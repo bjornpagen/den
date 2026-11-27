@@ -4,6 +4,7 @@ import {
 	closed,
 	closedId,
 	contained,
+	derivedName,
 	fragment,
 	key,
 	mutable,
@@ -111,76 +112,69 @@ export const RetryExhausted = relation("RetryExhausted", { root: sha256, step: s
 	"root",
 	"step"
 ])
-export const retry_steadfast_input_ebanfagjeadim = relation(
-	"retry_steadfast_input_ebanfagjeadim",
+export const RetrySteadfastInput = derivedName({
+	stem: "Retry",
+	path: ["SteadfastInput"]
+}).relation("RetrySteadfastInput", { root: sha256, step: sha256, key: Text }, ["root", "step"])
+export const RetryBrittleInput = derivedName({ stem: "Retry", path: ["BrittleInput"] }).relation(
+	"RetryBrittleInput",
 	{ root: sha256, step: sha256, key: Text },
 	["root", "step"]
 )
-export const retry_brittle_input_jbcpaiekdedpp = relation(
-	"retry_brittle_input_jbcpaiekdedpp",
+export const RetryPoliteInput = derivedName({ stem: "Retry", path: ["PoliteInput"] }).relation(
+	"RetryPoliteInput",
 	{ root: sha256, step: sha256, key: Text },
 	["root", "step"]
 )
-export const retry_polite_input_iopjdjgdhfide = relation(
-	"retry_polite_input_iopjdjgdhfide",
+export const RetryPatientInput = derivedName({ stem: "Retry", path: ["PatientInput"] }).relation(
+	"RetryPatientInput",
 	{ root: sha256, step: sha256, key: Text },
 	["root", "step"]
 )
-export const retry_patient_input_ndliolfjpjnoc = relation(
-	"retry_patient_input_ndliolfjpjnoc",
-	{ root: sha256, step: sha256, key: Text },
-	["root", "step"]
-)
-export const retry_ladders_input_fkbbgblmfmhbi = relation(
-	"retry_ladders_input_fkbbgblmfmhbi",
+export const RetryLaddersInput = derivedName({ stem: "Retry", path: ["LaddersInput"] }).relation(
+	"RetryLaddersInput",
 	{ root: sha256, scope: sha256, steadfast: Text, brittle: Text },
 	["root", "scope"]
 )
-export const retry_throttled_input_bfjgfamhjmgcd = relation(
-	"retry_throttled_input_bfjgfamhjmgcd",
-	{ root: sha256, scope: sha256, key: Text },
-	["root", "scope"]
-)
-export const retry_unhurried_input_mccbdnleajjif = relation(
-	"retry_unhurried_input_mccbdnleajjif",
-	{ root: sha256, scope: sha256, key: Text },
-	["root", "scope"]
-)
-export const retry_steadfast_output_aacklbgjpefbn = relation(
-	"retry_steadfast_output_aacklbgjpefbn",
+export const RetryThrottledInput = derivedName({
+	stem: "Retry",
+	path: ["ThrottledInput"]
+}).relation("RetryThrottledInput", { root: sha256, scope: sha256, key: Text }, ["root", "scope"])
+export const RetryUnhurriedInput = derivedName({
+	stem: "Retry",
+	path: ["UnhurriedInput"]
+}).relation("RetryUnhurriedInput", { root: sha256, scope: sha256, key: Text }, ["root", "scope"])
+export const RetrySteadfastOutput = derivedName({
+	stem: "Retry",
+	path: ["SteadfastOutput"]
+}).relation("RetrySteadfastOutput", { root: sha256, step: sha256, key: Text }, ["root", "step"])
+export const RetryBrittleOutput = derivedName({ stem: "Retry", path: ["BrittleOutput"] }).relation(
+	"RetryBrittleOutput",
 	{ root: sha256, step: sha256, key: Text },
 	["root", "step"]
 )
-export const retry_brittle_output_bajcdgadpoeak = relation(
-	"retry_brittle_output_bajcdgadpoeak",
+export const RetryPoliteOutput = derivedName({ stem: "Retry", path: ["PoliteOutput"] }).relation(
+	"RetryPoliteOutput",
 	{ root: sha256, step: sha256, key: Text },
 	["root", "step"]
 )
-export const retry_polite_output_nicaghgpaemah = relation(
-	"retry_polite_output_nicaghgpaemah",
+export const RetryPatientOutput = derivedName({ stem: "Retry", path: ["PatientOutput"] }).relation(
+	"RetryPatientOutput",
 	{ root: sha256, step: sha256, key: Text },
 	["root", "step"]
 )
-export const retry_patient_output_geoaicaaojcfl = relation(
-	"retry_patient_output_geoaicaaojcfl",
-	{ root: sha256, step: sha256, key: Text },
-	["root", "step"]
-)
-export const retry_ladders_finish_output_pgebkobjaoiih = relation(
-	"retry_ladders_finish_output_pgebkobjaoiih",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
-export const retry_throttled_finish_output_plgallgljmddo = relation(
-	"retry_throttled_finish_output_plgallgljmddo",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
-export const retry_unhurried_finish_output_oipogmdgcfehf = relation(
-	"retry_unhurried_finish_output_oipogmdgcfehf",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
+export const RetryLaddersFinishOutput = derivedName({
+	stem: "Retry",
+	path: ["LaddersFinishOutput"]
+}).relation("RetryLaddersFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
+export const RetryThrottledFinishOutput = derivedName({
+	stem: "Retry",
+	path: ["ThrottledFinishOutput"]
+}).relation("RetryThrottledFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
+export const RetryUnhurriedFinishOutput = derivedName({
+	stem: "Retry",
+	path: ["UnhurriedFinishOutput"]
+}).relation("RetryUnhurriedFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
 export const RetryPaused = relation(
 	"RetryPaused",
 	{ target: closedId(RetryPausable), turn: natural },
@@ -223,20 +217,20 @@ export const retryGraph = fragment(
 		RetryHeld,
 		RetryRefusal,
 		RetryExhausted,
-		retry_steadfast_input_ebanfagjeadim,
-		retry_brittle_input_jbcpaiekdedpp,
-		retry_polite_input_iopjdjgdhfide,
-		retry_patient_input_ndliolfjpjnoc,
-		retry_ladders_input_fkbbgblmfmhbi,
-		retry_throttled_input_bfjgfamhjmgcd,
-		retry_unhurried_input_mccbdnleajjif,
-		retry_steadfast_output_aacklbgjpefbn,
-		retry_brittle_output_bajcdgadpoeak,
-		retry_polite_output_nicaghgpaemah,
-		retry_patient_output_geoaicaaojcfl,
-		retry_ladders_finish_output_pgebkobjaoiih,
-		retry_throttled_finish_output_plgallgljmddo,
-		retry_unhurried_finish_output_oipogmdgcfehf
+		RetrySteadfastInput,
+		RetryBrittleInput,
+		RetryPoliteInput,
+		RetryPatientInput,
+		RetryLaddersInput,
+		RetryThrottledInput,
+		RetryUnhurriedInput,
+		RetrySteadfastOutput,
+		RetryBrittleOutput,
+		RetryPoliteOutput,
+		RetryPatientOutput,
+		RetryLaddersFinishOutput,
+		RetryThrottledFinishOutput,
+		RetryUnhurriedFinishOutput
 	],
 	[
 		unit("DenRoot", { root: sha256 }),
@@ -312,7 +306,7 @@ export const retryGraph = fragment(
 			on(RetryRequestedWith, "root")
 		),
 		contained(
-			on(retry_steadfast_input_ebanfagjeadim, "root", "step"),
+			on(RetrySteadfastInput, "root", "step"),
 			on(
 				select(RetryStep, (row) => row.eq(row.kind, "Steadfast")),
 				"root",
@@ -320,7 +314,7 @@ export const retryGraph = fragment(
 			)
 		),
 		contained(
-			on(retry_brittle_input_jbcpaiekdedpp, "root", "step"),
+			on(RetryBrittleInput, "root", "step"),
 			on(
 				select(RetryStep, (row) => row.eq(row.kind, "Brittle")),
 				"root",
@@ -328,7 +322,7 @@ export const retryGraph = fragment(
 			)
 		),
 		contained(
-			on(retry_polite_input_iopjdjgdhfide, "root", "step"),
+			on(RetryPoliteInput, "root", "step"),
 			on(
 				select(RetryStep, (row) => row.eq(row.kind, "Polite")),
 				"root",
@@ -336,7 +330,7 @@ export const retryGraph = fragment(
 			)
 		),
 		contained(
-			on(retry_patient_input_ndliolfjpjnoc, "root", "step"),
+			on(RetryPatientInput, "root", "step"),
 			on(
 				select(RetryStep, (row) => row.eq(row.kind, "Patient")),
 				"root",
@@ -344,67 +338,37 @@ export const retryGraph = fragment(
 			)
 		),
 		contained(
-			on(retry_ladders_input_fkbbgblmfmhbi, "scope"),
+			on(RetryLaddersInput, "scope"),
 			on(
 				select(RetryRoot, (row) => row.eq(row.kind, "Ladders")),
 				"root"
 			)
 		),
 		contained(
-			on(retry_throttled_input_bfjgfamhjmgcd, "scope"),
+			on(RetryThrottledInput, "scope"),
 			on(
 				select(RetryRoot, (row) => row.eq(row.kind, "Throttled")),
 				"root"
 			)
 		),
 		contained(
-			on(retry_unhurried_input_mccbdnleajjif, "scope"),
+			on(RetryUnhurriedInput, "scope"),
 			on(
 				select(RetryRoot, (row) => row.eq(row.kind, "Unhurried")),
 				"root"
 			)
 		),
-		contained(
-			on(retry_steadfast_output_aacklbgjpefbn, "root", "step"),
-			on(retry_steadfast_input_ebanfagjeadim, "root", "step")
-		),
-		contained(
-			on(retry_steadfast_output_aacklbgjpefbn, "root", "step"),
-			on(RetryDone, "root", "step")
-		),
-		contained(
-			on(retry_brittle_output_bajcdgadpoeak, "root", "step"),
-			on(retry_brittle_input_jbcpaiekdedpp, "root", "step")
-		),
-		contained(
-			on(retry_brittle_output_bajcdgadpoeak, "root", "step"),
-			on(RetryDone, "root", "step")
-		),
-		contained(
-			on(retry_polite_output_nicaghgpaemah, "root", "step"),
-			on(retry_polite_input_iopjdjgdhfide, "root", "step")
-		),
-		contained(on(retry_polite_output_nicaghgpaemah, "root", "step"), on(RetryDone, "root", "step")),
-		contained(
-			on(retry_patient_output_geoaicaaojcfl, "root", "step"),
-			on(retry_patient_input_ndliolfjpjnoc, "root", "step")
-		),
-		contained(
-			on(retry_patient_output_geoaicaaojcfl, "root", "step"),
-			on(RetryDone, "root", "step")
-		),
-		contained(
-			on(retry_ladders_finish_output_pgebkobjaoiih, "root", "step"),
-			on(RetryDone, "root", "step")
-		),
-		contained(
-			on(retry_throttled_finish_output_plgallgljmddo, "root", "step"),
-			on(RetryDone, "root", "step")
-		),
-		contained(
-			on(retry_unhurried_finish_output_oipogmdgcfehf, "root", "step"),
-			on(RetryDone, "root", "step")
-		),
+		contained(on(RetrySteadfastOutput, "root", "step"), on(RetrySteadfastInput, "root", "step")),
+		contained(on(RetrySteadfastOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryBrittleOutput, "root", "step"), on(RetryBrittleInput, "root", "step")),
+		contained(on(RetryBrittleOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryPoliteOutput, "root", "step"), on(RetryPoliteInput, "root", "step")),
+		contained(on(RetryPoliteOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryPatientOutput, "root", "step"), on(RetryPatientInput, "root", "step")),
+		contained(on(RetryPatientOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryLaddersFinishOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryThrottledFinishOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryUnhurriedFinishOutput, "root", "step"), on(RetryDone, "root", "step")),
 		contained(on(RetryScope, "root"), on(RetryRoot, "root")),
 		mutable(RetryScope),
 		mutable(RetryAdmitted),
@@ -434,64 +398,34 @@ export const retryGraph = fragment(
 		mutable(RetryRefusal),
 		contained(on(RetryExhausted, "root", "step"), on(RetryStep, "root", "step")),
 		mutable(RetryExhausted),
-		contained(
-			on(retry_steadfast_input_ebanfagjeadim, "root", "step"),
-			on(RetryStep, "root", "step")
-		),
-		mutable(retry_steadfast_input_ebanfagjeadim),
-		contained(on(retry_brittle_input_jbcpaiekdedpp, "root", "step"), on(RetryStep, "root", "step")),
-		mutable(retry_brittle_input_jbcpaiekdedpp),
-		contained(on(retry_polite_input_iopjdjgdhfide, "root", "step"), on(RetryStep, "root", "step")),
-		mutable(retry_polite_input_iopjdjgdhfide),
-		contained(on(retry_patient_input_ndliolfjpjnoc, "root", "step"), on(RetryStep, "root", "step")),
-		mutable(retry_patient_input_ndliolfjpjnoc),
-		contained(
-			on(retry_ladders_input_fkbbgblmfmhbi, "root", "scope"),
-			on(RetryScope, "root", "scope")
-		),
-		mutable(retry_ladders_input_fkbbgblmfmhbi),
-		contained(
-			on(retry_throttled_input_bfjgfamhjmgcd, "root", "scope"),
-			on(RetryScope, "root", "scope")
-		),
-		mutable(retry_throttled_input_bfjgfamhjmgcd),
-		contained(
-			on(retry_unhurried_input_mccbdnleajjif, "root", "scope"),
-			on(RetryScope, "root", "scope")
-		),
-		mutable(retry_unhurried_input_mccbdnleajjif),
-		contained(
-			on(retry_steadfast_output_aacklbgjpefbn, "root", "step"),
-			on(RetryStep, "root", "step")
-		),
-		mutable(retry_steadfast_output_aacklbgjpefbn),
-		contained(
-			on(retry_brittle_output_bajcdgadpoeak, "root", "step"),
-			on(RetryStep, "root", "step")
-		),
-		mutable(retry_brittle_output_bajcdgadpoeak),
-		contained(on(retry_polite_output_nicaghgpaemah, "root", "step"), on(RetryStep, "root", "step")),
-		mutable(retry_polite_output_nicaghgpaemah),
-		contained(
-			on(retry_patient_output_geoaicaaojcfl, "root", "step"),
-			on(RetryStep, "root", "step")
-		),
-		mutable(retry_patient_output_geoaicaaojcfl),
-		contained(
-			on(retry_ladders_finish_output_pgebkobjaoiih, "root", "step"),
-			on(RetryStep, "root", "step")
-		),
-		mutable(retry_ladders_finish_output_pgebkobjaoiih),
-		contained(
-			on(retry_throttled_finish_output_plgallgljmddo, "root", "step"),
-			on(RetryStep, "root", "step")
-		),
-		mutable(retry_throttled_finish_output_plgallgljmddo),
-		contained(
-			on(retry_unhurried_finish_output_oipogmdgcfehf, "root", "step"),
-			on(RetryStep, "root", "step")
-		),
-		mutable(retry_unhurried_finish_output_oipogmdgcfehf)
+		contained(on(RetrySteadfastInput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetrySteadfastInput),
+		contained(on(RetryBrittleInput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryBrittleInput),
+		contained(on(RetryPoliteInput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryPoliteInput),
+		contained(on(RetryPatientInput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryPatientInput),
+		contained(on(RetryLaddersInput, "root", "scope"), on(RetryScope, "root", "scope")),
+		mutable(RetryLaddersInput),
+		contained(on(RetryThrottledInput, "root", "scope"), on(RetryScope, "root", "scope")),
+		mutable(RetryThrottledInput),
+		contained(on(RetryUnhurriedInput, "root", "scope"), on(RetryScope, "root", "scope")),
+		mutable(RetryUnhurriedInput),
+		contained(on(RetrySteadfastOutput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetrySteadfastOutput),
+		contained(on(RetryBrittleOutput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryBrittleOutput),
+		contained(on(RetryPoliteOutput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryPoliteOutput),
+		contained(on(RetryPatientOutput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryPatientOutput),
+		contained(on(RetryLaddersFinishOutput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryLaddersFinishOutput),
+		contained(on(RetryThrottledFinishOutput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryThrottledFinishOutput),
+		contained(on(RetryUnhurriedFinishOutput, "root", "step"), on(RetryStep, "root", "step")),
+		mutable(RetryUnhurriedFinishOutput)
 	]
 )
 
@@ -518,11 +452,11 @@ export const retryWriter = [
 	"RetryResult",
 	"RetryDone",
 	"RetryHeld",
-	"retry_steadfast_output_aacklbgjpefbn",
-	"retry_brittle_output_bajcdgadpoeak",
-	"retry_polite_output_nicaghgpaemah",
-	"retry_patient_output_geoaicaaojcfl",
-	"retry_ladders_finish_output_pgebkobjaoiih",
-	"retry_throttled_finish_output_plgallgljmddo",
-	"retry_unhurried_finish_output_oipogmdgcfehf"
+	"RetrySteadfastOutput",
+	"RetryBrittleOutput",
+	"RetryPoliteOutput",
+	"RetryPatientOutput",
+	"RetryLaddersFinishOutput",
+	"RetryThrottledFinishOutput",
+	"RetryUnhurriedFinishOutput"
 ] as const

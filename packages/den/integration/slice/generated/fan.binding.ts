@@ -51,8 +51,8 @@ import {
 	FanRootKind,
 	FanPausable,
 	FanResource,
-	fan_fan_run_input_bghibckinpfgk,
-	fan_sweep_input_bnmfcblhkahec
+	FanFanRunInput,
+	FanSweepInput
 } from "#integration/slice/generated/fan.fragment.ts"
 import type {
 	FanScope,
@@ -61,10 +61,10 @@ import type {
 	FanFinish,
 	FanStartStep,
 	FanStartScope,
-	fan_square_input_ifddbjkaokoig,
-	fan_dust_input_lelfhikaelkja,
-	fan_mop_input_ngghbiaegmghl,
-	fan_batch_input_hjhhnklpfiilh,
+	FanSquareInput,
+	FanDustInput,
+	FanMopInput,
+	FanBatchInput,
 	FanKind
 } from "#integration/slice/generated/fan.fragment.ts"
 import type {
@@ -74,22 +74,20 @@ import type {
 	fanCommitPrograms
 } from "#integration/slice/generated/fan.programs.ts"
 
-/** The codec text of each declared field of fan_fan_run_input_bghibckinpfgk, a request's input row, bound once (grizzle's codecText). */
-const fan_fan_run_input_bghibckinpfgkTexts = Object.freeze({
-	batch: codecText(fan_fan_run_input_bghibckinpfgk.fields.batch),
-	size: codecText(fan_fan_run_input_bghibckinpfgk.fields.size)
+/** The codec text of each declared field of FanFanRunInput, a request's input row, bound once (grizzle's codecText). */
+const fanFanRunInputTexts = Object.freeze({
+	batch: codecText(FanFanRunInput.fields.batch),
+	size: codecText(FanFanRunInput.fields.size)
 })
-/** The codec text of each declared field of fan_sweep_input_bnmfcblhkahec, a request's input row, bound once (grizzle's codecText). */
-const fan_sweep_input_bnmfcblhkahecTexts = Object.freeze({
-	sweep: codecText(fan_sweep_input_bnmfcblhkahec.fields.sweep)
-})
+/** The codec text of each declared field of FanSweepInput, a request's input row, bound once (grizzle's codecText). */
+const fanSweepInputTexts = Object.freeze({ sweep: codecText(FanSweepInput.fields.sweep) })
 /** The fingerprint of root kind FanRun's input heading, taken once. */
 const fanFanRunHeading = inputFingerprint(
-	'70:31:fan_fan_run_input_bghibckinpfgk13:5:batch4:Text17:4:size9:pg.bigint275:6:digest263:[...pipe([{ scope: scope, root: scope, batch: input.batch, size: input.size }], Arr.flatMap((row) => [Result.succeed("fan_fan_run_input_bghibckinpfgk"), fan_fan_run_input_bghibckinpfgkTexts.batch(row.batch), fan_fan_run_input_bghibckinpfgkTexts.size(row.size)]))]'
+	'53:14:FanFanRunInput13:5:batch4:Text17:4:size9:pg.bigint224:6:digest212:[...pipe([{ scope: scope, root: scope, batch: input.batch, size: input.size }], Arr.flatMap((row) => [Result.succeed("FanFanRunInput"), fanFanRunInputTexts.batch(row.batch), fanFanRunInputTexts.size(row.size)]))]'
 )
 /** The fingerprint of root kind Sweep's input heading, taken once. */
 const fanSweepHeading = inputFingerprint(
-	'48:29:fan_sweep_input_bnmfcblhkahec13:5:sweep4:Text200:6:digest188:[...pipe([{ scope: scope, root: scope, sweep: input.sweep }], Arr.flatMap((row) => [Result.succeed("fan_sweep_input_bnmfcblhkahec"), fan_sweep_input_bnmfcblhkahecTexts.sweep(row.sweep)]))]'
+	'32:13:FanSweepInput13:5:sweep4:Text168:6:digest156:[...pipe([{ scope: scope, root: scope, sweep: input.sweep }], Arr.flatMap((row) => [Result.succeed("FanSweepInput"), fanSweepInputTexts.sweep(row.sweep)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
@@ -117,16 +115,10 @@ interface Rows {
 	readonly FanFinish: ReadonlyArray<Addition<typeof FanFinish>>
 	readonly FanStartStep: ReadonlyArray<Addition<typeof FanStartStep>>
 	readonly FanStartScope: ReadonlyArray<Addition<typeof FanStartScope>>
-	readonly fan_square_input_ifddbjkaokoig: ReadonlyArray<
-		Addition<typeof fan_square_input_ifddbjkaokoig>
-	>
-	readonly fan_dust_input_lelfhikaelkja: ReadonlyArray<
-		Addition<typeof fan_dust_input_lelfhikaelkja>
-	>
-	readonly fan_mop_input_ngghbiaegmghl: ReadonlyArray<Addition<typeof fan_mop_input_ngghbiaegmghl>>
-	readonly fan_batch_input_hjhhnklpfiilh: ReadonlyArray<
-		Addition<typeof fan_batch_input_hjhhnklpfiilh>
-	>
+	readonly FanSquareInput: ReadonlyArray<Addition<typeof FanSquareInput>>
+	readonly FanDustInput: ReadonlyArray<Addition<typeof FanDustInput>>
+	readonly FanMopInput: ReadonlyArray<Addition<typeof FanMopInput>>
+	readonly FanBatchInput: ReadonlyArray<Addition<typeof FanBatchInput>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -190,10 +182,10 @@ export const fanLedger = (h: FanHandles) => {
 		FanFinish: [],
 		FanStartStep: [],
 		FanStartScope: [],
-		fan_square_input_ifddbjkaokoig: [],
-		fan_dust_input_lelfhikaelkja: [],
-		fan_mop_input_ngghbiaegmghl: [],
-		fan_batch_input_hjhhnklpfiilh: []
+		FanSquareInput: [],
+		FanDustInput: [],
+		FanMopInput: [],
+		FanBatchInput: []
 	}
 	const nothingGrown: Grown = {
 		rows: noRows,
@@ -212,22 +204,10 @@ export const fanLedger = (h: FanHandles) => {
 			FanFinish: [...a.rows.FanFinish, ...b.rows.FanFinish],
 			FanStartStep: [...a.rows.FanStartStep, ...b.rows.FanStartStep],
 			FanStartScope: [...a.rows.FanStartScope, ...b.rows.FanStartScope],
-			fan_square_input_ifddbjkaokoig: [
-				...a.rows.fan_square_input_ifddbjkaokoig,
-				...b.rows.fan_square_input_ifddbjkaokoig
-			],
-			fan_dust_input_lelfhikaelkja: [
-				...a.rows.fan_dust_input_lelfhikaelkja,
-				...b.rows.fan_dust_input_lelfhikaelkja
-			],
-			fan_mop_input_ngghbiaegmghl: [
-				...a.rows.fan_mop_input_ngghbiaegmghl,
-				...b.rows.fan_mop_input_ngghbiaegmghl
-			],
-			fan_batch_input_hjhhnklpfiilh: [
-				...a.rows.fan_batch_input_hjhhnklpfiilh,
-				...b.rows.fan_batch_input_hjhhnklpfiilh
-			]
+			FanSquareInput: [...a.rows.FanSquareInput, ...b.rows.FanSquareInput],
+			FanDustInput: [...a.rows.FanDustInput, ...b.rows.FanDustInput],
+			FanMopInput: [...a.rows.FanMopInput, ...b.rows.FanMopInput],
+			FanBatchInput: [...a.rows.FanBatchInput, ...b.rows.FanBatchInput]
 		},
 		steps: [...a.steps, ...b.steps],
 		timed: [...a.timed, ...b.timed],
@@ -247,9 +227,7 @@ export const fanLedger = (h: FanHandles) => {
 					rows: {
 						...noRows,
 						FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						fan_square_input_ifddbjkaokoig: [
-							{ step: key, root: root, batch: spawn.input.batch, n: spawn.input.n }
-						]
+						FanSquareInput: [{ step: key, root: root, batch: spawn.input.batch, n: spawn.input.n }]
 					},
 					...spawnedOf(
 						{ step: key, kind: "Square", scope: scope },
@@ -278,7 +256,7 @@ export const fanLedger = (h: FanHandles) => {
 									FanAdmitted: [{ scope: key, root: root }],
 									FanFinish: [{ scope: key, step: finish, root: root }],
 									FanStartScope: [{ scope, ordinal: BigInt(ordinal), child: key, root }],
-									fan_batch_input_hjhhnklpfiilh: [
+									FanBatchInput: [
 										{ scope: key, root: root, batch: spawn.input.batch, size: spawn.input.size }
 									]
 								},
@@ -306,7 +284,7 @@ export const fanLedger = (h: FanHandles) => {
 							rows: {
 								...noRows,
 								FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-								fan_dust_input_lelfhikaelkja: [{ step: key, root: root, sweep: spawn.input.sweep }]
+								FanDustInput: [{ step: key, root: root, sweep: spawn.input.sweep }]
 							},
 							...spawnedOf(
 								{ step: key, kind: "Dust", scope: scope },
@@ -318,7 +296,7 @@ export const fanLedger = (h: FanHandles) => {
 							rows: {
 								...noRows,
 								FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-								fan_mop_input_ngghbiaegmghl: [{ step: key, root: root, sweep: spawn.input.sweep }]
+								FanMopInput: [{ step: key, root: root, sweep: spawn.input.sweep }]
 							},
 							...spawnedOf(
 								{ step: key, kind: "Mop", scope: scope },
@@ -348,7 +326,7 @@ export const fanLedger = (h: FanHandles) => {
 									FanAdmitted: [{ scope: key, root: root }],
 									FanFinish: [{ scope: key, step: finish, root: root }],
 									FanStartScope: [{ scope, ordinal: BigInt(ordinal), child: key, root }],
-									fan_batch_input_hjhhnklpfiilh: [
+									FanBatchInput: [
 										{ scope: key, root: root, batch: spawn.input.batch, size: spawn.input.size }
 									]
 								},
@@ -363,72 +341,58 @@ export const fanLedger = (h: FanHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readfan_square_input_ifddbjkaokoig = (root: Sha256, step: Sha256) =>
+	const readFanSquareInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.fanReadfan_square_input_ifddbjkaokoig.once({ params: { root, step }, facts: {} })
-				),
+				settled(h.den.fanReadFanSquareInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, n: found.n }))
 		})
-	const readfan_dust_input_lelfhikaelkja = (root: Sha256, step: Sha256) =>
+	const readFanDustInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.fanReadfan_dust_input_lelfhikaelkja.once({ params: { root, step }, facts: {} })
-				),
+				settled(h.den.fanReadFanDustInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readfan_mop_input_ngghbiaegmghl = (root: Sha256, step: Sha256) =>
+	const readFanMopInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.fanReadfan_mop_input_ngghbiaegmghl.once({ params: { root, step }, facts: {} })
-				),
+				settled(h.den.fanReadFanMopInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readfan_batch_input_hjhhnklpfiilh = (root: Sha256, scope: Sha256) =>
+	const readFanBatchInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.fanReadfan_batch_input_hjhhnklpfiilh.once({ params: { root, scope }, facts: {} })
-				),
+				settled(h.den.fanReadFanBatchInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
-	const readfan_fan_run_input_bghibckinpfgk = (root: Sha256, scope: Sha256) =>
+	const readFanFanRunInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.fanReadfan_fan_run_input_bghibckinpfgk.once({ params: { root, scope }, facts: {} })
-				),
+				settled(h.den.fanReadFanFanRunInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
-	const readfan_sweep_input_bnmfcblhkahec = (root: Sha256, scope: Sha256) =>
+	const readFanSweepInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.fanReadfan_sweep_input_bnmfcblhkahec.once({ params: { root, scope }, facts: {} })
-				),
+				settled(h.den.fanReadFanSweepInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readfan_wanted_input_nfecjpihiaope = (root: Sha256, scope: Sha256) =>
+	const readFanWantedInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.fanReadfan_wanted_input_nfecjpihiaope.once({ params: { root, scope }, facts: {} })
-				),
+				settled(h.den.fanReadFanWantedInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
@@ -507,7 +471,7 @@ export const fanLedger = (h: FanHandles) => {
 							fanFanRunScope: scope,
 							fanFanRunKey: key,
 							fanFanRunFanScope: [{ scope, root: scope }],
-							fanFanRunfan_fan_run_input_bghibckinpfgk: [
+							fanFanRunFanFanRunInput: [
 								{ scope: scope, root: scope, batch: input.batch, size: input.size }
 							],
 							fanFanRunFanRequestedWith: Option.toArray(
@@ -516,9 +480,9 @@ export const fanLedger = (h: FanHandles) => {
 										...pipe(
 											[{ scope: scope, root: scope, batch: input.batch, size: input.size }],
 											Arr.flatMap((row) => [
-												Result.succeed("fan_fan_run_input_bghibckinpfgk"),
-												fan_fan_run_input_bghibckinpfgkTexts.batch(row.batch),
-												fan_fan_run_input_bghibckinpfgkTexts.size(row.size)
+												Result.succeed("FanFanRunInput"),
+												fanFanRunInputTexts.batch(row.batch),
+												fanFanRunInputTexts.size(row.size)
 											])
 										)
 									]),
@@ -545,17 +509,15 @@ export const fanLedger = (h: FanHandles) => {
 							fanSweepScope: scope,
 							fanSweepKey: key,
 							fanSweepFanScope: [{ scope, root: scope }],
-							fanSweepfan_sweep_input_bnmfcblhkahec: [
-								{ scope: scope, root: scope, sweep: input.sweep }
-							],
+							fanSweepFanSweepInput: [{ scope: scope, root: scope, sweep: input.sweep }],
 							fanSweepFanRequestedWith: Option.toArray(
 								Option.map(
 									codecTextsOf([
 										...pipe(
 											[{ scope: scope, root: scope, sweep: input.sweep }],
 											Arr.flatMap((row) => [
-												Result.succeed("fan_sweep_input_bnmfcblhkahec"),
-												fan_sweep_input_bnmfcblhkahecTexts.sweep(row.sweep)
+												Result.succeed("FanSweepInput"),
+												fanSweepInputTexts.sweep(row.sweep)
 											])
 										)
 									]),
@@ -579,7 +541,7 @@ export const fanLedger = (h: FanHandles) => {
 		Square: runnerOf(
 			fan.kinds[0],
 			{
-				input: ({ root, step }) => readfan_square_input_ifddbjkaokoig(root, step),
+				input: ({ root, step }) => readFanSquareInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -594,7 +556,7 @@ export const fanLedger = (h: FanHandles) => {
 										FanHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										fan_square_output_gofcfljmlelgo: [
+										FanSquareOutput: [
 											{ step: done.turn.step, root: done.turn.root, square: done.output.square }
 										]
 									}
@@ -610,7 +572,7 @@ export const fanLedger = (h: FanHandles) => {
 		Dust: runnerOf(
 			fan.kinds[3],
 			{
-				input: ({ root, step }) => readfan_dust_input_lelfhikaelkja(root, step),
+				input: ({ root, step }) => readFanDustInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -625,7 +587,7 @@ export const fanLedger = (h: FanHandles) => {
 										FanHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										fan_dust_output_pgpcjjjdmhkim: [
+										FanDustOutput: [
 											{ step: done.turn.step, root: done.turn.root, sweep: done.output.sweep }
 										]
 									}
@@ -641,7 +603,7 @@ export const fanLedger = (h: FanHandles) => {
 		Mop: runnerOf(
 			fan.kinds[4],
 			{
-				input: ({ root, step }) => readfan_mop_input_ngghbiaegmghl(root, step),
+				input: ({ root, step }) => readFanMopInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -656,7 +618,7 @@ export const fanLedger = (h: FanHandles) => {
 										FanHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										fan_mop_output_okmfngilefbec: [
+										FanMopOutput: [
 											{ step: done.turn.step, root: done.turn.root, sweep: done.output.sweep }
 										]
 									}
@@ -692,7 +654,7 @@ export const fanLedger = (h: FanHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readfan_batch_input_hjhhnklpfiilh(root, scope)
+						const input = yield* readFanBatchInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -749,9 +711,7 @@ export const fanLedger = (h: FanHandles) => {
 											FanHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											fan_batch_finish_output_djinnhndkglgj: [
-												{ step: done.turn.step, root: done.turn.root }
-											]
+											FanBatchFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 										}
 									},
 									done.writes.facts
@@ -787,7 +747,7 @@ export const fanLedger = (h: FanHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readfan_fan_run_input_bghibckinpfgk(root, scope)
+						const input = yield* readFanFanRunInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -841,9 +801,7 @@ export const fanLedger = (h: FanHandles) => {
 											FanHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											fan_fan_run_finish_output_kcmicfckgdcip: [
-												{ step: done.turn.step, root: done.turn.root }
-											]
+											FanFanRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 										}
 									},
 									done.writes.facts
@@ -879,7 +837,7 @@ export const fanLedger = (h: FanHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readfan_sweep_input_bnmfcblhkahec(root, scope)
+						const input = yield* readFanSweepInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -899,9 +857,7 @@ export const fanLedger = (h: FanHandles) => {
 										FanHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										fan_sweep_finish_output_nebomlkgaabji: [
-											{ step: done.turn.step, root: done.turn.root }
-										]
+										FanSweepFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 									}
 								}
 							})
@@ -935,7 +891,7 @@ export const fanLedger = (h: FanHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readfan_wanted_input_nfecjpihiaope(root, scope)
+						const input = yield* readFanWantedInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -989,9 +945,7 @@ export const fanLedger = (h: FanHandles) => {
 											FanHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											fan_wanted_finish_output_lmjmjmcffnbda: [
-												{ step: done.turn.step, root: done.turn.root }
-											]
+											FanWantedFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 										}
 									},
 									done.writes.facts
@@ -1011,7 +965,7 @@ export const fanLedger = (h: FanHandles) => {
 			precondition: fan.kinds[2].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readfan_fan_run_input_bghibckinpfgk(scope, scope)
+					const input = yield* readFanFanRunInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1038,10 +992,10 @@ export const fanLedger = (h: FanHandles) => {
 									FanWithin: grown.rows.FanWithin,
 									FanStartStep: grown.rows.FanStartStep,
 									FanStartScope: grown.rows.FanStartScope,
-									fan_square_input_ifddbjkaokoig: grown.rows.fan_square_input_ifddbjkaokoig,
-									fan_dust_input_lelfhikaelkja: grown.rows.fan_dust_input_lelfhikaelkja,
-									fan_mop_input_ngghbiaegmghl: grown.rows.fan_mop_input_ngghbiaegmghl,
-									fan_batch_input_hjhhnklpfiilh: grown.rows.fan_batch_input_hjhhnklpfiilh,
+									FanSquareInput: grown.rows.FanSquareInput,
+									FanDustInput: grown.rows.FanDustInput,
+									FanMopInput: grown.rows.FanMopInput,
+									FanBatchInput: grown.rows.FanBatchInput,
 									FanAdmitted: admitted,
 									FanFinish: finishes
 								}
@@ -1062,7 +1016,7 @@ export const fanLedger = (h: FanHandles) => {
 			precondition: fan.kinds[5].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readfan_sweep_input_bnmfcblhkahec(scope, scope)
+					const input = yield* readFanSweepInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1089,10 +1043,10 @@ export const fanLedger = (h: FanHandles) => {
 									FanWithin: grown.rows.FanWithin,
 									FanStartStep: grown.rows.FanStartStep,
 									FanStartScope: grown.rows.FanStartScope,
-									fan_square_input_ifddbjkaokoig: grown.rows.fan_square_input_ifddbjkaokoig,
-									fan_dust_input_lelfhikaelkja: grown.rows.fan_dust_input_lelfhikaelkja,
-									fan_mop_input_ngghbiaegmghl: grown.rows.fan_mop_input_ngghbiaegmghl,
-									fan_batch_input_hjhhnklpfiilh: grown.rows.fan_batch_input_hjhhnklpfiilh,
+									FanSquareInput: grown.rows.FanSquareInput,
+									FanDustInput: grown.rows.FanDustInput,
+									FanMopInput: grown.rows.FanMopInput,
+									FanBatchInput: grown.rows.FanBatchInput,
 									FanAdmitted: admitted,
 									FanFinish: finishes
 								}
@@ -1113,7 +1067,7 @@ export const fanLedger = (h: FanHandles) => {
 			precondition: fan.kinds[6].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readfan_wanted_input_nfecjpihiaope(scope, scope)
+					const input = yield* readFanWantedInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1140,10 +1094,10 @@ export const fanLedger = (h: FanHandles) => {
 									FanWithin: grown.rows.FanWithin,
 									FanStartStep: grown.rows.FanStartStep,
 									FanStartScope: grown.rows.FanStartScope,
-									fan_square_input_ifddbjkaokoig: grown.rows.fan_square_input_ifddbjkaokoig,
-									fan_dust_input_lelfhikaelkja: grown.rows.fan_dust_input_lelfhikaelkja,
-									fan_mop_input_ngghbiaegmghl: grown.rows.fan_mop_input_ngghbiaegmghl,
-									fan_batch_input_hjhhnklpfiilh: grown.rows.fan_batch_input_hjhhnklpfiilh,
+									FanSquareInput: grown.rows.FanSquareInput,
+									FanDustInput: grown.rows.FanDustInput,
+									FanMopInput: grown.rows.FanMopInput,
+									FanBatchInput: grown.rows.FanBatchInput,
 									FanAdmitted: admitted,
 									FanFinish: finishes
 								}

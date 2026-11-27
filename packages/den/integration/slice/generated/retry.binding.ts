@@ -44,19 +44,19 @@ import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { retry } from "#integration/slice/flows.ts"
 import {
 	RetryPausable,
-	retry_ladders_input_fkbbgblmfmhbi,
-	retry_throttled_input_bfjgfamhjmgcd,
-	retry_unhurried_input_mccbdnleajjif
+	RetryLaddersInput,
+	RetryThrottledInput,
+	RetryUnhurriedInput
 } from "#integration/slice/generated/retry.fragment.ts"
 import type {
 	RetryScope,
 	RetryAdmitted,
 	RetryFinish,
 	RetryStartStep,
-	retry_steadfast_input_ebanfagjeadim,
-	retry_brittle_input_jbcpaiekdedpp,
-	retry_polite_input_iopjdjgdhfide,
-	retry_patient_input_ndliolfjpjnoc,
+	RetrySteadfastInput,
+	RetryBrittleInput,
+	RetryPoliteInput,
+	RetryPatientInput,
 	RetryKind,
 	RetryRootKind
 } from "#integration/slice/generated/retry.fragment.ts"
@@ -67,30 +67,26 @@ import type {
 	retryCommitPrograms
 } from "#integration/slice/generated/retry.programs.ts"
 
-/** The codec text of each declared field of retry_ladders_input_fkbbgblmfmhbi, a request's input row, bound once (grizzle's codecText). */
-const retry_ladders_input_fkbbgblmfmhbiTexts = Object.freeze({
-	steadfast: codecText(retry_ladders_input_fkbbgblmfmhbi.fields.steadfast),
-	brittle: codecText(retry_ladders_input_fkbbgblmfmhbi.fields.brittle)
+/** The codec text of each declared field of RetryLaddersInput, a request's input row, bound once (grizzle's codecText). */
+const retryLaddersInputTexts = Object.freeze({
+	steadfast: codecText(RetryLaddersInput.fields.steadfast),
+	brittle: codecText(RetryLaddersInput.fields.brittle)
 })
-/** The codec text of each declared field of retry_throttled_input_bfjgfamhjmgcd, a request's input row, bound once (grizzle's codecText). */
-const retry_throttled_input_bfjgfamhjmgcdTexts = Object.freeze({
-	key: codecText(retry_throttled_input_bfjgfamhjmgcd.fields.key)
-})
-/** The codec text of each declared field of retry_unhurried_input_mccbdnleajjif, a request's input row, bound once (grizzle's codecText). */
-const retry_unhurried_input_mccbdnleajjifTexts = Object.freeze({
-	key: codecText(retry_unhurried_input_mccbdnleajjif.fields.key)
-})
+/** The codec text of each declared field of RetryThrottledInput, a request's input row, bound once (grizzle's codecText). */
+const retryThrottledInputTexts = Object.freeze({ key: codecText(RetryThrottledInput.fields.key) })
+/** The codec text of each declared field of RetryUnhurriedInput, a request's input row, bound once (grizzle's codecText). */
+const retryUnhurriedInputTexts = Object.freeze({ key: codecText(RetryUnhurriedInput.fields.key) })
 /** The fingerprint of root kind Ladders's input heading, taken once. */
 const retryLaddersHeading = inputFingerprint(
-	'74:33:retry_ladders_input_fkbbgblmfmhbi17:9:steadfast4:Text15:7:brittle4:Text309:6:digest297:[...pipe([{ scope: scope, root: scope, steadfast: input.steadfast, brittle: input.brittle }], Arr.flatMap((row) => [Result.succeed("retry_ladders_input_fkbbgblmfmhbi"), retry_ladders_input_fkbbgblmfmhbiTexts.steadfast(row.steadfast), retry_ladders_input_fkbbgblmfmhbiTexts.brittle(row.brittle)]))]'
+	'58:17:RetryLaddersInput17:9:steadfast4:Text15:7:brittle4:Text261:6:digest249:[...pipe([{ scope: scope, root: scope, steadfast: input.steadfast, brittle: input.brittle }], Arr.flatMap((row) => [Result.succeed("RetryLaddersInput"), retryLaddersInputTexts.steadfast(row.steadfast), retryLaddersInputTexts.brittle(row.brittle)]))]'
 )
 /** The fingerprint of root kind Throttled's input heading, taken once. */
 const retryThrottledHeading = inputFingerprint(
-	'52:35:retry_throttled_input_bfjgfamhjmgcd11:3:key4:Text204:6:digest192:[...pipe([{ scope: scope, root: scope, key: input.key }], Arr.flatMap((row) => [Result.succeed("retry_throttled_input_bfjgfamhjmgcd"), retry_throttled_input_bfjgfamhjmgcdTexts.key(row.key)]))]'
+	'36:19:RetryThrottledInput11:3:key4:Text172:6:digest160:[...pipe([{ scope: scope, root: scope, key: input.key }], Arr.flatMap((row) => [Result.succeed("RetryThrottledInput"), retryThrottledInputTexts.key(row.key)]))]'
 )
 /** The fingerprint of root kind Unhurried's input heading, taken once. */
 const retryUnhurriedHeading = inputFingerprint(
-	'52:35:retry_unhurried_input_mccbdnleajjif11:3:key4:Text204:6:digest192:[...pipe([{ scope: scope, root: scope, key: input.key }], Arr.flatMap((row) => [Result.succeed("retry_unhurried_input_mccbdnleajjif"), retry_unhurried_input_mccbdnleajjifTexts.key(row.key)]))]'
+	'36:19:RetryUnhurriedInput11:3:key4:Text172:6:digest160:[...pipe([{ scope: scope, root: scope, key: input.key }], Arr.flatMap((row) => [Result.succeed("RetryUnhurriedInput"), retryUnhurriedInputTexts.key(row.key)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
@@ -118,18 +114,10 @@ interface Rows {
 	readonly RetryAdmitted: ReadonlyArray<Addition<typeof RetryAdmitted>>
 	readonly RetryFinish: ReadonlyArray<Addition<typeof RetryFinish>>
 	readonly RetryStartStep: ReadonlyArray<Addition<typeof RetryStartStep>>
-	readonly retry_steadfast_input_ebanfagjeadim: ReadonlyArray<
-		Addition<typeof retry_steadfast_input_ebanfagjeadim>
-	>
-	readonly retry_brittle_input_jbcpaiekdedpp: ReadonlyArray<
-		Addition<typeof retry_brittle_input_jbcpaiekdedpp>
-	>
-	readonly retry_polite_input_iopjdjgdhfide: ReadonlyArray<
-		Addition<typeof retry_polite_input_iopjdjgdhfide>
-	>
-	readonly retry_patient_input_ndliolfjpjnoc: ReadonlyArray<
-		Addition<typeof retry_patient_input_ndliolfjpjnoc>
-	>
+	readonly RetrySteadfastInput: ReadonlyArray<Addition<typeof RetrySteadfastInput>>
+	readonly RetryBrittleInput: ReadonlyArray<Addition<typeof RetryBrittleInput>>
+	readonly RetryPoliteInput: ReadonlyArray<Addition<typeof RetryPoliteInput>>
+	readonly RetryPatientInput: ReadonlyArray<Addition<typeof RetryPatientInput>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -153,10 +141,10 @@ export const retryLedger = (h: RetryHandles) => {
 		RetryAdmitted: [],
 		RetryFinish: [],
 		RetryStartStep: [],
-		retry_steadfast_input_ebanfagjeadim: [],
-		retry_brittle_input_jbcpaiekdedpp: [],
-		retry_polite_input_iopjdjgdhfide: [],
-		retry_patient_input_ndliolfjpjnoc: []
+		RetrySteadfastInput: [],
+		RetryBrittleInput: [],
+		RetryPoliteInput: [],
+		RetryPatientInput: []
 	}
 	const nothingGrown: Grown = {
 		rows: noRows,
@@ -172,22 +160,10 @@ export const retryLedger = (h: RetryHandles) => {
 			RetryAdmitted: [...a.rows.RetryAdmitted, ...b.rows.RetryAdmitted],
 			RetryFinish: [...a.rows.RetryFinish, ...b.rows.RetryFinish],
 			RetryStartStep: [...a.rows.RetryStartStep, ...b.rows.RetryStartStep],
-			retry_steadfast_input_ebanfagjeadim: [
-				...a.rows.retry_steadfast_input_ebanfagjeadim,
-				...b.rows.retry_steadfast_input_ebanfagjeadim
-			],
-			retry_brittle_input_jbcpaiekdedpp: [
-				...a.rows.retry_brittle_input_jbcpaiekdedpp,
-				...b.rows.retry_brittle_input_jbcpaiekdedpp
-			],
-			retry_polite_input_iopjdjgdhfide: [
-				...a.rows.retry_polite_input_iopjdjgdhfide,
-				...b.rows.retry_polite_input_iopjdjgdhfide
-			],
-			retry_patient_input_ndliolfjpjnoc: [
-				...a.rows.retry_patient_input_ndliolfjpjnoc,
-				...b.rows.retry_patient_input_ndliolfjpjnoc
-			]
+			RetrySteadfastInput: [...a.rows.RetrySteadfastInput, ...b.rows.RetrySteadfastInput],
+			RetryBrittleInput: [...a.rows.RetryBrittleInput, ...b.rows.RetryBrittleInput],
+			RetryPoliteInput: [...a.rows.RetryPoliteInput, ...b.rows.RetryPoliteInput],
+			RetryPatientInput: [...a.rows.RetryPatientInput, ...b.rows.RetryPatientInput]
 		},
 		steps: [...a.steps, ...b.steps],
 		timed: [...a.timed, ...b.timed],
@@ -209,9 +185,7 @@ export const retryLedger = (h: RetryHandles) => {
 							rows: {
 								...noRows,
 								RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-								retry_steadfast_input_ebanfagjeadim: [
-									{ step: key, root: root, key: spawn.input.key }
-								]
+								RetrySteadfastInput: [{ step: key, root: root, key: spawn.input.key }]
 							},
 							...spawnedOf(
 								{ step: key, kind: "Steadfast", scope: scope },
@@ -223,7 +197,7 @@ export const retryLedger = (h: RetryHandles) => {
 							rows: {
 								...noRows,
 								RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-								retry_brittle_input_jbcpaiekdedpp: [{ step: key, root: root, key: spawn.input.key }]
+								RetryBrittleInput: [{ step: key, root: root, key: spawn.input.key }]
 							},
 							...spawnedOf(
 								{ step: key, kind: "Brittle", scope: scope },
@@ -246,7 +220,7 @@ export const retryLedger = (h: RetryHandles) => {
 					rows: {
 						...noRows,
 						RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						retry_polite_input_iopjdjgdhfide: [{ step: key, root: root, key: spawn.input.key }]
+						RetryPoliteInput: [{ step: key, root: root, key: spawn.input.key }]
 					},
 					...spawnedOf(
 						{ step: key, kind: "Polite", scope: scope },
@@ -268,7 +242,7 @@ export const retryLedger = (h: RetryHandles) => {
 					rows: {
 						...noRows,
 						RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						retry_patient_input_ndliolfjpjnoc: [{ step: key, root: root, key: spawn.input.key }]
+						RetryPatientInput: [{ step: key, root: root, key: spawn.input.key }]
 					},
 					...spawnedOf(
 						{ step: key, kind: "Patient", scope: scope },
@@ -279,93 +253,58 @@ export const retryLedger = (h: RetryHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readretry_steadfast_input_ebanfagjeadim = (root: Sha256, step: Sha256) =>
+	const readRetrySteadfastInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.retryReadretry_steadfast_input_ebanfagjeadim.once({
-						params: { root, step },
-						facts: {}
-					})
-				),
+				settled(h.den.retryReadRetrySteadfastInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readretry_brittle_input_jbcpaiekdedpp = (root: Sha256, step: Sha256) =>
+	const readRetryBrittleInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.retryReadretry_brittle_input_jbcpaiekdedpp.once({
-						params: { root, step },
-						facts: {}
-					})
-				),
+				settled(h.den.retryReadRetryBrittleInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readretry_polite_input_iopjdjgdhfide = (root: Sha256, step: Sha256) =>
+	const readRetryPoliteInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.retryReadretry_polite_input_iopjdjgdhfide.once({
-						params: { root, step },
-						facts: {}
-					})
-				),
+				settled(h.den.retryReadRetryPoliteInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readretry_patient_input_ndliolfjpjnoc = (root: Sha256, step: Sha256) =>
+	const readRetryPatientInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.retryReadretry_patient_input_ndliolfjpjnoc.once({
-						params: { root, step },
-						facts: {}
-					})
-				),
+				settled(h.den.retryReadRetryPatientInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readretry_ladders_input_fkbbgblmfmhbi = (root: Sha256, scope: Sha256) =>
+	const readRetryLaddersInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.retryReadretry_ladders_input_fkbbgblmfmhbi.once({
-						params: { root, scope },
-						facts: {}
-					})
-				),
+				settled(h.den.retryReadRetryLaddersInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ steadfast: found.steadfast, brittle: found.brittle }))
 		})
-	const readretry_throttled_input_bfjgfamhjmgcd = (root: Sha256, scope: Sha256) =>
+	const readRetryThrottledInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.retryReadretry_throttled_input_bfjgfamhjmgcd.once({
-						params: { root, scope },
-						facts: {}
-					})
-				),
+				settled(h.den.retryReadRetryThrottledInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readretry_unhurried_input_mccbdnleajjif = (root: Sha256, scope: Sha256) =>
+	const readRetryUnhurriedInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.retryReadretry_unhurried_input_mccbdnleajjif.once({
-						params: { root, scope },
-						facts: {}
-					})
-				),
+				settled(h.den.retryReadRetryUnhurriedInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
@@ -411,7 +350,7 @@ export const retryLedger = (h: RetryHandles) => {
 							retryLaddersScope: scope,
 							retryLaddersKey: key,
 							retryLaddersRetryScope: [{ scope, root: scope }],
-							retryLaddersretry_ladders_input_fkbbgblmfmhbi: [
+							retryLaddersRetryLaddersInput: [
 								{ scope: scope, root: scope, steadfast: input.steadfast, brittle: input.brittle }
 							],
 							retryLaddersRetryRequestedWith: Option.toArray(
@@ -427,9 +366,9 @@ export const retryLedger = (h: RetryHandles) => {
 												}
 											],
 											Arr.flatMap((row) => [
-												Result.succeed("retry_ladders_input_fkbbgblmfmhbi"),
-												retry_ladders_input_fkbbgblmfmhbiTexts.steadfast(row.steadfast),
-												retry_ladders_input_fkbbgblmfmhbiTexts.brittle(row.brittle)
+												Result.succeed("RetryLaddersInput"),
+												retryLaddersInputTexts.steadfast(row.steadfast),
+												retryLaddersInputTexts.brittle(row.brittle)
 											])
 										)
 									]),
@@ -456,17 +395,15 @@ export const retryLedger = (h: RetryHandles) => {
 							retryThrottledScope: scope,
 							retryThrottledKey: key,
 							retryThrottledRetryScope: [{ scope, root: scope }],
-							retryThrottledretry_throttled_input_bfjgfamhjmgcd: [
-								{ scope: scope, root: scope, key: input.key }
-							],
+							retryThrottledRetryThrottledInput: [{ scope: scope, root: scope, key: input.key }],
 							retryThrottledRetryRequestedWith: Option.toArray(
 								Option.map(
 									codecTextsOf([
 										...pipe(
 											[{ scope: scope, root: scope, key: input.key }],
 											Arr.flatMap((row) => [
-												Result.succeed("retry_throttled_input_bfjgfamhjmgcd"),
-												retry_throttled_input_bfjgfamhjmgcdTexts.key(row.key)
+												Result.succeed("RetryThrottledInput"),
+												retryThrottledInputTexts.key(row.key)
 											])
 										)
 									]),
@@ -493,17 +430,15 @@ export const retryLedger = (h: RetryHandles) => {
 							retryUnhurriedScope: scope,
 							retryUnhurriedKey: key,
 							retryUnhurriedRetryScope: [{ scope, root: scope }],
-							retryUnhurriedretry_unhurried_input_mccbdnleajjif: [
-								{ scope: scope, root: scope, key: input.key }
-							],
+							retryUnhurriedRetryUnhurriedInput: [{ scope: scope, root: scope, key: input.key }],
 							retryUnhurriedRetryRequestedWith: Option.toArray(
 								Option.map(
 									codecTextsOf([
 										...pipe(
 											[{ scope: scope, root: scope, key: input.key }],
 											Arr.flatMap((row) => [
-												Result.succeed("retry_unhurried_input_mccbdnleajjif"),
-												retry_unhurried_input_mccbdnleajjifTexts.key(row.key)
+												Result.succeed("RetryUnhurriedInput"),
+												retryUnhurriedInputTexts.key(row.key)
 											])
 										)
 									]),
@@ -527,7 +462,7 @@ export const retryLedger = (h: RetryHandles) => {
 		Steadfast: runnerOf(
 			retry.kinds[0],
 			{
-				input: ({ root, step }) => readretry_steadfast_input_ebanfagjeadim(root, step),
+				input: ({ root, step }) => readRetrySteadfastInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -542,7 +477,7 @@ export const retryLedger = (h: RetryHandles) => {
 										RetryHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										retry_steadfast_output_aacklbgjpefbn: [
+										RetrySteadfastOutput: [
 											{ step: done.turn.step, root: done.turn.root, key: done.output.key }
 										]
 									}
@@ -558,7 +493,7 @@ export const retryLedger = (h: RetryHandles) => {
 		Brittle: runnerOf(
 			retry.kinds[1],
 			{
-				input: ({ root, step }) => readretry_brittle_input_jbcpaiekdedpp(root, step),
+				input: ({ root, step }) => readRetryBrittleInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -573,7 +508,7 @@ export const retryLedger = (h: RetryHandles) => {
 										RetryHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										retry_brittle_output_bajcdgadpoeak: [
+										RetryBrittleOutput: [
 											{ step: done.turn.step, root: done.turn.root, key: done.output.key }
 										]
 									}
@@ -589,7 +524,7 @@ export const retryLedger = (h: RetryHandles) => {
 		Polite: runnerOf(
 			retry.kinds[3],
 			{
-				input: ({ root, step }) => readretry_polite_input_iopjdjgdhfide(root, step),
+				input: ({ root, step }) => readRetryPoliteInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -604,7 +539,7 @@ export const retryLedger = (h: RetryHandles) => {
 										RetryHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										retry_polite_output_nicaghgpaemah: [
+										RetryPoliteOutput: [
 											{ step: done.turn.step, root: done.turn.root, key: done.output.key }
 										]
 									}
@@ -620,7 +555,7 @@ export const retryLedger = (h: RetryHandles) => {
 		Patient: runnerOf(
 			retry.kinds[5],
 			{
-				input: ({ root, step }) => readretry_patient_input_ndliolfjpjnoc(root, step),
+				input: ({ root, step }) => readRetryPatientInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -635,7 +570,7 @@ export const retryLedger = (h: RetryHandles) => {
 										RetryHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										retry_patient_output_geoaicaaojcfl: [
+										RetryPatientOutput: [
 											{ step: done.turn.step, root: done.turn.root, key: done.output.key }
 										]
 									}
@@ -671,7 +606,7 @@ export const retryLedger = (h: RetryHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readretry_ladders_input_fkbbgblmfmhbi(root, scope)
+						const input = yield* readRetryLaddersInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -776,9 +711,7 @@ export const retryLedger = (h: RetryHandles) => {
 											RetryHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											retry_ladders_finish_output_pgebkobjaoiih: [
-												{ step: done.turn.step, root: done.turn.root }
-											]
+											RetryLaddersFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 										}
 									},
 									done.writes.facts
@@ -814,7 +747,7 @@ export const retryLedger = (h: RetryHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readretry_throttled_input_bfjgfamhjmgcd(root, scope)
+						const input = yield* readRetryThrottledInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -879,9 +812,7 @@ export const retryLedger = (h: RetryHandles) => {
 											RetryHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											retry_throttled_finish_output_plgallgljmddo: [
-												{ step: done.turn.step, root: done.turn.root }
-											]
+											RetryThrottledFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 										}
 									},
 									done.writes.facts
@@ -917,7 +848,7 @@ export const retryLedger = (h: RetryHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readretry_unhurried_input_mccbdnleajjif(root, scope)
+						const input = yield* readRetryUnhurriedInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -982,9 +913,7 @@ export const retryLedger = (h: RetryHandles) => {
 											RetryHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											retry_unhurried_finish_output_oipogmdgcfehf: [
-												{ step: done.turn.step, root: done.turn.root }
-											]
+											RetryUnhurriedFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 										}
 									},
 									done.writes.facts
@@ -1004,7 +933,7 @@ export const retryLedger = (h: RetryHandles) => {
 			precondition: retry.kinds[2].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readretry_ladders_input_fkbbgblmfmhbi(scope, scope)
+					const input = yield* readRetryLaddersInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1029,11 +958,10 @@ export const retryLedger = (h: RetryHandles) => {
 								insert: {
 									RetryScope: grown.rows.RetryScope,
 									RetryStartStep: grown.rows.RetryStartStep,
-									retry_steadfast_input_ebanfagjeadim:
-										grown.rows.retry_steadfast_input_ebanfagjeadim,
-									retry_brittle_input_jbcpaiekdedpp: grown.rows.retry_brittle_input_jbcpaiekdedpp,
-									retry_polite_input_iopjdjgdhfide: grown.rows.retry_polite_input_iopjdjgdhfide,
-									retry_patient_input_ndliolfjpjnoc: grown.rows.retry_patient_input_ndliolfjpjnoc,
+									RetrySteadfastInput: grown.rows.RetrySteadfastInput,
+									RetryBrittleInput: grown.rows.RetryBrittleInput,
+									RetryPoliteInput: grown.rows.RetryPoliteInput,
+									RetryPatientInput: grown.rows.RetryPatientInput,
 									RetryAdmitted: admitted,
 									RetryFinish: finishes
 								}
@@ -1054,7 +982,7 @@ export const retryLedger = (h: RetryHandles) => {
 			precondition: retry.kinds[4].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readretry_throttled_input_bfjgfamhjmgcd(scope, scope)
+					const input = yield* readRetryThrottledInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1079,11 +1007,10 @@ export const retryLedger = (h: RetryHandles) => {
 								insert: {
 									RetryScope: grown.rows.RetryScope,
 									RetryStartStep: grown.rows.RetryStartStep,
-									retry_steadfast_input_ebanfagjeadim:
-										grown.rows.retry_steadfast_input_ebanfagjeadim,
-									retry_brittle_input_jbcpaiekdedpp: grown.rows.retry_brittle_input_jbcpaiekdedpp,
-									retry_polite_input_iopjdjgdhfide: grown.rows.retry_polite_input_iopjdjgdhfide,
-									retry_patient_input_ndliolfjpjnoc: grown.rows.retry_patient_input_ndliolfjpjnoc,
+									RetrySteadfastInput: grown.rows.RetrySteadfastInput,
+									RetryBrittleInput: grown.rows.RetryBrittleInput,
+									RetryPoliteInput: grown.rows.RetryPoliteInput,
+									RetryPatientInput: grown.rows.RetryPatientInput,
 									RetryAdmitted: admitted,
 									RetryFinish: finishes
 								}
@@ -1104,7 +1031,7 @@ export const retryLedger = (h: RetryHandles) => {
 			precondition: retry.kinds[6].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readretry_unhurried_input_mccbdnleajjif(scope, scope)
+					const input = yield* readRetryUnhurriedInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1129,11 +1056,10 @@ export const retryLedger = (h: RetryHandles) => {
 								insert: {
 									RetryScope: grown.rows.RetryScope,
 									RetryStartStep: grown.rows.RetryStartStep,
-									retry_steadfast_input_ebanfagjeadim:
-										grown.rows.retry_steadfast_input_ebanfagjeadim,
-									retry_brittle_input_jbcpaiekdedpp: grown.rows.retry_brittle_input_jbcpaiekdedpp,
-									retry_polite_input_iopjdjgdhfide: grown.rows.retry_polite_input_iopjdjgdhfide,
-									retry_patient_input_ndliolfjpjnoc: grown.rows.retry_patient_input_ndliolfjpjnoc,
+									RetrySteadfastInput: grown.rows.RetrySteadfastInput,
+									RetryBrittleInput: grown.rows.RetryBrittleInput,
+									RetryPoliteInput: grown.rows.RetryPoliteInput,
+									RetryPatientInput: grown.rows.RetryPatientInput,
 									RetryAdmitted: admitted,
 									RetryFinish: finishes
 								}

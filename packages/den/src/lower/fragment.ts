@@ -1,5 +1,6 @@
-import { type ClockUnit, recordPaths } from "@bjornpagen/grizzle"
-import { Array as Arr, Option, Record, String as Str } from "effect"
+import { type ClockUnit, sha256 } from "@bjornpagen/grizzle"
+import { records } from "@bjornpagen/grizzle/dynamic"
+import { Array as Arr, Option, Record } from "effect"
 import {
 	type AnyFlow,
 	type AnyJoin,
@@ -29,7 +30,8 @@ import {
 	namedBrand,
 	namedDerived,
 	namedReadable,
-	namedRecordsRow,
+	namedRecords,
+	finiteCheckOf,
 	type Piece,
 	readableOf,
 	under,
@@ -93,16 +95,26 @@ export type FieldType =
 	| { readonly kind: "app"; readonly relation: string; readonly field: string }
 	| { readonly kind: "vector"; readonly dimensions: number }
 
-/** A lowered relation: its name, its fields in order, and its primary key. */
+/**
+ * How grizzle holds a lowered name (lower/names.ts): declared, its identifier its conversion, or derived, its every
+ * identifier hashed over the flow's name and the rest of the name, grizzle's `derivedName`.
+ */
+export type NamingIR =
+	| { readonly kind: "declared" }
+	| { readonly kind: "derived"; readonly stem: string; readonly path: readonly [string] }
+
+/** A lowered relation: its name and naming, its fields in order, and its primary key. */
 export interface RelationIR {
 	readonly name: string
+	readonly naming: NamingIR
 	readonly fields: ReadonlyArray<{ readonly name: string; readonly type: FieldType }>
 	readonly key: readonly [string, ...Array<string>]
 }
 
-/** A roster: its name and handles, in code order. */
+/** A roster: its name and naming, and its handles, in code order. */
 export interface RosterIR {
 	readonly name: string
+	readonly naming: NamingIR
 	readonly handles: readonly [string, ...Array<string>]
 }
 
@@ -246,16 +258,15 @@ export interface EdgeIR {
 /**
  * One named query of a step's declared reads, lowered: its name; the stem its records are named by, the relations
  * grizzle's `records` makes of the query when the fragment loads (`${stem}Row`, keyed by a row's digest alone, so a row
- * every root that found it shares is stored once, and a relation per attachment under it), which no root's unit holds;
- * the name den gives the relation of each attachment path of the query, every one (grizzle's recordPaths), so records
- * derive none; and the relation of the step's references to the rows it found, by ordinal, named the stem itself, which
- * no records name is, a body of its root's unit. The records are den's own relations: no flow names them.
+ * every root that found it shares is stored once, and a relation per attachment under it, each a name grizzle derives,
+ * readable, its identifiers hashed), which no root's unit holds; and the relation of the step's references to the rows
+ * it found, by ordinal, named the stem itself, which no records name is, a body of its root's unit. The records are
+ * den's own relations: no flow names them.
  */
 export interface ReadIR {
 	readonly name: string
 	readonly stem: string
 	readonly record: string
-	readonly paths: ReadonlyArray<{ readonly path: string; readonly name: string }>
 }
 
 /**
@@ -466,19 +477,27 @@ export const lower = (flow: AnyFlow): Lowered => {
 		minted.push(namedReadable(readable))
 		return readable
 	}
-	/** A name derived from the flow's names, of its one form (lower/names.ts). */
+	/** A name derived from the flow's names, readable, held by derived naming (lower/names.ts). */
 	const derive = (kind: DerivedKind, pieces: ReadonlyArray<Piece>): Derived => {
-		const derived = derivedOf(kind, pieces)
+		const derived = derivedOf(p, kind, pieces)
 		minted.push(namedDerived(derived))
 		return derived
 	}
+	const declaredNaming: NamingIR = { kind: "declared" }
+	const derivedNaming = (d: Derived): NamingIR => ({ kind: "derived", ...d.naming })
 	const relations: Array<RelationIR> = []
 	const laws: Array<LawIR> = []
 	const rosters: Array<RosterIR> = []
 	const brands: Array<BrandIR> = []
-	const relation = (ir: RelationIR): string => {
-		relations.push(ir)
+	/** One of the flow's singletons' relations, declared. */
+	const relation = (ir: Omit<RelationIR, "naming">): string => {
+		relations.push({ ...ir, naming: declaredNaming })
 		return ir.name
+	}
+	/** A relation den derives the name of, held by derived naming. */
+	const derivedRelation = (d: Derived, ir: Omit<RelationIR, "name" | "naming">): string => {
+		relations.push({ ...ir, name: d.name, naming: derivedNaming(d) })
+		return d.name
 	}
 	const brand = (b: BrandIR): void => {
 		const held = Arr.findFirst(brands, (other) => other.name === b.name)
@@ -505,9 +524,13 @@ export const lower = (flow: AnyFlow): Lowered => {
 			case "vector":
 				return { kind: "vector", dimensions: column.type.dimensions }
 			case "roster": {
-				const roster = derive("roster", [under(owner), declared(column.name)]).name
-				rosters.push({ name: roster, handles: column.type.handles })
-				return { kind: "closed", roster }
+				const roster = derive("roster", [under(owner), declared(column.name)])
+				rosters.push({
+					name: roster.name,
+					naming: derivedNaming(roster),
+					handles: column.type.handles
+				})
+				return { kind: "closed", roster: roster.name }
 			}
 		}
 	}
@@ -520,7 +543,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			if ((c.type.kind === "base" || c.type.kind === "brand") && c.type.base === "double") {
 				laws.push({
 					kind: "check",
-					name: derive("finite", [under(owner), declared(c.name), word("Finite")]).name,
+					name: finiteCheckOf(p, owner.name, c.name),
 					relation: owner.name,
 					field: c.name,
 					holds: { kind: "finite" }
@@ -569,17 +592,21 @@ export const lower = (flow: AnyFlow): Lowered => {
 			why: "a flow runs at least one root and its finish"
 		})
 	}
-	rosters.push({ name: name("Kind"), handles: kindNames })
-	rosters.push({ name: name("RootKind"), handles: rootNames })
+	rosters.push({ naming: declaredNaming, name: name("Kind"), handles: kindNames })
+	rosters.push({ naming: declaredNaming, name: name("RootKind"), handles: rootNames })
 	if (Arr.isReadonlyArrayNonEmpty(childNames)) {
-		rosters.push({ name: name("ChildKind"), handles: childNames })
+		rosters.push({ naming: declaredNaming, name: name("ChildKind"), handles: childNames })
 	}
-	rosters.push({ name: name("Outcome"), handles: ["done", "failed"] })
-	rosters.push({ name: name("RetryWhy"), handles: ["spent", "transient", "later"] })
-	rosters.push({ name: name("Pausable"), handles: pausable })
+	rosters.push({ naming: declaredNaming, name: name("Outcome"), handles: ["done", "failed"] })
+	rosters.push({
+		naming: declaredNaming,
+		name: name("RetryWhy"),
+		handles: ["spent", "transient", "later"]
+	})
+	rosters.push({ naming: declaredNaming, name: name("Pausable"), handles: pausable })
 	const resourceNames = Arr.map(flow.resources, (r) => r.name)
 	if (Arr.isReadonlyArrayNonEmpty(resourceNames)) {
-		rosters.push({ name: name("Resource"), handles: resourceNames })
+		rosters.push({ naming: declaredNaming, name: name("Resource"), handles: resourceNames })
 	}
 
 	const Scope = relation({
@@ -881,8 +908,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			}
 		})
 		const relationName = named.name
-		relation({
-			name: relationName,
+		derivedRelation(named, {
 			fields: [
 				{ name: key, type: ownerKey(owner) },
 				...Arr.map(shape.columns, (c) => ({
@@ -903,8 +929,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		finite(named, shape.columns)
 		const sidecars = Arr.map(shape.options, (column) => {
 			const option = derive("option", [under(named), declared(column.name)])
-			const sidecar = relation({
-				name: option.name,
+			const sidecar = derivedRelation(option, {
 				fields: [
 					{ name: key, type: ownerKey(owner) },
 					{ name: "value", type: fieldOf(option, column) }
@@ -921,8 +946,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				field.element.kind === "value"
 					? [{ name: "value", type: field.element.type }]
 					: field.element.columns
-			const family = relation({
-				name: array.name,
+			const family = derivedRelation(array, {
 				fields: [
 					{ name: key, type: ownerKey(owner) },
 					{ name: "ordinal", type: natural },
@@ -960,8 +984,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 					field: field.name,
 					handle: variant.tag
 				})
-				const held = relation({
-					name: variantNamed.name,
+				const held = derivedRelation(variantNamed, {
 					fields: [
 						{ name: key, type: ownerKey(owner) },
 						...Arr.map(variant.columns, (c) => ({
@@ -1122,8 +1145,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				why: "it names no field, and a key names what its root is requested by"
 			})
 		}
-		relation({
-			name: relationName,
+		derivedRelation(keyNamed, {
 			fields: [
 				{ name: "root", type: scopeKey },
 				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(keyNamed, c) }))
@@ -1194,8 +1216,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 
 	const edgesIR: ReadonlyArray<EdgeIR> = Arr.map(flow.edges, (e, index) => {
 		const to = spawnedOf(e.to)
-		const edgeRelation = relation({
-			name: derive("edge", [declared(p), declared(e.name)]).name,
+		const edgeRelation = derivedRelation(derive("edge", [declared(p), declared(e.name)]), {
 			fields: [
 				{ name: "from", type: stepKey },
 				{ name: "ordinal", type: natural },
@@ -1223,13 +1244,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 		return Arr.map(Record.toEntries(s.reads.named), ([readName, query]): ReadIR => {
 			const read = derive("read", [declared(p), declared(s.name), word("Read"), declared(readName)])
 			const stem = read.name
-			minted.push(namedRecordsRow(read))
-			const paths = Arr.map(recordPaths(query), (path) => ({
-				path,
-				name: derive("attachment", [under(read), ...Arr.map(Str.split(path, "."), declared)]).name
-			}))
-			const record = relation({
-				name: stem,
+			Arr.forEach(
+				records(stem, query, { digest: sha256 }, ["digest"], { names: {} }).relations,
+				(made) => minted.push(namedRecords(stem, made.name))
+			)
+			const record = derivedRelation(read, {
 				fields: [
 					{ name: "step", type: stepKey },
 					{ name: "ordinal", type: natural },
@@ -1241,7 +1260,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				into(side(record, ["step"]), side(Result, ["step"])),
 				into(side(record, ["digest"]), side(`${stem}Row`, ["digest"]))
 			)
-			return { name: readName, stem, record, paths }
+			return { name: readName, stem, record }
 		})
 	}
 

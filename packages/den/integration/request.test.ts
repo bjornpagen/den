@@ -708,13 +708,13 @@ export const aKeyNamesItsWholeInput = property.explore(probes, {
 	kills: [
 		{
 			file: "packages/den/integration/slice/generated/assign.binding.ts",
-			original: "assign_assignment_input_exclude_paaebdpkimeblTexts.value(row.value)\n",
+			original: "assignAssignmentInputExcludeTexts.value(row.value)\n",
 			replacement: 'Result.succeed("excluded")\n',
 			why: "A digest blind to an ordered family's values: a request again excluding another passage is answered as already requested, its input lost."
 		},
 		{
 			file: "packages/den/integration/slice/generated/assign.binding.ts",
-			original: "assign_assignment_input_mode_within_iahlinklmdadjTexts.radius(row.radius)\n",
+			original: "assignAssignmentInputModeWithinTexts.radius(row.radius)\n",
 			replacement: 'Result.succeed("radius")\n',
 			why: "A digest blind to a variant's field: a request again within another radius is answered as already requested."
 		},

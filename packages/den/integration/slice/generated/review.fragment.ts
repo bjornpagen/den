@@ -5,6 +5,7 @@ import {
 	closed,
 	closedId,
 	contained,
+	derivedName,
 	derived,
 	drawn,
 	fin,
@@ -136,23 +137,26 @@ export const ReviewExhausted = relation("ReviewExhausted", { root: sha256, step:
 	"root",
 	"step"
 ])
-export const review_analyze_input_aobppbhebnkae = relation(
-	"review_analyze_input_aobppbhebnkae",
+export const ReviewAnalyzeInput = derivedName({ stem: "Review", path: ["AnalyzeInput"] }).relation(
+	"ReviewAnalyzeInput",
 	{ root: sha256, step: sha256, review: Text, group: pg.bigint, question: pg.bigint },
 	["root", "step"]
 )
-export const review_gather_input_eiadkjkkdoiel = relation(
-	"review_gather_input_eiadkjkkdoiel",
+export const ReviewGatherInput = derivedName({ stem: "Review", path: ["GatherInput"] }).relation(
+	"ReviewGatherInput",
 	{ root: sha256, step: sha256, review: Delivered.fields.attempt },
 	["root", "step"]
 )
-export const review_gather_input_sizes_ifjkkjdhlfbgp = relation(
-	"review_gather_input_sizes_ifjkkjdhlfbgp",
+export const ReviewGatherInputSizes = derivedName({
+	stem: "Review",
+	path: ["GatherInputSizes"]
+}).relation(
+	"ReviewGatherInputSizes",
 	{ root: sha256, step: sha256, ordinal: natural, value: pg.bigint },
 	["root", "step", "ordinal"]
 )
-export const review_save_input_njbdjgekhblef = relation(
-	"review_save_input_njbdjgekhblef",
+export const ReviewSaveInput = derivedName({ stem: "Review", path: ["SaveInput"] }).relation(
+	"ReviewSaveInput",
 	{
 		root: sha256,
 		step: sha256,
@@ -163,53 +167,65 @@ export const review_save_input_njbdjgekhblef = relation(
 	},
 	["root", "step"]
 )
-export const review_questions_input_jigaomgjefjfk = relation(
-	"review_questions_input_jigaomgjefjfk",
+export const ReviewQuestionsInput = derivedName({
+	stem: "Review",
+	path: ["QuestionsInput"]
+}).relation(
+	"ReviewQuestionsInput",
 	{ root: sha256, scope: sha256, review: Text, group: pg.bigint, size: pg.bigint },
 	["root", "scope"]
 )
-export const review_review_run_input_hpdfjnehnkdig = relation(
-	"review_review_run_input_hpdfjnehnkdig",
-	{ root: sha256, scope: sha256, review: Text },
-	["root", "scope"]
-)
-export const review_review_run_input_sizes_fmllfmbfdoojd = relation(
-	"review_review_run_input_sizes_fmllfmbfdoojd",
+export const ReviewReviewRunInput = derivedName({
+	stem: "Review",
+	path: ["ReviewRunInput"]
+}).relation("ReviewReviewRunInput", { root: sha256, scope: sha256, review: Text }, [
+	"root",
+	"scope"
+])
+export const ReviewReviewRunInputSizes = derivedName({
+	stem: "Review",
+	path: ["ReviewRunInputSizes"]
+}).relation(
+	"ReviewReviewRunInputSizes",
 	{ root: sha256, scope: sha256, ordinal: natural, value: pg.bigint },
 	["root", "scope", "ordinal"]
 )
-export const review_analyze_output_fhhkmphnmpkdm = relation(
-	"review_analyze_output_fhhkmphnmpkdm",
-	{ root: sha256, step: sha256, score: pg.bigint },
-	["root", "step"]
-)
-export const review_gather_output_cgnhmechbiddp = relation(
-	"review_gather_output_cgnhmechbiddp",
+export const ReviewAnalyzeOutput = derivedName({
+	stem: "Review",
+	path: ["AnalyzeOutput"]
+}).relation("ReviewAnalyzeOutput", { root: sha256, step: sha256, score: pg.bigint }, [
+	"root",
+	"step"
+])
+export const ReviewGatherOutput = derivedName({ stem: "Review", path: ["GatherOutput"] }).relation(
+	"ReviewGatherOutput",
 	{ root: sha256, step: sha256, groups: pg.bigint },
 	["root", "step"]
 )
-export const review_save_output_falmopiohdlkl = relation(
-	"review_save_output_falmopiohdlkl",
+export const ReviewSaveOutput = derivedName({ stem: "Review", path: ["SaveOutput"] }).relation(
+	"ReviewSaveOutput",
 	{ root: sha256, step: sha256, total: pg.bigint },
 	["root", "step"]
 )
-export const review_questions_finish_output_kddidbknbjeof = relation(
-	"review_questions_finish_output_kddidbknbjeof",
+export const ReviewQuestionsFinishOutput = derivedName({
+	stem: "Review",
+	path: ["QuestionsFinishOutput"]
+}).relation(
+	"ReviewQuestionsFinishOutput",
 	{ root: sha256, step: sha256, count: pg.bigint, total: pg.bigint },
 	["root", "step"]
 )
-export const review_review_run_finish_output_fbgeikbjoigci = relation(
-	"review_review_run_finish_output_fbgeikbjoigci",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
-export const review_split_fnhnebdnlfmck = relation(
-	"review_split_fnhnebdnlfmck",
+export const ReviewReviewRunFinishOutput = derivedName({
+	stem: "Review",
+	path: ["ReviewRunFinishOutput"]
+}).relation("ReviewReviewRunFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
+export const ReviewSplit = derivedName({ stem: "Review", path: ["Split"] }).relation(
+	"ReviewSplit",
 	{ root: sha256, from: sha256, ordinal: natural, to: sha256 },
 	["root", "from", "ordinal"]
 )
-export const review_saved_bppbpjmhcjbaa = relation(
-	"review_saved_bppbpjmhcjbaa",
+export const ReviewSaved = derivedName({ stem: "Review", path: ["Saved"] }).relation(
+	"ReviewSaved",
 	{ root: sha256, from: sha256, ordinal: natural, to: sha256 },
 	["root", "from", "ordinal"]
 )
@@ -271,20 +287,20 @@ export const reviewGraph = fragment(
 		ReviewHeld,
 		ReviewRefusal,
 		ReviewExhausted,
-		review_analyze_input_aobppbhebnkae,
-		review_gather_input_eiadkjkkdoiel,
-		review_gather_input_sizes_ifjkkjdhlfbgp,
-		review_save_input_njbdjgekhblef,
-		review_questions_input_jigaomgjefjfk,
-		review_review_run_input_hpdfjnehnkdig,
-		review_review_run_input_sizes_fmllfmbfdoojd,
-		review_analyze_output_fhhkmphnmpkdm,
-		review_gather_output_cgnhmechbiddp,
-		review_save_output_falmopiohdlkl,
-		review_questions_finish_output_kddidbknbjeof,
-		review_review_run_finish_output_fbgeikbjoigci,
-		review_split_fnhnebdnlfmck,
-		review_saved_bppbpjmhcjbaa,
+		ReviewAnalyzeInput,
+		ReviewGatherInput,
+		ReviewGatherInputSizes,
+		ReviewSaveInput,
+		ReviewQuestionsInput,
+		ReviewReviewRunInput,
+		ReviewReviewRunInputSizes,
+		ReviewAnalyzeOutput,
+		ReviewGatherOutput,
+		ReviewSaveOutput,
+		ReviewQuestionsFinishOutput,
+		ReviewReviewRunFinishOutput,
+		ReviewSplit,
+		ReviewSaved,
 		ReviewHold
 	],
 	[
@@ -361,7 +377,7 @@ export const reviewGraph = fragment(
 			on(ReviewRequestedWith, "root")
 		),
 		contained(
-			on(review_analyze_input_aobppbhebnkae, "root", "step"),
+			on(ReviewAnalyzeInput, "root", "step"),
 			on(
 				select(ReviewStep, (row) => row.eq(row.kind, "Analyze")),
 				"root",
@@ -369,28 +385,25 @@ export const reviewGraph = fragment(
 			)
 		),
 		contained(
-			on(review_gather_input_eiadkjkkdoiel, "root", "step"),
+			on(ReviewGatherInput, "root", "step"),
 			on(
 				select(ReviewStep, (row) => row.eq(row.kind, "Gather")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(review_gather_input_sizes_ifjkkjdhlfbgp, "root", "step"),
-			on(review_gather_input_eiadkjkkdoiel, "root", "step")
-		),
+		contained(on(ReviewGatherInputSizes, "root", "step"), on(ReviewGatherInput, "root", "step")),
 		contained(
 			on(
-				select(review_gather_input_sizes_ifjkkjdhlfbgp, (row) => row.ge(row.ordinal, 1n)),
+				select(ReviewGatherInputSizes, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
 				pred("ordinal")
 			),
-			on(review_gather_input_sizes_ifjkkjdhlfbgp, "root", "step", "ordinal")
+			on(ReviewGatherInputSizes, "root", "step", "ordinal")
 		),
 		contained(
-			on(review_save_input_njbdjgekhblef, "root", "step"),
+			on(ReviewSaveInput, "root", "step"),
 			on(
 				select(ReviewStep, (row) => row.eq(row.kind, "Save")),
 				"root",
@@ -398,7 +411,7 @@ export const reviewGraph = fragment(
 			)
 		),
 		contained(
-			on(review_questions_input_jigaomgjefjfk, "root", "scope"),
+			on(ReviewQuestionsInput, "root", "scope"),
 			on(
 				select(ReviewWithin, (row) => row.eq(row.kind, "Questions")),
 				"root",
@@ -406,72 +419,39 @@ export const reviewGraph = fragment(
 			)
 		),
 		contained(
-			on(review_review_run_input_hpdfjnehnkdig, "scope"),
+			on(ReviewReviewRunInput, "scope"),
 			on(
 				select(ReviewRoot, (row) => row.eq(row.kind, "ReviewRun")),
 				"root"
 			)
 		),
 		contained(
-			on(review_review_run_input_sizes_fmllfmbfdoojd, "root", "scope"),
-			on(review_review_run_input_hpdfjnehnkdig, "root", "scope")
+			on(ReviewReviewRunInputSizes, "root", "scope"),
+			on(ReviewReviewRunInput, "root", "scope")
 		),
 		contained(
 			on(
-				select(review_review_run_input_sizes_fmllfmbfdoojd, (row) => row.ge(row.ordinal, 1n)),
+				select(ReviewReviewRunInputSizes, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"scope",
 				pred("ordinal")
 			),
-			on(review_review_run_input_sizes_fmllfmbfdoojd, "root", "scope", "ordinal")
+			on(ReviewReviewRunInputSizes, "root", "scope", "ordinal")
 		),
-		contained(
-			on(review_analyze_output_fhhkmphnmpkdm, "root", "step"),
-			on(review_analyze_input_aobppbhebnkae, "root", "step")
-		),
-		contained(
-			on(review_analyze_output_fhhkmphnmpkdm, "root", "step"),
-			on(ReviewDone, "root", "step")
-		),
-		contained(
-			on(review_gather_output_cgnhmechbiddp, "root", "step"),
-			on(review_gather_input_eiadkjkkdoiel, "root", "step")
-		),
-		contained(
-			on(review_gather_output_cgnhmechbiddp, "root", "step"),
-			on(ReviewDone, "root", "step")
-		),
-		contained(
-			on(review_save_output_falmopiohdlkl, "root", "step"),
-			on(review_save_input_njbdjgekhblef, "root", "step")
-		),
-		contained(on(review_save_output_falmopiohdlkl, "root", "step"), on(ReviewDone, "root", "step")),
-		contained(
-			on(review_questions_finish_output_kddidbknbjeof, "root", "step"),
-			on(ReviewDone, "root", "step")
-		),
-		contained(
-			on(review_review_run_finish_output_fbgeikbjoigci, "root", "step"),
-			on(ReviewDone, "root", "step")
-		),
-		contained(
-			on(review_split_fnhnebdnlfmck, "root", "from"),
-			on(review_gather_output_cgnhmechbiddp, "root", "step")
-		),
-		contained(
-			on(review_split_fnhnebdnlfmck, "root", "to"),
-			on(review_questions_input_jigaomgjefjfk, "root", "scope")
-		),
-		key(on(review_split_fnhnebdnlfmck, "root", "to")),
-		contained(
-			on(review_saved_bppbpjmhcjbaa, "root", "from"),
-			on(review_questions_finish_output_kddidbknbjeof, "root", "step")
-		),
-		contained(
-			on(review_saved_bppbpjmhcjbaa, "root", "to"),
-			on(review_save_input_njbdjgekhblef, "root", "step")
-		),
-		key(on(review_saved_bppbpjmhcjbaa, "root", "to")),
+		contained(on(ReviewAnalyzeOutput, "root", "step"), on(ReviewAnalyzeInput, "root", "step")),
+		contained(on(ReviewAnalyzeOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewGatherOutput, "root", "step"), on(ReviewGatherInput, "root", "step")),
+		contained(on(ReviewGatherOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewSaveOutput, "root", "step"), on(ReviewSaveInput, "root", "step")),
+		contained(on(ReviewSaveOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewQuestionsFinishOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewReviewRunFinishOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewSplit, "root", "from"), on(ReviewGatherOutput, "root", "step")),
+		contained(on(ReviewSplit, "root", "to"), on(ReviewQuestionsInput, "root", "scope")),
+		key(on(ReviewSplit, "root", "to")),
+		contained(on(ReviewSaved, "root", "from"), on(ReviewQuestionsFinishOutput, "root", "step")),
+		contained(on(ReviewSaved, "root", "to"), on(ReviewSaveInput, "root", "step")),
+		key(on(ReviewSaved, "root", "to")),
 		unit("ReviewSeat", { resource: closedId(ReviewResource) }),
 		ordered(on(ReviewHold, "root", "step", "attempt", "at"), fin(ReviewClaim, "holds")),
 		mutable(ReviewHold),
@@ -507,64 +487,34 @@ export const reviewGraph = fragment(
 		mutable(ReviewRefusal),
 		contained(on(ReviewExhausted, "root", "step"), on(ReviewStep, "root", "step")),
 		mutable(ReviewExhausted),
-		contained(
-			on(review_analyze_input_aobppbhebnkae, "root", "step"),
-			on(ReviewStep, "root", "step")
-		),
-		mutable(review_analyze_input_aobppbhebnkae),
-		contained(
-			on(review_gather_input_eiadkjkkdoiel, "root", "step"),
-			on(ReviewStep, "root", "step")
-		),
-		mutable(review_gather_input_eiadkjkkdoiel),
-		contained(
-			on(review_gather_input_sizes_ifjkkjdhlfbgp, "root", "step"),
-			on(ReviewStep, "root", "step")
-		),
-		mutable(review_gather_input_sizes_ifjkkjdhlfbgp),
-		contained(on(review_save_input_njbdjgekhblef, "root", "step"), on(ReviewStep, "root", "step")),
-		mutable(review_save_input_njbdjgekhblef),
-		contained(
-			on(review_questions_input_jigaomgjefjfk, "root", "scope"),
-			on(ReviewScope, "root", "scope")
-		),
-		mutable(review_questions_input_jigaomgjefjfk),
-		contained(
-			on(review_review_run_input_hpdfjnehnkdig, "root", "scope"),
-			on(ReviewScope, "root", "scope")
-		),
-		mutable(review_review_run_input_hpdfjnehnkdig),
-		contained(
-			on(review_review_run_input_sizes_fmllfmbfdoojd, "root", "scope"),
-			on(ReviewScope, "root", "scope")
-		),
-		mutable(review_review_run_input_sizes_fmllfmbfdoojd),
-		contained(
-			on(review_analyze_output_fhhkmphnmpkdm, "root", "step"),
-			on(ReviewStep, "root", "step")
-		),
-		mutable(review_analyze_output_fhhkmphnmpkdm),
-		contained(
-			on(review_gather_output_cgnhmechbiddp, "root", "step"),
-			on(ReviewStep, "root", "step")
-		),
-		mutable(review_gather_output_cgnhmechbiddp),
-		contained(on(review_save_output_falmopiohdlkl, "root", "step"), on(ReviewStep, "root", "step")),
-		mutable(review_save_output_falmopiohdlkl),
-		contained(
-			on(review_questions_finish_output_kddidbknbjeof, "root", "step"),
-			on(ReviewStep, "root", "step")
-		),
-		mutable(review_questions_finish_output_kddidbknbjeof),
-		contained(
-			on(review_review_run_finish_output_fbgeikbjoigci, "root", "step"),
-			on(ReviewStep, "root", "step")
-		),
-		mutable(review_review_run_finish_output_fbgeikbjoigci),
-		contained(on(review_split_fnhnebdnlfmck, "root", "from"), on(ReviewStep, "root", "step")),
-		mutable(review_split_fnhnebdnlfmck),
-		contained(on(review_saved_bppbpjmhcjbaa, "root", "from"), on(ReviewStep, "root", "step")),
-		mutable(review_saved_bppbpjmhcjbaa)
+		contained(on(ReviewAnalyzeInput, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewAnalyzeInput),
+		contained(on(ReviewGatherInput, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewGatherInput),
+		contained(on(ReviewGatherInputSizes, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewGatherInputSizes),
+		contained(on(ReviewSaveInput, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewSaveInput),
+		contained(on(ReviewQuestionsInput, "root", "scope"), on(ReviewScope, "root", "scope")),
+		mutable(ReviewQuestionsInput),
+		contained(on(ReviewReviewRunInput, "root", "scope"), on(ReviewScope, "root", "scope")),
+		mutable(ReviewReviewRunInput),
+		contained(on(ReviewReviewRunInputSizes, "root", "scope"), on(ReviewScope, "root", "scope")),
+		mutable(ReviewReviewRunInputSizes),
+		contained(on(ReviewAnalyzeOutput, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewAnalyzeOutput),
+		contained(on(ReviewGatherOutput, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewGatherOutput),
+		contained(on(ReviewSaveOutput, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewSaveOutput),
+		contained(on(ReviewQuestionsFinishOutput, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewQuestionsFinishOutput),
+		contained(on(ReviewReviewRunFinishOutput, "root", "step"), on(ReviewStep, "root", "step")),
+		mutable(ReviewReviewRunFinishOutput),
+		contained(on(ReviewSplit, "root", "from"), on(ReviewStep, "root", "step")),
+		mutable(ReviewSplit),
+		contained(on(ReviewSaved, "root", "from"), on(ReviewStep, "root", "step")),
+		mutable(ReviewSaved)
 	]
 )
 
@@ -622,11 +572,11 @@ export const reviewWriter = [
 	"ReviewResult",
 	"ReviewDone",
 	"ReviewHeld",
-	"review_analyze_output_fhhkmphnmpkdm",
-	"review_gather_output_cgnhmechbiddp",
-	"review_save_output_falmopiohdlkl",
-	"review_questions_finish_output_kddidbknbjeof",
-	"review_review_run_finish_output_fbgeikbjoigci",
+	"ReviewAnalyzeOutput",
+	"ReviewGatherOutput",
+	"ReviewSaveOutput",
+	"ReviewQuestionsFinishOutput",
+	"ReviewReviewRunFinishOutput",
 	"ReviewStep",
 	"ReviewScope",
 	"ReviewWithin",
@@ -634,11 +584,11 @@ export const reviewWriter = [
 	"ReviewFinish",
 	"ReviewStartStep",
 	"ReviewStartScope",
-	"review_analyze_input_aobppbhebnkae",
-	"review_gather_input_eiadkjkkdoiel",
-	"review_gather_input_sizes_ifjkkjdhlfbgp",
-	"review_save_input_njbdjgekhblef",
-	"review_questions_input_jigaomgjefjfk",
-	"review_split_fnhnebdnlfmck",
-	"review_saved_bppbpjmhcjbaa"
+	"ReviewAnalyzeInput",
+	"ReviewGatherInput",
+	"ReviewGatherInputSizes",
+	"ReviewSaveInput",
+	"ReviewQuestionsInput",
+	"ReviewSplit",
+	"ReviewSaved"
 ] as const

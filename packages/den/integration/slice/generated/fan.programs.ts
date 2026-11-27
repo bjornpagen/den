@@ -32,21 +32,21 @@ import {
 	FanHeld,
 	FanRefusal,
 	FanExhausted,
-	fan_square_input_ifddbjkaokoig,
-	fan_dust_input_lelfhikaelkja,
-	fan_mop_input_ngghbiaegmghl,
-	fan_batch_input_hjhhnklpfiilh,
-	fan_fan_run_input_bghibckinpfgk,
-	fan_sweep_input_bnmfcblhkahec,
-	fan_wanted_input_nfecjpihiaope,
-	fan_wanted_key_ldjmcglkghhjb,
-	fan_square_output_gofcfljmlelgo,
-	fan_dust_output_pgpcjjjdmhkim,
-	fan_mop_output_okmfngilefbec,
-	fan_batch_finish_output_djinnhndkglgj,
-	fan_fan_run_finish_output_kcmicfckgdcip,
-	fan_sweep_finish_output_nebomlkgaabji,
-	fan_wanted_finish_output_lmjmjmcffnbda,
+	FanSquareInput,
+	FanDustInput,
+	FanMopInput,
+	FanBatchInput,
+	FanFanRunInput,
+	FanSweepInput,
+	FanWantedInput,
+	FanWantedKey,
+	FanSquareOutput,
+	FanDustOutput,
+	FanMopOutput,
+	FanBatchFinishOutput,
+	FanFanRunFinishOutput,
+	FanSweepFinishOutput,
+	FanWantedFinishOutput,
 	FanExclusive,
 	FanReleased,
 	FanPaused,
@@ -98,18 +98,18 @@ export const FanDen = role(
 			"FanHeld",
 			"FanRefusal",
 			"FanExhausted",
-			"fan_square_input_ifddbjkaokoig",
-			"fan_dust_input_lelfhikaelkja",
-			"fan_mop_input_ngghbiaegmghl",
-			"fan_batch_input_hjhhnklpfiilh",
-			"fan_fan_run_input_bghibckinpfgk",
-			"fan_sweep_input_bnmfcblhkahec",
-			"fan_wanted_input_nfecjpihiaope",
-			"fan_wanted_key_ldjmcglkghhjb",
-			"fan_batch_finish_output_djinnhndkglgj",
-			"fan_fan_run_finish_output_kcmicfckgdcip",
-			"fan_sweep_finish_output_nebomlkgaabji",
-			"fan_wanted_finish_output_lmjmjmcffnbda",
+			"FanSquareInput",
+			"FanDustInput",
+			"FanMopInput",
+			"FanBatchInput",
+			"FanFanRunInput",
+			"FanSweepInput",
+			"FanWantedInput",
+			"FanWantedKey",
+			"FanBatchFinishOutput",
+			"FanFanRunFinishOutput",
+			"FanSweepFinishOutput",
+			"FanWantedFinishOutput",
 			"FanHold"
 		]
 	}
@@ -268,10 +268,10 @@ export const fanDenPrograms = Object.freeze({
 			.insert(FanScope, [])
 			.insert(FanWithin, [])
 			.insert(FanStartScope, [])
-			.insert(fan_square_input_ifddbjkaokoig, [])
-			.insert(fan_dust_input_lelfhikaelkja, [])
-			.insert(fan_mop_input_ngghbiaegmghl, [])
-			.insert(fan_batch_input_hjhhnklpfiilh, [])
+			.insert(FanSquareInput, [])
+			.insert(FanDustInput, [])
+			.insert(FanMopInput, [])
+			.insert(FanBatchInput, [])
 			.insert(
 				FanStep,
 				query(fanGraph).rule((r) => {
@@ -521,58 +521,52 @@ export const fanDenPrograms = Object.freeze({
 				.find({ target, turn })
 		})
 	}),
-	fanReadfan_square_input_ifddbjkaokoig: query(fanGraph).rule((r) => {
-		const { root, step, batch, n } = v(
-			fan_square_input_ifddbjkaokoig,
-			"fan_square_input_ifddbjkaokoig"
-		)
+	fanReadFanSquareInput: query(fanGraph).rule((r) => {
+		const { root, step, batch, n } = v(FanSquareInput, "fanSquareInput")
 		return r
-			.match(fan_square_input_ifddbjkaokoig, { root, step, batch, n })
+			.match(FanSquareInput, { root, step, batch, n })
 			.where(
-				r.eq(root, r.param("root", fan_square_input_ifddbjkaokoig.fields.root)),
-				r.eq(step, r.param("step", fan_square_input_ifddbjkaokoig.fields.step))
+				r.eq(root, r.param("root", FanSquareInput.fields.root)),
+				r.eq(step, r.param("step", FanSquareInput.fields.step))
 			)
 			.find({ root, step, batch, n })
 	}),
-	fanReadfan_dust_input_lelfhikaelkja: query(fanGraph).rule((r) => {
-		const { root, step, sweep } = v(fan_dust_input_lelfhikaelkja, "fan_dust_input_lelfhikaelkja")
+	fanReadFanDustInput: query(fanGraph).rule((r) => {
+		const { root, step, sweep } = v(FanDustInput, "fanDustInput")
 		return r
-			.match(fan_dust_input_lelfhikaelkja, { root, step, sweep })
+			.match(FanDustInput, { root, step, sweep })
 			.where(
-				r.eq(root, r.param("root", fan_dust_input_lelfhikaelkja.fields.root)),
-				r.eq(step, r.param("step", fan_dust_input_lelfhikaelkja.fields.step))
+				r.eq(root, r.param("root", FanDustInput.fields.root)),
+				r.eq(step, r.param("step", FanDustInput.fields.step))
 			)
 			.find({ root, step, sweep })
 	}),
-	fanReadfan_mop_input_ngghbiaegmghl: query(fanGraph).rule((r) => {
-		const { root, step, sweep } = v(fan_mop_input_ngghbiaegmghl, "fan_mop_input_ngghbiaegmghl")
+	fanReadFanMopInput: query(fanGraph).rule((r) => {
+		const { root, step, sweep } = v(FanMopInput, "fanMopInput")
 		return r
-			.match(fan_mop_input_ngghbiaegmghl, { root, step, sweep })
+			.match(FanMopInput, { root, step, sweep })
 			.where(
-				r.eq(root, r.param("root", fan_mop_input_ngghbiaegmghl.fields.root)),
-				r.eq(step, r.param("step", fan_mop_input_ngghbiaegmghl.fields.step))
+				r.eq(root, r.param("root", FanMopInput.fields.root)),
+				r.eq(step, r.param("step", FanMopInput.fields.step))
 			)
 			.find({ root, step, sweep })
 	}),
-	fanReadfan_batch_input_hjhhnklpfiilh: query(fanGraph).rule((r) => {
-		const { root, scope, batch, size } = v(
-			fan_batch_input_hjhhnklpfiilh,
-			"fan_batch_input_hjhhnklpfiilh"
-		)
+	fanReadFanBatchInput: query(fanGraph).rule((r) => {
+		const { root, scope, batch, size } = v(FanBatchInput, "fanBatchInput")
 		return r
-			.match(fan_batch_input_hjhhnklpfiilh, { root, scope, batch, size })
+			.match(FanBatchInput, { root, scope, batch, size })
 			.where(
-				r.eq(root, r.param("root", fan_batch_input_hjhhnklpfiilh.fields.root)),
-				r.eq(scope, r.param("scope", fan_batch_input_hjhhnklpfiilh.fields.scope))
+				r.eq(root, r.param("root", FanBatchInput.fields.root)),
+				r.eq(scope, r.param("scope", FanBatchInput.fields.scope))
 			)
 			.find({ root, scope, batch, size })
 	}),
 	fanOutputsBatchSquare: query(fanGraph).rule((r) => {
 		const { root, step, scope } = v(FanStep, "step")
-		const { square } = v(fan_square_output_gofcfljmlelgo, "output")
+		const { square } = v(FanSquareOutput, "output")
 		return r
 			.match(FanStep, { root, step, kind: "Square", scope })
-			.match(fan_square_output_gofcfljmlelgo, { root, step, square })
+			.match(FanSquareOutput, { root, step, square })
 			.where(
 				r.eq(root, r.param("root", FanScope.fields.root)),
 				r.eq(scope, r.param("scope", FanScope.fields.scope))
@@ -581,10 +575,10 @@ export const fanDenPrograms = Object.freeze({
 	}),
 	fanInputsBatchSquare: query(fanGraph).rule((r) => {
 		const { root, step, scope } = v(FanStep, "step")
-		const { batch, n } = v(fan_square_input_ifddbjkaokoig, "input")
+		const { batch, n } = v(FanSquareInput, "input")
 		return r
 			.match(FanStep, { root, step, kind: "Square", scope })
-			.match(fan_square_input_ifddbjkaokoig, { root, step, batch, n })
+			.match(FanSquareInput, { root, step, batch, n })
 			.where(
 				r.eq(root, r.param("root", FanScope.fields.root)),
 				r.eq(scope, r.param("scope", FanScope.fields.scope))
@@ -602,16 +596,13 @@ export const fanDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	fanReadfan_fan_run_input_bghibckinpfgk: query(fanGraph).rule((r) => {
-		const { root, scope, batch, size } = v(
-			fan_fan_run_input_bghibckinpfgk,
-			"fan_fan_run_input_bghibckinpfgk"
-		)
+	fanReadFanFanRunInput: query(fanGraph).rule((r) => {
+		const { root, scope, batch, size } = v(FanFanRunInput, "fanFanRunInput")
 		return r
-			.match(fan_fan_run_input_bghibckinpfgk, { root, scope, batch, size })
+			.match(FanFanRunInput, { root, scope, batch, size })
 			.where(
-				r.eq(root, r.param("root", fan_fan_run_input_bghibckinpfgk.fields.root)),
-				r.eq(scope, r.param("scope", fan_fan_run_input_bghibckinpfgk.fields.scope))
+				r.eq(root, r.param("root", FanFanRunInput.fields.root)),
+				r.eq(scope, r.param("scope", FanFanRunInput.fields.scope))
 			)
 			.find({ root, scope, batch, size })
 	}),
@@ -632,13 +623,13 @@ export const fanDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				fan_fan_run_input_bghibckinpfgk,
+				FanFanRunInput,
 				query(fanGraph).rule((r) => {
-					const requested = r.relation("fanFanRunfan_fan_run_input_bghibckinpfgk", {
-						root: fan_fan_run_input_bghibckinpfgk.fields.root,
-						scope: fan_fan_run_input_bghibckinpfgk.fields.scope,
-						batch: fan_fan_run_input_bghibckinpfgk.fields.batch,
-						size: fan_fan_run_input_bghibckinpfgk.fields.size
+					const requested = r.relation("fanFanRunFanFanRunInput", {
+						root: FanFanRunInput.fields.root,
+						scope: FanFanRunInput.fields.scope,
+						batch: FanFanRunInput.fields.batch,
+						size: FanFanRunInput.fields.size
 					})
 					const { root, scope, batch, size } = v(requested, "requested")
 					return r
@@ -708,7 +699,7 @@ export const fanDenPrograms = Object.freeze({
 		return r
 			.match(FanWithin, { root, scope, parent, kind: "Batch" })
 			.match(FanFinish, { root, scope, step })
-			.match(fan_batch_finish_output_djinnhndkglgj, { root, step })
+			.match(FanBatchFinishOutput, { root, step })
 			.where(
 				r.eq(root, r.param("root", FanScope.fields.root)),
 				r.eq(parent, r.param("scope", FanScope.fields.scope))
@@ -718,11 +709,11 @@ export const fanDenPrograms = Object.freeze({
 	fanInputsFanRunBatch: query(fanGraph).rule((r) => {
 		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
-		const { batch, size } = v(fan_batch_input_hjhhnklpfiilh, "input")
+		const { batch, size } = v(FanBatchInput, "input")
 		return r
 			.match(FanWithin, { root, scope, parent, kind: "Batch" })
 			.match(FanFinish, { root, scope, step })
-			.match(fan_batch_input_hjhhnklpfiilh, { root, scope, batch, size })
+			.match(FanBatchInput, { root, scope, batch, size })
 			.where(
 				r.eq(root, r.param("root", FanScope.fields.root)),
 				r.eq(parent, r.param("scope", FanScope.fields.scope))
@@ -742,13 +733,13 @@ export const fanDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	fanReadfan_sweep_input_bnmfcblhkahec: query(fanGraph).rule((r) => {
-		const { root, scope, sweep } = v(fan_sweep_input_bnmfcblhkahec, "fan_sweep_input_bnmfcblhkahec")
+	fanReadFanSweepInput: query(fanGraph).rule((r) => {
+		const { root, scope, sweep } = v(FanSweepInput, "fanSweepInput")
 		return r
-			.match(fan_sweep_input_bnmfcblhkahec, { root, scope, sweep })
+			.match(FanSweepInput, { root, scope, sweep })
 			.where(
-				r.eq(root, r.param("root", fan_sweep_input_bnmfcblhkahec.fields.root)),
-				r.eq(scope, r.param("scope", fan_sweep_input_bnmfcblhkahec.fields.scope))
+				r.eq(root, r.param("root", FanSweepInput.fields.root)),
+				r.eq(scope, r.param("scope", FanSweepInput.fields.scope))
 			)
 			.find({ root, scope, sweep })
 	}),
@@ -769,12 +760,12 @@ export const fanDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				fan_sweep_input_bnmfcblhkahec,
+				FanSweepInput,
 				query(fanGraph).rule((r) => {
-					const requested = r.relation("fanSweepfan_sweep_input_bnmfcblhkahec", {
-						root: fan_sweep_input_bnmfcblhkahec.fields.root,
-						scope: fan_sweep_input_bnmfcblhkahec.fields.scope,
-						sweep: fan_sweep_input_bnmfcblhkahec.fields.sweep
+					const requested = r.relation("fanSweepFanSweepInput", {
+						root: FanSweepInput.fields.root,
+						scope: FanSweepInput.fields.scope,
+						sweep: FanSweepInput.fields.sweep
 					})
 					const { root, scope, sweep } = v(requested, "requested")
 					return r
@@ -838,16 +829,13 @@ export const fanDenPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	fanReadfan_wanted_input_nfecjpihiaope: query(fanGraph).rule((r) => {
-		const { root, scope, batch, size } = v(
-			fan_wanted_input_nfecjpihiaope,
-			"fan_wanted_input_nfecjpihiaope"
-		)
+	fanReadFanWantedInput: query(fanGraph).rule((r) => {
+		const { root, scope, batch, size } = v(FanWantedInput, "fanWantedInput")
 		return r
-			.match(fan_wanted_input_nfecjpihiaope, { root, scope, batch, size })
+			.match(FanWantedInput, { root, scope, batch, size })
 			.where(
-				r.eq(root, r.param("root", fan_wanted_input_nfecjpihiaope.fields.root)),
-				r.eq(scope, r.param("scope", fan_wanted_input_nfecjpihiaope.fields.scope))
+				r.eq(root, r.param("root", FanWantedInput.fields.root)),
+				r.eq(scope, r.param("scope", FanWantedInput.fields.scope))
 			)
 			.find({ root, scope, batch, size })
 	}),
@@ -857,7 +845,7 @@ export const fanDenPrograms = Object.freeze({
 		return r
 			.match(FanWithin, { root, scope, parent, kind: "Batch" })
 			.match(FanFinish, { root, scope, step })
-			.match(fan_batch_finish_output_djinnhndkglgj, { root, step })
+			.match(FanBatchFinishOutput, { root, step })
 			.where(
 				r.eq(root, r.param("root", FanScope.fields.root)),
 				r.eq(parent, r.param("scope", FanScope.fields.scope))
@@ -867,11 +855,11 @@ export const fanDenPrograms = Object.freeze({
 	fanInputsWantedBatch: query(fanGraph).rule((r) => {
 		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
-		const { batch, size } = v(fan_batch_input_hjhhnklpfiilh, "input")
+		const { batch, size } = v(FanBatchInput, "input")
 		return r
 			.match(FanWithin, { root, scope, parent, kind: "Batch" })
 			.match(FanFinish, { root, scope, step })
-			.match(fan_batch_input_hjhhnklpfiilh, { root, scope, batch, size })
+			.match(FanBatchInput, { root, scope, batch, size })
 			.where(
 				r.eq(root, r.param("root", FanScope.fields.root)),
 				r.eq(parent, r.param("scope", FanScope.fields.scope))
@@ -966,20 +954,20 @@ export const FanRetirer = role(
 			"FanHeld",
 			"FanRefusal",
 			"FanExhausted",
-			"fan_square_input_ifddbjkaokoig",
-			"fan_dust_input_lelfhikaelkja",
-			"fan_mop_input_ngghbiaegmghl",
-			"fan_batch_input_hjhhnklpfiilh",
-			"fan_fan_run_input_bghibckinpfgk",
-			"fan_sweep_input_bnmfcblhkahec",
-			"fan_wanted_input_nfecjpihiaope",
-			"fan_square_output_gofcfljmlelgo",
-			"fan_dust_output_pgpcjjjdmhkim",
-			"fan_mop_output_okmfngilefbec",
-			"fan_batch_finish_output_djinnhndkglgj",
-			"fan_fan_run_finish_output_kcmicfckgdcip",
-			"fan_sweep_finish_output_nebomlkgaabji",
-			"fan_wanted_finish_output_lmjmjmcffnbda",
+			"FanSquareInput",
+			"FanDustInput",
+			"FanMopInput",
+			"FanBatchInput",
+			"FanFanRunInput",
+			"FanSweepInput",
+			"FanWantedInput",
+			"FanSquareOutput",
+			"FanDustOutput",
+			"FanMopOutput",
+			"FanBatchFinishOutput",
+			"FanFanRunFinishOutput",
+			"FanSweepFinishOutput",
+			"FanWantedFinishOutput",
 			"FanHold"
 		]
 	}
@@ -1006,20 +994,20 @@ export const fanRetirerPrograms = Object.freeze({
 		FanHeld: { root: param("root", FanRoot.fields.root) },
 		FanRefusal: { root: param("root", FanRoot.fields.root) },
 		FanExhausted: { root: param("root", FanRoot.fields.root) },
-		fan_square_input_ifddbjkaokoig: { root: param("root", FanRoot.fields.root) },
-		fan_dust_input_lelfhikaelkja: { root: param("root", FanRoot.fields.root) },
-		fan_mop_input_ngghbiaegmghl: { root: param("root", FanRoot.fields.root) },
-		fan_batch_input_hjhhnklpfiilh: { root: param("root", FanRoot.fields.root) },
-		fan_fan_run_input_bghibckinpfgk: { root: param("root", FanRoot.fields.root) },
-		fan_sweep_input_bnmfcblhkahec: { root: param("root", FanRoot.fields.root) },
-		fan_wanted_input_nfecjpihiaope: { root: param("root", FanRoot.fields.root) },
-		fan_square_output_gofcfljmlelgo: { root: param("root", FanRoot.fields.root) },
-		fan_dust_output_pgpcjjjdmhkim: { root: param("root", FanRoot.fields.root) },
-		fan_mop_output_okmfngilefbec: { root: param("root", FanRoot.fields.root) },
-		fan_batch_finish_output_djinnhndkglgj: { root: param("root", FanRoot.fields.root) },
-		fan_fan_run_finish_output_kcmicfckgdcip: { root: param("root", FanRoot.fields.root) },
-		fan_sweep_finish_output_nebomlkgaabji: { root: param("root", FanRoot.fields.root) },
-		fan_wanted_finish_output_lmjmjmcffnbda: { root: param("root", FanRoot.fields.root) }
+		FanSquareInput: { root: param("root", FanRoot.fields.root) },
+		FanDustInput: { root: param("root", FanRoot.fields.root) },
+		FanMopInput: { root: param("root", FanRoot.fields.root) },
+		FanBatchInput: { root: param("root", FanRoot.fields.root) },
+		FanFanRunInput: { root: param("root", FanRoot.fields.root) },
+		FanSweepInput: { root: param("root", FanRoot.fields.root) },
+		FanWantedInput: { root: param("root", FanRoot.fields.root) },
+		FanSquareOutput: { root: param("root", FanRoot.fields.root) },
+		FanDustOutput: { root: param("root", FanRoot.fields.root) },
+		FanMopOutput: { root: param("root", FanRoot.fields.root) },
+		FanBatchFinishOutput: { root: param("root", FanRoot.fields.root) },
+		FanFanRunFinishOutput: { root: param("root", FanRoot.fields.root) },
+		FanSweepFinishOutput: { root: param("root", FanRoot.fields.root) },
+		FanWantedFinishOutput: { root: param("root", FanRoot.fields.root) }
 	})
 })
 
@@ -1036,23 +1024,23 @@ export const fanCommitPrograms = Object.freeze({
 		.insert(FanResult, [])
 		.insert(FanDone, [])
 		.insert(FanHeld, [])
-		.insert(fan_square_output_gofcfljmlelgo, []),
+		.insert(FanSquareOutput, []),
 	fanCommitDust: ChangeSet.empty(fanGraph)
 		.insert(FanResult, [])
 		.insert(FanDone, [])
 		.insert(FanHeld, [])
-		.insert(fan_dust_output_pgpcjjjdmhkim, []),
+		.insert(FanDustOutput, []),
 	fanCommitMop: ChangeSet.empty(fanGraph)
 		.insert(FanResult, [])
 		.insert(FanDone, [])
 		.insert(FanHeld, [])
-		.insert(fan_mop_output_okmfngilefbec, []),
+		.insert(FanMopOutput, []),
 	fanCommitBatchFinish: ChangeSet.union(
 		ChangeSet.empty(fanGraph)
 			.insert(FanResult, [])
 			.insert(FanDone, [])
 			.insert(FanHeld, [])
-			.insert(fan_batch_finish_output_djinnhndkglgj, []),
+			.insert(FanBatchFinishOutput, []),
 		declaredFlow.kinds[1].finish.writes.changes(Loader)
 	),
 	fanCommitFanRunFinish: ChangeSet.union(
@@ -1060,20 +1048,20 @@ export const fanCommitPrograms = Object.freeze({
 			.insert(FanResult, [])
 			.insert(FanDone, [])
 			.insert(FanHeld, [])
-			.insert(fan_fan_run_finish_output_kcmicfckgdcip, []),
+			.insert(FanFanRunFinishOutput, []),
 		declaredFlow.kinds[2].finish.writes.changes(Loader)
 	),
 	fanCommitSweepFinish: ChangeSet.empty(fanGraph)
 		.insert(FanResult, [])
 		.insert(FanDone, [])
 		.insert(FanHeld, [])
-		.insert(fan_sweep_finish_output_nebomlkgaabji, []),
+		.insert(FanSweepFinishOutput, []),
 	fanCommitWantedFinish: ChangeSet.union(
 		ChangeSet.empty(fanGraph)
 			.insert(FanResult, [])
 			.insert(FanDone, [])
 			.insert(FanHeld, [])
-			.insert(fan_wanted_finish_output_lmjmjmcffnbda, []),
+			.insert(FanWantedFinishOutput, []),
 		declaredFlow.kinds[6].finish.writes.changes(Loader)
 	)
 })
@@ -1092,7 +1080,7 @@ export const fanRequests = Object.freeze({
 				})
 				const { root, scope } = v(requested, "requested")
 				const derived = declaredFlow.kinds[6].from.read.bind({
-					batch: r.param("fanWantedKeyBatch", fan_wanted_key_ldjmcglkghhjb.fields.batch)
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
 				})
 				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
 				return r
@@ -1113,7 +1101,7 @@ export const fanRequests = Object.freeze({
 				})
 				const { root, scope, key, id } = v(requested, "requested")
 				const derived = declaredFlow.kinds[6].from.read.bind({
-					batch: r.param("fanWantedKeyBatch", fan_wanted_key_ldjmcglkghhjb.fields.batch)
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
 				})
 				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
 				return r
@@ -1124,7 +1112,7 @@ export const fanRequests = Object.freeze({
 			})
 		)
 		.insert(
-			fan_wanted_key_ldjmcglkghhjb,
+			FanWantedKey,
 			query(App).rule((r) => {
 				const requested = r.relation("fanWantedFanScope", {
 					root: FanScope.fields.root,
@@ -1132,21 +1120,18 @@ export const fanRequests = Object.freeze({
 				})
 				const { root, scope } = v(requested, "requested")
 				const derived = declaredFlow.kinds[6].from.read.bind({
-					batch: r.param("fanWantedKeyBatch", fan_wanted_key_ldjmcglkghhjb.fields.batch)
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
 				})
 				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
 				return r
 					.match(requested, { root, scope })
 					.match(derived, { batch: derivedBatch, size: derivedSize })
 					.where(r.eq(scope, root), r.not(FanRoot, { root }))
-					.find({
-						root,
-						batch: r.param("fanWantedKeyBatch", fan_wanted_key_ldjmcglkghhjb.fields.batch)
-					})
+					.find({ root, batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch) })
 			})
 		)
 		.insert(
-			fan_wanted_input_nfecjpihiaope,
+			FanWantedInput,
 			query(App).rule((r) => {
 				const requested = r.relation("fanWantedFanScope", {
 					root: FanScope.fields.root,
@@ -1154,7 +1139,7 @@ export const fanRequests = Object.freeze({
 				})
 				const { root, scope } = v(requested, "requested")
 				const derived = declaredFlow.kinds[6].from.read.bind({
-					batch: r.param("fanWantedKeyBatch", fan_wanted_key_ldjmcglkghhjb.fields.batch)
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
 				})
 				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
 				return r
@@ -1173,7 +1158,7 @@ export const fanRequests = Object.freeze({
 				})
 				const { root, scope } = v(requested, "requested")
 				const derived = declaredFlow.kinds[6].from.read.bind({
-					batch: r.param("fanWantedKeyBatch", fan_wanted_key_ldjmcglkghhjb.fields.batch)
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
 				})
 				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
 				return r
@@ -1196,11 +1181,5 @@ export const fanRequests = Object.freeze({
 
 /** What each of the flow's requests inserts, by its root: a role whose write composes a request inserts these beside its write's own, and none of den's step commits; a role composing several of the flow's requests names each relation in its insert list once. */
 export const fanRequestWrites = Object.freeze({
-	Wanted: [
-		"FanScope",
-		"FanExclusiveKey",
-		"fan_wanted_key_ldjmcglkghhjb",
-		"fan_wanted_input_nfecjpihiaope",
-		"FanRoot"
-	] as const
+	Wanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput", "FanRoot"] as const
 })

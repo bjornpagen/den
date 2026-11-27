@@ -27,15 +27,15 @@ import {
 	ClockHeld,
 	ClockRefusal,
 	ClockExhausted,
-	clock_chime_input_bfjhiocgaifco,
-	clock_close_input_bajjphdpmhlbc,
-	clock_hourly_input_nknibbhbedpnl,
-	clock_sitting_input_bckcjcndffgmo,
-	clock_hourly_key_cnlgnmcbbcgma,
-	clock_chime_output_bddonoddgecmi,
-	clock_close_output_aoheikcdnbjpp,
-	clock_hourly_finish_output_mgokiakijlfbi,
-	clock_sitting_finish_output_aahppmdaoafco,
+	ClockChimeInput,
+	ClockCloseInput,
+	ClockHourlyInput,
+	ClockSittingInput,
+	ClockHourlyKey,
+	ClockChimeOutput,
+	ClockCloseOutput,
+	ClockHourlyFinishOutput,
+	ClockSittingFinishOutput,
 	ClockPaused,
 	ClockResumed,
 	ClockServed,
@@ -75,13 +75,13 @@ export const ClockDen = role(
 			"ClockHeld",
 			"ClockRefusal",
 			"ClockExhausted",
-			"clock_chime_input_bfjhiocgaifco",
-			"clock_close_input_bajjphdpmhlbc",
-			"clock_hourly_input_nknibbhbedpnl",
-			"clock_sitting_input_bckcjcndffgmo",
-			"clock_hourly_key_cnlgnmcbbcgma",
-			"clock_hourly_finish_output_mgokiakijlfbi",
-			"clock_sitting_finish_output_aahppmdaoafco"
+			"ClockChimeInput",
+			"ClockCloseInput",
+			"ClockHourlyInput",
+			"ClockSittingInput",
+			"ClockHourlyKey",
+			"ClockHourlyFinishOutput",
+			"ClockSittingFinishOutput"
 		]
 	}
 )
@@ -230,8 +230,8 @@ export const clockDenPrograms = Object.freeze({
 			.insert(ClockFinish, [])
 			.insert(ClockStartStep, [])
 			.insert(ClockScope, [])
-			.insert(clock_chime_input_bfjhiocgaifco, [])
-			.insert(clock_close_input_bajjphdpmhlbc, [])
+			.insert(ClockChimeInput, [])
+			.insert(ClockCloseInput, [])
 			.insert(
 				ClockStep,
 				query(clockGraph)
@@ -440,42 +440,33 @@ export const clockDenPrograms = Object.freeze({
 				.find({ target, turn })
 		})
 	}),
-	clockReadclock_chime_input_bfjhiocgaifco: query(clockGraph).rule((r) => {
-		const { root, step, hour, bell } = v(
-			clock_chime_input_bfjhiocgaifco,
-			"clock_chime_input_bfjhiocgaifco"
-		)
+	clockReadClockChimeInput: query(clockGraph).rule((r) => {
+		const { root, step, hour, bell } = v(ClockChimeInput, "clockChimeInput")
 		return r
-			.match(clock_chime_input_bfjhiocgaifco, { root, step, hour, bell })
+			.match(ClockChimeInput, { root, step, hour, bell })
 			.where(
-				r.eq(root, r.param("root", clock_chime_input_bfjhiocgaifco.fields.root)),
-				r.eq(step, r.param("step", clock_chime_input_bfjhiocgaifco.fields.step))
+				r.eq(root, r.param("root", ClockChimeInput.fields.root)),
+				r.eq(step, r.param("step", ClockChimeInput.fields.step))
 			)
 			.find({ root, step, hour, bell })
 	}),
-	clockReadclock_close_input_bajjphdpmhlbc: query(clockGraph).rule((r) => {
-		const { root, step, sitting, deadline } = v(
-			clock_close_input_bajjphdpmhlbc,
-			"clock_close_input_bajjphdpmhlbc"
-		)
+	clockReadClockCloseInput: query(clockGraph).rule((r) => {
+		const { root, step, sitting, deadline } = v(ClockCloseInput, "clockCloseInput")
 		return r
-			.match(clock_close_input_bajjphdpmhlbc, { root, step, sitting, deadline })
+			.match(ClockCloseInput, { root, step, sitting, deadline })
 			.where(
-				r.eq(root, r.param("root", clock_close_input_bajjphdpmhlbc.fields.root)),
-				r.eq(step, r.param("step", clock_close_input_bajjphdpmhlbc.fields.step))
+				r.eq(root, r.param("root", ClockCloseInput.fields.root)),
+				r.eq(step, r.param("step", ClockCloseInput.fields.step))
 			)
 			.find({ root, step, sitting, deadline })
 	}),
-	clockReadclock_hourly_input_nknibbhbedpnl: query(clockGraph).rule((r) => {
-		const { root, scope, hour, bell } = v(
-			clock_hourly_input_nknibbhbedpnl,
-			"clock_hourly_input_nknibbhbedpnl"
-		)
+	clockReadClockHourlyInput: query(clockGraph).rule((r) => {
+		const { root, scope, hour, bell } = v(ClockHourlyInput, "clockHourlyInput")
 		return r
-			.match(clock_hourly_input_nknibbhbedpnl, { root, scope, hour, bell })
+			.match(ClockHourlyInput, { root, scope, hour, bell })
 			.where(
-				r.eq(root, r.param("root", clock_hourly_input_nknibbhbedpnl.fields.root)),
-				r.eq(scope, r.param("scope", clock_hourly_input_nknibbhbedpnl.fields.scope))
+				r.eq(root, r.param("root", ClockHourlyInput.fields.root)),
+				r.eq(scope, r.param("scope", ClockHourlyInput.fields.scope))
 			)
 			.find({ root, scope, hour, bell })
 	}),
@@ -490,8 +481,8 @@ export const clockDenPrograms = Object.freeze({
 					})
 					const { root, scope } = v(requested, "requested")
 					const derived = declaredFlow.kinds[1].from.read.bind({
-						at: r.param("clockHourlyKeyAt", clock_hourly_key_cnlgnmcbbcgma.fields.at),
-						member: r.param("clockHourlyKeyMember", clock_hourly_key_cnlgnmcbbcgma.fields.member)
+						at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+						member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
 					})
 					const { hour: derivedHour, bell: derivedBell } = v(derived, "derived")
 					return r
@@ -502,7 +493,7 @@ export const clockDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				clock_hourly_key_cnlgnmcbbcgma,
+				ClockHourlyKey,
 				query(ClockDen).rule((r) => {
 					const requested = r.relation("clockHourlyClockScope", {
 						root: ClockScope.fields.root,
@@ -510,8 +501,8 @@ export const clockDenPrograms = Object.freeze({
 					})
 					const { root, scope } = v(requested, "requested")
 					const derived = declaredFlow.kinds[1].from.read.bind({
-						at: r.param("clockHourlyKeyAt", clock_hourly_key_cnlgnmcbbcgma.fields.at),
-						member: r.param("clockHourlyKeyMember", clock_hourly_key_cnlgnmcbbcgma.fields.member)
+						at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+						member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
 					})
 					const { hour: derivedHour, bell: derivedBell } = v(derived, "derived")
 					return r
@@ -520,13 +511,13 @@ export const clockDenPrograms = Object.freeze({
 						.where(r.eq(scope, root), r.not(ClockRoot, { root }))
 						.find({
 							root,
-							at: r.param("clockHourlyKeyAt", clock_hourly_key_cnlgnmcbbcgma.fields.at),
-							member: r.param("clockHourlyKeyMember", clock_hourly_key_cnlgnmcbbcgma.fields.member)
+							at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+							member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
 						})
 				})
 			)
 			.insert(
-				clock_hourly_input_nknibbhbedpnl,
+				ClockHourlyInput,
 				query(ClockDen).rule((r) => {
 					const requested = r.relation("clockHourlyClockScope", {
 						root: ClockScope.fields.root,
@@ -534,8 +525,8 @@ export const clockDenPrograms = Object.freeze({
 					})
 					const { root, scope } = v(requested, "requested")
 					const derived = declaredFlow.kinds[1].from.read.bind({
-						at: r.param("clockHourlyKeyAt", clock_hourly_key_cnlgnmcbbcgma.fields.at),
-						member: r.param("clockHourlyKeyMember", clock_hourly_key_cnlgnmcbbcgma.fields.member)
+						at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+						member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
 					})
 					const { hour: derivedHour, bell: derivedBell } = v(derived, "derived")
 					return r
@@ -554,8 +545,8 @@ export const clockDenPrograms = Object.freeze({
 					})
 					const { root, scope } = v(requested, "requested")
 					const derived = declaredFlow.kinds[1].from.read.bind({
-						at: r.param("clockHourlyKeyAt", clock_hourly_key_cnlgnmcbbcgma.fields.at),
-						member: r.param("clockHourlyKeyMember", clock_hourly_key_cnlgnmcbbcgma.fields.member)
+						at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+						member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
 					})
 					const { hour: derivedHour, bell: derivedBell } = v(derived, "derived")
 					return r
@@ -577,16 +568,13 @@ export const clockDenPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	clockReadclock_sitting_input_bckcjcndffgmo: query(clockGraph).rule((r) => {
-		const { root, scope, sitting, deadline } = v(
-			clock_sitting_input_bckcjcndffgmo,
-			"clock_sitting_input_bckcjcndffgmo"
-		)
+	clockReadClockSittingInput: query(clockGraph).rule((r) => {
+		const { root, scope, sitting, deadline } = v(ClockSittingInput, "clockSittingInput")
 		return r
-			.match(clock_sitting_input_bckcjcndffgmo, { root, scope, sitting, deadline })
+			.match(ClockSittingInput, { root, scope, sitting, deadline })
 			.where(
-				r.eq(root, r.param("root", clock_sitting_input_bckcjcndffgmo.fields.root)),
-				r.eq(scope, r.param("scope", clock_sitting_input_bckcjcndffgmo.fields.scope))
+				r.eq(root, r.param("root", ClockSittingInput.fields.root)),
+				r.eq(scope, r.param("scope", ClockSittingInput.fields.scope))
 			)
 			.find({ root, scope, sitting, deadline })
 	}),
@@ -607,13 +595,13 @@ export const clockDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				clock_sitting_input_bckcjcndffgmo,
+				ClockSittingInput,
 				query(clockGraph).rule((r) => {
-					const requested = r.relation("clockSittingclock_sitting_input_bckcjcndffgmo", {
-						root: clock_sitting_input_bckcjcndffgmo.fields.root,
-						scope: clock_sitting_input_bckcjcndffgmo.fields.scope,
-						sitting: clock_sitting_input_bckcjcndffgmo.fields.sitting,
-						deadline: clock_sitting_input_bckcjcndffgmo.fields.deadline
+					const requested = r.relation("clockSittingClockSittingInput", {
+						root: ClockSittingInput.fields.root,
+						scope: ClockSittingInput.fields.scope,
+						sitting: ClockSittingInput.fields.sitting,
+						deadline: ClockSittingInput.fields.deadline
 					})
 					const { root, scope, sitting, deadline } = v(requested, "requested")
 					return r
@@ -736,14 +724,14 @@ export const ClockRetirer = role(
 			"ClockHeld",
 			"ClockRefusal",
 			"ClockExhausted",
-			"clock_chime_input_bfjhiocgaifco",
-			"clock_close_input_bajjphdpmhlbc",
-			"clock_hourly_input_nknibbhbedpnl",
-			"clock_sitting_input_bckcjcndffgmo",
-			"clock_chime_output_bddonoddgecmi",
-			"clock_close_output_aoheikcdnbjpp",
-			"clock_hourly_finish_output_mgokiakijlfbi",
-			"clock_sitting_finish_output_aahppmdaoafco"
+			"ClockChimeInput",
+			"ClockCloseInput",
+			"ClockHourlyInput",
+			"ClockSittingInput",
+			"ClockChimeOutput",
+			"ClockCloseOutput",
+			"ClockHourlyFinishOutput",
+			"ClockSittingFinishOutput"
 		]
 	}
 )
@@ -766,14 +754,14 @@ export const clockRetirerPrograms = Object.freeze({
 		ClockHeld: { root: param("root", ClockRoot.fields.root) },
 		ClockRefusal: { root: param("root", ClockRoot.fields.root) },
 		ClockExhausted: { root: param("root", ClockRoot.fields.root) },
-		clock_chime_input_bfjhiocgaifco: { root: param("root", ClockRoot.fields.root) },
-		clock_close_input_bajjphdpmhlbc: { root: param("root", ClockRoot.fields.root) },
-		clock_hourly_input_nknibbhbedpnl: { root: param("root", ClockRoot.fields.root) },
-		clock_sitting_input_bckcjcndffgmo: { root: param("root", ClockRoot.fields.root) },
-		clock_chime_output_bddonoddgecmi: { root: param("root", ClockRoot.fields.root) },
-		clock_close_output_aoheikcdnbjpp: { root: param("root", ClockRoot.fields.root) },
-		clock_hourly_finish_output_mgokiakijlfbi: { root: param("root", ClockRoot.fields.root) },
-		clock_sitting_finish_output_aahppmdaoafco: { root: param("root", ClockRoot.fields.root) }
+		ClockChimeInput: { root: param("root", ClockRoot.fields.root) },
+		ClockCloseInput: { root: param("root", ClockRoot.fields.root) },
+		ClockHourlyInput: { root: param("root", ClockRoot.fields.root) },
+		ClockSittingInput: { root: param("root", ClockRoot.fields.root) },
+		ClockChimeOutput: { root: param("root", ClockRoot.fields.root) },
+		ClockCloseOutput: { root: param("root", ClockRoot.fields.root) },
+		ClockHourlyFinishOutput: { root: param("root", ClockRoot.fields.root) },
+		ClockSittingFinishOutput: { root: param("root", ClockRoot.fields.root) }
 	})
 })
 
@@ -791,24 +779,24 @@ export const clockCommitPrograms = Object.freeze({
 			.insert(ClockResult, [])
 			.insert(ClockDone, [])
 			.insert(ClockHeld, [])
-			.insert(clock_chime_output_bddonoddgecmi, []),
+			.insert(ClockChimeOutput, []),
 		declaredFlow.kinds[0].writes.changes(Loader)
 	),
 	clockCommitClose: ChangeSet.empty(clockGraph)
 		.insert(ClockResult, [])
 		.insert(ClockDone, [])
 		.insert(ClockHeld, [])
-		.insert(clock_close_output_aoheikcdnbjpp, []),
+		.insert(ClockCloseOutput, []),
 	clockCommitHourlyFinish: ChangeSet.empty(clockGraph)
 		.insert(ClockResult, [])
 		.insert(ClockDone, [])
 		.insert(ClockHeld, [])
-		.insert(clock_hourly_finish_output_mgokiakijlfbi, []),
+		.insert(ClockHourlyFinishOutput, []),
 	clockCommitSittingFinish: ChangeSet.empty(clockGraph)
 		.insert(ClockResult, [])
 		.insert(ClockDone, [])
 		.insert(ClockHeld, [])
-		.insert(clock_sitting_finish_output_aahppmdaoafco, [])
+		.insert(ClockSittingFinishOutput, [])
 })
 
 export const clockCommits = workload(Loader, clockCommitPrograms)

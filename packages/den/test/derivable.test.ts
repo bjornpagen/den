@@ -36,7 +36,6 @@ import {
 } from "#algebra/kinds.ts"
 import { lower } from "#lower/fragment.ts"
 import { Text } from "#lower/keys.ts"
-import { declared, derivedOf, word } from "#lower/names.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
@@ -521,11 +520,7 @@ it.effect(
 								edges: []
 							})
 						)
-						const keyRelation = derivedOf("key", [
-							declared("Wants"),
-							declared(kind.name),
-							word("Key")
-						]).name
+						const keyRelation = `Wants${kind.name}Key`
 						const record = recorded === "a derived root's key" ? keyRelation : "WantsRequestedWith"
 						const contains = (from: string, to: string) =>
 							Arr.some(

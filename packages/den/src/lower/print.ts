@@ -11,6 +11,7 @@ import {
 	type KeyIR,
 	type LawIR,
 	type Lowered,
+	type NamingIR,
 	type ReadIR,
 	type RelationIR,
 	type SeatsIR,
@@ -73,6 +74,23 @@ const commas = (parts: ReadonlyArray<string>): string => Arr.join(parts, ", ")
 const lower1 = (text: string): string => Str.uncapitalize(text)
 /** The key a brand's contract is its fragment module's under, the symbol only that module holds. */
 const brandKey = (brand: string): string => `${lower1(brand)}Key`
+/**
+ * The builder a lowered name is printed by: the root's `declared` builder for a declared name, or the one of grizzle's
+ * `derivedName` of its naming, its identifiers hashed over it, for a derived one.
+ */
+const namedBy = (
+	naming: NamingIR,
+	declared: string,
+	derived: "relation" | "generated" | "unordered"
+): string => {
+	switch (naming.kind) {
+		case "declared":
+			return declared
+		case "derived":
+			return `derivedName({ stem: ${q(naming.stem)}, path: [${commas(Arr.map(naming.path, q))}] }).${derived}`
+	}
+}
+
 /** The mint of a brand's host type, its fragment module's, under its key (`brandKey`). */
 const brandMint = (brand: string): string => `${lower1(brand)}Mint`
 
@@ -309,6 +327,9 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(used("closed") ? ["closedId"] : []),
 		"contained",
 		...(Arr.isReadonlyArrayNonEmpty(l.brands) ? ["contract"] : []),
+		...(Arr.some([...l.relations, ...l.rosters], (r) => r.naming.kind === "derived")
+			? ["derivedName"]
+			: []),
 		...(digested ? ["Crypto"] : []),
 		...(seated ? ["derived"] : []),
 		...(used("drawn") ? ["drawn"] : []),
@@ -834,21 +855,21 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		...Arr.map(
 			l.rosters,
 			(r) =>
-				`export const ${r.name} = closed.unordered(${q(r.name)}, [${commas(Arr.map(r.handles, q))}])`
+				`export const ${r.name} = ${namedBy(r.naming, "closed.unordered", "unordered")}(${q(r.name)}, [${commas(Arr.map(r.handles, q))}])`
 		),
 		...Arr.map(counts, countsExpr),
 		"",
 		...Arr.map(
 			l.relations,
 			(r) =>
-				`${Arr.contains(nested, r.name) ? "const" : "export const"} ${r.name} = ${Arr.isReadonlyArrayNonEmpty(digestsOf(l, r.name)) ? "relation.generated" : "relation"}(${q(r.name)}, { ${commas(
+				`${Arr.contains(nested, r.name) ? "const" : "export const"} ${r.name} = ${Arr.isReadonlyArrayNonEmpty(digestsOf(l, r.name)) ? namedBy(r.naming, "relation.generated", "generated") : namedBy(r.naming, "relation", "relation")}(${q(r.name)}, { ${commas(
 					Arr.map(r.fields, (f) => `${f.name}: ${fieldExpr(f.type)}`)
 				)} }, [${commas(Arr.map(r.key, q))}]${Arr.match(digestsOf(l, r.name), { onEmpty: () => "", onNonEmpty: (digests) => `, (row) => ({ ${commas(Arr.map(digests, (d) => `${d.name}: generated(sha256, Crypto.sha256(row.${d.of}))`))} })` })})`
 		),
 		"",
 		...Arr.flatMap(readsOfFlow(l), ({ step, read }) => [
-			`/** The records of the rows step ${step.name}'s read \`${read.name}\` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, named by den, keyed by a row's digest alone, so every root that found a row shares it. */`,
-			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256 }, ["digest"]${Arr.isReadonlyArrayNonEmpty(read.paths) ? `, { names: { ${commas(Arr.map(read.paths, (at) => `${q(at.path)}: ${q(at.name)}`))} } }` : ""})`,
+			`/** The records of the rows step ${step.name}'s read \`${read.name}\` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */`,
+			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256 }, ["digest"])`,
 			`export const ${read.stem}Row = ${read.stem}Records.row`,
 			""
 		]),

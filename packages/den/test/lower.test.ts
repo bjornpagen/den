@@ -1,11 +1,4 @@
-import {
-	conversionOf,
-	pg,
-	query,
-	relation as declareRelation,
-	schema,
-	v
-} from "@bjornpagen/grizzle"
+import { pg, query, relation as declareRelation, schema, v } from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -40,7 +33,6 @@ import {
 } from "#algebra/kinds.ts"
 import { type LawIR, type Lowered, lower, type SideIR } from "#lower/fragment.ts"
 import { Text } from "#lower/keys.ts"
-import { declared, derivedOf, under, word } from "#lower/names.ts"
 import { type Placement, printFragment } from "#lower/print.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
@@ -449,27 +441,12 @@ it.effect(
 							...Arr.map(lowered.rosters, (r) => r.name)
 						]
 						const has = (name: string) => Arr.contains(relations, name)
-						/** The derived name of what `kind` names by these names of the flow's and words of den's. */
-						const derived = (
-							kind: Parameters<typeof derivedOf>[0],
-							...pieces: Parameters<typeof derivedOf>[1]
-						) => derivedOf(kind, pieces)
-						const s0Input = derived("input", declared(P), declared("S0"), word("Input"))
-						const s0Value = (kind: "option" | "array") =>
-							derived(kind, under(s0Input), declared("value")).name
-						const s0Array = s0Value("array")
-						const finishOutput = (join: string) =>
-							derived("output", declared(P), declared(join), word("Finish"), word("Output")).name
-						const stepOutput = (stepName: string) =>
-							derived("output", declared(P), declared(stepName), word("Output")).name
-						const readOf = (read: string) =>
-							derived("read", declared(P), declared("S0"), word("Read"), declared(read)).name
-						assert.isTrue(
-							Arr.every(
-								names,
-								(n) => Str.startsWith(P)(n) || Str.startsWith(`${conversionOf(P)}_`)(n)
-							)
-						)
+						const s0Input = `${P}S0Input`
+						const s0Array = `${P}S0InputValue`
+						const finishOutput = (join: string) => `${P}${join}FinishOutput`
+						const stepOutput = (stepName: string) => `${P}${stepName}Output`
+						const readOf = (read: string) => `${P}S0Read${Str.capitalize(read)}`
+						assert.isTrue(Arr.every(names, Str.startsWith(P)))
 						const sides = Arr.flatMap(lowered.laws, (law) => {
 							switch (law.kind) {
 								case "contained":
@@ -488,7 +465,7 @@ it.effect(
 						})
 						assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
 						assert.strictEqual(
-							has(s0Value("option")) || has(s0Array),
+							has(s0Array),
 							sketch.form === "option" || sketch.form === "array" || sketch.form === "structs"
 						)
 						const keyed = (name: string) =>
@@ -506,14 +483,13 @@ it.effect(
 									Arr.map(law.from.terms, (t) => `${t.pred ? "pred:" : ""}${t.field}`)
 								]),
 								[
-									[s0Input.name, ["root", "step"]],
+									[s0Input, ["root", "step"]],
 									[s0Array, ["root", "step", "pred:ordinal"]],
 									[`${P}Step`, ["root", "step"]]
 								]
 							)
 						}
-						const variantOf = (tag: string) =>
-							derived("variant", under(s0Input), declared("value"), declared(tag)).name
+						const variantOf = (tag: string) => `${P}S0InputValue${tag}`
 						assert.strictEqual(
 							has(variantOf("Serve")) && has(variantOf("Rest")),
 							sketch.form === "union"
@@ -522,7 +498,7 @@ it.effect(
 							Arr.forEach(["Serve", "Rest"], (tag) => {
 								const variant = variantOf(tag)
 								const tagged = (law: Extract<LawIR, { readonly kind: "contained" }>["to"]) =>
-									law.relation === s0Input.name &&
+									law.relation === s0Input &&
 									law.selection.kind === "handle" &&
 									law.selection.field === "value" &&
 									law.selection.handle === tag
@@ -563,7 +539,7 @@ it.effect(
 							Arr.some(
 								containments,
 								(law) =>
-									law.from.relation === derived("edge", declared(P), declared(edgeName)).name &&
+									law.from.relation === `${P}${edgeName}` &&
 									Arr.some(law.from.terms, (t) => t.field === "from") &&
 									law.to.relation === output
 							)
@@ -576,7 +552,7 @@ it.effect(
 							Arr.some(lowered.joins, (j) => Arr.some(j.finish.edges, (e) => e.name === "After")),
 							sketch.scoped
 						)
-						const s0Error = derived("error", declared(P), declared("S0"), word("Error")).name
+						const s0Error = `${P}S0Error`
 						assert.strictEqual(has(s0Error), sketch.typed)
 						if (sketch.typed) {
 							assert.isTrue(
@@ -634,7 +610,7 @@ it.effect(
 								lowered.laws,
 								(law) =>
 									law.kind === "check" &&
-									law.relation === s0Input.name &&
+									law.relation === s0Input &&
 									law.field === "value" &&
 									law.holds.kind === "finite"
 							),

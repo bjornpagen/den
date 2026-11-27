@@ -1,73 +1,35 @@
-import { conversionOf, nameFaultText, parseDeclaredName, Sha256 } from "@bjornpagen/grizzle"
+import { conversionOf, nameFaultText, parseDeclaredName } from "@bjornpagen/grizzle"
 import { Array as Arr, String as Str } from "effect"
 import { nameBytes, Refused } from "#algebra/kinds.ts"
 import { framedText } from "#runtime/identity.ts"
 
 /**
- * den's naming door: every name den gives what it lowers a flow to is minted here, of one form per kind, as grizzle's
- * naming door (core/identity.ts) mints every PostgreSQL identifier grizzle installs. Each name is a declared name to
- * grizzle, which judges it by its conversion: its segments, lowercased, joined by single underscores, within
- * PostgreSQL's nameBytes.
+ * den's naming door: every name den gives what it lowers a flow to is minted here. A name is the schema type's key and
+ * its row maps' key, which apps name in source (a law over a derived root's key, a grant, a test's rows), so every name
+ * stays readable; only the PostgreSQL identifiers grizzle mints from a name ever differ from it, by its naming.
  *
- * - Readable: a name of the flow's own and one of den's words, `<P><Word>` (the flow's singletons: `<P>Scope`,
- *   `<P>Step`, `<P>Kind`, …), as grizzle keeps `<schema>__<name>` readable. Its identity is the flow's name and the word,
- *   so it is one-to-one in the schema's namespace, and it is refused at den's door, as its flow's, when its conversion
- *   passes nameBytes (`readableOf`), before grizzle sees it.
- * - Derived: every other name den makes from the flow's names (a kind's input, output and error relations and their
- *   options, arrays and variants, a column's roster and a double's row check, a derived root's key, an edge, a read's
- *   records and every attachment path of them). Its identity holds its names whole, as many and as long as the flow
- *   nests them, so no fixed width holds it readably; its form is always `<stem>_<digest>`, never readable where it would
- *   fit, so a name never changes form for its length: the stem its identity's segments cut at a segment boundary to
- *   stemBudget bytes, and the digest digestLetters letters of the SHA-256 of its canonical encoding. Already in its
- *   conversion, so its conversion is itself, and within nameBytes by construction. The names grizzle's records derive
- *   from a stem den gives them, their root's `${stem}Row`, are grizzle's derived names, its identifiers hashed, so
- *   den's stem leaves them no room.
+ * - Readable singletons: a name of the flow's own and one of den's words, `<P><Word>` (`<P>Scope`, `<P>Step`,
+ *   `<P>Kind`, …), declared to grizzle, its identifier its conversion, as grizzle keeps `<schema>__<name>` readable. Its
+ *   identity is the flow's name and the word, so it is one-to-one in the schema's namespace, and it is refused at den's
+ *   door, as its flow's, when its conversion passes nameBytes (`readableOf`), before grizzle sees it.
+ * - Derived: every other relation or roster name den makes from the flow's names (a kind's or a join's input, output
+ *   and error relations and their options, arrays and variants, a column's roster, a derived root's key, an edge, a
+ *   read's references), the readable composition of its pieces, `<P><Kind>Input`, `<Relation><Field>`, of any length,
+ *   which grizzle holds by derived naming (its `derivedName`): its name refused for nothing but a collision, and every
+ *   identifier grizzle installs for it the hashed form of its kind, over the flow's name and the rest of the name, so
+ *   no nesting and no length of a flow's names carries an identifier past PostgreSQL's 63 bytes.
  *
- * Two distinct derived identities meet under one name only where their stems and their digests do, which the census
- * of a flow's names refuses (`censusOf`), as it refuses two declarations of any form that meet under one conversion.
- *
- * The canonical encoding is injective: what the name names (DerivedKind), then each piece tagged by what it is (a name
- * the flow declares, a word of den's, the identity it is under, by that identity's canonical encoding), each framed by
- * its length (framedText). The stem is read off the same pieces and is presentation only.
+ * Two identities can compose one readable name (an edge named as a kind's input field's option), so the census of a
+ * flow's names refuses two declarations of distinct identities whose conversions meet (`censusOf`), before grizzle
+ * would. A derived name's identity is its canonical encoding: what it names (DerivedKind), then each piece tagged by
+ * what it is (a name the flow declares, a word of den's, the derived name it is under, by that name's canonical
+ * encoding), each framed by its length (framedText).
  */
-
-/** The suffix grizzle's records add to the stem den gives them, naming their root relation (`${stem}Row`). */
-const recordsRowSuffix = "Row"
-
-/**
- * The width of a derived name's digest, in letters: a format constant of den's naming door, whose change renames every
- * derived relation.
- *
- * Its letters are the sixteen from a to p, four bits each, so the digest is one segment of grizzle's conversion,
- * which splits a name at every boundary between a letter and a digit: an alphabet with digits would scatter underscores
- * through a digest and make its width depend on its value. Collision arithmetic: two distinct derived identities share a
- * name only where their stems agree and the first 4 * 13 = 52 bits of their canonical encodings' SHA-256 do; over n
- * derived names of one flow the chance of any shared digest is at most n(n - 1) / 2 / 2^52, below 1.2 * 10^-8 for
- * n = 10^4. One that happens is refused by the census (`censusOf`), never lowered.
- *
- * @formatConstant the letters of a derived name's digest
- */
-const digestLetters = 13
-
-/** The code point of `a`, the letter of a digest's nibble 0: nibble n is the letter n places after it. */
-const firstLetter = 0x61
-
-/**
- * The bytes a derived name's stem may take: nameBytes less the underscore before the digest and the digest. No limit
- * of its own: PostgreSQL's identifier read against the derived name's form.
- *
- * @limitKind derived
- * @owner den's naming door (packages/den/src/lower/names.ts)
- * @unit bytes
- * @scope a derived name's stem
- * @derivation nameBytes - 1 - digestLetters = 63 - 1 - 13 = 49
- */
-const stemBudget = nameBytes - 1 - digestLetters
 
 /**
  * What a derived name names, the first part of its identity: a kind's or a join's input, output or error relation; one
- * of a value's options, arrays or variants; a column's roster; a double column's row check; a derived root's key; an
- * edge; a read's records, their stem, and the relation of each attachment path of them.
+ * of a value's options, arrays or variants; a column's roster; a derived root's key; an edge; a read's references, the
+ * stem of its records.
  */
 export type DerivedKind =
 	| "input"
@@ -77,11 +39,9 @@ export type DerivedKind =
 	| "array"
 	| "variant"
 	| "roster"
-	| "finite"
 	| "key"
 	| "edge"
 	| "read"
-	| "attachment"
 
 /** A piece of a derived name's identity: a name its flow declares, a word of den's, or the derived name it is under. */
 export type Piece =
@@ -99,13 +59,14 @@ export const word = (text: string): Piece => ({ kind: "word", word: text })
 export const under = (derived: Derived): Piece => ({ kind: "under", derived })
 
 /**
- * A name den derives: its identity's canonical encoding, its identity's segments, whole, which a name under it extends,
- * and the name, `<stem>_<digest>`.
+ * A name den derives: its identity's canonical encoding, its readable name, and its naming as grizzle's derivedName
+ * takes it, the flow's name as its stem and the rest of the name as its path, which grizzle hashes every identifier of
+ * it over.
  */
 export interface Derived {
 	readonly canonical: string
-	readonly segments: ReadonlyArray<string>
 	readonly name: string
+	readonly naming: { readonly stem: string; readonly path: readonly [string] }
 }
 
 /** A piece's canonical encoding: its tag, then its text or the canonical encoding of what it is under. */
@@ -120,56 +81,32 @@ const encodedPiece = (piece: Piece): string => {
 	}
 }
 
-/** A piece's segments: a name's or a word's in grizzle's conversion, or those of what it is under, whole. */
-const pieceSegments = (piece: Piece): ReadonlyArray<string> => {
+/** A piece's part of the readable name: a name capitalized, a word as it is, or the name it is under, whole. */
+const pieceText = (piece: Piece): string => {
 	switch (piece.kind) {
 		case "declared":
-			return Str.split(conversionOf(piece.name), "_")
+			return Str.capitalize(piece.name)
 		case "word":
-			return Str.split(conversionOf(piece.word), "_")
+			return piece.word
 		case "under":
-			return piece.derived.segments
+			return piece.derived.name
 	}
 }
 
-/** The longest run of `segments` from the first whose conversion, joined by underscores, fits stemBudget bytes. */
-const stemOf = (segments: ReadonlyArray<string>): ReadonlyArray<string> =>
-	Arr.reduce(segments, { kept: Arr.empty<string>(), open: true }, (cut, segment) => {
-		const joined = [...cut.kept, segment]
-		return cut.open && Arr.join(joined, "_").length <= stemBudget
-			? { kept: joined, open: true }
-			: { kept: cut.kept, open: false }
-	}).kept
-
-const encoder = new TextEncoder()
-
 /**
- * The digest of a canonical encoding: its SHA-256's first digestLetters nibbles, high nibble of each byte first, each the
- * letter that many places after `a`.
+ * The derived name of what `kind` names by `pieces` in the flow `flow`: the readable composition of its pieces, which
+ * starts with the flow's name, and its naming over the flow's name and the rest.
  */
-const digestOf = (canonical: string): string =>
-	Arr.join(
-		Arr.map(
-			Arr.take(
-				Arr.flatMap(Array.from(Sha256.ofBytes(encoder.encode(canonical))), (byte) => [
-					byte >> 4,
-					byte & 0x0f
-				]),
-				digestLetters
-			),
-			(nibble) => String.fromCodePoint(firstLetter + nibble)
-		),
-		""
-	)
-
-/** The derived name of what `kind` names by `pieces`: `<stem>_<digest>`, its one form. */
-export const derivedOf = (kind: DerivedKind, pieces: ReadonlyArray<Piece>): Derived => {
-	const canonical = framedText([kind, ...Arr.map(pieces, encodedPiece)])
-	const segments = Arr.flatMap(pieces, pieceSegments)
+export const derivedOf = (
+	flow: string,
+	kind: DerivedKind,
+	pieces: ReadonlyArray<Piece>
+): Derived => {
+	const name = Arr.join(Arr.map(pieces, pieceText), "")
 	return {
-		canonical,
-		segments,
-		name: Arr.join([...stemOf(segments), digestOf(canonical)], "_")
+		canonical: framedText([kind, ...Arr.map(pieces, encodedPiece)]),
+		name,
+		naming: { stem: flow, path: [Str.slice(flow.length)(name)] }
 	}
 }
 
@@ -201,11 +138,27 @@ export const namedReadable = (name: string): Named => ({ name, identity: `r${nam
 /** A brand's contract in the census, its identity the brand's name. */
 export const namedBrand = (brand: string): Named => ({ name: brand, identity: `b${brand}` })
 
-/** The root relation grizzle's records make of a read's stem (`${stem}Row`), in the census, its identity the read's. */
-export const namedRecordsRow = (read: Derived): Named => ({
-	name: `${read.name}${recordsRowSuffix}`,
-	identity: `w${read.canonical}`
+/** A relation grizzle's records derive from a read's stem, in the census, its identity the stem's and its own name. */
+export const namedRecords = (stem: string, name: string): Named => ({
+	name,
+	identity: `w${framedText([stem, name])}`
 })
+
+/**
+ * A row check's name den composes from a double column's, `<column>Finite`, in its relation's namespace of checks, or
+ * its refusal as the flow's where its conversion passes nameBytes: a column's name too long to hold den's word.
+ */
+export const finiteCheckOf = (flow: string, relation: string, column: string): string => {
+	const name = `${column}Finite`
+	const parsed = parseDeclaredName(name)
+	if (!parsed.ok) {
+		throw new Refused({
+			declaration: `flow ${flow}`,
+			why: `${relation}'s field ${column} does not hold den's row check ${name}, ${nameFaultText(parsed.error)}`
+		})
+	}
+	return name
+}
 
 /**
  * A roster handle den composes from a declared name, `handle`, or its refusal as `declaration`'s where its bytes pass
@@ -213,7 +166,7 @@ export const namedRecordsRow = (read: Derived): Named => ({
  * `<Join>Finish`.
  */
 export const handleOf = (declaration: string, handle: string): string => {
-	const bytes = encoder.encode(handle).length
+	const bytes = new TextEncoder().encode(handle).length
 	if (bytes > nameBytes) {
 		throw new Refused({
 			declaration,
@@ -231,8 +184,7 @@ export const namedDerived = (derived: Derived): Named => ({
 
 /**
  * The census of a flow's names: two of them of one conversion, grizzle's one namespace of relations, rosters and
- * contracts, are refused, two identities meeting under one name (a digest collision, where both are derived); one
- * identity named twice is one declaration.
+ * contracts, are refused, two identities meeting under one name; one identity named twice is one declaration.
  */
 export const censusOf = (flow: string, names: ReadonlyArray<Named>): void => {
 	const held = new Map<string, Named>()

@@ -27,10 +27,10 @@ import {
 	WritebackHeld,
 	WritebackRefusal,
 	WritebackExhausted,
-	writeback_deliver_input_libhnkibecamc,
-	writeback_writeback_input_ljafdhfgfeocc,
-	writeback_deliver_output_ppecogpmgbpek,
-	writeback_writeback_finish_output_mhjodpondhejh,
+	WritebackDeliverInput,
+	WritebackWritebackInput,
+	WritebackDeliverOutput,
+	WritebackWritebackFinishOutput,
 	WritebackPaused,
 	WritebackResumed,
 	WritebackServed,
@@ -64,9 +64,9 @@ export const WritebackDen = role(
 			"WritebackHeld",
 			"WritebackRefusal",
 			"WritebackExhausted",
-			"writeback_deliver_input_libhnkibecamc",
-			"writeback_writeback_input_ljafdhfgfeocc",
-			"writeback_writeback_finish_output_mhjodpondhejh"
+			"WritebackDeliverInput",
+			"WritebackWritebackInput",
+			"WritebackWritebackFinishOutput"
 		]
 	}
 )
@@ -217,7 +217,7 @@ export const writebackDenPrograms = Object.freeze({
 			.insert(WritebackFinish, [])
 			.insert(WritebackStartStep, [])
 			.insert(WritebackScope, [])
-			.insert(writeback_deliver_input_libhnkibecamc, [])
+			.insert(WritebackDeliverInput, [])
 			.insert(
 				WritebackStep,
 				query(writebackGraph).rule((r) => {
@@ -413,29 +413,23 @@ export const writebackDenPrograms = Object.freeze({
 				.find({ target, turn })
 		})
 	}),
-	writebackReadwriteback_deliver_input_libhnkibecamc: query(writebackGraph).rule((r) => {
-		const { root, step, attempt } = v(
-			writeback_deliver_input_libhnkibecamc,
-			"writeback_deliver_input_libhnkibecamc"
-		)
+	writebackReadWritebackDeliverInput: query(writebackGraph).rule((r) => {
+		const { root, step, attempt } = v(WritebackDeliverInput, "writebackDeliverInput")
 		return r
-			.match(writeback_deliver_input_libhnkibecamc, { root, step, attempt })
+			.match(WritebackDeliverInput, { root, step, attempt })
 			.where(
-				r.eq(root, r.param("root", writeback_deliver_input_libhnkibecamc.fields.root)),
-				r.eq(step, r.param("step", writeback_deliver_input_libhnkibecamc.fields.step))
+				r.eq(root, r.param("root", WritebackDeliverInput.fields.root)),
+				r.eq(step, r.param("step", WritebackDeliverInput.fields.step))
 			)
 			.find({ root, step, attempt })
 	}),
-	writebackReadwriteback_writeback_input_ljafdhfgfeocc: query(writebackGraph).rule((r) => {
-		const { root, scope, attempt } = v(
-			writeback_writeback_input_ljafdhfgfeocc,
-			"writeback_writeback_input_ljafdhfgfeocc"
-		)
+	writebackReadWritebackWritebackInput: query(writebackGraph).rule((r) => {
+		const { root, scope, attempt } = v(WritebackWritebackInput, "writebackWritebackInput")
 		return r
-			.match(writeback_writeback_input_ljafdhfgfeocc, { root, scope, attempt })
+			.match(WritebackWritebackInput, { root, scope, attempt })
 			.where(
-				r.eq(root, r.param("root", writeback_writeback_input_ljafdhfgfeocc.fields.root)),
-				r.eq(scope, r.param("scope", writeback_writeback_input_ljafdhfgfeocc.fields.scope))
+				r.eq(root, r.param("root", WritebackWritebackInput.fields.root)),
+				r.eq(scope, r.param("scope", WritebackWritebackInput.fields.scope))
 			)
 			.find({ root, scope, attempt })
 	}),
@@ -456,16 +450,13 @@ export const writebackDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				writeback_writeback_input_ljafdhfgfeocc,
+				WritebackWritebackInput,
 				query(writebackGraph).rule((r) => {
-					const requested = r.relation(
-						"writebackWritebackwriteback_writeback_input_ljafdhfgfeocc",
-						{
-							root: writeback_writeback_input_ljafdhfgfeocc.fields.root,
-							scope: writeback_writeback_input_ljafdhfgfeocc.fields.scope,
-							attempt: writeback_writeback_input_ljafdhfgfeocc.fields.attempt
-						}
-					)
+					const requested = r.relation("writebackWritebackWritebackWritebackInput", {
+						root: WritebackWritebackInput.fields.root,
+						scope: WritebackWritebackInput.fields.scope,
+						attempt: WritebackWritebackInput.fields.attempt
+					})
 					const { root, scope, attempt } = v(requested, "requested")
 					return r
 						.match(requested, { root, scope, attempt })
@@ -590,10 +581,10 @@ export const WritebackRetirer = role(
 			"WritebackHeld",
 			"WritebackRefusal",
 			"WritebackExhausted",
-			"writeback_deliver_input_libhnkibecamc",
-			"writeback_writeback_input_ljafdhfgfeocc",
-			"writeback_deliver_output_ppecogpmgbpek",
-			"writeback_writeback_finish_output_mhjodpondhejh"
+			"WritebackDeliverInput",
+			"WritebackWritebackInput",
+			"WritebackDeliverOutput",
+			"WritebackWritebackFinishOutput"
 		]
 	}
 )
@@ -616,12 +607,10 @@ export const writebackRetirerPrograms = Object.freeze({
 		WritebackHeld: { root: param("root", WritebackRoot.fields.root) },
 		WritebackRefusal: { root: param("root", WritebackRoot.fields.root) },
 		WritebackExhausted: { root: param("root", WritebackRoot.fields.root) },
-		writeback_deliver_input_libhnkibecamc: { root: param("root", WritebackRoot.fields.root) },
-		writeback_writeback_input_ljafdhfgfeocc: { root: param("root", WritebackRoot.fields.root) },
-		writeback_deliver_output_ppecogpmgbpek: { root: param("root", WritebackRoot.fields.root) },
-		writeback_writeback_finish_output_mhjodpondhejh: {
-			root: param("root", WritebackRoot.fields.root)
-		}
+		WritebackDeliverInput: { root: param("root", WritebackRoot.fields.root) },
+		WritebackWritebackInput: { root: param("root", WritebackRoot.fields.root) },
+		WritebackDeliverOutput: { root: param("root", WritebackRoot.fields.root) },
+		WritebackWritebackFinishOutput: { root: param("root", WritebackRoot.fields.root) }
 	})
 })
 
@@ -639,14 +628,14 @@ export const writebackCommitPrograms = Object.freeze({
 			.insert(WritebackResult, [])
 			.insert(WritebackDone, [])
 			.insert(WritebackHeld, [])
-			.insert(writeback_deliver_output_ppecogpmgbpek, []),
+			.insert(WritebackDeliverOutput, []),
 		declaredFlow.kinds[0].writes.changes(Loader)
 	),
 	writebackCommitWritebackFinish: ChangeSet.empty(writebackGraph)
 		.insert(WritebackResult, [])
 		.insert(WritebackDone, [])
 		.insert(WritebackHeld, [])
-		.insert(writeback_writeback_finish_output_mhjodpondhejh, [])
+		.insert(WritebackWritebackFinishOutput, [])
 })
 
 export const writebackCommits = workload(Loader, writebackCommitPrograms)

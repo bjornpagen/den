@@ -49,8 +49,8 @@ import { review } from "#integration/slice/flows.ts"
 import {
 	ReviewPausable,
 	ReviewResource,
-	review_review_run_input_hpdfjnehnkdig,
-	review_review_run_input_sizes_fmllfmbfdoojd
+	ReviewReviewRunInput,
+	ReviewReviewRunInputSizes
 } from "#integration/slice/generated/review.fragment.ts"
 import type {
 	ReviewScope,
@@ -59,13 +59,13 @@ import type {
 	ReviewFinish,
 	ReviewStartStep,
 	ReviewStartScope,
-	review_analyze_input_aobppbhebnkae,
-	review_gather_input_eiadkjkkdoiel,
-	review_gather_input_sizes_ifjkkjdhlfbgp,
-	review_save_input_njbdjgekhblef,
-	review_questions_input_jigaomgjefjfk,
-	review_split_fnhnebdnlfmck,
-	review_saved_bppbpjmhcjbaa,
+	ReviewAnalyzeInput,
+	ReviewGatherInput,
+	ReviewGatherInputSizes,
+	ReviewSaveInput,
+	ReviewQuestionsInput,
+	ReviewSplit,
+	ReviewSaved,
 	ReviewKind,
 	ReviewRootKind
 } from "#integration/slice/generated/review.fragment.ts"
@@ -76,18 +76,18 @@ import type {
 	reviewCommitPrograms
 } from "#integration/slice/generated/review.programs.ts"
 
-/** The codec text of each declared field of review_review_run_input_hpdfjnehnkdig, a request's input row, bound once (grizzle's codecText). */
-const review_review_run_input_hpdfjnehnkdigTexts = Object.freeze({
-	review: codecText(review_review_run_input_hpdfjnehnkdig.fields.review)
+/** The codec text of each declared field of ReviewReviewRunInput, a request's input row, bound once (grizzle's codecText). */
+const reviewReviewRunInputTexts = Object.freeze({
+	review: codecText(ReviewReviewRunInput.fields.review)
 })
-/** The codec text of each declared field of review_review_run_input_sizes_fmllfmbfdoojd, a request's input row, bound once (grizzle's codecText). */
-const review_review_run_input_sizes_fmllfmbfdoojdTexts = Object.freeze({
-	ordinal: codecText(review_review_run_input_sizes_fmllfmbfdoojd.fields.ordinal),
-	value: codecText(review_review_run_input_sizes_fmllfmbfdoojd.fields.value)
+/** The codec text of each declared field of ReviewReviewRunInputSizes, a request's input row, bound once (grizzle's codecText). */
+const reviewReviewRunInputSizesTexts = Object.freeze({
+	ordinal: codecText(ReviewReviewRunInputSizes.fields.ordinal),
+	value: codecText(ReviewReviewRunInputSizes.fields.value)
 })
 /** The fingerprint of root kind ReviewRun's input heading, taken once. */
 const reviewReviewRunHeading = inputFingerprint(
-	'57:37:review_review_run_input_hpdfjnehnkdig14:6:review4:Text88:43:review_review_run_input_sizes_fmllfmbfdoojd18:7:ordinal7:natural18:5:value9:pg.bigint569:6:digest557:[...pipe([{ scope: scope, root: scope, review: input.review }], Arr.flatMap((row) => [Result.succeed("review_review_run_input_hpdfjnehnkdig"), review_review_run_input_hpdfjnehnkdigTexts.review(row.review)])), ...pipe(Arr.map(input.sizes, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("review_review_run_input_sizes_fmllfmbfdoojd"), review_review_run_input_sizes_fmllfmbfdoojdTexts.ordinal(row.ordinal), review_review_run_input_sizes_fmllfmbfdoojdTexts.value(row.value)]))]'
+	'40:20:ReviewReviewRunInput14:6:review4:Text70:25:ReviewReviewRunInputSizes18:7:ordinal7:natural18:5:value9:pg.bigint481:6:digest469:[...pipe([{ scope: scope, root: scope, review: input.review }], Arr.flatMap((row) => [Result.succeed("ReviewReviewRunInput"), reviewReviewRunInputTexts.review(row.review)])), ...pipe(Arr.map(input.sizes, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("ReviewReviewRunInputSizes"), reviewReviewRunInputSizesTexts.ordinal(row.ordinal), reviewReviewRunInputSizesTexts.value(row.value)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
@@ -119,23 +119,13 @@ interface Rows {
 	readonly ReviewFinish: ReadonlyArray<Addition<typeof ReviewFinish>>
 	readonly ReviewStartStep: ReadonlyArray<Addition<typeof ReviewStartStep>>
 	readonly ReviewStartScope: ReadonlyArray<Addition<typeof ReviewStartScope>>
-	readonly review_analyze_input_aobppbhebnkae: ReadonlyArray<
-		Addition<typeof review_analyze_input_aobppbhebnkae>
-	>
-	readonly review_gather_input_eiadkjkkdoiel: ReadonlyArray<
-		Addition<typeof review_gather_input_eiadkjkkdoiel>
-	>
-	readonly review_gather_input_sizes_ifjkkjdhlfbgp: ReadonlyArray<
-		Addition<typeof review_gather_input_sizes_ifjkkjdhlfbgp>
-	>
-	readonly review_save_input_njbdjgekhblef: ReadonlyArray<
-		Addition<typeof review_save_input_njbdjgekhblef>
-	>
-	readonly review_questions_input_jigaomgjefjfk: ReadonlyArray<
-		Addition<typeof review_questions_input_jigaomgjefjfk>
-	>
-	readonly review_split_fnhnebdnlfmck: ReadonlyArray<Addition<typeof review_split_fnhnebdnlfmck>>
-	readonly review_saved_bppbpjmhcjbaa: ReadonlyArray<Addition<typeof review_saved_bppbpjmhcjbaa>>
+	readonly ReviewAnalyzeInput: ReadonlyArray<Addition<typeof ReviewAnalyzeInput>>
+	readonly ReviewGatherInput: ReadonlyArray<Addition<typeof ReviewGatherInput>>
+	readonly ReviewGatherInputSizes: ReadonlyArray<Addition<typeof ReviewGatherInputSizes>>
+	readonly ReviewSaveInput: ReadonlyArray<Addition<typeof ReviewSaveInput>>
+	readonly ReviewQuestionsInput: ReadonlyArray<Addition<typeof ReviewQuestionsInput>>
+	readonly ReviewSplit: ReadonlyArray<Addition<typeof ReviewSplit>>
+	readonly ReviewSaved: ReadonlyArray<Addition<typeof ReviewSaved>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -169,13 +159,13 @@ export const reviewLedger = (h: ReviewHandles) => {
 		ReviewFinish: [],
 		ReviewStartStep: [],
 		ReviewStartScope: [],
-		review_analyze_input_aobppbhebnkae: [],
-		review_gather_input_eiadkjkkdoiel: [],
-		review_gather_input_sizes_ifjkkjdhlfbgp: [],
-		review_save_input_njbdjgekhblef: [],
-		review_questions_input_jigaomgjefjfk: [],
-		review_split_fnhnebdnlfmck: [],
-		review_saved_bppbpjmhcjbaa: []
+		ReviewAnalyzeInput: [],
+		ReviewGatherInput: [],
+		ReviewGatherInputSizes: [],
+		ReviewSaveInput: [],
+		ReviewQuestionsInput: [],
+		ReviewSplit: [],
+		ReviewSaved: []
 	}
 	const nothingGrown: Grown = {
 		rows: noRows,
@@ -194,34 +184,13 @@ export const reviewLedger = (h: ReviewHandles) => {
 			ReviewFinish: [...a.rows.ReviewFinish, ...b.rows.ReviewFinish],
 			ReviewStartStep: [...a.rows.ReviewStartStep, ...b.rows.ReviewStartStep],
 			ReviewStartScope: [...a.rows.ReviewStartScope, ...b.rows.ReviewStartScope],
-			review_analyze_input_aobppbhebnkae: [
-				...a.rows.review_analyze_input_aobppbhebnkae,
-				...b.rows.review_analyze_input_aobppbhebnkae
-			],
-			review_gather_input_eiadkjkkdoiel: [
-				...a.rows.review_gather_input_eiadkjkkdoiel,
-				...b.rows.review_gather_input_eiadkjkkdoiel
-			],
-			review_gather_input_sizes_ifjkkjdhlfbgp: [
-				...a.rows.review_gather_input_sizes_ifjkkjdhlfbgp,
-				...b.rows.review_gather_input_sizes_ifjkkjdhlfbgp
-			],
-			review_save_input_njbdjgekhblef: [
-				...a.rows.review_save_input_njbdjgekhblef,
-				...b.rows.review_save_input_njbdjgekhblef
-			],
-			review_questions_input_jigaomgjefjfk: [
-				...a.rows.review_questions_input_jigaomgjefjfk,
-				...b.rows.review_questions_input_jigaomgjefjfk
-			],
-			review_split_fnhnebdnlfmck: [
-				...a.rows.review_split_fnhnebdnlfmck,
-				...b.rows.review_split_fnhnebdnlfmck
-			],
-			review_saved_bppbpjmhcjbaa: [
-				...a.rows.review_saved_bppbpjmhcjbaa,
-				...b.rows.review_saved_bppbpjmhcjbaa
-			]
+			ReviewAnalyzeInput: [...a.rows.ReviewAnalyzeInput, ...b.rows.ReviewAnalyzeInput],
+			ReviewGatherInput: [...a.rows.ReviewGatherInput, ...b.rows.ReviewGatherInput],
+			ReviewGatherInputSizes: [...a.rows.ReviewGatherInputSizes, ...b.rows.ReviewGatherInputSizes],
+			ReviewSaveInput: [...a.rows.ReviewSaveInput, ...b.rows.ReviewSaveInput],
+			ReviewQuestionsInput: [...a.rows.ReviewQuestionsInput, ...b.rows.ReviewQuestionsInput],
+			ReviewSplit: [...a.rows.ReviewSplit, ...b.rows.ReviewSplit],
+			ReviewSaved: [...a.rows.ReviewSaved, ...b.rows.ReviewSaved]
 		},
 		steps: [...a.steps, ...b.steps],
 		timed: [...a.timed, ...b.timed],
@@ -241,7 +210,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 					rows: {
 						...noRows,
 						ReviewStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						review_analyze_input_aobppbhebnkae: [
+						ReviewAnalyzeInput: [
 							{
 								step: key,
 								root: root,
@@ -271,18 +240,13 @@ export const reviewLedger = (h: ReviewHandles) => {
 					rows: {
 						...noRows,
 						ReviewStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						review_gather_input_eiadkjkkdoiel: [
-							{ step: key, root: root, review: spawn.input.review }
-						],
-						review_gather_input_sizes_ifjkkjdhlfbgp: Arr.map(
-							spawn.input.sizes,
-							(element, index) => ({
-								step: key,
-								root: root,
-								ordinal: BigInt(index),
-								value: element
-							})
-						)
+						ReviewGatherInput: [{ step: key, root: root, review: spawn.input.review }],
+						ReviewGatherInputSizes: Arr.map(spawn.input.sizes, (element, index) => ({
+							step: key,
+							root: root,
+							ordinal: BigInt(index),
+							value: element
+						}))
 					},
 					...spawnedOf(
 						{ step: key, kind: "Gather", scope: scope },
@@ -293,15 +257,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readreview_analyze_input_aobppbhebnkae = (root: Sha256, step: Sha256) =>
+	const readReviewAnalyzeInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.reviewReadreview_analyze_input_aobppbhebnkae.once({
-						params: { root, step },
-						facts: {}
-					})
-				),
+				settled(h.den.reviewReadReviewAnalyzeInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({
@@ -310,24 +269,14 @@ export const reviewLedger = (h: ReviewHandles) => {
 				question: found.question
 			}))
 		})
-	const readreview_gather_input_eiadkjkkdoiel = (root: Sha256, step: Sha256) =>
+	const readReviewGatherInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.reviewReadreview_gather_input_eiadkjkkdoiel.once({
-						params: { root, step },
-						facts: {}
-					})
-				),
+				settled(h.den.reviewReadReviewGatherInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			const family0 = yield* Effect.map(
-				settled(
-					h.den.reviewReadreview_gather_input_sizes_ifjkkjdhlfbgp.once({
-						params: { root, step },
-						facts: {}
-					})
-				),
+				settled(h.den.reviewReadReviewGatherInputSizes.once({ params: { root, step }, facts: {} })),
 				rowsOf
 			)
 			return Option.map(row, (found) => ({
@@ -335,15 +284,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 				sizes: Arr.map(ordered(family0), (e) => e.value)
 			}))
 		})
-	const readreview_save_input_njbdjgekhblef = (root: Sha256, step: Sha256) =>
+	const readReviewSaveInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.reviewReadreview_save_input_njbdjgekhblef.once({
-						params: { root, step },
-						facts: {}
-					})
-				),
+				settled(h.den.reviewReadReviewSaveInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({
@@ -353,15 +297,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 				total: found.total
 			}))
 		})
-	const readreview_questions_input_jigaomgjefjfk = (root: Sha256, scope: Sha256) =>
+	const readReviewQuestionsInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.reviewReadreview_questions_input_jigaomgjefjfk.once({
-						params: { root, scope },
-						facts: {}
-					})
-				),
+				settled(h.den.reviewReadReviewQuestionsInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({
@@ -370,23 +309,15 @@ export const reviewLedger = (h: ReviewHandles) => {
 				size: found.size
 			}))
 		})
-	const readreview_review_run_input_hpdfjnehnkdig = (root: Sha256, scope: Sha256) =>
+	const readReviewReviewRunInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.reviewReadreview_review_run_input_hpdfjnehnkdig.once({
-						params: { root, scope },
-						facts: {}
-					})
-				),
+				settled(h.den.reviewReadReviewReviewRunInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			const family0 = yield* Effect.map(
 				settled(
-					h.den.reviewReadreview_review_run_input_sizes_fmllfmbfdoojd.once({
-						params: { root, scope },
-						facts: {}
-					})
+					h.den.reviewReadReviewReviewRunInputSizes.once({ params: { root, scope }, facts: {} })
 				),
 				rowsOf
 			)
@@ -439,26 +370,23 @@ export const reviewLedger = (h: ReviewHandles) => {
 							reviewReviewRunScope: scope,
 							reviewReviewRunKey: key,
 							reviewReviewRunReviewScope: [{ scope, root: scope }],
-							reviewReviewRunreview_review_run_input_hpdfjnehnkdig: [
+							reviewReviewRunReviewReviewRunInput: [
 								{ scope: scope, root: scope, review: input.review }
 							],
-							reviewReviewRunreview_review_run_input_sizes_fmllfmbfdoojd: Arr.map(
-								input.sizes,
-								(element, index) => ({
-									scope: scope,
-									root: scope,
-									ordinal: BigInt(index),
-									value: element
-								})
-							),
+							reviewReviewRunReviewReviewRunInputSizes: Arr.map(input.sizes, (element, index) => ({
+								scope: scope,
+								root: scope,
+								ordinal: BigInt(index),
+								value: element
+							})),
 							reviewReviewRunReviewRequestedWith: Option.toArray(
 								Option.map(
 									codecTextsOf([
 										...pipe(
 											[{ scope: scope, root: scope, review: input.review }],
 											Arr.flatMap((row) => [
-												Result.succeed("review_review_run_input_hpdfjnehnkdig"),
-												review_review_run_input_hpdfjnehnkdigTexts.review(row.review)
+												Result.succeed("ReviewReviewRunInput"),
+												reviewReviewRunInputTexts.review(row.review)
 											])
 										),
 										...pipe(
@@ -469,9 +397,9 @@ export const reviewLedger = (h: ReviewHandles) => {
 												value: element
 											})),
 											Arr.flatMap((row) => [
-												Result.succeed("review_review_run_input_sizes_fmllfmbfdoojd"),
-												review_review_run_input_sizes_fmllfmbfdoojdTexts.ordinal(row.ordinal),
-												review_review_run_input_sizes_fmllfmbfdoojdTexts.value(row.value)
+												Result.succeed("ReviewReviewRunInputSizes"),
+												reviewReviewRunInputSizesTexts.ordinal(row.ordinal),
+												reviewReviewRunInputSizesTexts.value(row.value)
 											])
 										)
 									]),
@@ -495,7 +423,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		Analyze: runnerOf(
 			review.kinds[0],
 			{
-				input: ({ root, step }) => readreview_analyze_input_aobppbhebnkae(root, step),
+				input: ({ root, step }) => readReviewAnalyzeInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -510,7 +438,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 										ReviewHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										review_analyze_output_fhhkmphnmpkdm: [
+										ReviewAnalyzeOutput: [
 											{ step: done.turn.step, root: done.turn.root, score: done.output.score }
 										]
 									}
@@ -526,7 +454,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		Gather: runnerOf(
 			review.kinds[2],
 			{
-				input: ({ root, step }) => readreview_gather_input_eiadkjkkdoiel(root, step),
+				input: ({ root, step }) => readReviewGatherInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -551,7 +479,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 															],
 															ReviewAdmitted: [{ scope: key, root: done.turn.root }],
 															ReviewFinish: [{ scope: key, step: finish, root: done.turn.root }],
-															review_split_fnhnebdnlfmck: [
+															ReviewSplit: [
 																{
 																	from: done.turn.step,
 																	ordinal: BigInt(ordinal),
@@ -559,7 +487,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 																	root: done.turn.root
 																}
 															],
-															review_questions_input_jigaomgjefjfk: [
+															ReviewQuestionsInput: [
 																{
 																	scope: key,
 																	root: done.turn.root,
@@ -600,7 +528,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 										ReviewHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										review_gather_output_cgnhmechbiddp: [
+										ReviewGatherOutput: [
 											{ step: done.turn.step, root: done.turn.root, groups: done.output.groups }
 										]
 									}
@@ -616,7 +544,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		Save: runnerOf(
 			review.kinds[3],
 			{
-				input: ({ root, step }) => readreview_save_input_njbdjgekhblef(root, step),
+				input: ({ root, step }) => readReviewSaveInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -634,7 +562,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 											ReviewHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											review_save_output_falmopiohdlkl: [
+											ReviewSaveOutput: [
 												{ step: done.turn.step, root: done.turn.root, total: done.output.total }
 											]
 										}
@@ -673,7 +601,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readreview_questions_input_jigaomgjefjfk(root, scope)
+						const input = yield* readReviewQuestionsInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -744,7 +672,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 											pipe(edgeStep(done.turn.step, "Saved", ordinal), (key): Grown => ({
 												rows: {
 													...noRows,
-													review_saved_bppbpjmhcjbaa: [
+													ReviewSaved: [
 														{
 															from: done.turn.step,
 															ordinal: BigInt(ordinal),
@@ -752,7 +680,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 															root: done.turn.root
 														}
 													],
-													review_save_input_njbdjgekhblef: [
+													ReviewSaveInput: [
 														{
 															step: key,
 															root: done.turn.root,
@@ -787,7 +715,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 										ReviewHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										review_questions_finish_output_kddidbknbjeof: [
+										ReviewQuestionsFinishOutput: [
 											{
 												step: done.turn.step,
 												root: done.turn.root,
@@ -828,7 +756,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readreview_review_run_input_hpdfjnehnkdig(root, scope)
+						const input = yield* readReviewReviewRunInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -938,9 +866,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 											ReviewHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											review_review_run_finish_output_fbgeikbjoigci: [
-												{ step: done.turn.step, root: done.turn.root }
-											]
+											ReviewReviewRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 										}
 									},
 									done.writes.facts
@@ -960,7 +886,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 			precondition: review.kinds[4].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readreview_review_run_input_hpdfjnehnkdig(scope, scope)
+					const input = yield* readReviewReviewRunInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -987,13 +913,11 @@ export const reviewLedger = (h: ReviewHandles) => {
 									ReviewWithin: grown.rows.ReviewWithin,
 									ReviewStartStep: grown.rows.ReviewStartStep,
 									ReviewStartScope: grown.rows.ReviewStartScope,
-									review_analyze_input_aobppbhebnkae: grown.rows.review_analyze_input_aobppbhebnkae,
-									review_gather_input_eiadkjkkdoiel: grown.rows.review_gather_input_eiadkjkkdoiel,
-									review_gather_input_sizes_ifjkkjdhlfbgp:
-										grown.rows.review_gather_input_sizes_ifjkkjdhlfbgp,
-									review_save_input_njbdjgekhblef: grown.rows.review_save_input_njbdjgekhblef,
-									review_questions_input_jigaomgjefjfk:
-										grown.rows.review_questions_input_jigaomgjefjfk,
+									ReviewAnalyzeInput: grown.rows.ReviewAnalyzeInput,
+									ReviewGatherInput: grown.rows.ReviewGatherInput,
+									ReviewGatherInputSizes: grown.rows.ReviewGatherInputSizes,
+									ReviewSaveInput: grown.rows.ReviewSaveInput,
+									ReviewQuestionsInput: grown.rows.ReviewQuestionsInput,
 									ReviewAdmitted: admitted,
 									ReviewFinish: finishes
 								}

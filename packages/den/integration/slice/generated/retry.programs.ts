@@ -27,20 +27,20 @@ import {
 	RetryHeld,
 	RetryRefusal,
 	RetryExhausted,
-	retry_steadfast_input_ebanfagjeadim,
-	retry_brittle_input_jbcpaiekdedpp,
-	retry_polite_input_iopjdjgdhfide,
-	retry_patient_input_ndliolfjpjnoc,
-	retry_ladders_input_fkbbgblmfmhbi,
-	retry_throttled_input_bfjgfamhjmgcd,
-	retry_unhurried_input_mccbdnleajjif,
-	retry_steadfast_output_aacklbgjpefbn,
-	retry_brittle_output_bajcdgadpoeak,
-	retry_polite_output_nicaghgpaemah,
-	retry_patient_output_geoaicaaojcfl,
-	retry_ladders_finish_output_pgebkobjaoiih,
-	retry_throttled_finish_output_plgallgljmddo,
-	retry_unhurried_finish_output_oipogmdgcfehf,
+	RetrySteadfastInput,
+	RetryBrittleInput,
+	RetryPoliteInput,
+	RetryPatientInput,
+	RetryLaddersInput,
+	RetryThrottledInput,
+	RetryUnhurriedInput,
+	RetrySteadfastOutput,
+	RetryBrittleOutput,
+	RetryPoliteOutput,
+	RetryPatientOutput,
+	RetryLaddersFinishOutput,
+	RetryThrottledFinishOutput,
+	RetryUnhurriedFinishOutput,
 	RetryPaused,
 	RetryResumed,
 	RetryServed,
@@ -74,16 +74,16 @@ export const RetryDen = role(
 			"RetryHeld",
 			"RetryRefusal",
 			"RetryExhausted",
-			"retry_steadfast_input_ebanfagjeadim",
-			"retry_brittle_input_jbcpaiekdedpp",
-			"retry_polite_input_iopjdjgdhfide",
-			"retry_patient_input_ndliolfjpjnoc",
-			"retry_ladders_input_fkbbgblmfmhbi",
-			"retry_throttled_input_bfjgfamhjmgcd",
-			"retry_unhurried_input_mccbdnleajjif",
-			"retry_ladders_finish_output_pgebkobjaoiih",
-			"retry_throttled_finish_output_plgallgljmddo",
-			"retry_unhurried_finish_output_oipogmdgcfehf"
+			"RetrySteadfastInput",
+			"RetryBrittleInput",
+			"RetryPoliteInput",
+			"RetryPatientInput",
+			"RetryLaddersInput",
+			"RetryThrottledInput",
+			"RetryUnhurriedInput",
+			"RetryLaddersFinishOutput",
+			"RetryThrottledFinishOutput",
+			"RetryUnhurriedFinishOutput"
 		]
 	}
 )
@@ -232,10 +232,10 @@ export const retryDenPrograms = Object.freeze({
 			.insert(RetryFinish, [])
 			.insert(RetryStartStep, [])
 			.insert(RetryScope, [])
-			.insert(retry_steadfast_input_ebanfagjeadim, [])
-			.insert(retry_brittle_input_jbcpaiekdedpp, [])
-			.insert(retry_polite_input_iopjdjgdhfide, [])
-			.insert(retry_patient_input_ndliolfjpjnoc, [])
+			.insert(RetrySteadfastInput, [])
+			.insert(RetryBrittleInput, [])
+			.insert(RetryPoliteInput, [])
+			.insert(RetryPatientInput, [])
 			.insert(
 				RetryStep,
 				query(retryGraph).rule((r) => {
@@ -431,68 +431,53 @@ export const retryDenPrograms = Object.freeze({
 				.find({ target, turn })
 		})
 	}),
-	retryReadretry_steadfast_input_ebanfagjeadim: query(retryGraph).rule((r) => {
-		const { root, step, key } = v(
-			retry_steadfast_input_ebanfagjeadim,
-			"retry_steadfast_input_ebanfagjeadim"
-		)
+	retryReadRetrySteadfastInput: query(retryGraph).rule((r) => {
+		const { root, step, key } = v(RetrySteadfastInput, "retrySteadfastInput")
 		return r
-			.match(retry_steadfast_input_ebanfagjeadim, { root, step, key })
+			.match(RetrySteadfastInput, { root, step, key })
 			.where(
-				r.eq(root, r.param("root", retry_steadfast_input_ebanfagjeadim.fields.root)),
-				r.eq(step, r.param("step", retry_steadfast_input_ebanfagjeadim.fields.step))
+				r.eq(root, r.param("root", RetrySteadfastInput.fields.root)),
+				r.eq(step, r.param("step", RetrySteadfastInput.fields.step))
 			)
 			.find({ root, step, key })
 	}),
-	retryReadretry_brittle_input_jbcpaiekdedpp: query(retryGraph).rule((r) => {
-		const { root, step, key } = v(
-			retry_brittle_input_jbcpaiekdedpp,
-			"retry_brittle_input_jbcpaiekdedpp"
-		)
+	retryReadRetryBrittleInput: query(retryGraph).rule((r) => {
+		const { root, step, key } = v(RetryBrittleInput, "retryBrittleInput")
 		return r
-			.match(retry_brittle_input_jbcpaiekdedpp, { root, step, key })
+			.match(RetryBrittleInput, { root, step, key })
 			.where(
-				r.eq(root, r.param("root", retry_brittle_input_jbcpaiekdedpp.fields.root)),
-				r.eq(step, r.param("step", retry_brittle_input_jbcpaiekdedpp.fields.step))
+				r.eq(root, r.param("root", RetryBrittleInput.fields.root)),
+				r.eq(step, r.param("step", RetryBrittleInput.fields.step))
 			)
 			.find({ root, step, key })
 	}),
-	retryReadretry_polite_input_iopjdjgdhfide: query(retryGraph).rule((r) => {
-		const { root, step, key } = v(
-			retry_polite_input_iopjdjgdhfide,
-			"retry_polite_input_iopjdjgdhfide"
-		)
+	retryReadRetryPoliteInput: query(retryGraph).rule((r) => {
+		const { root, step, key } = v(RetryPoliteInput, "retryPoliteInput")
 		return r
-			.match(retry_polite_input_iopjdjgdhfide, { root, step, key })
+			.match(RetryPoliteInput, { root, step, key })
 			.where(
-				r.eq(root, r.param("root", retry_polite_input_iopjdjgdhfide.fields.root)),
-				r.eq(step, r.param("step", retry_polite_input_iopjdjgdhfide.fields.step))
+				r.eq(root, r.param("root", RetryPoliteInput.fields.root)),
+				r.eq(step, r.param("step", RetryPoliteInput.fields.step))
 			)
 			.find({ root, step, key })
 	}),
-	retryReadretry_patient_input_ndliolfjpjnoc: query(retryGraph).rule((r) => {
-		const { root, step, key } = v(
-			retry_patient_input_ndliolfjpjnoc,
-			"retry_patient_input_ndliolfjpjnoc"
-		)
+	retryReadRetryPatientInput: query(retryGraph).rule((r) => {
+		const { root, step, key } = v(RetryPatientInput, "retryPatientInput")
 		return r
-			.match(retry_patient_input_ndliolfjpjnoc, { root, step, key })
+			.match(RetryPatientInput, { root, step, key })
 			.where(
-				r.eq(root, r.param("root", retry_patient_input_ndliolfjpjnoc.fields.root)),
-				r.eq(step, r.param("step", retry_patient_input_ndliolfjpjnoc.fields.step))
+				r.eq(root, r.param("root", RetryPatientInput.fields.root)),
+				r.eq(step, r.param("step", RetryPatientInput.fields.step))
 			)
 			.find({ root, step, key })
 	}),
-	retryReadretry_ladders_input_fkbbgblmfmhbi: query(retryGraph).rule((r) => {
-		const { root, scope, steadfast, brittle } = v(
-			retry_ladders_input_fkbbgblmfmhbi,
-			"retry_ladders_input_fkbbgblmfmhbi"
-		)
+	retryReadRetryLaddersInput: query(retryGraph).rule((r) => {
+		const { root, scope, steadfast, brittle } = v(RetryLaddersInput, "retryLaddersInput")
 		return r
-			.match(retry_ladders_input_fkbbgblmfmhbi, { root, scope, steadfast, brittle })
+			.match(RetryLaddersInput, { root, scope, steadfast, brittle })
 			.where(
-				r.eq(root, r.param("root", retry_ladders_input_fkbbgblmfmhbi.fields.root)),
-				r.eq(scope, r.param("scope", retry_ladders_input_fkbbgblmfmhbi.fields.scope))
+				r.eq(root, r.param("root", RetryLaddersInput.fields.root)),
+				r.eq(scope, r.param("scope", RetryLaddersInput.fields.scope))
 			)
 			.find({ root, scope, steadfast, brittle })
 	}),
@@ -513,13 +498,13 @@ export const retryDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				retry_ladders_input_fkbbgblmfmhbi,
+				RetryLaddersInput,
 				query(retryGraph).rule((r) => {
-					const requested = r.relation("retryLaddersretry_ladders_input_fkbbgblmfmhbi", {
-						root: retry_ladders_input_fkbbgblmfmhbi.fields.root,
-						scope: retry_ladders_input_fkbbgblmfmhbi.fields.scope,
-						steadfast: retry_ladders_input_fkbbgblmfmhbi.fields.steadfast,
-						brittle: retry_ladders_input_fkbbgblmfmhbi.fields.brittle
+					const requested = r.relation("retryLaddersRetryLaddersInput", {
+						root: RetryLaddersInput.fields.root,
+						scope: RetryLaddersInput.fields.scope,
+						steadfast: RetryLaddersInput.fields.steadfast,
+						brittle: RetryLaddersInput.fields.brittle
 					})
 					const { root, scope, steadfast, brittle } = v(requested, "requested")
 					return r
@@ -585,10 +570,10 @@ export const retryDenPrograms = Object.freeze({
 	),
 	retryOutputsLaddersSteadfast: query(retryGraph).rule((r) => {
 		const { root, step, scope } = v(RetryStep, "step")
-		const { key } = v(retry_steadfast_output_aacklbgjpefbn, "output")
+		const { key } = v(RetrySteadfastOutput, "output")
 		return r
 			.match(RetryStep, { root, step, kind: "Steadfast", scope })
-			.match(retry_steadfast_output_aacklbgjpefbn, { root, step, key })
+			.match(RetrySteadfastOutput, { root, step, key })
 			.where(
 				r.eq(root, r.param("root", RetryScope.fields.root)),
 				r.eq(scope, r.param("scope", RetryScope.fields.scope))
@@ -597,10 +582,10 @@ export const retryDenPrograms = Object.freeze({
 	}),
 	retryInputsLaddersSteadfast: query(retryGraph).rule((r) => {
 		const { root, step, scope } = v(RetryStep, "step")
-		const { key } = v(retry_steadfast_input_ebanfagjeadim, "input")
+		const { key } = v(RetrySteadfastInput, "input")
 		return r
 			.match(RetryStep, { root, step, kind: "Steadfast", scope })
-			.match(retry_steadfast_input_ebanfagjeadim, { root, step, key })
+			.match(RetrySteadfastInput, { root, step, key })
 			.where(
 				r.eq(root, r.param("root", RetryScope.fields.root)),
 				r.eq(scope, r.param("scope", RetryScope.fields.scope))
@@ -620,10 +605,10 @@ export const retryDenPrograms = Object.freeze({
 	}),
 	retryOutputsLaddersBrittle: query(retryGraph).rule((r) => {
 		const { root, step, scope } = v(RetryStep, "step")
-		const { key } = v(retry_brittle_output_bajcdgadpoeak, "output")
+		const { key } = v(RetryBrittleOutput, "output")
 		return r
 			.match(RetryStep, { root, step, kind: "Brittle", scope })
-			.match(retry_brittle_output_bajcdgadpoeak, { root, step, key })
+			.match(RetryBrittleOutput, { root, step, key })
 			.where(
 				r.eq(root, r.param("root", RetryScope.fields.root)),
 				r.eq(scope, r.param("scope", RetryScope.fields.scope))
@@ -632,10 +617,10 @@ export const retryDenPrograms = Object.freeze({
 	}),
 	retryInputsLaddersBrittle: query(retryGraph).rule((r) => {
 		const { root, step, scope } = v(RetryStep, "step")
-		const { key } = v(retry_brittle_input_jbcpaiekdedpp, "input")
+		const { key } = v(RetryBrittleInput, "input")
 		return r
 			.match(RetryStep, { root, step, kind: "Brittle", scope })
-			.match(retry_brittle_input_jbcpaiekdedpp, { root, step, key })
+			.match(RetryBrittleInput, { root, step, key })
 			.where(
 				r.eq(root, r.param("root", RetryScope.fields.root)),
 				r.eq(scope, r.param("scope", RetryScope.fields.scope))
@@ -653,16 +638,13 @@ export const retryDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	retryReadretry_throttled_input_bfjgfamhjmgcd: query(retryGraph).rule((r) => {
-		const { root, scope, key } = v(
-			retry_throttled_input_bfjgfamhjmgcd,
-			"retry_throttled_input_bfjgfamhjmgcd"
-		)
+	retryReadRetryThrottledInput: query(retryGraph).rule((r) => {
+		const { root, scope, key } = v(RetryThrottledInput, "retryThrottledInput")
 		return r
-			.match(retry_throttled_input_bfjgfamhjmgcd, { root, scope, key })
+			.match(RetryThrottledInput, { root, scope, key })
 			.where(
-				r.eq(root, r.param("root", retry_throttled_input_bfjgfamhjmgcd.fields.root)),
-				r.eq(scope, r.param("scope", retry_throttled_input_bfjgfamhjmgcd.fields.scope))
+				r.eq(root, r.param("root", RetryThrottledInput.fields.root)),
+				r.eq(scope, r.param("scope", RetryThrottledInput.fields.scope))
 			)
 			.find({ root, scope, key })
 	}),
@@ -683,12 +665,12 @@ export const retryDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				retry_throttled_input_bfjgfamhjmgcd,
+				RetryThrottledInput,
 				query(retryGraph).rule((r) => {
-					const requested = r.relation("retryThrottledretry_throttled_input_bfjgfamhjmgcd", {
-						root: retry_throttled_input_bfjgfamhjmgcd.fields.root,
-						scope: retry_throttled_input_bfjgfamhjmgcd.fields.scope,
-						key: retry_throttled_input_bfjgfamhjmgcd.fields.key
+					const requested = r.relation("retryThrottledRetryThrottledInput", {
+						root: RetryThrottledInput.fields.root,
+						scope: RetryThrottledInput.fields.scope,
+						key: RetryThrottledInput.fields.key
 					})
 					const { root, scope, key } = v(requested, "requested")
 					return r
@@ -754,10 +736,10 @@ export const retryDenPrograms = Object.freeze({
 	),
 	retryOutputsThrottledPolite: query(retryGraph).rule((r) => {
 		const { root, step, scope } = v(RetryStep, "step")
-		const { key } = v(retry_polite_output_nicaghgpaemah, "output")
+		const { key } = v(RetryPoliteOutput, "output")
 		return r
 			.match(RetryStep, { root, step, kind: "Polite", scope })
-			.match(retry_polite_output_nicaghgpaemah, { root, step, key })
+			.match(RetryPoliteOutput, { root, step, key })
 			.where(
 				r.eq(root, r.param("root", RetryScope.fields.root)),
 				r.eq(scope, r.param("scope", RetryScope.fields.scope))
@@ -766,10 +748,10 @@ export const retryDenPrograms = Object.freeze({
 	}),
 	retryInputsThrottledPolite: query(retryGraph).rule((r) => {
 		const { root, step, scope } = v(RetryStep, "step")
-		const { key } = v(retry_polite_input_iopjdjgdhfide, "input")
+		const { key } = v(RetryPoliteInput, "input")
 		return r
 			.match(RetryStep, { root, step, kind: "Polite", scope })
-			.match(retry_polite_input_iopjdjgdhfide, { root, step, key })
+			.match(RetryPoliteInput, { root, step, key })
 			.where(
 				r.eq(root, r.param("root", RetryScope.fields.root)),
 				r.eq(scope, r.param("scope", RetryScope.fields.scope))
@@ -787,16 +769,13 @@ export const retryDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	retryReadretry_unhurried_input_mccbdnleajjif: query(retryGraph).rule((r) => {
-		const { root, scope, key } = v(
-			retry_unhurried_input_mccbdnleajjif,
-			"retry_unhurried_input_mccbdnleajjif"
-		)
+	retryReadRetryUnhurriedInput: query(retryGraph).rule((r) => {
+		const { root, scope, key } = v(RetryUnhurriedInput, "retryUnhurriedInput")
 		return r
-			.match(retry_unhurried_input_mccbdnleajjif, { root, scope, key })
+			.match(RetryUnhurriedInput, { root, scope, key })
 			.where(
-				r.eq(root, r.param("root", retry_unhurried_input_mccbdnleajjif.fields.root)),
-				r.eq(scope, r.param("scope", retry_unhurried_input_mccbdnleajjif.fields.scope))
+				r.eq(root, r.param("root", RetryUnhurriedInput.fields.root)),
+				r.eq(scope, r.param("scope", RetryUnhurriedInput.fields.scope))
 			)
 			.find({ root, scope, key })
 	}),
@@ -817,12 +796,12 @@ export const retryDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				retry_unhurried_input_mccbdnleajjif,
+				RetryUnhurriedInput,
 				query(retryGraph).rule((r) => {
-					const requested = r.relation("retryUnhurriedretry_unhurried_input_mccbdnleajjif", {
-						root: retry_unhurried_input_mccbdnleajjif.fields.root,
-						scope: retry_unhurried_input_mccbdnleajjif.fields.scope,
-						key: retry_unhurried_input_mccbdnleajjif.fields.key
+					const requested = r.relation("retryUnhurriedRetryUnhurriedInput", {
+						root: RetryUnhurriedInput.fields.root,
+						scope: RetryUnhurriedInput.fields.scope,
+						key: RetryUnhurriedInput.fields.key
 					})
 					const { root, scope, key } = v(requested, "requested")
 					return r
@@ -888,10 +867,10 @@ export const retryDenPrograms = Object.freeze({
 	),
 	retryOutputsUnhurriedPatient: query(retryGraph).rule((r) => {
 		const { root, step, scope } = v(RetryStep, "step")
-		const { key } = v(retry_patient_output_geoaicaaojcfl, "output")
+		const { key } = v(RetryPatientOutput, "output")
 		return r
 			.match(RetryStep, { root, step, kind: "Patient", scope })
-			.match(retry_patient_output_geoaicaaojcfl, { root, step, key })
+			.match(RetryPatientOutput, { root, step, key })
 			.where(
 				r.eq(root, r.param("root", RetryScope.fields.root)),
 				r.eq(scope, r.param("scope", RetryScope.fields.scope))
@@ -900,10 +879,10 @@ export const retryDenPrograms = Object.freeze({
 	}),
 	retryInputsUnhurriedPatient: query(retryGraph).rule((r) => {
 		const { root, step, scope } = v(RetryStep, "step")
-		const { key } = v(retry_patient_input_ndliolfjpjnoc, "input")
+		const { key } = v(RetryPatientInput, "input")
 		return r
 			.match(RetryStep, { root, step, kind: "Patient", scope })
-			.match(retry_patient_input_ndliolfjpjnoc, { root, step, key })
+			.match(RetryPatientInput, { root, step, key })
 			.where(
 				r.eq(root, r.param("root", RetryScope.fields.root)),
 				r.eq(scope, r.param("scope", RetryScope.fields.scope))
@@ -980,20 +959,20 @@ export const RetryRetirer = role(
 			"RetryHeld",
 			"RetryRefusal",
 			"RetryExhausted",
-			"retry_steadfast_input_ebanfagjeadim",
-			"retry_brittle_input_jbcpaiekdedpp",
-			"retry_polite_input_iopjdjgdhfide",
-			"retry_patient_input_ndliolfjpjnoc",
-			"retry_ladders_input_fkbbgblmfmhbi",
-			"retry_throttled_input_bfjgfamhjmgcd",
-			"retry_unhurried_input_mccbdnleajjif",
-			"retry_steadfast_output_aacklbgjpefbn",
-			"retry_brittle_output_bajcdgadpoeak",
-			"retry_polite_output_nicaghgpaemah",
-			"retry_patient_output_geoaicaaojcfl",
-			"retry_ladders_finish_output_pgebkobjaoiih",
-			"retry_throttled_finish_output_plgallgljmddo",
-			"retry_unhurried_finish_output_oipogmdgcfehf"
+			"RetrySteadfastInput",
+			"RetryBrittleInput",
+			"RetryPoliteInput",
+			"RetryPatientInput",
+			"RetryLaddersInput",
+			"RetryThrottledInput",
+			"RetryUnhurriedInput",
+			"RetrySteadfastOutput",
+			"RetryBrittleOutput",
+			"RetryPoliteOutput",
+			"RetryPatientOutput",
+			"RetryLaddersFinishOutput",
+			"RetryThrottledFinishOutput",
+			"RetryUnhurriedFinishOutput"
 		]
 	}
 )
@@ -1016,20 +995,20 @@ export const retryRetirerPrograms = Object.freeze({
 		RetryHeld: { root: param("root", RetryRoot.fields.root) },
 		RetryRefusal: { root: param("root", RetryRoot.fields.root) },
 		RetryExhausted: { root: param("root", RetryRoot.fields.root) },
-		retry_steadfast_input_ebanfagjeadim: { root: param("root", RetryRoot.fields.root) },
-		retry_brittle_input_jbcpaiekdedpp: { root: param("root", RetryRoot.fields.root) },
-		retry_polite_input_iopjdjgdhfide: { root: param("root", RetryRoot.fields.root) },
-		retry_patient_input_ndliolfjpjnoc: { root: param("root", RetryRoot.fields.root) },
-		retry_ladders_input_fkbbgblmfmhbi: { root: param("root", RetryRoot.fields.root) },
-		retry_throttled_input_bfjgfamhjmgcd: { root: param("root", RetryRoot.fields.root) },
-		retry_unhurried_input_mccbdnleajjif: { root: param("root", RetryRoot.fields.root) },
-		retry_steadfast_output_aacklbgjpefbn: { root: param("root", RetryRoot.fields.root) },
-		retry_brittle_output_bajcdgadpoeak: { root: param("root", RetryRoot.fields.root) },
-		retry_polite_output_nicaghgpaemah: { root: param("root", RetryRoot.fields.root) },
-		retry_patient_output_geoaicaaojcfl: { root: param("root", RetryRoot.fields.root) },
-		retry_ladders_finish_output_pgebkobjaoiih: { root: param("root", RetryRoot.fields.root) },
-		retry_throttled_finish_output_plgallgljmddo: { root: param("root", RetryRoot.fields.root) },
-		retry_unhurried_finish_output_oipogmdgcfehf: { root: param("root", RetryRoot.fields.root) }
+		RetrySteadfastInput: { root: param("root", RetryRoot.fields.root) },
+		RetryBrittleInput: { root: param("root", RetryRoot.fields.root) },
+		RetryPoliteInput: { root: param("root", RetryRoot.fields.root) },
+		RetryPatientInput: { root: param("root", RetryRoot.fields.root) },
+		RetryLaddersInput: { root: param("root", RetryRoot.fields.root) },
+		RetryThrottledInput: { root: param("root", RetryRoot.fields.root) },
+		RetryUnhurriedInput: { root: param("root", RetryRoot.fields.root) },
+		RetrySteadfastOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryBrittleOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryPoliteOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryPatientOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryLaddersFinishOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryThrottledFinishOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryUnhurriedFinishOutput: { root: param("root", RetryRoot.fields.root) }
 	})
 })
 
@@ -1046,28 +1025,28 @@ export const retryCommitPrograms = Object.freeze({
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
-		.insert(retry_steadfast_output_aacklbgjpefbn, []),
+		.insert(RetrySteadfastOutput, []),
 	retryCommitBrittle: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
-		.insert(retry_brittle_output_bajcdgadpoeak, []),
+		.insert(RetryBrittleOutput, []),
 	retryCommitPolite: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
-		.insert(retry_polite_output_nicaghgpaemah, []),
+		.insert(RetryPoliteOutput, []),
 	retryCommitPatient: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
-		.insert(retry_patient_output_geoaicaaojcfl, []),
+		.insert(RetryPatientOutput, []),
 	retryCommitLaddersFinish: ChangeSet.union(
 		ChangeSet.empty(retryGraph)
 			.insert(RetryResult, [])
 			.insert(RetryDone, [])
 			.insert(RetryHeld, [])
-			.insert(retry_ladders_finish_output_pgebkobjaoiih, []),
+			.insert(RetryLaddersFinishOutput, []),
 		declaredFlow.kinds[2].finish.writes.changes(Loader)
 	),
 	retryCommitThrottledFinish: ChangeSet.union(
@@ -1075,7 +1054,7 @@ export const retryCommitPrograms = Object.freeze({
 			.insert(RetryResult, [])
 			.insert(RetryDone, [])
 			.insert(RetryHeld, [])
-			.insert(retry_throttled_finish_output_plgallgljmddo, []),
+			.insert(RetryThrottledFinishOutput, []),
 		declaredFlow.kinds[4].finish.writes.changes(Loader)
 	),
 	retryCommitUnhurriedFinish: ChangeSet.union(
@@ -1083,7 +1062,7 @@ export const retryCommitPrograms = Object.freeze({
 			.insert(RetryResult, [])
 			.insert(RetryDone, [])
 			.insert(RetryHeld, [])
-			.insert(retry_unhurried_finish_output_oipogmdgcfehf, []),
+			.insert(RetryUnhurriedFinishOutput, []),
 		declaredFlow.kinds[6].finish.writes.changes(Loader)
 	)
 })

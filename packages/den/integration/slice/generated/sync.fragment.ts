@@ -4,6 +4,7 @@ import {
 	closed,
 	closedId,
 	contained,
+	derivedName,
 	fragment,
 	key,
 	mutable,
@@ -106,46 +107,44 @@ export const SyncExhausted = relation("SyncExhausted", { root: sha256, step: sha
 	"root",
 	"step"
 ])
-export const sync_copy_input_fijfgeannmgef = relation(
-	"sync_copy_input_fijfgeannmgef",
+export const SyncCopyInput = derivedName({ stem: "Sync", path: ["CopyInput"] }).relation(
+	"SyncCopyInput",
 	{ root: sha256, step: sha256, relation: Text, run: pg.bigint },
 	["root", "step"]
 )
-export const sync_build_input_khidlilbdjpfi = relation(
-	"sync_build_input_khidlilbdjpfi",
+export const SyncBuildInput = derivedName({ stem: "Sync", path: ["BuildInput"] }).relation(
+	"SyncBuildInput",
 	{ root: sha256, step: sha256, build: pg.bigint },
 	["root", "step"]
 )
-export const sync_sync_run_input_kmejgmkijpoho = relation(
-	"sync_sync_run_input_kmejgmkijpoho",
+export const SyncSyncRunInput = derivedName({ stem: "Sync", path: ["SyncRunInput"] }).relation(
+	"SyncSyncRunInput",
 	{ root: sha256, scope: sha256, relation: Text, run: pg.bigint },
 	["root", "scope"]
 )
-export const sync_gold_input_edhkhlceilnoh = relation(
-	"sync_gold_input_edhkhlceilnoh",
+export const SyncGoldInput = derivedName({ stem: "Sync", path: ["GoldInput"] }).relation(
+	"SyncGoldInput",
 	{ root: sha256, scope: sha256, build: pg.bigint },
 	["root", "scope"]
 )
-export const sync_copy_output_cfficoloepjbj = relation(
-	"sync_copy_output_cfficoloepjbj",
+export const SyncCopyOutput = derivedName({ stem: "Sync", path: ["CopyOutput"] }).relation(
+	"SyncCopyOutput",
 	{ root: sha256, step: sha256, run: pg.bigint },
 	["root", "step"]
 )
-export const sync_build_output_ianmlfhgbcfli = relation(
-	"sync_build_output_ianmlfhgbcfli",
+export const SyncBuildOutput = derivedName({ stem: "Sync", path: ["BuildOutput"] }).relation(
+	"SyncBuildOutput",
 	{ root: sha256, step: sha256, build: pg.bigint },
 	["root", "step"]
 )
-export const sync_sync_run_finish_output_inlpehpebjlbl = relation(
-	"sync_sync_run_finish_output_inlpehpebjlbl",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
-export const sync_gold_finish_output_hkddafacepdaa = relation(
-	"sync_gold_finish_output_hkddafacepdaa",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
+export const SyncSyncRunFinishOutput = derivedName({
+	stem: "Sync",
+	path: ["SyncRunFinishOutput"]
+}).relation("SyncSyncRunFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
+export const SyncGoldFinishOutput = derivedName({
+	stem: "Sync",
+	path: ["GoldFinishOutput"]
+}).relation("SyncGoldFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
 export const SyncExclusive = relation(
 	"SyncExclusive",
 	{ kind: closedId(SyncRootKind), key: sha256, turn: natural, scope: sha256 },
@@ -199,14 +198,14 @@ export const syncGraph = fragment(
 		SyncHeld,
 		SyncRefusal,
 		SyncExhausted,
-		sync_copy_input_fijfgeannmgef,
-		sync_build_input_khidlilbdjpfi,
-		sync_sync_run_input_kmejgmkijpoho,
-		sync_gold_input_edhkhlceilnoh,
-		sync_copy_output_cfficoloepjbj,
-		sync_build_output_ianmlfhgbcfli,
-		sync_sync_run_finish_output_inlpehpebjlbl,
-		sync_gold_finish_output_hkddafacepdaa
+		SyncCopyInput,
+		SyncBuildInput,
+		SyncSyncRunInput,
+		SyncGoldInput,
+		SyncCopyOutput,
+		SyncBuildOutput,
+		SyncSyncRunFinishOutput,
+		SyncGoldFinishOutput
 	],
 	[
 		unit("DenRoot", { root: sha256 }),
@@ -273,7 +272,7 @@ export const syncGraph = fragment(
 			on(SyncRequestedWith, "root")
 		),
 		contained(
-			on(sync_copy_input_fijfgeannmgef, "root", "step"),
+			on(SyncCopyInput, "root", "step"),
 			on(
 				select(SyncStep, (row) => row.eq(row.kind, "Copy")),
 				"root",
@@ -281,7 +280,7 @@ export const syncGraph = fragment(
 			)
 		),
 		contained(
-			on(sync_build_input_khidlilbdjpfi, "root", "step"),
+			on(SyncBuildInput, "root", "step"),
 			on(
 				select(SyncStep, (row) => row.eq(row.kind, "Build")),
 				"root",
@@ -289,37 +288,25 @@ export const syncGraph = fragment(
 			)
 		),
 		contained(
-			on(sync_sync_run_input_kmejgmkijpoho, "scope"),
+			on(SyncSyncRunInput, "scope"),
 			on(
 				select(SyncRoot, (row) => row.eq(row.kind, "SyncRun")),
 				"root"
 			)
 		),
 		contained(
-			on(sync_gold_input_edhkhlceilnoh, "scope"),
+			on(SyncGoldInput, "scope"),
 			on(
 				select(SyncRoot, (row) => row.eq(row.kind, "Gold")),
 				"root"
 			)
 		),
-		contained(
-			on(sync_copy_output_cfficoloepjbj, "root", "step"),
-			on(sync_copy_input_fijfgeannmgef, "root", "step")
-		),
-		contained(on(sync_copy_output_cfficoloepjbj, "root", "step"), on(SyncDone, "root", "step")),
-		contained(
-			on(sync_build_output_ianmlfhgbcfli, "root", "step"),
-			on(sync_build_input_khidlilbdjpfi, "root", "step")
-		),
-		contained(on(sync_build_output_ianmlfhgbcfli, "root", "step"), on(SyncDone, "root", "step")),
-		contained(
-			on(sync_sync_run_finish_output_inlpehpebjlbl, "root", "step"),
-			on(SyncDone, "root", "step")
-		),
-		contained(
-			on(sync_gold_finish_output_hkddafacepdaa, "root", "step"),
-			on(SyncDone, "root", "step")
-		),
+		contained(on(SyncCopyOutput, "root", "step"), on(SyncCopyInput, "root", "step")),
+		contained(on(SyncCopyOutput, "root", "step"), on(SyncDone, "root", "step")),
+		contained(on(SyncBuildOutput, "root", "step"), on(SyncBuildInput, "root", "step")),
+		contained(on(SyncBuildOutput, "root", "step"), on(SyncDone, "root", "step")),
+		contained(on(SyncSyncRunFinishOutput, "root", "step"), on(SyncDone, "root", "step")),
+		contained(on(SyncGoldFinishOutput, "root", "step"), on(SyncDone, "root", "step")),
 		contained(on(SyncScope, "root"), on(SyncRoot, "root")),
 		mutable(SyncScope),
 		mutable(SyncExclusiveKey),
@@ -350,31 +337,22 @@ export const syncGraph = fragment(
 		mutable(SyncRefusal),
 		contained(on(SyncExhausted, "root", "step"), on(SyncStep, "root", "step")),
 		mutable(SyncExhausted),
-		contained(on(sync_copy_input_fijfgeannmgef, "root", "step"), on(SyncStep, "root", "step")),
-		mutable(sync_copy_input_fijfgeannmgef),
-		contained(on(sync_build_input_khidlilbdjpfi, "root", "step"), on(SyncStep, "root", "step")),
-		mutable(sync_build_input_khidlilbdjpfi),
-		contained(
-			on(sync_sync_run_input_kmejgmkijpoho, "root", "scope"),
-			on(SyncScope, "root", "scope")
-		),
-		mutable(sync_sync_run_input_kmejgmkijpoho),
-		contained(on(sync_gold_input_edhkhlceilnoh, "root", "scope"), on(SyncScope, "root", "scope")),
-		mutable(sync_gold_input_edhkhlceilnoh),
-		contained(on(sync_copy_output_cfficoloepjbj, "root", "step"), on(SyncStep, "root", "step")),
-		mutable(sync_copy_output_cfficoloepjbj),
-		contained(on(sync_build_output_ianmlfhgbcfli, "root", "step"), on(SyncStep, "root", "step")),
-		mutable(sync_build_output_ianmlfhgbcfli),
-		contained(
-			on(sync_sync_run_finish_output_inlpehpebjlbl, "root", "step"),
-			on(SyncStep, "root", "step")
-		),
-		mutable(sync_sync_run_finish_output_inlpehpebjlbl),
-		contained(
-			on(sync_gold_finish_output_hkddafacepdaa, "root", "step"),
-			on(SyncStep, "root", "step")
-		),
-		mutable(sync_gold_finish_output_hkddafacepdaa)
+		contained(on(SyncCopyInput, "root", "step"), on(SyncStep, "root", "step")),
+		mutable(SyncCopyInput),
+		contained(on(SyncBuildInput, "root", "step"), on(SyncStep, "root", "step")),
+		mutable(SyncBuildInput),
+		contained(on(SyncSyncRunInput, "root", "scope"), on(SyncScope, "root", "scope")),
+		mutable(SyncSyncRunInput),
+		contained(on(SyncGoldInput, "root", "scope"), on(SyncScope, "root", "scope")),
+		mutable(SyncGoldInput),
+		contained(on(SyncCopyOutput, "root", "step"), on(SyncStep, "root", "step")),
+		mutable(SyncCopyOutput),
+		contained(on(SyncBuildOutput, "root", "step"), on(SyncStep, "root", "step")),
+		mutable(SyncBuildOutput),
+		contained(on(SyncSyncRunFinishOutput, "root", "step"), on(SyncStep, "root", "step")),
+		mutable(SyncSyncRunFinishOutput),
+		contained(on(SyncGoldFinishOutput, "root", "step"), on(SyncStep, "root", "step")),
+		mutable(SyncGoldFinishOutput)
 	]
 )
 
@@ -408,8 +386,8 @@ export const syncWriter = [
 	"SyncResult",
 	"SyncDone",
 	"SyncHeld",
-	"sync_copy_output_cfficoloepjbj",
-	"sync_build_output_ianmlfhgbcfli",
-	"sync_sync_run_finish_output_inlpehpebjlbl",
-	"sync_gold_finish_output_hkddafacepdaa"
+	"SyncCopyOutput",
+	"SyncBuildOutput",
+	"SyncSyncRunFinishOutput",
+	"SyncGoldFinishOutput"
 ] as const

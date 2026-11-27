@@ -49,7 +49,7 @@ const recordingSlice = sliceCopyNeed(
 	"den requests: the slice with its hourly kind an operator's",
 	"clock",
 	lower(recording),
-	["clock_hourly_key_cnlgnmcbbcgma"]
+	["ClockHourlyKey"]
 )
 
 /**

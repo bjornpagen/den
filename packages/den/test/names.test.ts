@@ -1,4 +1,5 @@
 import {
+	type AnyRoster,
 	closedId,
 	conversionOf,
 	type FieldBase,
@@ -12,11 +13,20 @@ import {
 	sha256,
 	v
 } from "@bjornpagen/grizzle"
-import { lawsOf } from "@bjornpagen/grizzle/compile"
+import { installedIdentifiersOf, lawsOf } from "@bjornpagen/grizzle/compile"
 import * as Dynamic from "@bjornpagen/grizzle/dynamic"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
-import { array, element, type Gen, int, map, uniqueArray } from "@bjornpagen/testing/gen"
+import {
+	array,
+	constant,
+	element,
+	type Gen,
+	int,
+	map,
+	uniqueArray,
+	weighted
+} from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
@@ -53,39 +63,37 @@ import {
 } from "#algebra/kinds.ts"
 import { type FieldType, type Lowered, lower } from "#lower/fragment.ts"
 import { DenEnvironment, DenInstant, Text } from "#lower/keys.ts"
+import { type Placement, printBinding, printFragment } from "#lower/print.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
- * den's naming door (lower/names.ts): every name den derives from a flow's names takes one form, `<stem>_<digest>`, a
- * stem of its identity's segments cut to a fixed budget and a digest of its whole identity, whatever its length, so no
- * nesting and no length of a flow's names carries a name past PostgreSQL's 63 bytes; a flow's own singletons stay
- * readable, `<P><Word>`, and a flow whose name cannot hold den's words is refused at den's door, naming the flow, before
- * grizzle sees it; two identities never meet under one name; and a read's records are named by den at every attachment
- * path its query has (grizzle's recordPaths), records deriving none.
+ * den's naming door (lower/names.ts): every name den gives grizzle stays readable, the schema type's key and its row
+ * maps', which apps name in source: a flow's singletons `<P><Word>`, declared, refused at den's door, naming the flow,
+ * where they cannot fit; every other relation and roster name den composes from a flow's names (`<P><Step>Input`, an
+ * option's `<Relation><Field>`, an edge's `<P><Edge>`, a read's `<P><Step>Read<Read>`), of any length, held by grizzle's
+ * derived naming, its every identifier hashed, so no nesting and no length of a flow's names carries a PostgreSQL
+ * identifier past 63 bytes; two identities whose readable names meet are refused by den's census; and a read's records
+ * take the names grizzle derives, readable, their identifiers hashed too.
  *
  * Property: over drawn flows, a flow's name, its steps' names, their input fields' names and forms, their reads' names
- * and an edge's name each of one to six words drawn from a vocabulary whose words compose into one another (so a
- * readable concatenation of two identities' names can be one name) and run long, and each read's query nested to any of
- * the depths its box holds under attachments of long names: a flow whose name fits den's longest word beside it and
- * whose steps' names fit a roster's handle is lowered, never refused, and any other is refused at den's door, naming
- * the flow or the step; every name it lowers to, each attachment path's name among them, is admitted by grizzle's
- * declared-name rule; every name is the flow's singleton or of the one derived form, its conversion itself and its last
- * segment a digest; no two declarations share a conversion, each records' root (`${stem}Row`, grizzle's derived name)
- * among them; every attachment path of every read is named, and grizzle's dynamic door builds each read's records with
- * every relation beside the root named as den states; and a schema of every relation and roster the lowering names and
- * every read's records, their relations and laws, compiles through grizzle.
+ * and an edge's name each of one to six words drawn from a vocabulary whose words compose into one another (so two
+ * identities' readable names can meet) and run long, and each read's query nested to any of the depths its box holds:
+ * a flow whose name fits den's longest word beside it and whose steps' names fit a roster's handle is lowered or
+ * refused as two identities meeting, whose names the refusal names and whose conversions meet, and any other is
+ * refused at den's door, naming the flow or the step; a lowered flow names each kind's input and output, its edge and
+ * each read by the readable composition of their names; no identifier or row map's key den prints holds a digest; no
+ * two declarations share a conversion, each read's records' among them; and a schema of every relation and roster the
+ * lowering names, each by its naming, and every read's records compiles through grizzle with every PostgreSQL
+ * identifier it installs within 63 bytes.
  *
  * Kept case: metis's essay flow, whose item step reads the stimuli its item cites with each stimulus's document and the
  * document's scan nested under the citation (metis packages/essay-grading/src/documents.ts and reads.ts, delivery's
- * scannedDocument, pantry's documentScanOf), where den's readable composition named the deepest path
- * `EssayItemReadCitedDocumentScanDocumentRowDeclarationStandalone`, past PostgreSQL's bytes: it must reach that.
+ * scannedDocument, pantry's documentScanOf), where den's readable composition of the deepest records path,
+ * `EssayItemReadCitedDocumentScanDocumentRowDeclarationStandalone`, passes PostgreSQL's bytes: it must reach that.
  *
- * Oracle (specification): grizzle's declared-name rule (parseDeclaredName), its conversion (conversionOf), its
- * recordPaths and its compile of a schema (lawsOf), and the derived form the naming door states. Mutants it kills: a
- * derived name of its stem alone, the digest dropped (`name: Arr.join(stemOf(segments), "_")`), whose two identities of
- * one cut stem meet under one name and whose names hold no digest; and a derived name readable wherever it fits, hashed
- * only past the budget (`Arr.join(segments, "_").length <= stemBudget ? Arr.join(segments, "_") : …`), whose short
- * names hold no digest and whose readable concatenations of two identities meet.
+ * Oracle (specification): the readable compositions, grizzle's conversion and compile, and PostgreSQL's 63 bytes.
+ * Mutant it kills: the digest back in a derived name (`name: \`${name}_${digest}\``), which prints a digest into the
+ * fragment's identifiers and row maps' keys and names no kind's input by its composition.
  */
 
 /** The level the reads are over: the nodes of documents, one relation every query of the box reads. */
@@ -302,18 +310,14 @@ const built = (d: Drawn): AnyFlow => {
  */
 const longestWordBytes = Str.length("_requested_with")
 
-/** A derived name's digest: its last segment, thirteen letters from a to p. */
-const DIGEST = regex("^[a-p]{13}$")
+/** The census's refusal of two identities meeting: the conversion, and the two names. */
+const MET = regex("meet under the name (\\S+): (\\S+) and (\\S+)$")
 
-/** Whether a name is of the derived form: its conversion itself, its last segment a digest. */
-const derivedForm = (name: string): boolean =>
-	conversionOf(name) === name && DIGEST.test(Arr.lastNonEmpty(Str.split(name, "_")))
+/** A digest den once put in a derived name: an underscore and thirteen letters from a to p, closing a name. */
+const DIGESTED = regex("_[a-p]{13}(?![A-Za-z0-9_])")
 
 /** A field as grizzle declares it, for the schema that compiles the lowering's names. */
-const fieldExpr = (
-	type: FieldType,
-	rosters: ReadonlyMap<string, ReturnType<typeof Dynamic.closed.unordered>>
-): FieldBase => {
+const fieldExpr = (type: FieldType, rosters: ReadonlyMap<string, AnyRoster>): FieldBase => {
 	switch (type.kind) {
 		case "key":
 			return type.contract === "DenInstant" ? DenInstant : DenEnvironment
@@ -346,31 +350,94 @@ const fieldExpr = (
 	}
 }
 
-/** Every name a lowering gives grizzle's one namespace: its relations, rosters and each read's records'. */
-const namesOf = (lowered: Lowered): ReadonlyArray<string> => [
-	...Arr.map(lowered.relations, (r) => r.name),
-	...Arr.map(lowered.rosters, (r) => r.name),
-	...Arr.flatMap(Option.toArray(lowered.seats), (st) => [st.counts.name, st.live]),
-	...Arr.flatMap(lowered.steps, (s) =>
-		Arr.flatMap(s.reads, (read) => Arr.map(read.paths, (at) => at.name))
-	)
-]
+/** A roster as grizzle's dynamic door declares it, by its naming. */
+const rosterOf = (r: Lowered["rosters"][number]): AnyRoster => {
+	switch (r.naming.kind) {
+		case "declared":
+			return Dynamic.closed.unordered(r.name, r.handles)
+		case "derived":
+			return Dynamic.derivedName(r.naming).unordered(r.name, r.handles)
+	}
+}
+
+/** Where the probe prints a lowering's modules: printed, never loaded. */
+const placement: Placement = {
+	fragment: "#fragment.ts",
+	programs: "#programs.ts",
+	relations: "#relations.ts",
+	schema: { from: "#app.ts", name: "App" },
+	writer: { from: "#roles.ts", name: "Loader" },
+	flow: { from: "#flows.ts", name: "flow" },
+	reads: { from: "#reads.ts", exports: {} }
+}
 
 /** Whatever a lowering's names hold, checked against grizzle (see the module's doc); `what` names the case. */
-const namesHold = (declaredFlow: AnyFlow, lowered: Lowered, what: string): void => {
-	const names = namesOf(lowered)
-	const checks = Arr.flatMap(lowered.laws, (law) => (law.kind === "check" ? [law.name] : []))
-	Arr.forEach([...names, ...checks], (name) => {
-		const parsed = parseDeclaredName(name)
-		assert.isTrue(parsed.ok, `${what}: grizzle admits ${name}`)
-		assert.isTrue(
-			Str.startsWith(lowered.prefix)(name) || derivedForm(name),
-			`${what}: ${name} is the flow's singleton or of the derived form`
+const namesHold = (d: Drawn, declaredFlow: AnyFlow, lowered: Lowered, what: string): void => {
+	const P = d.flow
+	const relationNames = Arr.map(lowered.relations, (r) => r.name)
+	Arr.forEach(
+		[
+			`${P}${d.steps[0]}Input`,
+			`${P}${d.steps[0]}Output`,
+			`${P}${d.steps[1]}Input`,
+			`${P}${d.edge}`,
+			...Arr.map(d.reads, (read) => `${P}${d.steps[0]}Read${Str.capitalize(read.name)}`)
+		],
+		(expected) =>
+			assert.isTrue(
+				Arr.contains(relationNames, expected),
+				`${what}: den names ${expected} by its readable composition`
+			)
+	)
+	const printed = Arr.join(
+		[printFragment(lowered, placement), printBinding(lowered, placement)],
+		"\n"
+	)
+	assert.isFalse(
+		DIGESTED.test(printed),
+		`${what}: no printed identifier or row map's key names a digest`
+	)
+	const checks = Arr.flatMap(lowered.laws, (law) => (law.kind === "check" ? [law] : []))
+	Arr.forEach(checks, (check) =>
+		assert.isTrue(parseDeclaredName(check.name).ok, `${what}: grizzle admits ${check.name}`)
+	)
+	const rosters = new Map(Arr.map(lowered.rosters, (r) => [r.name, rosterOf(r)] as const))
+	const relations = Arr.map(lowered.relations, (r) => {
+		const fields = Rec.fromEntries(
+			Arr.map(r.fields, (f) => [f.name, fieldExpr(f.type, rosters)] as const)
 		)
-		assert.isAtMost(Str.length(conversionOf(name)), nameBytes, `${what}: ${name} fits`)
+		switch (r.naming.kind) {
+			case "declared":
+				return Dynamic.relation(r.name, fields, r.key)
+			case "derived":
+				return Dynamic.derivedName(r.naming).relation(r.name, fields, r.key)
+		}
 	})
+	const records = Arr.flatMap(stepsOf(declaredFlow.kinds), (kind) =>
+		Arr.flatMap(
+			kind.reads.kind === "query" ? Rec.toEntries(kind.reads.named) : [],
+			([readName, readQuery]) =>
+				Arr.flatMap(lowered.steps, (s) =>
+					s.name === kind.name
+						? Arr.flatMap(s.reads, (read) =>
+								read.name === readName
+									? [
+											Dynamic.records(read.stem, readQuery, { digest: sha256 }, ["digest"], {
+												names: {}
+											})
+										]
+									: []
+							)
+						: []
+				)
+		)
+	)
 	const conversions = Arr.map(
-		[...names, ...Arr.flatMap(lowered.steps, (s) => Arr.map(s.reads, (read) => `${read.stem}Row`))],
+		[
+			...relationNames,
+			...Arr.map(lowered.rosters, (r) => r.name),
+			...Arr.flatMap(records, (made) => Arr.map(made.relations, (r) => r.name))
+		],
 		conversionOf
 	)
 	assert.strictEqual(
@@ -378,51 +445,17 @@ const namesHold = (declaredFlow: AnyFlow, lowered: Lowered, what: string): void 
 		conversions.length,
 		`${what}: no two declarations meet under one name`
 	)
-	assert.strictEqual(Arr.dedupe(checks).length, checks.length, `${what}: no two checks meet`)
-	const records = Arr.flatMap(stepsOf(declaredFlow.kinds), (kind) =>
-		Arr.flatMap(
-			kind.reads.kind === "query" ? Rec.toEntries(kind.reads.named) : [],
-			([readName, readQuery]) =>
-				Arr.flatMap(lowered.steps, (s) =>
-					s.name === kind.name
-						? Arr.flatMap(s.reads, (read) => {
-								if (read.name !== readName) {
-									return []
-								}
-								assert.deepStrictEqual(
-									Arr.map(read.paths, (at) => at.path),
-									recordPaths(readQuery),
-									`${what}: every attachment path of ${readName} is named`
-								)
-								const made = Dynamic.records(read.stem, readQuery, { digest: sha256 }, ["digest"], {
-									names: Rec.fromEntries(Arr.map(read.paths, (at) => [at.path, at.name] as const))
-								})
-								assert.deepStrictEqual(
-									Arr.map(made.relations, (r) => r.name),
-									[`${read.stem}Row`, ...Arr.map(read.paths, (at) => at.name)],
-									`${what}: every relation of ${readName}'s records beside its root named as den states`
-								)
-								return [made]
-							})
-						: []
-				)
-		)
+	const level = schema(
+		"Names",
+		[...rosters.values(), ...relations, ...Arr.flatMap(records, (made) => made.relations)],
+		Arr.flatMap(records, (made) => made.rules)
 	)
-	const rosters = new Map(
-		Arr.map(lowered.rosters, (r) => [r.name, Dynamic.closed.unordered(r.name, r.handles)] as const)
-	)
-	const relations = Arr.map(lowered.relations, (r) =>
-		Dynamic.relation(
-			r.name,
-			Rec.fromEntries(Arr.map(r.fields, (f) => [f.name, fieldExpr(f.type, rosters)] as const)),
-			r.key
-		)
-	)
-	lawsOf(
-		schema(
-			"Names",
-			[...rosters.values(), ...relations, ...Arr.flatMap(records, (made) => made.relations)],
-			Arr.flatMap(records, (made) => made.rules)
+	lawsOf(level)
+	Arr.forEach(installedIdentifiersOf(level), ({ identifier, display }) =>
+		assert.isAtMost(
+			new TextEncoder().encode(identifier).length,
+			nameBytes,
+			`${what}: ${display}'s identifier ${identifier} fits PostgreSQL's`
 		)
 	)
 }
@@ -440,7 +473,10 @@ const fieldGen: Gen<string> = map(
 	(drawnWords) => Str.uncapitalize(Arr.join(Arr.map(drawnWords, Str.capitalize), ""))
 )
 
-/** A drawn flow (Drawn): every name of one to six words, the first step's reads each a query of the box. */
+/**
+ * A drawn flow (Drawn): every name of one to six words, the first step's reads each a query of the box, its edge named
+ * now and then as the first step's input, whose readable name the edge's relation meets.
+ */
 const drawnFlow: Gen<Drawn> = (source) => {
 	const first = source.draw(pascal(6))
 	return {
@@ -459,15 +495,21 @@ const drawnFlow: Gen<Drawn> = (source) => {
 				max: 2
 			})
 		),
-		edge: source.draw(pascal(6))
+		edge: source.draw(
+			weighted([
+				[3, pascal(6)],
+				[1, constant(`${first}Input`)]
+			])
+		)
 	}
 }
 
 type Feature =
 	| "refused at den's door"
+	| "two identities meeting under one name, refused"
 	| "lowered"
 	| "a read nested two levels or more"
-	| "a flow's step whose readable names pass the stem's budget"
+	| "a step whose readable names pass PostgreSQL's bytes"
 	| "a records path whose readable name passes PostgreSQL's bytes"
 
 /**
@@ -500,8 +542,18 @@ const lowersWithin = (d: Drawn, note: (feature: Feature) => void): Effect.Effect
 			})
 		)
 		if (lowering._tag === "Failure") {
-			note("refused at den's door")
 			const refused = lowering.failure
+			const met = Option.flatMap(refused, (r) => Option.fromNullishOr(MET.exec(r.why)))
+			if (Option.isSome(met)) {
+				const [, conversion, first, second] = met.value
+				assert.isTrue(
+					conversionOf(first) === conversion && conversionOf(second) === conversion,
+					`two identities refused only where their names meet: ${Formatter.format(refused)}`
+				)
+				note("two identities meeting under one name, refused")
+				return
+			}
+			note("refused at den's door")
 			assert.isTrue(
 				Option.exists(refused, (r) =>
 					Arr.contains(
@@ -519,7 +571,7 @@ const lowersWithin = (d: Drawn, note: (feature: Feature) => void): Effect.Effect
 			note("a read nested two levels or more")
 		}
 		if (Str.length(conversionOf(`${d.flow}${d.steps[0]}Output`)) > nameBytes) {
-			note("a flow's step whose readable names pass the stem's budget")
+			note("a step whose readable names pass PostgreSQL's bytes")
 		}
 		if (
 			Arr.some(d.reads, (read) =>
@@ -531,7 +583,7 @@ const lowersWithin = (d: Drawn, note: (feature: Feature) => void): Effect.Effect
 		) {
 			note("a records path whose readable name passes PostgreSQL's bytes")
 		}
-		namesHold(lowering.success.declaredFlow, lowering.success.lowered, Formatter.format(d))
+		namesHold(d, lowering.success.declaredFlow, lowering.success.lowered, Formatter.format(d))
 	})
 
 /** The kept case's flow: metis's essay grading, its item step reading its citations with their scans nested. */
@@ -554,16 +606,17 @@ it.effect(
 					suite: "den's names",
 					oracle: {
 						kind: "specification",
-						name: "grizzle's declared-name rule, conversion, recordPaths and compile, and the derived form"
+						name: "the readable compositions, grizzle's conversion and compile, and PostgreSQL's 63 bytes"
 					},
 					draw: drawn(drawnFlow),
 					literal: Formatter.format,
 					coverage: required<Feature>(
 						[
 							"refused at den's door",
+							"two identities meeting under one name, refused",
 							"lowered",
 							"a read nested two levels or more",
-							"a flow's step whose readable names pass the stem's budget",
+							"a step whose readable names pass PostgreSQL's bytes",
 							"a records path whose readable name passes PostgreSQL's bytes"
 						],
 						{ cases: 60, sense: notesOnly }

@@ -4,6 +4,7 @@ import {
 	closed,
 	closedId,
 	contained,
+	derivedName,
 	fragment,
 	key,
 	mutable,
@@ -118,26 +119,31 @@ export const WritebackExhausted = relation("WritebackExhausted", { root: sha256,
 	"root",
 	"step"
 ])
-export const writeback_deliver_input_libhnkibecamc = relation(
-	"writeback_deliver_input_libhnkibecamc",
-	{ root: sha256, step: sha256, attempt: Text },
-	["root", "step"]
-)
-export const writeback_writeback_input_ljafdhfgfeocc = relation(
-	"writeback_writeback_input_ljafdhfgfeocc",
-	{ root: sha256, scope: sha256, attempt: Text },
-	["root", "scope"]
-)
-export const writeback_deliver_output_ppecogpmgbpek = relation(
-	"writeback_deliver_output_ppecogpmgbpek",
-	{ root: sha256, step: sha256, attempt: Text },
-	["root", "step"]
-)
-export const writeback_writeback_finish_output_mhjodpondhejh = relation(
-	"writeback_writeback_finish_output_mhjodpondhejh",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
+export const WritebackDeliverInput = derivedName({
+	stem: "Writeback",
+	path: ["DeliverInput"]
+}).relation("WritebackDeliverInput", { root: sha256, step: sha256, attempt: Text }, [
+	"root",
+	"step"
+])
+export const WritebackWritebackInput = derivedName({
+	stem: "Writeback",
+	path: ["WritebackInput"]
+}).relation("WritebackWritebackInput", { root: sha256, scope: sha256, attempt: Text }, [
+	"root",
+	"scope"
+])
+export const WritebackDeliverOutput = derivedName({
+	stem: "Writeback",
+	path: ["DeliverOutput"]
+}).relation("WritebackDeliverOutput", { root: sha256, step: sha256, attempt: Text }, [
+	"root",
+	"step"
+])
+export const WritebackWritebackFinishOutput = derivedName({
+	stem: "Writeback",
+	path: ["WritebackFinishOutput"]
+}).relation("WritebackWritebackFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
 export const WritebackPaused = relation(
 	"WritebackPaused",
 	{ target: closedId(WritebackPausable), turn: natural },
@@ -180,10 +186,10 @@ export const writebackGraph = fragment(
 		WritebackHeld,
 		WritebackRefusal,
 		WritebackExhausted,
-		writeback_deliver_input_libhnkibecamc,
-		writeback_writeback_input_ljafdhfgfeocc,
-		writeback_deliver_output_ppecogpmgbpek,
-		writeback_writeback_finish_output_mhjodpondhejh
+		WritebackDeliverInput,
+		WritebackWritebackInput,
+		WritebackDeliverOutput,
+		WritebackWritebackFinishOutput
 	],
 	[
 		unit("DenRoot", { root: sha256 }),
@@ -254,7 +260,7 @@ export const writebackGraph = fragment(
 			on(WritebackRequestedWith, "root")
 		),
 		contained(
-			on(writeback_deliver_input_libhnkibecamc, "root", "step"),
+			on(WritebackDeliverInput, "root", "step"),
 			on(
 				select(WritebackStep, (row) => row.eq(row.kind, "Deliver")),
 				"root",
@@ -262,22 +268,19 @@ export const writebackGraph = fragment(
 			)
 		),
 		contained(
-			on(writeback_writeback_input_ljafdhfgfeocc, "scope"),
+			on(WritebackWritebackInput, "scope"),
 			on(
 				select(WritebackRoot, (row) => row.eq(row.kind, "Writeback")),
 				"root"
 			)
 		),
 		contained(
-			on(writeback_deliver_output_ppecogpmgbpek, "root", "step"),
-			on(writeback_deliver_input_libhnkibecamc, "root", "step")
+			on(WritebackDeliverOutput, "root", "step"),
+			on(WritebackDeliverInput, "root", "step")
 		),
+		contained(on(WritebackDeliverOutput, "root", "step"), on(WritebackDone, "root", "step")),
 		contained(
-			on(writeback_deliver_output_ppecogpmgbpek, "root", "step"),
-			on(WritebackDone, "root", "step")
-		),
-		contained(
-			on(writeback_writeback_finish_output_mhjodpondhejh, "root", "step"),
+			on(WritebackWritebackFinishOutput, "root", "step"),
 			on(WritebackDone, "root", "step")
 		),
 		contained(on(WritebackScope, "root"), on(WritebackRoot, "root")),
@@ -309,26 +312,17 @@ export const writebackGraph = fragment(
 		mutable(WritebackRefusal),
 		contained(on(WritebackExhausted, "root", "step"), on(WritebackStep, "root", "step")),
 		mutable(WritebackExhausted),
+		contained(on(WritebackDeliverInput, "root", "step"), on(WritebackStep, "root", "step")),
+		mutable(WritebackDeliverInput),
+		contained(on(WritebackWritebackInput, "root", "scope"), on(WritebackScope, "root", "scope")),
+		mutable(WritebackWritebackInput),
+		contained(on(WritebackDeliverOutput, "root", "step"), on(WritebackStep, "root", "step")),
+		mutable(WritebackDeliverOutput),
 		contained(
-			on(writeback_deliver_input_libhnkibecamc, "root", "step"),
+			on(WritebackWritebackFinishOutput, "root", "step"),
 			on(WritebackStep, "root", "step")
 		),
-		mutable(writeback_deliver_input_libhnkibecamc),
-		contained(
-			on(writeback_writeback_input_ljafdhfgfeocc, "root", "scope"),
-			on(WritebackScope, "root", "scope")
-		),
-		mutable(writeback_writeback_input_ljafdhfgfeocc),
-		contained(
-			on(writeback_deliver_output_ppecogpmgbpek, "root", "step"),
-			on(WritebackStep, "root", "step")
-		),
-		mutable(writeback_deliver_output_ppecogpmgbpek),
-		contained(
-			on(writeback_writeback_finish_output_mhjodpondhejh, "root", "step"),
-			on(WritebackStep, "root", "step")
-		),
-		mutable(writeback_writeback_finish_output_mhjodpondhejh)
+		mutable(WritebackWritebackFinishOutput)
 	]
 )
 
@@ -355,6 +349,6 @@ export const writebackWriter = [
 	"WritebackResult",
 	"WritebackDone",
 	"WritebackHeld",
-	"writeback_deliver_output_ppecogpmgbpek",
-	"writeback_writeback_finish_output_mhjodpondhejh"
+	"WritebackDeliverOutput",
+	"WritebackWritebackFinishOutput"
 ] as const

@@ -5,6 +5,7 @@ import {
 	closedId,
 	contained,
 	contract,
+	derivedName,
 	fragment,
 	key,
 	mintOf,
@@ -33,18 +34,18 @@ export const ChainRootKind = closed.unordered("ChainRootKind", ["ChainRun", "Ord
 export const ChainOutcome = closed.unordered("ChainOutcome", ["done", "failed"])
 export const ChainRetryWhy = closed.unordered("ChainRetryWhy", ["spent", "transient", "later"])
 export const ChainPausable = closed.unordered("ChainPausable", ["ChainRun", "Ordered"])
-export const chain_page_input_feed_nlhfmgjplihkf = closed.unordered(
-	"chain_page_input_feed_nlhfmgjplihkf",
+export const ChainPageInputFeed = derivedName({ stem: "Chain", path: ["PageInputFeed"] }).unordered(
+	"ChainPageInputFeed",
 	["news", "sport"]
 )
-export const chain_chain_run_input_feed_dcnlhjpledlkf = closed.unordered(
-	"chain_chain_run_input_feed_dcnlhjpledlkf",
-	["news", "sport"]
-)
-export const chain_ordered_input_feed_hbpmfpphpfngm = closed.unordered(
-	"chain_ordered_input_feed_hbpmfpphpfngm",
-	["news", "sport"]
-)
+export const ChainChainRunInputFeed = derivedName({
+	stem: "Chain",
+	path: ["ChainRunInputFeed"]
+}).unordered("ChainChainRunInputFeed", ["news", "sport"])
+export const ChainOrderedInputFeed = derivedName({
+	stem: "Chain",
+	path: ["OrderedInputFeed"]
+}).unordered("ChainOrderedInputFeed", ["news", "sport"])
 
 export const ChainScope = relation("ChainScope", { root: sha256, scope: sha256 }, ["root", "scope"])
 export const ChainRoot = relation(
@@ -118,79 +119,65 @@ export const ChainExhausted = relation("ChainExhausted", { root: sha256, step: s
 	"root",
 	"step"
 ])
-export const chain_page_input_jhliinhchcgno = relation(
-	"chain_page_input_jhliinhchcgno",
-	{
-		root: sha256,
-		step: sha256,
-		feed: closedId(chain_page_input_feed_nlhfmgjplihkf),
-		seq: Seq,
-		pages: pg.bigint
-	},
+export const ChainPageInput = derivedName({ stem: "Chain", path: ["PageInput"] }).relation(
+	"ChainPageInput",
+	{ root: sha256, step: sha256, feed: closedId(ChainPageInputFeed), seq: Seq, pages: pg.bigint },
 	["root", "step"]
 )
-export const chain_page_input_after_gdigbcabbnakb = relation(
-	"chain_page_input_after_gdigbcabbnakb",
-	{ root: sha256, step: sha256, value: Text },
-	["root", "step"]
-)
-export const chain_chain_run_input_glnkafcnkbnnn = relation(
-	"chain_chain_run_input_glnkafcnkbnnn",
-	{
-		root: sha256,
-		scope: sha256,
-		feed: closedId(chain_chain_run_input_feed_dcnlhjpledlkf),
-		pages: pg.bigint
-	},
+export const ChainPageInputAfter = derivedName({
+	stem: "Chain",
+	path: ["PageInputAfter"]
+}).relation("ChainPageInputAfter", { root: sha256, step: sha256, value: Text }, ["root", "step"])
+export const ChainChainRunInput = derivedName({ stem: "Chain", path: ["ChainRunInput"] }).relation(
+	"ChainChainRunInput",
+	{ root: sha256, scope: sha256, feed: closedId(ChainChainRunInputFeed), pages: pg.bigint },
 	["root", "scope"]
 )
-export const chain_ordered_input_pbjpmafopnahk = relation(
-	"chain_ordered_input_pbjpmafopnahk",
-	{
-		root: sha256,
-		scope: sha256,
-		feed: closedId(chain_ordered_input_feed_hbpmfpphpfngm),
-		pages: pg.bigint
-	},
+export const ChainOrderedInput = derivedName({ stem: "Chain", path: ["OrderedInput"] }).relation(
+	"ChainOrderedInput",
+	{ root: sha256, scope: sha256, feed: closedId(ChainOrderedInputFeed), pages: pg.bigint },
 	["root", "scope"]
 )
-export const chain_page_output_dniojohpmhcee = relation(
-	"chain_page_output_dniojohpmhcee",
+export const ChainPageOutput = derivedName({ stem: "Chain", path: ["PageOutput"] }).relation(
+	"ChainPageOutput",
 	{ root: sha256, step: sha256, seq: Seq, items: pg.bigint, earlier: pg.bigint },
 	["root", "step"]
 )
-export const chain_page_output_next_pocjijjpkpono = relation(
-	"chain_page_output_next_pocjijjpkpono",
-	{ root: sha256, step: sha256, value: Text },
-	["root", "step"]
-)
-export const chain_chain_run_finish_output_lhniobmdeemdb = relation(
-	"chain_chain_run_finish_output_lhniobmdeemdb",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
-export const chain_ordered_finish_output_nnemphmmfdblb = relation(
-	"chain_ordered_finish_output_nnemphmmfdblb",
-	{ root: sha256, step: sha256 },
-	["root", "step"]
-)
-export const chain_next_bbflpfpnlejpm = relation(
-	"chain_next_bbflpfpnlejpm",
+export const ChainPageOutputNext = derivedName({
+	stem: "Chain",
+	path: ["PageOutputNext"]
+}).relation("ChainPageOutputNext", { root: sha256, step: sha256, value: Text }, ["root", "step"])
+export const ChainChainRunFinishOutput = derivedName({
+	stem: "Chain",
+	path: ["ChainRunFinishOutput"]
+}).relation("ChainChainRunFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
+export const ChainOrderedFinishOutput = derivedName({
+	stem: "Chain",
+	path: ["OrderedFinishOutput"]
+}).relation("ChainOrderedFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
+export const ChainNext = derivedName({ stem: "Chain", path: ["Next"] }).relation(
+	"ChainNext",
 	{ root: sha256, from: sha256, ordinal: natural, to: sha256 },
 	["root", "from", "ordinal"]
 )
-export const chain_page_read_weights_agiabippcbobb = relation(
-	"chain_page_read_weights_agiabippcbobb",
+export const ChainPageReadWeights = derivedName({
+	stem: "Chain",
+	path: ["PageReadWeights"]
+}).relation(
+	"ChainPageReadWeights",
 	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
 	["root", "step", "ordinal"]
 )
-export const chain_page_read_earlier_dgehlbgebidjc = relation(
-	"chain_page_read_earlier_dgehlbgebidjc",
+export const ChainPageReadEarlier = derivedName({
+	stem: "Chain",
+	path: ["PageReadEarlier"]
+}).relation(
+	"ChainPageReadEarlier",
 	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
 	["root", "step", "ordinal"]
 )
-export const chain_page_read_tree_lakencnpkciin = relation(
-	"chain_page_read_tree_lakencnpkciin",
+export const ChainPageReadTree = derivedName({ stem: "Chain", path: ["PageReadTree"] }).relation(
+	"ChainPageReadTree",
 	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
 	["root", "step", "ordinal"]
 )
@@ -210,40 +197,32 @@ export const ChainServed = relation(
 	["environment", "at"]
 )
 
-/** The records of the rows step Page's read `weights` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, named by den, keyed by a row's digest alone, so every root that found a row shares it. */
-export const chain_page_read_weights_agiabippcbobbRecords = records(
-	"chain_page_read_weights_agiabippcbobb",
+/** The records of the rows step Page's read `weights` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */
+export const ChainPageReadWeightsRecords = records(
+	"ChainPageReadWeights",
 	PageReads.named.weights,
 	{ digest: sha256 },
 	["digest"]
 )
-export const chain_page_read_weights_agiabippcbobbRow =
-	chain_page_read_weights_agiabippcbobbRecords.row
+export const ChainPageReadWeightsRow = ChainPageReadWeightsRecords.row
 
-/** The records of the rows step Page's read `earlier` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, named by den, keyed by a row's digest alone, so every root that found a row shares it. */
-export const chain_page_read_earlier_dgehlbgebidjcRecords = records(
-	"chain_page_read_earlier_dgehlbgebidjc",
+/** The records of the rows step Page's read `earlier` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */
+export const ChainPageReadEarlierRecords = records(
+	"ChainPageReadEarlier",
 	PageReads.named.earlier,
 	{ digest: sha256 },
 	["digest"]
 )
-export const chain_page_read_earlier_dgehlbgebidjcRow =
-	chain_page_read_earlier_dgehlbgebidjcRecords.row
+export const ChainPageReadEarlierRow = ChainPageReadEarlierRecords.row
 
-/** The records of the rows step Page's read `tree` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, named by den, keyed by a row's digest alone, so every root that found a row shares it. */
-export const chain_page_read_tree_lakencnpkciinRecords = records(
-	"chain_page_read_tree_lakencnpkciin",
+/** The records of the rows step Page's read `tree` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */
+export const ChainPageReadTreeRecords = records(
+	"ChainPageReadTree",
 	PageReads.named.tree,
 	{ digest: sha256 },
-	["digest"],
-	{
-		names: {
-			items: "chain_page_read_tree_items_cokakfjlndgem",
-			"items.first": "chain_page_read_tree_items_first_ocgolceclfbii"
-		}
-	}
+	["digest"]
 )
-export const chain_page_read_tree_lakencnpkciinRow = chain_page_read_tree_lakencnpkciinRecords.row
+export const ChainPageReadTreeRow = ChainPageReadTreeRecords.row
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
 export const chainGraph = fragment(
@@ -253,9 +232,9 @@ export const chainGraph = fragment(
 		ChainOutcome,
 		ChainRetryWhy,
 		ChainPausable,
-		chain_page_input_feed_nlhfmgjplihkf,
-		chain_chain_run_input_feed_dcnlhjpledlkf,
-		chain_ordered_input_feed_hbpmfpphpfngm,
+		ChainPageInputFeed,
+		ChainChainRunInputFeed,
+		ChainOrderedInputFeed,
 		ChainScope,
 		ChainRoot,
 		ChainRequestedWith,
@@ -274,21 +253,21 @@ export const chainGraph = fragment(
 		ChainHeld,
 		ChainRefusal,
 		ChainExhausted,
-		chain_page_input_jhliinhchcgno,
-		chain_page_input_after_gdigbcabbnakb,
-		chain_chain_run_input_glnkafcnkbnnn,
-		chain_ordered_input_pbjpmafopnahk,
-		chain_page_output_dniojohpmhcee,
-		chain_page_output_next_pocjijjpkpono,
-		chain_chain_run_finish_output_lhniobmdeemdb,
-		chain_ordered_finish_output_nnemphmmfdblb,
-		chain_next_bbflpfpnlejpm,
-		chain_page_read_weights_agiabippcbobb,
-		chain_page_read_earlier_dgehlbgebidjc,
-		chain_page_read_tree_lakencnpkciin,
-		...chain_page_read_weights_agiabippcbobbRecords.relations,
-		...chain_page_read_earlier_dgehlbgebidjcRecords.relations,
-		...chain_page_read_tree_lakencnpkciinRecords.relations
+		ChainPageInput,
+		ChainPageInputAfter,
+		ChainChainRunInput,
+		ChainOrderedInput,
+		ChainPageOutput,
+		ChainPageOutputNext,
+		ChainChainRunFinishOutput,
+		ChainOrderedFinishOutput,
+		ChainNext,
+		ChainPageReadWeights,
+		ChainPageReadEarlier,
+		ChainPageReadTree,
+		...ChainPageReadWeightsRecords.relations,
+		...ChainPageReadEarlierRecords.relations,
+		...ChainPageReadTreeRecords.relations
 	],
 	[
 		unit("DenRoot", { root: sha256 }),
@@ -357,81 +336,42 @@ export const chainGraph = fragment(
 			on(ChainRequestedWith, "root")
 		),
 		contained(
-			on(chain_page_input_jhliinhchcgno, "root", "step"),
+			on(ChainPageInput, "root", "step"),
 			on(
 				select(ChainStep, (row) => row.eq(row.kind, "Page")),
 				"root",
 				"step"
 			)
 		),
+		contained(on(ChainPageInputAfter, "root", "step"), on(ChainPageInput, "root", "step")),
 		contained(
-			on(chain_page_input_after_gdigbcabbnakb, "root", "step"),
-			on(chain_page_input_jhliinhchcgno, "root", "step")
-		),
-		contained(
-			on(chain_chain_run_input_glnkafcnkbnnn, "scope"),
+			on(ChainChainRunInput, "scope"),
 			on(
 				select(ChainRoot, (row) => row.eq(row.kind, "ChainRun")),
 				"root"
 			)
 		),
 		contained(
-			on(chain_ordered_input_pbjpmafopnahk, "scope"),
+			on(ChainOrderedInput, "scope"),
 			on(
 				select(ChainRoot, (row) => row.eq(row.kind, "Ordered")),
 				"root"
 			)
 		),
-		contained(
-			on(chain_page_output_dniojohpmhcee, "root", "step"),
-			on(chain_page_input_jhliinhchcgno, "root", "step")
-		),
-		contained(on(chain_page_output_dniojohpmhcee, "root", "step"), on(ChainDone, "root", "step")),
-		contained(
-			on(chain_page_output_next_pocjijjpkpono, "root", "step"),
-			on(chain_page_output_dniojohpmhcee, "root", "step")
-		),
-		contained(
-			on(chain_chain_run_finish_output_lhniobmdeemdb, "root", "step"),
-			on(ChainDone, "root", "step")
-		),
-		contained(
-			on(chain_ordered_finish_output_nnemphmmfdblb, "root", "step"),
-			on(ChainDone, "root", "step")
-		),
-		contained(
-			on(chain_next_bbflpfpnlejpm, "root", "from"),
-			on(chain_page_output_dniojohpmhcee, "root", "step")
-		),
-		contained(
-			on(chain_next_bbflpfpnlejpm, "root", "to"),
-			on(chain_page_input_jhliinhchcgno, "root", "step")
-		),
-		key(on(chain_next_bbflpfpnlejpm, "root", "to")),
-		contained(
-			on(chain_page_read_weights_agiabippcbobb, "root", "step"),
-			on(ChainResult, "root", "step")
-		),
-		contained(
-			on(chain_page_read_weights_agiabippcbobb, "digest"),
-			on(chain_page_read_weights_agiabippcbobbRow, "digest")
-		),
-		contained(
-			on(chain_page_read_earlier_dgehlbgebidjc, "root", "step"),
-			on(ChainResult, "root", "step")
-		),
-		contained(
-			on(chain_page_read_earlier_dgehlbgebidjc, "digest"),
-			on(chain_page_read_earlier_dgehlbgebidjcRow, "digest")
-		),
-		contained(
-			on(chain_page_read_tree_lakencnpkciin, "root", "step"),
-			on(ChainResult, "root", "step")
-		),
-		contained(
-			on(chain_page_read_tree_lakencnpkciin, "digest"),
-			on(chain_page_read_tree_lakencnpkciinRow, "digest")
-		),
+		contained(on(ChainPageOutput, "root", "step"), on(ChainPageInput, "root", "step")),
+		contained(on(ChainPageOutput, "root", "step"), on(ChainDone, "root", "step")),
+		contained(on(ChainPageOutputNext, "root", "step"), on(ChainPageOutput, "root", "step")),
+		contained(on(ChainChainRunFinishOutput, "root", "step"), on(ChainDone, "root", "step")),
+		contained(on(ChainOrderedFinishOutput, "root", "step"), on(ChainDone, "root", "step")),
+		contained(on(ChainNext, "root", "from"), on(ChainPageOutput, "root", "step")),
+		contained(on(ChainNext, "root", "to"), on(ChainPageInput, "root", "step")),
+		key(on(ChainNext, "root", "to")),
+		contained(on(ChainPageReadWeights, "root", "step"), on(ChainResult, "root", "step")),
+		contained(on(ChainPageReadWeights, "digest"), on(ChainPageReadWeightsRow, "digest")),
+		contained(on(ChainPageReadEarlier, "root", "step"), on(ChainResult, "root", "step")),
+		contained(on(ChainPageReadEarlier, "digest"), on(ChainPageReadEarlierRow, "digest")),
+		contained(on(ChainPageReadTree, "root", "step"), on(ChainResult, "root", "step")),
+		contained(on(ChainPageReadTree, "digest"), on(ChainPageReadTreeRow, "digest")),
 		contained(on(ChainScope, "root"), on(ChainRoot, "root")),
 		mutable(ChainScope),
 		mutable(ChainAdmitted),
@@ -461,60 +401,33 @@ export const chainGraph = fragment(
 		mutable(ChainRefusal),
 		contained(on(ChainExhausted, "root", "step"), on(ChainStep, "root", "step")),
 		mutable(ChainExhausted),
-		contained(on(chain_page_input_jhliinhchcgno, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(chain_page_input_jhliinhchcgno),
-		contained(
-			on(chain_page_input_after_gdigbcabbnakb, "root", "step"),
-			on(ChainStep, "root", "step")
-		),
-		mutable(chain_page_input_after_gdigbcabbnakb),
-		contained(
-			on(chain_chain_run_input_glnkafcnkbnnn, "root", "scope"),
-			on(ChainScope, "root", "scope")
-		),
-		mutable(chain_chain_run_input_glnkafcnkbnnn),
-		contained(
-			on(chain_ordered_input_pbjpmafopnahk, "root", "scope"),
-			on(ChainScope, "root", "scope")
-		),
-		mutable(chain_ordered_input_pbjpmafopnahk),
-		contained(on(chain_page_output_dniojohpmhcee, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(chain_page_output_dniojohpmhcee),
-		contained(
-			on(chain_page_output_next_pocjijjpkpono, "root", "step"),
-			on(ChainStep, "root", "step")
-		),
-		mutable(chain_page_output_next_pocjijjpkpono),
-		contained(
-			on(chain_chain_run_finish_output_lhniobmdeemdb, "root", "step"),
-			on(ChainStep, "root", "step")
-		),
-		mutable(chain_chain_run_finish_output_lhniobmdeemdb),
-		contained(
-			on(chain_ordered_finish_output_nnemphmmfdblb, "root", "step"),
-			on(ChainStep, "root", "step")
-		),
-		mutable(chain_ordered_finish_output_nnemphmmfdblb),
-		contained(on(chain_next_bbflpfpnlejpm, "root", "from"), on(ChainStep, "root", "step")),
-		mutable(chain_next_bbflpfpnlejpm),
-		contained(
-			on(chain_page_read_weights_agiabippcbobb, "root", "step"),
-			on(ChainStep, "root", "step")
-		),
-		mutable(chain_page_read_weights_agiabippcbobb),
-		contained(
-			on(chain_page_read_earlier_dgehlbgebidjc, "root", "step"),
-			on(ChainStep, "root", "step")
-		),
-		mutable(chain_page_read_earlier_dgehlbgebidjc),
-		contained(
-			on(chain_page_read_tree_lakencnpkciin, "root", "step"),
-			on(ChainStep, "root", "step")
-		),
-		mutable(chain_page_read_tree_lakencnpkciin),
-		...chain_page_read_weights_agiabippcbobbRecords.rules,
-		...chain_page_read_earlier_dgehlbgebidjcRecords.rules,
-		...chain_page_read_tree_lakencnpkciinRecords.rules
+		contained(on(ChainPageInput, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainPageInput),
+		contained(on(ChainPageInputAfter, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainPageInputAfter),
+		contained(on(ChainChainRunInput, "root", "scope"), on(ChainScope, "root", "scope")),
+		mutable(ChainChainRunInput),
+		contained(on(ChainOrderedInput, "root", "scope"), on(ChainScope, "root", "scope")),
+		mutable(ChainOrderedInput),
+		contained(on(ChainPageOutput, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainPageOutput),
+		contained(on(ChainPageOutputNext, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainPageOutputNext),
+		contained(on(ChainChainRunFinishOutput, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainChainRunFinishOutput),
+		contained(on(ChainOrderedFinishOutput, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainOrderedFinishOutput),
+		contained(on(ChainNext, "root", "from"), on(ChainStep, "root", "step")),
+		mutable(ChainNext),
+		contained(on(ChainPageReadWeights, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainPageReadWeights),
+		contained(on(ChainPageReadEarlier, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainPageReadEarlier),
+		contained(on(ChainPageReadTree, "root", "step"), on(ChainStep, "root", "step")),
+		mutable(ChainPageReadTree),
+		...ChainPageReadWeightsRecords.rules,
+		...ChainPageReadEarlierRecords.rules,
+		...ChainPageReadTreeRecords.rules
 	]
 )
 
@@ -526,9 +439,9 @@ export const chainCoordination = fragment(
 		ChainOutcome,
 		ChainRetryWhy,
 		ChainPausable,
-		chain_page_input_feed_nlhfmgjplihkf,
-		chain_chain_run_input_feed_dcnlhjpledlkf,
-		chain_ordered_input_feed_hbpmfpphpfngm,
+		ChainPageInputFeed,
+		ChainChainRunInputFeed,
+		ChainOrderedInputFeed,
 		ChainPaused,
 		ChainResumed,
 		ChainServed
@@ -544,25 +457,25 @@ export const chainWriter = [
 	"ChainResult",
 	"ChainDone",
 	"ChainHeld",
-	"chain_page_output_dniojohpmhcee",
-	"chain_page_output_next_pocjijjpkpono",
-	"chain_chain_run_finish_output_lhniobmdeemdb",
-	"chain_ordered_finish_output_nnemphmmfdblb",
-	"chain_page_read_weights_agiabippcbobb",
-	"chain_page_read_earlier_dgehlbgebidjc",
-	"chain_page_read_tree_lakencnpkciin",
+	"ChainPageOutput",
+	"ChainPageOutputNext",
+	"ChainChainRunFinishOutput",
+	"ChainOrderedFinishOutput",
+	"ChainPageReadWeights",
+	"ChainPageReadEarlier",
+	"ChainPageReadTree",
 	"ChainStep",
 	"ChainScope",
 	"ChainAdmitted",
 	"ChainFinish",
 	"ChainStartStep",
-	"chain_page_input_jhliinhchcgno",
-	"chain_page_input_after_gdigbcabbnakb",
-	"chain_next_bbflpfpnlejpm",
-	"chain_ordered_input_pbjpmafopnahk",
+	"ChainPageInput",
+	"ChainPageInputAfter",
+	"ChainNext",
+	"ChainOrderedInput",
 	"ChainRequestedWith",
 	"ChainRoot",
-	...Arr.map(chain_page_read_weights_agiabippcbobbRecords.relations, (rel) => rel.name),
-	...Arr.map(chain_page_read_earlier_dgehlbgebidjcRecords.relations, (rel) => rel.name),
-	...Arr.map(chain_page_read_tree_lakencnpkciinRecords.relations, (rel) => rel.name)
+	...Arr.map(ChainPageReadWeightsRecords.relations, (rel) => rel.name),
+	...Arr.map(ChainPageReadEarlierRecords.relations, (rel) => rel.name),
+	...Arr.map(ChainPageReadTreeRecords.relations, (rel) => rel.name)
 ] as const

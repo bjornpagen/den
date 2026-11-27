@@ -28,14 +28,14 @@ import {
 	SyncHeld,
 	SyncRefusal,
 	SyncExhausted,
-	sync_copy_input_fijfgeannmgef,
-	sync_build_input_khidlilbdjpfi,
-	sync_sync_run_input_kmejgmkijpoho,
-	sync_gold_input_edhkhlceilnoh,
-	sync_copy_output_cfficoloepjbj,
-	sync_build_output_ianmlfhgbcfli,
-	sync_sync_run_finish_output_inlpehpebjlbl,
-	sync_gold_finish_output_hkddafacepdaa,
+	SyncCopyInput,
+	SyncBuildInput,
+	SyncSyncRunInput,
+	SyncGoldInput,
+	SyncCopyOutput,
+	SyncBuildOutput,
+	SyncSyncRunFinishOutput,
+	SyncGoldFinishOutput,
 	SyncExclusive,
 	SyncReleased,
 	SyncPaused,
@@ -81,12 +81,12 @@ export const SyncDen = role(
 			"SyncHeld",
 			"SyncRefusal",
 			"SyncExhausted",
-			"sync_copy_input_fijfgeannmgef",
-			"sync_build_input_khidlilbdjpfi",
-			"sync_sync_run_input_kmejgmkijpoho",
-			"sync_gold_input_edhkhlceilnoh",
-			"sync_sync_run_finish_output_inlpehpebjlbl",
-			"sync_gold_finish_output_hkddafacepdaa"
+			"SyncCopyInput",
+			"SyncBuildInput",
+			"SyncSyncRunInput",
+			"SyncGoldInput",
+			"SyncSyncRunFinishOutput",
+			"SyncGoldFinishOutput"
 		]
 	}
 )
@@ -242,8 +242,8 @@ export const syncDenPrograms = Object.freeze({
 			.insert(SyncFinish, [])
 			.insert(SyncStartStep, [])
 			.insert(SyncScope, [])
-			.insert(sync_copy_input_fijfgeannmgef, [])
-			.insert(sync_build_input_khidlilbdjpfi, [])
+			.insert(SyncCopyInput, [])
+			.insert(SyncBuildInput, [])
 			.insert(
 				SyncStep,
 				query(syncGraph).rule((r) => {
@@ -463,42 +463,33 @@ export const syncDenPrograms = Object.freeze({
 		}),
 		busyChain: syncBusyChainRead
 	}),
-	syncReadsync_copy_input_fijfgeannmgef: query(syncGraph).rule((r) => {
-		const { root, step, relation, run } = v(
-			sync_copy_input_fijfgeannmgef,
-			"sync_copy_input_fijfgeannmgef"
-		)
+	syncReadSyncCopyInput: query(syncGraph).rule((r) => {
+		const { root, step, relation, run } = v(SyncCopyInput, "syncCopyInput")
 		return r
-			.match(sync_copy_input_fijfgeannmgef, { root, step, relation, run })
+			.match(SyncCopyInput, { root, step, relation, run })
 			.where(
-				r.eq(root, r.param("root", sync_copy_input_fijfgeannmgef.fields.root)),
-				r.eq(step, r.param("step", sync_copy_input_fijfgeannmgef.fields.step))
+				r.eq(root, r.param("root", SyncCopyInput.fields.root)),
+				r.eq(step, r.param("step", SyncCopyInput.fields.step))
 			)
 			.find({ root, step, relation, run })
 	}),
-	syncReadsync_build_input_khidlilbdjpfi: query(syncGraph).rule((r) => {
-		const { root, step, build } = v(
-			sync_build_input_khidlilbdjpfi,
-			"sync_build_input_khidlilbdjpfi"
-		)
+	syncReadSyncBuildInput: query(syncGraph).rule((r) => {
+		const { root, step, build } = v(SyncBuildInput, "syncBuildInput")
 		return r
-			.match(sync_build_input_khidlilbdjpfi, { root, step, build })
+			.match(SyncBuildInput, { root, step, build })
 			.where(
-				r.eq(root, r.param("root", sync_build_input_khidlilbdjpfi.fields.root)),
-				r.eq(step, r.param("step", sync_build_input_khidlilbdjpfi.fields.step))
+				r.eq(root, r.param("root", SyncBuildInput.fields.root)),
+				r.eq(step, r.param("step", SyncBuildInput.fields.step))
 			)
 			.find({ root, step, build })
 	}),
-	syncReadsync_sync_run_input_kmejgmkijpoho: query(syncGraph).rule((r) => {
-		const { root, scope, relation, run } = v(
-			sync_sync_run_input_kmejgmkijpoho,
-			"sync_sync_run_input_kmejgmkijpoho"
-		)
+	syncReadSyncSyncRunInput: query(syncGraph).rule((r) => {
+		const { root, scope, relation, run } = v(SyncSyncRunInput, "syncSyncRunInput")
 		return r
-			.match(sync_sync_run_input_kmejgmkijpoho, { root, scope, relation, run })
+			.match(SyncSyncRunInput, { root, scope, relation, run })
 			.where(
-				r.eq(root, r.param("root", sync_sync_run_input_kmejgmkijpoho.fields.root)),
-				r.eq(scope, r.param("scope", sync_sync_run_input_kmejgmkijpoho.fields.scope))
+				r.eq(root, r.param("root", SyncSyncRunInput.fields.root)),
+				r.eq(scope, r.param("scope", SyncSyncRunInput.fields.scope))
 			)
 			.find({ root, scope, relation, run })
 	}),
@@ -535,13 +526,13 @@ export const syncDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				sync_sync_run_input_kmejgmkijpoho,
+				SyncSyncRunInput,
 				query(syncGraph).rule((r) => {
-					const requested = r.relation("syncSyncRunsync_sync_run_input_kmejgmkijpoho", {
-						root: sync_sync_run_input_kmejgmkijpoho.fields.root,
-						scope: sync_sync_run_input_kmejgmkijpoho.fields.scope,
-						relation: sync_sync_run_input_kmejgmkijpoho.fields.relation,
-						run: sync_sync_run_input_kmejgmkijpoho.fields.run
+					const requested = r.relation("syncSyncRunSyncSyncRunInput", {
+						root: SyncSyncRunInput.fields.root,
+						scope: SyncSyncRunInput.fields.scope,
+						relation: SyncSyncRunInput.fields.relation,
+						run: SyncSyncRunInput.fields.run
 					})
 					const { root, scope, relation, run } = v(requested, "requested")
 					return r
@@ -605,13 +596,13 @@ export const syncDenPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	syncReadsync_gold_input_edhkhlceilnoh: query(syncGraph).rule((r) => {
-		const { root, scope, build } = v(sync_gold_input_edhkhlceilnoh, "sync_gold_input_edhkhlceilnoh")
+	syncReadSyncGoldInput: query(syncGraph).rule((r) => {
+		const { root, scope, build } = v(SyncGoldInput, "syncGoldInput")
 		return r
-			.match(sync_gold_input_edhkhlceilnoh, { root, scope, build })
+			.match(SyncGoldInput, { root, scope, build })
 			.where(
-				r.eq(root, r.param("root", sync_gold_input_edhkhlceilnoh.fields.root)),
-				r.eq(scope, r.param("scope", sync_gold_input_edhkhlceilnoh.fields.scope))
+				r.eq(root, r.param("root", SyncGoldInput.fields.root)),
+				r.eq(scope, r.param("scope", SyncGoldInput.fields.scope))
 			)
 			.find({ root, scope, build })
 	}),
@@ -632,12 +623,12 @@ export const syncDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				sync_gold_input_edhkhlceilnoh,
+				SyncGoldInput,
 				query(syncGraph).rule((r) => {
-					const requested = r.relation("syncGoldsync_gold_input_edhkhlceilnoh", {
-						root: sync_gold_input_edhkhlceilnoh.fields.root,
-						scope: sync_gold_input_edhkhlceilnoh.fields.scope,
-						build: sync_gold_input_edhkhlceilnoh.fields.build
+					const requested = r.relation("syncGoldSyncGoldInput", {
+						root: SyncGoldInput.fields.root,
+						scope: SyncGoldInput.fields.scope,
+						build: SyncGoldInput.fields.build
 					})
 					const { root, scope, build } = v(requested, "requested")
 					return r
@@ -774,14 +765,14 @@ export const SyncRetirer = role(
 			"SyncHeld",
 			"SyncRefusal",
 			"SyncExhausted",
-			"sync_copy_input_fijfgeannmgef",
-			"sync_build_input_khidlilbdjpfi",
-			"sync_sync_run_input_kmejgmkijpoho",
-			"sync_gold_input_edhkhlceilnoh",
-			"sync_copy_output_cfficoloepjbj",
-			"sync_build_output_ianmlfhgbcfli",
-			"sync_sync_run_finish_output_inlpehpebjlbl",
-			"sync_gold_finish_output_hkddafacepdaa"
+			"SyncCopyInput",
+			"SyncBuildInput",
+			"SyncSyncRunInput",
+			"SyncGoldInput",
+			"SyncCopyOutput",
+			"SyncBuildOutput",
+			"SyncSyncRunFinishOutput",
+			"SyncGoldFinishOutput"
 		]
 	}
 )
@@ -805,14 +796,14 @@ export const syncRetirerPrograms = Object.freeze({
 		SyncHeld: { root: param("root", SyncRoot.fields.root) },
 		SyncRefusal: { root: param("root", SyncRoot.fields.root) },
 		SyncExhausted: { root: param("root", SyncRoot.fields.root) },
-		sync_copy_input_fijfgeannmgef: { root: param("root", SyncRoot.fields.root) },
-		sync_build_input_khidlilbdjpfi: { root: param("root", SyncRoot.fields.root) },
-		sync_sync_run_input_kmejgmkijpoho: { root: param("root", SyncRoot.fields.root) },
-		sync_gold_input_edhkhlceilnoh: { root: param("root", SyncRoot.fields.root) },
-		sync_copy_output_cfficoloepjbj: { root: param("root", SyncRoot.fields.root) },
-		sync_build_output_ianmlfhgbcfli: { root: param("root", SyncRoot.fields.root) },
-		sync_sync_run_finish_output_inlpehpebjlbl: { root: param("root", SyncRoot.fields.root) },
-		sync_gold_finish_output_hkddafacepdaa: { root: param("root", SyncRoot.fields.root) }
+		SyncCopyInput: { root: param("root", SyncRoot.fields.root) },
+		SyncBuildInput: { root: param("root", SyncRoot.fields.root) },
+		SyncSyncRunInput: { root: param("root", SyncRoot.fields.root) },
+		SyncGoldInput: { root: param("root", SyncRoot.fields.root) },
+		SyncCopyOutput: { root: param("root", SyncRoot.fields.root) },
+		SyncBuildOutput: { root: param("root", SyncRoot.fields.root) },
+		SyncSyncRunFinishOutput: { root: param("root", SyncRoot.fields.root) },
+		SyncGoldFinishOutput: { root: param("root", SyncRoot.fields.root) }
 	})
 })
 
@@ -830,7 +821,7 @@ export const syncCommitPrograms = Object.freeze({
 			.insert(SyncResult, [])
 			.insert(SyncDone, [])
 			.insert(SyncHeld, [])
-			.insert(sync_copy_output_cfficoloepjbj, []),
+			.insert(SyncCopyOutput, []),
 		declaredFlow.kinds[0].writes.changes(Loader)
 	),
 	syncCommitBuild: clocked(
@@ -839,7 +830,7 @@ export const syncCommitPrograms = Object.freeze({
 				.insert(SyncResult, [])
 				.insert(SyncDone, [])
 				.insert(SyncHeld, [])
-				.insert(sync_build_output_ianmlfhgbcfli, []),
+				.insert(SyncBuildOutput, []),
 			declaredFlow.kinds[2].writes.changes(Loader)
 		),
 		{ builtAt: "millis" },
@@ -849,12 +840,12 @@ export const syncCommitPrograms = Object.freeze({
 		.insert(SyncResult, [])
 		.insert(SyncDone, [])
 		.insert(SyncHeld, [])
-		.insert(sync_sync_run_finish_output_inlpehpebjlbl, []),
+		.insert(SyncSyncRunFinishOutput, []),
 	syncCommitGoldFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncDone, [])
 		.insert(SyncHeld, [])
-		.insert(sync_gold_finish_output_hkddafacepdaa, [])
+		.insert(SyncGoldFinishOutput, [])
 })
 
 export const syncCommits = workload(Loader, syncCommitPrograms)

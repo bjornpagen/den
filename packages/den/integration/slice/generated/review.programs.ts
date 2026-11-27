@@ -31,20 +31,20 @@ import {
 	ReviewHeld,
 	ReviewRefusal,
 	ReviewExhausted,
-	review_analyze_input_aobppbhebnkae,
-	review_gather_input_eiadkjkkdoiel,
-	review_gather_input_sizes_ifjkkjdhlfbgp,
-	review_save_input_njbdjgekhblef,
-	review_questions_input_jigaomgjefjfk,
-	review_review_run_input_hpdfjnehnkdig,
-	review_review_run_input_sizes_fmllfmbfdoojd,
-	review_analyze_output_fhhkmphnmpkdm,
-	review_gather_output_cgnhmechbiddp,
-	review_save_output_falmopiohdlkl,
-	review_questions_finish_output_kddidbknbjeof,
-	review_review_run_finish_output_fbgeikbjoigci,
-	review_split_fnhnebdnlfmck,
-	review_saved_bppbpjmhcjbaa,
+	ReviewAnalyzeInput,
+	ReviewGatherInput,
+	ReviewGatherInputSizes,
+	ReviewSaveInput,
+	ReviewQuestionsInput,
+	ReviewReviewRunInput,
+	ReviewReviewRunInputSizes,
+	ReviewAnalyzeOutput,
+	ReviewGatherOutput,
+	ReviewSaveOutput,
+	ReviewQuestionsFinishOutput,
+	ReviewReviewRunFinishOutput,
+	ReviewSplit,
+	ReviewSaved,
 	ReviewPaused,
 	ReviewResumed,
 	ReviewServed,
@@ -92,15 +92,15 @@ export const ReviewDen = role(
 			"ReviewHeld",
 			"ReviewRefusal",
 			"ReviewExhausted",
-			"review_analyze_input_aobppbhebnkae",
-			"review_gather_input_eiadkjkkdoiel",
-			"review_gather_input_sizes_ifjkkjdhlfbgp",
-			"review_save_input_njbdjgekhblef",
-			"review_questions_input_jigaomgjefjfk",
-			"review_review_run_input_hpdfjnehnkdig",
-			"review_review_run_input_sizes_fmllfmbfdoojd",
-			"review_questions_finish_output_kddidbknbjeof",
-			"review_review_run_finish_output_fbgeikbjoigci",
+			"ReviewAnalyzeInput",
+			"ReviewGatherInput",
+			"ReviewGatherInputSizes",
+			"ReviewSaveInput",
+			"ReviewQuestionsInput",
+			"ReviewReviewRunInput",
+			"ReviewReviewRunInputSizes",
+			"ReviewQuestionsFinishOutput",
+			"ReviewReviewRunFinishOutput",
 			"ReviewHold"
 		]
 	}
@@ -260,11 +260,11 @@ export const reviewDenPrograms = Object.freeze({
 			.insert(ReviewScope, [])
 			.insert(ReviewWithin, [])
 			.insert(ReviewStartScope, [])
-			.insert(review_analyze_input_aobppbhebnkae, [])
-			.insert(review_gather_input_eiadkjkkdoiel, [])
-			.insert(review_gather_input_sizes_ifjkkjdhlfbgp, [])
-			.insert(review_save_input_njbdjgekhblef, [])
-			.insert(review_questions_input_jigaomgjefjfk, [])
+			.insert(ReviewAnalyzeInput, [])
+			.insert(ReviewGatherInput, [])
+			.insert(ReviewGatherInputSizes, [])
+			.insert(ReviewSaveInput, [])
+			.insert(ReviewQuestionsInput, [])
 			.insert(
 				ReviewStep,
 				query(reviewGraph).rule((r) => {
@@ -496,9 +496,9 @@ export const reviewDenPrograms = Object.freeze({
 				.find({ target, turn })
 		}),
 		awaiting: query(ReviewDen).rule((r) => {
-			const { root, step, review } = v(review_gather_input_eiadkjkkdoiel, "input")
+			const { root, step, review } = v(ReviewGatherInput, "input")
 			return r
-				.match(review_gather_input_eiadkjkkdoiel, { root, step, review })
+				.match(ReviewGatherInput, { root, step, review })
 				.where(
 					r.not(ReviewResult, { root, step }),
 					r.not(App.relations.Delivered, { attempt: review })
@@ -507,9 +507,9 @@ export const reviewDenPrograms = Object.freeze({
 		})
 	}),
 	reviewAwaitingOf: query(ReviewDen).rule((r) => {
-		const { root, step, review } = v(review_gather_input_eiadkjkkdoiel, "input")
+		const { root, step, review } = v(ReviewGatherInput, "input")
 		return r
-			.match(review_gather_input_eiadkjkkdoiel, { root, step, review })
+			.match(ReviewGatherInput, { root, step, review })
 			.where(
 				r.eq(root, r.param("root", ReviewScope.fields.root)),
 				r.eq(step, r.param("step", ReviewStep.fields.step)),
@@ -519,81 +519,69 @@ export const reviewDenPrograms = Object.freeze({
 			.find({ root, step })
 	}),
 	reviewReady: query(ReviewDen).rule((r) => {
-		const { root, step, review } = v(review_gather_input_eiadkjkkdoiel, "input")
+		const { root, step, review } = v(ReviewGatherInput, "input")
 		return r
-			.match(review_gather_input_eiadkjkkdoiel, { root, step, review })
+			.match(ReviewGatherInput, { root, step, review })
 			.match(App.relations.Delivered, { attempt: review })
 			.where(r.not(ReviewResult, { root, step }), r.not(ReviewClaim, { root, step }))
 			.find({ root, step })
 	}),
-	reviewReadreview_analyze_input_aobppbhebnkae: query(reviewGraph).rule((r) => {
-		const { root, step, review, group, question } = v(
-			review_analyze_input_aobppbhebnkae,
-			"review_analyze_input_aobppbhebnkae"
-		)
+	reviewReadReviewAnalyzeInput: query(reviewGraph).rule((r) => {
+		const { root, step, review, group, question } = v(ReviewAnalyzeInput, "reviewAnalyzeInput")
 		return r
-			.match(review_analyze_input_aobppbhebnkae, { root, step, review, group, question })
+			.match(ReviewAnalyzeInput, { root, step, review, group, question })
 			.where(
-				r.eq(root, r.param("root", review_analyze_input_aobppbhebnkae.fields.root)),
-				r.eq(step, r.param("step", review_analyze_input_aobppbhebnkae.fields.step))
+				r.eq(root, r.param("root", ReviewAnalyzeInput.fields.root)),
+				r.eq(step, r.param("step", ReviewAnalyzeInput.fields.step))
 			)
 			.find({ root, step, review, group, question })
 	}),
-	reviewReadreview_gather_input_eiadkjkkdoiel: query(reviewGraph).rule((r) => {
-		const { root, step, review } = v(
-			review_gather_input_eiadkjkkdoiel,
-			"review_gather_input_eiadkjkkdoiel"
-		)
+	reviewReadReviewGatherInput: query(reviewGraph).rule((r) => {
+		const { root, step, review } = v(ReviewGatherInput, "reviewGatherInput")
 		return r
-			.match(review_gather_input_eiadkjkkdoiel, { root, step, review })
+			.match(ReviewGatherInput, { root, step, review })
 			.where(
-				r.eq(root, r.param("root", review_gather_input_eiadkjkkdoiel.fields.root)),
-				r.eq(step, r.param("step", review_gather_input_eiadkjkkdoiel.fields.step))
+				r.eq(root, r.param("root", ReviewGatherInput.fields.root)),
+				r.eq(step, r.param("step", ReviewGatherInput.fields.step))
 			)
 			.find({ root, step, review })
 	}),
-	reviewReadreview_gather_input_sizes_ifjkkjdhlfbgp: query(reviewGraph).rule((r) => {
-		const { root, step, ordinal, value } = v(review_gather_input_sizes_ifjkkjdhlfbgp, "part")
+	reviewReadReviewGatherInputSizes: query(reviewGraph).rule((r) => {
+		const { root, step, ordinal, value } = v(ReviewGatherInputSizes, "part")
 		return r
-			.match(review_gather_input_sizes_ifjkkjdhlfbgp, { root, step, ordinal, value })
+			.match(ReviewGatherInputSizes, { root, step, ordinal, value })
 			.where(
-				r.eq(root, r.param("root", review_gather_input_sizes_ifjkkjdhlfbgp.fields.root)),
-				r.eq(step, r.param("step", review_gather_input_sizes_ifjkkjdhlfbgp.fields.step))
+				r.eq(root, r.param("root", ReviewGatherInputSizes.fields.root)),
+				r.eq(step, r.param("step", ReviewGatherInputSizes.fields.step))
 			)
 			.find({ root, step, ordinal, value })
 	}),
-	reviewReadreview_save_input_njbdjgekhblef: query(reviewGraph).rule((r) => {
-		const { root, step, review, group, count, total } = v(
-			review_save_input_njbdjgekhblef,
-			"review_save_input_njbdjgekhblef"
-		)
+	reviewReadReviewSaveInput: query(reviewGraph).rule((r) => {
+		const { root, step, review, group, count, total } = v(ReviewSaveInput, "reviewSaveInput")
 		return r
-			.match(review_save_input_njbdjgekhblef, { root, step, review, group, count, total })
+			.match(ReviewSaveInput, { root, step, review, group, count, total })
 			.where(
-				r.eq(root, r.param("root", review_save_input_njbdjgekhblef.fields.root)),
-				r.eq(step, r.param("step", review_save_input_njbdjgekhblef.fields.step))
+				r.eq(root, r.param("root", ReviewSaveInput.fields.root)),
+				r.eq(step, r.param("step", ReviewSaveInput.fields.step))
 			)
 			.find({ root, step, review, group, count, total })
 	}),
-	reviewReadreview_questions_input_jigaomgjefjfk: query(reviewGraph).rule((r) => {
-		const { root, scope, review, group, size } = v(
-			review_questions_input_jigaomgjefjfk,
-			"review_questions_input_jigaomgjefjfk"
-		)
+	reviewReadReviewQuestionsInput: query(reviewGraph).rule((r) => {
+		const { root, scope, review, group, size } = v(ReviewQuestionsInput, "reviewQuestionsInput")
 		return r
-			.match(review_questions_input_jigaomgjefjfk, { root, scope, review, group, size })
+			.match(ReviewQuestionsInput, { root, scope, review, group, size })
 			.where(
-				r.eq(root, r.param("root", review_questions_input_jigaomgjefjfk.fields.root)),
-				r.eq(scope, r.param("scope", review_questions_input_jigaomgjefjfk.fields.scope))
+				r.eq(root, r.param("root", ReviewQuestionsInput.fields.root)),
+				r.eq(scope, r.param("scope", ReviewQuestionsInput.fields.scope))
 			)
 			.find({ root, scope, review, group, size })
 	}),
 	reviewOutputsQuestionsAnalyze: query(reviewGraph).rule((r) => {
 		const { root, step, scope } = v(ReviewStep, "step")
-		const { score } = v(review_analyze_output_fhhkmphnmpkdm, "output")
+		const { score } = v(ReviewAnalyzeOutput, "output")
 		return r
 			.match(ReviewStep, { root, step, kind: "Analyze", scope })
-			.match(review_analyze_output_fhhkmphnmpkdm, { root, step, score })
+			.match(ReviewAnalyzeOutput, { root, step, score })
 			.where(
 				r.eq(root, r.param("root", ReviewScope.fields.root)),
 				r.eq(scope, r.param("scope", ReviewScope.fields.scope))
@@ -602,10 +590,10 @@ export const reviewDenPrograms = Object.freeze({
 	}),
 	reviewInputsQuestionsAnalyze: query(reviewGraph).rule((r) => {
 		const { root, step, scope } = v(ReviewStep, "step")
-		const { review, group, question } = v(review_analyze_input_aobppbhebnkae, "input")
+		const { review, group, question } = v(ReviewAnalyzeInput, "input")
 		return r
 			.match(ReviewStep, { root, step, kind: "Analyze", scope })
-			.match(review_analyze_input_aobppbhebnkae, { root, step, review, group, question })
+			.match(ReviewAnalyzeInput, { root, step, review, group, question })
 			.where(
 				r.eq(root, r.param("root", ReviewScope.fields.root)),
 				r.eq(scope, r.param("scope", ReviewScope.fields.scope))
@@ -623,26 +611,23 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	reviewReadreview_review_run_input_hpdfjnehnkdig: query(reviewGraph).rule((r) => {
-		const { root, scope, review } = v(
-			review_review_run_input_hpdfjnehnkdig,
-			"review_review_run_input_hpdfjnehnkdig"
-		)
+	reviewReadReviewReviewRunInput: query(reviewGraph).rule((r) => {
+		const { root, scope, review } = v(ReviewReviewRunInput, "reviewReviewRunInput")
 		return r
-			.match(review_review_run_input_hpdfjnehnkdig, { root, scope, review })
+			.match(ReviewReviewRunInput, { root, scope, review })
 			.where(
-				r.eq(root, r.param("root", review_review_run_input_hpdfjnehnkdig.fields.root)),
-				r.eq(scope, r.param("scope", review_review_run_input_hpdfjnehnkdig.fields.scope))
+				r.eq(root, r.param("root", ReviewReviewRunInput.fields.root)),
+				r.eq(scope, r.param("scope", ReviewReviewRunInput.fields.scope))
 			)
 			.find({ root, scope, review })
 	}),
-	reviewReadreview_review_run_input_sizes_fmllfmbfdoojd: query(reviewGraph).rule((r) => {
-		const { root, scope, ordinal, value } = v(review_review_run_input_sizes_fmllfmbfdoojd, "part")
+	reviewReadReviewReviewRunInputSizes: query(reviewGraph).rule((r) => {
+		const { root, scope, ordinal, value } = v(ReviewReviewRunInputSizes, "part")
 		return r
-			.match(review_review_run_input_sizes_fmllfmbfdoojd, { root, scope, ordinal, value })
+			.match(ReviewReviewRunInputSizes, { root, scope, ordinal, value })
 			.where(
-				r.eq(root, r.param("root", review_review_run_input_sizes_fmllfmbfdoojd.fields.root)),
-				r.eq(scope, r.param("scope", review_review_run_input_sizes_fmllfmbfdoojd.fields.scope))
+				r.eq(root, r.param("root", ReviewReviewRunInputSizes.fields.root)),
+				r.eq(scope, r.param("scope", ReviewReviewRunInputSizes.fields.scope))
 			)
 			.find({ root, scope, ordinal, value })
 	}),
@@ -663,12 +648,12 @@ export const reviewDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				review_review_run_input_hpdfjnehnkdig,
+				ReviewReviewRunInput,
 				query(reviewGraph).rule((r) => {
-					const requested = r.relation("reviewReviewRunreview_review_run_input_hpdfjnehnkdig", {
-						root: review_review_run_input_hpdfjnehnkdig.fields.root,
-						scope: review_review_run_input_hpdfjnehnkdig.fields.scope,
-						review: review_review_run_input_hpdfjnehnkdig.fields.review
+					const requested = r.relation("reviewReviewRunReviewReviewRunInput", {
+						root: ReviewReviewRunInput.fields.root,
+						scope: ReviewReviewRunInput.fields.scope,
+						review: ReviewReviewRunInput.fields.review
 					})
 					const { root, scope, review } = v(requested, "requested")
 					return r
@@ -678,17 +663,14 @@ export const reviewDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				review_review_run_input_sizes_fmllfmbfdoojd,
+				ReviewReviewRunInputSizes,
 				query(reviewGraph).rule((r) => {
-					const requested = r.relation(
-						"reviewReviewRunreview_review_run_input_sizes_fmllfmbfdoojd",
-						{
-							root: review_review_run_input_sizes_fmllfmbfdoojd.fields.root,
-							scope: review_review_run_input_sizes_fmllfmbfdoojd.fields.scope,
-							ordinal: review_review_run_input_sizes_fmllfmbfdoojd.fields.ordinal,
-							value: review_review_run_input_sizes_fmllfmbfdoojd.fields.value
-						}
-					)
+					const requested = r.relation("reviewReviewRunReviewReviewRunInputSizes", {
+						root: ReviewReviewRunInputSizes.fields.root,
+						scope: ReviewReviewRunInputSizes.fields.scope,
+						ordinal: ReviewReviewRunInputSizes.fields.ordinal,
+						value: ReviewReviewRunInputSizes.fields.value
+					})
 					const { root, scope, ordinal, value } = v(requested, "requested")
 					return r
 						.match(requested, { root, scope, ordinal, value })
@@ -754,11 +736,11 @@ export const reviewDenPrograms = Object.freeze({
 	reviewOutputsReviewRunQuestions: query(reviewGraph).rule((r) => {
 		const { root, scope, parent } = v(ReviewWithin, "within")
 		const { step } = v(ReviewFinish, "finish")
-		const { count, total } = v(review_questions_finish_output_kddidbknbjeof, "output")
+		const { count, total } = v(ReviewQuestionsFinishOutput, "output")
 		return r
 			.match(ReviewWithin, { root, scope, parent, kind: "Questions" })
 			.match(ReviewFinish, { root, scope, step })
-			.match(review_questions_finish_output_kddidbknbjeof, { root, step, count, total })
+			.match(ReviewQuestionsFinishOutput, { root, step, count, total })
 			.where(
 				r.eq(root, r.param("root", ReviewScope.fields.root)),
 				r.eq(parent, r.param("scope", ReviewScope.fields.scope))
@@ -768,11 +750,11 @@ export const reviewDenPrograms = Object.freeze({
 	reviewInputsReviewRunQuestions: query(reviewGraph).rule((r) => {
 		const { root, scope, parent } = v(ReviewWithin, "within")
 		const { step } = v(ReviewFinish, "finish")
-		const { review, group, size } = v(review_questions_input_jigaomgjefjfk, "input")
+		const { review, group, size } = v(ReviewQuestionsInput, "input")
 		return r
 			.match(ReviewWithin, { root, scope, parent, kind: "Questions" })
 			.match(ReviewFinish, { root, scope, step })
-			.match(review_questions_input_jigaomgjefjfk, { root, scope, review, group, size })
+			.match(ReviewQuestionsInput, { root, scope, review, group, size })
 			.where(
 				r.eq(root, r.param("root", ReviewScope.fields.root)),
 				r.eq(parent, r.param("scope", ReviewScope.fields.scope))
@@ -794,10 +776,10 @@ export const reviewDenPrograms = Object.freeze({
 	}),
 	reviewOutputsReviewRunSave: query(reviewGraph).rule((r) => {
 		const { root, step, scope } = v(ReviewStep, "step")
-		const { total } = v(review_save_output_falmopiohdlkl, "output")
+		const { total } = v(ReviewSaveOutput, "output")
 		return r
 			.match(ReviewStep, { root, step, kind: "Save", scope })
-			.match(review_save_output_falmopiohdlkl, { root, step, total })
+			.match(ReviewSaveOutput, { root, step, total })
 			.where(
 				r.eq(root, r.param("root", ReviewScope.fields.root)),
 				r.eq(scope, r.param("scope", ReviewScope.fields.scope))
@@ -806,10 +788,10 @@ export const reviewDenPrograms = Object.freeze({
 	}),
 	reviewInputsReviewRunSave: query(reviewGraph).rule((r) => {
 		const { root, step, scope } = v(ReviewStep, "step")
-		const { review, group, count, total } = v(review_save_input_njbdjgekhblef, "input")
+		const { review, group, count, total } = v(ReviewSaveInput, "input")
 		return r
 			.match(ReviewStep, { root, step, kind: "Save", scope })
-			.match(review_save_input_njbdjgekhblef, { root, step, review, group, count, total })
+			.match(ReviewSaveInput, { root, step, review, group, count, total })
 			.where(
 				r.eq(root, r.param("root", ReviewScope.fields.root)),
 				r.eq(scope, r.param("scope", ReviewScope.fields.scope))
@@ -888,20 +870,20 @@ export const ReviewRetirer = role(
 			"ReviewHeld",
 			"ReviewRefusal",
 			"ReviewExhausted",
-			"review_analyze_input_aobppbhebnkae",
-			"review_gather_input_eiadkjkkdoiel",
-			"review_gather_input_sizes_ifjkkjdhlfbgp",
-			"review_save_input_njbdjgekhblef",
-			"review_questions_input_jigaomgjefjfk",
-			"review_review_run_input_hpdfjnehnkdig",
-			"review_review_run_input_sizes_fmllfmbfdoojd",
-			"review_analyze_output_fhhkmphnmpkdm",
-			"review_gather_output_cgnhmechbiddp",
-			"review_save_output_falmopiohdlkl",
-			"review_questions_finish_output_kddidbknbjeof",
-			"review_review_run_finish_output_fbgeikbjoigci",
-			"review_split_fnhnebdnlfmck",
-			"review_saved_bppbpjmhcjbaa",
+			"ReviewAnalyzeInput",
+			"ReviewGatherInput",
+			"ReviewGatherInputSizes",
+			"ReviewSaveInput",
+			"ReviewQuestionsInput",
+			"ReviewReviewRunInput",
+			"ReviewReviewRunInputSizes",
+			"ReviewAnalyzeOutput",
+			"ReviewGatherOutput",
+			"ReviewSaveOutput",
+			"ReviewQuestionsFinishOutput",
+			"ReviewReviewRunFinishOutput",
+			"ReviewSplit",
+			"ReviewSaved",
 			"ReviewHold"
 		]
 	}
@@ -927,20 +909,20 @@ export const reviewRetirerPrograms = Object.freeze({
 		ReviewHeld: { root: param("root", ReviewRoot.fields.root) },
 		ReviewRefusal: { root: param("root", ReviewRoot.fields.root) },
 		ReviewExhausted: { root: param("root", ReviewRoot.fields.root) },
-		review_analyze_input_aobppbhebnkae: { root: param("root", ReviewRoot.fields.root) },
-		review_gather_input_eiadkjkkdoiel: { root: param("root", ReviewRoot.fields.root) },
-		review_gather_input_sizes_ifjkkjdhlfbgp: { root: param("root", ReviewRoot.fields.root) },
-		review_save_input_njbdjgekhblef: { root: param("root", ReviewRoot.fields.root) },
-		review_questions_input_jigaomgjefjfk: { root: param("root", ReviewRoot.fields.root) },
-		review_review_run_input_hpdfjnehnkdig: { root: param("root", ReviewRoot.fields.root) },
-		review_review_run_input_sizes_fmllfmbfdoojd: { root: param("root", ReviewRoot.fields.root) },
-		review_analyze_output_fhhkmphnmpkdm: { root: param("root", ReviewRoot.fields.root) },
-		review_gather_output_cgnhmechbiddp: { root: param("root", ReviewRoot.fields.root) },
-		review_save_output_falmopiohdlkl: { root: param("root", ReviewRoot.fields.root) },
-		review_questions_finish_output_kddidbknbjeof: { root: param("root", ReviewRoot.fields.root) },
-		review_review_run_finish_output_fbgeikbjoigci: { root: param("root", ReviewRoot.fields.root) },
-		review_split_fnhnebdnlfmck: { root: param("root", ReviewRoot.fields.root) },
-		review_saved_bppbpjmhcjbaa: { root: param("root", ReviewRoot.fields.root) }
+		ReviewAnalyzeInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewGatherInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewGatherInputSizes: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSaveInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewQuestionsInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunInputSizes: { root: param("root", ReviewRoot.fields.root) },
+		ReviewAnalyzeOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewGatherOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSaveOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewQuestionsFinishOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunFinishOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSplit: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSaved: { root: param("root", ReviewRoot.fields.root) }
 	})
 })
 
@@ -957,26 +939,26 @@ export const reviewCommitPrograms = Object.freeze({
 		.insert(ReviewResult, [])
 		.insert(ReviewDone, [])
 		.insert(ReviewHeld, [])
-		.insert(review_analyze_output_fhhkmphnmpkdm, []),
+		.insert(ReviewAnalyzeOutput, []),
 	reviewCommitGather: clocked(
 		ChangeSet.empty(reviewGraph)
 			.insert(ReviewResult, [])
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
-			.insert(review_gather_output_cgnhmechbiddp, [])
+			.insert(ReviewGatherOutput, [])
 			.insert(ReviewScope, [])
 			.insert(ReviewWithin, [])
 			.insert(ReviewAdmitted, [])
 			.insert(ReviewFinish, [])
 			.insert(ReviewStartStep, [])
 			.insert(ReviewStartScope, [])
-			.insert(review_analyze_input_aobppbhebnkae, [])
-			.insert(review_gather_input_eiadkjkkdoiel, [])
-			.insert(review_gather_input_sizes_ifjkkjdhlfbgp, [])
-			.insert(review_save_input_njbdjgekhblef, [])
-			.insert(review_questions_input_jigaomgjefjfk, [])
-			.insert(review_split_fnhnebdnlfmck, [])
-			.insert(review_saved_bppbpjmhcjbaa, [])
+			.insert(ReviewAnalyzeInput, [])
+			.insert(ReviewGatherInput, [])
+			.insert(ReviewGatherInputSizes, [])
+			.insert(ReviewSaveInput, [])
+			.insert(ReviewQuestionsInput, [])
+			.insert(ReviewSplit, [])
+			.insert(ReviewSaved, [])
 			.insert(
 				ReviewStep,
 				query(reviewGraph).rule((r) => {
@@ -1008,7 +990,7 @@ export const reviewCommitPrograms = Object.freeze({
 			.insert(ReviewResult, [])
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
-			.insert(review_save_output_falmopiohdlkl, []),
+			.insert(ReviewSaveOutput, []),
 		declaredFlow.kinds[3].writes.changes(Loader)
 	),
 	reviewCommitQuestionsFinish: clocked(
@@ -1016,20 +998,20 @@ export const reviewCommitPrograms = Object.freeze({
 			.insert(ReviewResult, [])
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
-			.insert(review_questions_finish_output_kddidbknbjeof, [])
+			.insert(ReviewQuestionsFinishOutput, [])
 			.insert(ReviewScope, [])
 			.insert(ReviewWithin, [])
 			.insert(ReviewAdmitted, [])
 			.insert(ReviewFinish, [])
 			.insert(ReviewStartStep, [])
 			.insert(ReviewStartScope, [])
-			.insert(review_analyze_input_aobppbhebnkae, [])
-			.insert(review_gather_input_eiadkjkkdoiel, [])
-			.insert(review_gather_input_sizes_ifjkkjdhlfbgp, [])
-			.insert(review_save_input_njbdjgekhblef, [])
-			.insert(review_questions_input_jigaomgjefjfk, [])
-			.insert(review_split_fnhnebdnlfmck, [])
-			.insert(review_saved_bppbpjmhcjbaa, [])
+			.insert(ReviewAnalyzeInput, [])
+			.insert(ReviewGatherInput, [])
+			.insert(ReviewGatherInputSizes, [])
+			.insert(ReviewSaveInput, [])
+			.insert(ReviewQuestionsInput, [])
+			.insert(ReviewSplit, [])
+			.insert(ReviewSaved, [])
 			.insert(
 				ReviewStep,
 				query(reviewGraph).rule((r) => {
@@ -1061,7 +1043,7 @@ export const reviewCommitPrograms = Object.freeze({
 			.insert(ReviewResult, [])
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
-			.insert(review_review_run_finish_output_fbgeikbjoigci, []),
+			.insert(ReviewReviewRunFinishOutput, []),
 		declaredFlow.kinds[4].finish.writes.changes(Loader)
 	)
 })

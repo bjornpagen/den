@@ -43,14 +43,14 @@ import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { writeback } from "#integration/slice/flows.ts"
 import {
 	WritebackPausable,
-	writeback_writeback_input_ljafdhfgfeocc
+	WritebackWritebackInput
 } from "#integration/slice/generated/writeback.fragment.ts"
 import type {
 	WritebackScope,
 	WritebackAdmitted,
 	WritebackFinish,
 	WritebackStartStep,
-	writeback_deliver_input_libhnkibecamc,
+	WritebackDeliverInput,
 	WritebackKind,
 	WritebackRootKind
 } from "#integration/slice/generated/writeback.fragment.ts"
@@ -61,13 +61,13 @@ import type {
 	writebackCommitPrograms
 } from "#integration/slice/generated/writeback.programs.ts"
 
-/** The codec text of each declared field of writeback_writeback_input_ljafdhfgfeocc, a request's input row, bound once (grizzle's codecText). */
-const writeback_writeback_input_ljafdhfgfeoccTexts = Object.freeze({
-	attempt: codecText(writeback_writeback_input_ljafdhfgfeocc.fields.attempt)
+/** The codec text of each declared field of WritebackWritebackInput, a request's input row, bound once (grizzle's codecText). */
+const writebackWritebackInputTexts = Object.freeze({
+	attempt: codecText(WritebackWritebackInput.fields.attempt)
 })
 /** The fingerprint of root kind Writeback's input heading, taken once. */
 const writebackWritebackHeading = inputFingerprint(
-	'60:39:writeback_writeback_input_ljafdhfgfeocc15:7:attempt4:Text228:6:digest216:[...pipe([{ scope: scope, root: scope, attempt: input.attempt }], Arr.flatMap((row) => [Result.succeed("writeback_writeback_input_ljafdhfgfeocc"), writeback_writeback_input_ljafdhfgfeoccTexts.attempt(row.attempt)]))]'
+	'44:23:WritebackWritebackInput15:7:attempt4:Text196:6:digest184:[...pipe([{ scope: scope, root: scope, attempt: input.attempt }], Arr.flatMap((row) => [Result.succeed("WritebackWritebackInput"), writebackWritebackInputTexts.attempt(row.attempt)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
@@ -99,9 +99,7 @@ interface Rows {
 	readonly WritebackAdmitted: ReadonlyArray<Addition<typeof WritebackAdmitted>>
 	readonly WritebackFinish: ReadonlyArray<Addition<typeof WritebackFinish>>
 	readonly WritebackStartStep: ReadonlyArray<Addition<typeof WritebackStartStep>>
-	readonly writeback_deliver_input_libhnkibecamc: ReadonlyArray<
-		Addition<typeof writeback_deliver_input_libhnkibecamc>
-	>
+	readonly WritebackDeliverInput: ReadonlyArray<Addition<typeof WritebackDeliverInput>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -125,7 +123,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 		WritebackAdmitted: [],
 		WritebackFinish: [],
 		WritebackStartStep: [],
-		writeback_deliver_input_libhnkibecamc: []
+		WritebackDeliverInput: []
 	}
 	const nothingGrown: Grown = {
 		rows: noRows,
@@ -141,10 +139,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			WritebackAdmitted: [...a.rows.WritebackAdmitted, ...b.rows.WritebackAdmitted],
 			WritebackFinish: [...a.rows.WritebackFinish, ...b.rows.WritebackFinish],
 			WritebackStartStep: [...a.rows.WritebackStartStep, ...b.rows.WritebackStartStep],
-			writeback_deliver_input_libhnkibecamc: [
-				...a.rows.writeback_deliver_input_libhnkibecamc,
-				...b.rows.writeback_deliver_input_libhnkibecamc
-			]
+			WritebackDeliverInput: [...a.rows.WritebackDeliverInput, ...b.rows.WritebackDeliverInput]
 		},
 		steps: [...a.steps, ...b.steps],
 		timed: [...a.timed, ...b.timed],
@@ -164,9 +159,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 					rows: {
 						...noRows,
 						WritebackStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						writeback_deliver_input_libhnkibecamc: [
-							{ step: key, root: root, attempt: spawn.input.attempt }
-						]
+						WritebackDeliverInput: [{ step: key, root: root, attempt: spawn.input.attempt }]
 					},
 					...spawnedOf(
 						{ step: key, kind: "Deliver", scope: scope },
@@ -177,27 +170,21 @@ export const writebackLedger = (h: WritebackHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readwriteback_deliver_input_libhnkibecamc = (root: Sha256, step: Sha256) =>
+	const readWritebackDeliverInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
-					h.den.writebackReadwriteback_deliver_input_libhnkibecamc.once({
-						params: { root, step },
-						facts: {}
-					})
+					h.den.writebackReadWritebackDeliverInput.once({ params: { root, step }, facts: {} })
 				),
 				one
 			)
 			return Option.map(row, (found) => ({ attempt: found.attempt }))
 		})
-	const readwriteback_writeback_input_ljafdhfgfeocc = (root: Sha256, scope: Sha256) =>
+	const readWritebackWritebackInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
-					h.den.writebackReadwriteback_writeback_input_ljafdhfgfeocc.once({
-						params: { root, scope },
-						facts: {}
-					})
+					h.den.writebackReadWritebackWritebackInput.once({ params: { root, scope }, facts: {} })
 				),
 				one
 			)
@@ -250,7 +237,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 							writebackWritebackScope: scope,
 							writebackWritebackKey: key,
 							writebackWritebackWritebackScope: [{ scope, root: scope }],
-							writebackWritebackwriteback_writeback_input_ljafdhfgfeocc: [
+							writebackWritebackWritebackWritebackInput: [
 								{ scope: scope, root: scope, attempt: input.attempt }
 							],
 							writebackWritebackWritebackRequestedWith: Option.toArray(
@@ -259,8 +246,8 @@ export const writebackLedger = (h: WritebackHandles) => {
 										...pipe(
 											[{ scope: scope, root: scope, attempt: input.attempt }],
 											Arr.flatMap((row) => [
-												Result.succeed("writeback_writeback_input_ljafdhfgfeocc"),
-												writeback_writeback_input_ljafdhfgfeoccTexts.attempt(row.attempt)
+												Result.succeed("WritebackWritebackInput"),
+												writebackWritebackInputTexts.attempt(row.attempt)
 											])
 										)
 									]),
@@ -284,7 +271,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 		Deliver: runnerOf(
 			writeback.kinds[0],
 			{
-				input: ({ root, step }) => readwriteback_deliver_input_libhnkibecamc(root, step),
+				input: ({ root, step }) => readWritebackDeliverInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -302,7 +289,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 											WritebackHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											writeback_deliver_output_ppecogpmgbpek: [
+											WritebackDeliverOutput: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.output.attempt }
 											]
 										}
@@ -340,7 +327,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readwriteback_writeback_input_ljafdhfgfeocc(root, scope)
+						const input = yield* readWritebackWritebackInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -362,9 +349,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 										WritebackHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										writeback_writeback_finish_output_mhjodpondhejh: [
-											{ step: done.turn.step, root: done.turn.root }
-										]
+										WritebackWritebackFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 									}
 								}
 							})
@@ -382,7 +367,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			precondition: writeback.kinds[1].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readwriteback_writeback_input_ljafdhfgfeocc(scope, scope)
+					const input = yield* readWritebackWritebackInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -407,8 +392,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 								insert: {
 									WritebackScope: grown.rows.WritebackScope,
 									WritebackStartStep: grown.rows.WritebackStartStep,
-									writeback_deliver_input_libhnkibecamc:
-										grown.rows.writeback_deliver_input_libhnkibecamc,
+									WritebackDeliverInput: grown.rows.WritebackDeliverInput,
 									WritebackAdmitted: admitted,
 									WritebackFinish: finishes
 								}

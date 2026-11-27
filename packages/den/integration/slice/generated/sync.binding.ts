@@ -46,16 +46,16 @@ import { sync } from "#integration/slice/flows.ts"
 import {
 	SyncRootKind,
 	SyncPausable,
-	sync_sync_run_input_kmejgmkijpoho,
-	sync_gold_input_edhkhlceilnoh
+	SyncSyncRunInput,
+	SyncGoldInput
 } from "#integration/slice/generated/sync.fragment.ts"
 import type {
 	SyncScope,
 	SyncAdmitted,
 	SyncFinish,
 	SyncStartStep,
-	sync_copy_input_fijfgeannmgef,
-	sync_build_input_khidlilbdjpfi,
+	SyncCopyInput,
+	SyncBuildInput,
 	SyncKind
 } from "#integration/slice/generated/sync.fragment.ts"
 import type {
@@ -65,22 +65,20 @@ import type {
 	syncCommitPrograms
 } from "#integration/slice/generated/sync.programs.ts"
 
-/** The codec text of each declared field of sync_sync_run_input_kmejgmkijpoho, a request's input row, bound once (grizzle's codecText). */
-const sync_sync_run_input_kmejgmkijpohoTexts = Object.freeze({
-	relation: codecText(sync_sync_run_input_kmejgmkijpoho.fields.relation),
-	run: codecText(sync_sync_run_input_kmejgmkijpoho.fields.run)
+/** The codec text of each declared field of SyncSyncRunInput, a request's input row, bound once (grizzle's codecText). */
+const syncSyncRunInputTexts = Object.freeze({
+	relation: codecText(SyncSyncRunInput.fields.relation),
+	run: codecText(SyncSyncRunInput.fields.run)
 })
-/** The codec text of each declared field of sync_gold_input_edhkhlceilnoh, a request's input row, bound once (grizzle's codecText). */
-const sync_gold_input_edhkhlceilnohTexts = Object.freeze({
-	build: codecText(sync_gold_input_edhkhlceilnoh.fields.build)
-})
+/** The codec text of each declared field of SyncGoldInput, a request's input row, bound once (grizzle's codecText). */
+const syncGoldInputTexts = Object.freeze({ build: codecText(SyncGoldInput.fields.build) })
 /** The fingerprint of root kind SyncRun's input heading, taken once. */
 const syncSyncRunHeading = inputFingerprint(
-	'74:33:sync_sync_run_input_kmejgmkijpoho16:8:relation4:Text16:3:run9:pg.bigint289:6:digest277:[...pipe([{ scope: scope, root: scope, relation: input.relation, run: input.run }], Arr.flatMap((row) => [Result.succeed("sync_sync_run_input_kmejgmkijpoho"), sync_sync_run_input_kmejgmkijpohoTexts.relation(row.relation), sync_sync_run_input_kmejgmkijpohoTexts.run(row.run)]))]'
+	'57:16:SyncSyncRunInput16:8:relation4:Text16:3:run9:pg.bigint238:6:digest226:[...pipe([{ scope: scope, root: scope, relation: input.relation, run: input.run }], Arr.flatMap((row) => [Result.succeed("SyncSyncRunInput"), syncSyncRunInputTexts.relation(row.relation), syncSyncRunInputTexts.run(row.run)]))]'
 )
 /** The fingerprint of root kind Gold's input heading, taken once. */
 const syncGoldHeading = inputFingerprint(
-	'53:29:sync_gold_input_edhkhlceilnoh18:5:build9:pg.bigint200:6:digest188:[...pipe([{ scope: scope, root: scope, build: input.build }], Arr.flatMap((row) => [Result.succeed("sync_gold_input_edhkhlceilnoh"), sync_gold_input_edhkhlceilnohTexts.build(row.build)]))]'
+	'37:13:SyncGoldInput18:5:build9:pg.bigint168:6:digest156:[...pipe([{ scope: scope, root: scope, build: input.build }], Arr.flatMap((row) => [Result.succeed("SyncGoldInput"), syncGoldInputTexts.build(row.build)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
@@ -106,12 +104,8 @@ interface Rows {
 	readonly SyncAdmitted: ReadonlyArray<Addition<typeof SyncAdmitted>>
 	readonly SyncFinish: ReadonlyArray<Addition<typeof SyncFinish>>
 	readonly SyncStartStep: ReadonlyArray<Addition<typeof SyncStartStep>>
-	readonly sync_copy_input_fijfgeannmgef: ReadonlyArray<
-		Addition<typeof sync_copy_input_fijfgeannmgef>
-	>
-	readonly sync_build_input_khidlilbdjpfi: ReadonlyArray<
-		Addition<typeof sync_build_input_khidlilbdjpfi>
-	>
+	readonly SyncCopyInput: ReadonlyArray<Addition<typeof SyncCopyInput>>
+	readonly SyncBuildInput: ReadonlyArray<Addition<typeof SyncBuildInput>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -143,8 +137,8 @@ export const syncLedger = (h: SyncHandles) => {
 		SyncAdmitted: [],
 		SyncFinish: [],
 		SyncStartStep: [],
-		sync_copy_input_fijfgeannmgef: [],
-		sync_build_input_khidlilbdjpfi: []
+		SyncCopyInput: [],
+		SyncBuildInput: []
 	}
 	const nothingGrown: Grown = {
 		rows: noRows,
@@ -160,14 +154,8 @@ export const syncLedger = (h: SyncHandles) => {
 			SyncAdmitted: [...a.rows.SyncAdmitted, ...b.rows.SyncAdmitted],
 			SyncFinish: [...a.rows.SyncFinish, ...b.rows.SyncFinish],
 			SyncStartStep: [...a.rows.SyncStartStep, ...b.rows.SyncStartStep],
-			sync_copy_input_fijfgeannmgef: [
-				...a.rows.sync_copy_input_fijfgeannmgef,
-				...b.rows.sync_copy_input_fijfgeannmgef
-			],
-			sync_build_input_khidlilbdjpfi: [
-				...a.rows.sync_build_input_khidlilbdjpfi,
-				...b.rows.sync_build_input_khidlilbdjpfi
-			]
+			SyncCopyInput: [...a.rows.SyncCopyInput, ...b.rows.SyncCopyInput],
+			SyncBuildInput: [...a.rows.SyncBuildInput, ...b.rows.SyncBuildInput]
 		},
 		steps: [...a.steps, ...b.steps],
 		timed: [...a.timed, ...b.timed],
@@ -187,7 +175,7 @@ export const syncLedger = (h: SyncHandles) => {
 					rows: {
 						...noRows,
 						SyncStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						sync_copy_input_fijfgeannmgef: [
+						SyncCopyInput: [
 							{ step: key, root: root, relation: spawn.input.relation, run: spawn.input.run }
 						]
 					},
@@ -211,7 +199,7 @@ export const syncLedger = (h: SyncHandles) => {
 					rows: {
 						...noRows,
 						SyncStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						sync_build_input_khidlilbdjpfi: [{ step: key, root: root, build: spawn.input.build }]
+						SyncBuildInput: [{ step: key, root: root, build: spawn.input.build }]
 					},
 					...spawnedOf(
 						{ step: key, kind: "Build", scope: scope },
@@ -222,45 +210,34 @@ export const syncLedger = (h: SyncHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readsync_copy_input_fijfgeannmgef = (root: Sha256, step: Sha256) =>
+	const readSyncCopyInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.syncReadsync_copy_input_fijfgeannmgef.once({ params: { root, step }, facts: {} })
-				),
+				settled(h.den.syncReadSyncCopyInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ relation: found.relation, run: found.run }))
 		})
-	const readsync_build_input_khidlilbdjpfi = (root: Sha256, step: Sha256) =>
+	const readSyncBuildInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.syncReadsync_build_input_khidlilbdjpfi.once({ params: { root, step }, facts: {} })
-				),
+				settled(h.den.syncReadSyncBuildInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ build: found.build }))
 		})
-	const readsync_sync_run_input_kmejgmkijpoho = (root: Sha256, scope: Sha256) =>
+	const readSyncSyncRunInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.syncReadsync_sync_run_input_kmejgmkijpoho.once({
-						params: { root, scope },
-						facts: {}
-					})
-				),
+				settled(h.den.syncReadSyncSyncRunInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ relation: found.relation, run: found.run }))
 		})
-	const readsync_gold_input_edhkhlceilnoh = (root: Sha256, scope: Sha256) =>
+	const readSyncGoldInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.syncReadsync_gold_input_edhkhlceilnoh.once({ params: { root, scope }, facts: {} })
-				),
+				settled(h.den.syncReadSyncGoldInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ build: found.build }))
@@ -343,7 +320,7 @@ export const syncLedger = (h: SyncHandles) => {
 								syncSyncRunKey: key,
 								syncSyncRunSyncScope: [{ scope, root: scope }],
 								syncSyncRunSyncExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
-								syncSyncRunsync_sync_run_input_kmejgmkijpoho: [
+								syncSyncRunSyncSyncRunInput: [
 									{ scope: scope, root: scope, relation: input.relation, run: input.run }
 								],
 								syncSyncRunSyncRequestedWith: Option.toArray(
@@ -352,9 +329,9 @@ export const syncLedger = (h: SyncHandles) => {
 											...pipe(
 												[{ scope: scope, root: scope, relation: input.relation, run: input.run }],
 												Arr.flatMap((row) => [
-													Result.succeed("sync_sync_run_input_kmejgmkijpoho"),
-													sync_sync_run_input_kmejgmkijpohoTexts.relation(row.relation),
-													sync_sync_run_input_kmejgmkijpohoTexts.run(row.run)
+													Result.succeed("SyncSyncRunInput"),
+													syncSyncRunInputTexts.relation(row.relation),
+													syncSyncRunInputTexts.run(row.run)
 												])
 											)
 										]),
@@ -382,17 +359,15 @@ export const syncLedger = (h: SyncHandles) => {
 							syncGoldScope: scope,
 							syncGoldKey: key,
 							syncGoldSyncScope: [{ scope, root: scope }],
-							syncGoldsync_gold_input_edhkhlceilnoh: [
-								{ scope: scope, root: scope, build: input.build }
-							],
+							syncGoldSyncGoldInput: [{ scope: scope, root: scope, build: input.build }],
 							syncGoldSyncRequestedWith: Option.toArray(
 								Option.map(
 									codecTextsOf([
 										...pipe(
 											[{ scope: scope, root: scope, build: input.build }],
 											Arr.flatMap((row) => [
-												Result.succeed("sync_gold_input_edhkhlceilnoh"),
-												sync_gold_input_edhkhlceilnohTexts.build(row.build)
+												Result.succeed("SyncGoldInput"),
+												syncGoldInputTexts.build(row.build)
 											])
 										)
 									]),
@@ -416,7 +391,7 @@ export const syncLedger = (h: SyncHandles) => {
 		Copy: runnerOf(
 			sync.kinds[0],
 			{
-				input: ({ root, step }) => readsync_copy_input_fijfgeannmgef(root, step),
+				input: ({ root, step }) => readSyncCopyInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -432,7 +407,7 @@ export const syncLedger = (h: SyncHandles) => {
 											SyncHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											sync_copy_output_cfficoloepjbj: [
+											SyncCopyOutput: [
 												{ step: done.turn.step, root: done.turn.root, run: done.output.run }
 											]
 										}
@@ -450,7 +425,7 @@ export const syncLedger = (h: SyncHandles) => {
 		Build: runnerOf(
 			sync.kinds[2],
 			{
-				input: ({ root, step }) => readsync_build_input_khidlilbdjpfi(root, step),
+				input: ({ root, step }) => readSyncBuildInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -466,7 +441,7 @@ export const syncLedger = (h: SyncHandles) => {
 											SyncHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											sync_build_output_ianmlfhgbcfli: [
+											SyncBuildOutput: [
 												{ step: done.turn.step, root: done.turn.root, build: done.output.build }
 											]
 										}
@@ -504,7 +479,7 @@ export const syncLedger = (h: SyncHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readsync_sync_run_input_kmejgmkijpoho(root, scope)
+						const input = yield* readSyncSyncRunInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -524,9 +499,7 @@ export const syncLedger = (h: SyncHandles) => {
 										SyncHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										sync_sync_run_finish_output_inlpehpebjlbl: [
-											{ step: done.turn.step, root: done.turn.root }
-										]
+										SyncSyncRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 									}
 								}
 							})
@@ -560,7 +533,7 @@ export const syncLedger = (h: SyncHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readsync_gold_input_edhkhlceilnoh(root, scope)
+						const input = yield* readSyncGoldInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -580,9 +553,7 @@ export const syncLedger = (h: SyncHandles) => {
 										SyncHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										sync_gold_finish_output_hkddafacepdaa: [
-											{ step: done.turn.step, root: done.turn.root }
-										]
+										SyncGoldFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 									}
 								}
 							})
@@ -600,7 +571,7 @@ export const syncLedger = (h: SyncHandles) => {
 			precondition: sync.kinds[1].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readsync_sync_run_input_kmejgmkijpoho(scope, scope)
+					const input = yield* readSyncSyncRunInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -625,8 +596,8 @@ export const syncLedger = (h: SyncHandles) => {
 								insert: {
 									SyncScope: grown.rows.SyncScope,
 									SyncStartStep: grown.rows.SyncStartStep,
-									sync_copy_input_fijfgeannmgef: grown.rows.sync_copy_input_fijfgeannmgef,
-									sync_build_input_khidlilbdjpfi: grown.rows.sync_build_input_khidlilbdjpfi,
+									SyncCopyInput: grown.rows.SyncCopyInput,
+									SyncBuildInput: grown.rows.SyncBuildInput,
 									SyncAdmitted: admitted,
 									SyncFinish: finishes
 								}
@@ -647,7 +618,7 @@ export const syncLedger = (h: SyncHandles) => {
 			precondition: sync.kinds[3].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readsync_gold_input_edhkhlceilnoh(scope, scope)
+					const input = yield* readSyncGoldInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -672,8 +643,8 @@ export const syncLedger = (h: SyncHandles) => {
 								insert: {
 									SyncScope: grown.rows.SyncScope,
 									SyncStartStep: grown.rows.SyncStartStep,
-									sync_copy_input_fijfgeannmgef: grown.rows.sync_copy_input_fijfgeannmgef,
-									sync_build_input_khidlilbdjpfi: grown.rows.sync_build_input_khidlilbdjpfi,
+									SyncCopyInput: grown.rows.SyncCopyInput,
+									SyncBuildInput: grown.rows.SyncBuildInput,
 									SyncAdmitted: admitted,
 									SyncFinish: finishes
 								}
