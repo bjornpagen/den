@@ -861,5 +861,6 @@ const placement: Placement = {
 	schema: { from: "#app.ts", name: "App" },
 	writer: { from: "#roles.ts", name: "Loader" },
 	flow: { from: "#flows.ts", name: "flow" },
-	reads: { from: "#reads.ts", exports: {} }
+	reads: { from: "#reads.ts", exports: {} },
+	contracts: { from: "#contracts.ts", exports: {} }
 }

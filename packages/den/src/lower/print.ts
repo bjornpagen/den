@@ -1,6 +1,6 @@
 import { regex } from "arkregex"
 import { Array as Arr, Option, Order, Record as Rec, String as Str } from "effect"
-import { denClock } from "#algebra/kinds.ts"
+import { type ContractField, denClock } from "#algebra/kinds.ts"
 import {
 	type AwaitIR,
 	type CommitIR,
@@ -60,6 +60,16 @@ export interface Placement {
 	 * reads to.
 	 */
 	readonly reads: { readonly from: string; readonly exports: { readonly [name: string]: unknown } }
+	/**
+	 * The module exporting each consumer's contract a value of the flow holds (algebra/kinds.ts contractInput) under its
+	 * contract's name, which the fragment imports to declare its column by: grizzle's field, so PostgreSQL holds the
+	 * column to the contract's domain and its read delivers the contract's host type. `exports` is that module's
+	 * namespace, which `den generate` holds each contract input's contract to.
+	 */
+	readonly contracts: {
+		readonly from: string
+		readonly exports: { readonly [name: string]: unknown }
+	}
 }
 
 /** A string literal of `text`, its quotes, backslashes and line breaks escaped. */
@@ -122,6 +132,7 @@ const hostValue = (type: ColumnType, value: string): string => {
 		case "base":
 		case "roster":
 		case "vector":
+		case "contract":
 			return value
 	}
 }
@@ -140,6 +151,7 @@ const bodyValue = (type: ColumnType, value: string): string => {
 		case "base":
 		case "roster":
 		case "vector":
+		case "contract":
 			return value
 	}
 }
@@ -241,6 +253,8 @@ const fieldExpr = (type: FieldType): string => {
 			return `${type.relation}.fields.${type.field}`
 		case "vector":
 			return `pg.vector(${type.dimensions})`
+		case "contract":
+			return type.contract.name
 		case "base":
 			switch (type.base) {
 				case "text":
@@ -308,6 +322,19 @@ const denKeysOf = (l: Lowered): ReadonlyArray<string> => {
 		Arr.some(l.brands, (b) => b.base === "text")
 	return Arr.sort([...keys, ...(text ? ["Text"] : [])], Order.String)
 }
+
+/**
+ * The consumers' contracts the fragment's columns are declared by (algebra/kinds.ts contractInput), each once, by its
+ * name, sorted: the fragment imports each from the placement's contracts module.
+ */
+export const contractsOf = (l: Lowered): ReadonlyArray<ContractField> =>
+	Arr.sort(
+		Arr.dedupeWith(
+			Arr.flatMap(fieldsOf(l), (t) => (t.kind === "contract" ? [t.contract] : [])),
+			(a, b) => a === b
+		),
+		Order.mapInput(Order.String, (c: ContractField) => c.name)
+	)
 
 /** The grizzle names a fragment module uses. */
 const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
@@ -579,7 +606,9 @@ const headingTypeOf = (l: Lowered, type: FieldType): string =>
 							)
 					).handles
 				])
-			: fieldExpr(type)
+			: type.kind === "contract"
+				? framedText(["contract", type.contract.name])
+				: fieldExpr(type)
 
 /**
  * The texts a request's input digest is taken of, each a Result of its codec: each input relation's rows, the
@@ -844,6 +873,12 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 					`import { ${commas(Arr.dedupe(Arr.map(readsOfFlow(l), ({ step }) => readsExport(step.name))))} } from ${q(place.reads.from)}`
 				]
 			: []),
+		...Arr.match(contractsOf(l), {
+			onEmpty: () => [],
+			onNonEmpty: (contracts) => [
+				`import { ${commas(Arr.map(contracts, (c) => c.name))} } from ${q(place.contracts.from)}`
+			]
+		}),
 		"",
 		...Arr.flatMap(l.brands, (b) => [
 			`const ${brandKey(b.name)} = Symbol(${q(b.name)})`,

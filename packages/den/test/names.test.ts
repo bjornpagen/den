@@ -332,6 +332,8 @@ const fieldExpr = (type: FieldType, rosters: ReadonlyMap<string, AnyRoster>): Fi
 				onNone: () => Text,
 				onSome: (roster) => closedId(roster)
 			})
+		case "contract":
+			return type.contract
 		case "brand":
 		case "app":
 		case "vector":
@@ -368,7 +370,8 @@ const placement: Placement = {
 	schema: { from: "#app.ts", name: "App" },
 	writer: { from: "#roles.ts", name: "Loader" },
 	flow: { from: "#flows.ts", name: "flow" },
-	reads: { from: "#reads.ts", exports: {} }
+	reads: { from: "#reads.ts", exports: {} },
+	contracts: { from: "#contracts.ts", exports: {} }
 }
 
 /** Whatever a lowering's names hold, checked against grizzle (see the module's doc); `what` names the case. */

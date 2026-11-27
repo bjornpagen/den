@@ -8,7 +8,8 @@ import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
-import { Array as Arr, Effect } from "effect"
+import { Array as Arr, Effect, Result } from "effect"
+import { buildNumberParser } from "#integration/slice/contracts.ts"
 import { ringOnAndDrain } from "#integration/support/run.ts"
 import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
@@ -58,7 +59,7 @@ export const aPreconditionRootAdmitsTheGoldBuildOnlyOnceTheChainHasNothingPendin
 							const app = yield* openAuditor
 							const at = yield* chain.ledger.now
 							const ends = instantOf(Number(at) + longestLeaseMillis)
-							const build = 1n
+							const build = Result.getOrThrow(buildNumberParser.parse(1n))
 							const chained = yield* chain.request.ChainRun("gold", {
 								feed: run.feed,
 								pages: BigInt(run.pages)

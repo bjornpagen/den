@@ -721,7 +721,8 @@ const sliceCopyOf = (flow: string, lowered: Lowered, drops: ReadonlyArray<string
 			schema: { from: `${specifier}app.ts`, name: "App" },
 			writer: { from: `${specifier}roles.ts`, name: "Loader" },
 			flow: { from: `${specifier}flows.ts`, name: flow },
-			reads: { from: `${specifier}reads.ts`, exports: {} }
+			reads: { from: `${specifier}reads.ts`, exports: {} },
+			contracts: { from: `${specifier}relations.ts`, exports: {} }
 		}
 		yield* Effect.forEach(
 			[

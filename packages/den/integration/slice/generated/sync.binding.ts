@@ -78,7 +78,7 @@ const syncSyncRunHeading = inputFingerprint(
 )
 /** The fingerprint of root kind Gold's input heading, taken once. */
 const syncGoldHeading = inputFingerprint(
-	'37:13:SyncGoldInput18:5:build9:pg.bigint168:6:digest156:[...pipe([{ scope: scope, root: scope, build: input.build }], Arr.flatMap((row) => [Result.succeed("SyncGoldInput"), syncGoldInputTexts.build(row.build)]))]'
+	'53:13:SyncGoldInput34:5:build24:8:contract11:BuildNumber168:6:digest156:[...pipe([{ scope: scope, root: scope, build: input.build }], Arr.flatMap((row) => [Result.succeed("SyncGoldInput"), syncGoldInputTexts.build(row.build)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */

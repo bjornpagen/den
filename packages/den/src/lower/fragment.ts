@@ -12,6 +12,7 @@ import {
 import {
 	type AnyCommit,
 	type AnyStepKind,
+	type ContractField,
 	type Due,
 	type Again,
 	Refused,
@@ -94,6 +95,7 @@ export type FieldType =
 	| { readonly kind: "base"; readonly base: Base }
 	| { readonly kind: "app"; readonly relation: string; readonly field: string }
 	| { readonly kind: "vector"; readonly dimensions: number }
+	| { readonly kind: "contract"; readonly contract: ContractField }
 
 /**
  * How grizzle holds a lowered name (lower/names.ts): declared, its identifier its conversion, or derived, its every
@@ -514,6 +516,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 	}
 	const fieldOf = (owner: Derived, column: Column): FieldType => {
 		switch (column.type.kind) {
+			case "contract":
+				return { kind: "contract", contract: column.type.contract }
 			case "base":
 				return { kind: "base", base: column.type.base }
 			case "brand":
@@ -540,7 +544,10 @@ export const lower = (flow: AnyFlow): Lowered => {
 	 */
 	const finite = (owner: Derived, columns: ReadonlyArray<Column>): void =>
 		Arr.forEach(columns, (c) => {
-			if ((c.type.kind === "base" || c.type.kind === "brand") && c.type.base === "double") {
+			if (
+				(c.type.kind === "base" || c.type.kind === "brand" || c.type.kind === "contract") &&
+				c.type.base === "double"
+			) {
 				laws.push({
 					kind: "check",
 					name: finiteCheckOf(p, owner.name, c.name),

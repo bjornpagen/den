@@ -3,7 +3,9 @@ import {
 	closed,
 	closedId,
 	contract,
+	mintOf,
 	natural,
+	Num,
 	pg,
 	relation,
 	sha256,
@@ -92,8 +94,28 @@ export const builtAtKey = Symbol("BuiltAt")
 /** The instant the Gold step recorded a build, the database's reading in milliseconds: a contract of the app's own. */
 const BuiltAt = contract<typeof builtAtKey>()("BuiltAt", pg.bigint)
 
+/**
+ * BuildNumber's key: the app's capability to mint a build's number, which this module and its checked mint's
+ * (contracts.ts) hold.
+ */
+export const buildNumberKey = Symbol("BuildNumber")
+
+/**
+ * A build's number: any nonnegative int8, a contract of the app's own, as qti-pie's SittingKey is metis's: the Gold
+ * root's and its Build step's input hold one, so den's column of it is the contract itself (contractInput).
+ */
+export const BuildNumber = contract<typeof buildNumberKey>()("BuildNumber", pg.bigint, (n) =>
+	Num.within(n, 0n, 2n ** 63n - 1n)
+)
+
+/**
+ * BuildNumber's unchecked mint: a suite writes a number outside the contract through den by it, which PostgreSQL's
+ * domain of the contract refuses.
+ */
+export const toBuildNumber = mintOf(buildNumberKey)
+
 /** A build the Gold step made, by its number, at the instant its commit read the database's clock. */
-export const Built = relation("Built", { build: natural, at: BuiltAt }, ["build"])
+export const Built = relation("Built", { build: BuildNumber, at: BuiltAt }, ["build"])
 
 /**
  * The dimensions of a passage's embedding, the suite's own width: four, where a production embedding (Gemini Embedding

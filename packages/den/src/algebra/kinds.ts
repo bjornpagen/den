@@ -6,6 +6,7 @@ import type {
 	clocked,
 	EvidenceOfQuery,
 	Fact,
+	FieldBase,
 	HeadOf,
 	ParamArg,
 	ParamsOf,
@@ -15,17 +16,20 @@ import type {
 	SchemaSource,
 	Vector
 } from "@bjornpagen/grizzle"
-import type { InputOf } from "@bjornpagen/grizzle/runtime"
+import type { ContractRefused, InputOf } from "@bjornpagen/grizzle/runtime"
 import { regex } from "arkregex"
 import {
 	Array as Arr,
 	type Cron,
 	Data,
 	Duration,
-	type Effect,
+	Effect,
 	Option,
 	Record as Rec,
-	Schema
+	Result,
+	Schema,
+	SchemaGetter,
+	SchemaIssue
 } from "effect"
 import type { Later } from "#algebra/later.ts"
 
@@ -238,8 +242,96 @@ export const vectorOf = <const N extends number>(dimensions: N): VectorSchema<N>
 export const dimensionsOf = (schema: Schema.Top): Option.Option<number> =>
 	Option.fromNullishOr(vectorDimensions.get(schema))
 
+/** The schemas a contract input decodes from: a column's text, bigint, finite number or boolean. */
+export type ContractBaseSchema = Schema.String | Schema.BigInt | Schema.Finite | Schema.Boolean
+
+/** A consumer's contract: grizzle's field, by its name. */
+export type ContractField = FieldBase & { readonly name: string }
+
 /**
- * A column's schema: text, a bigint, a finite number, a boolean, a literal union of texts, a brand of one, or a vector.
+ * A consumer's contract parser as den takes it, grizzle's runtime contractParser's answer, built by the key's holder over
+ * the contract's checker file with no compiler loaded: the contract, a grizzle field, by its name, and its checked mint
+ * of a value of its base, M the contract's host type.
+ */
+export interface ContractParserOf<A, M extends A, C extends ContractField> {
+	readonly contract: C
+	readonly parse: (value: A) => Result.Result<M, ContractRefused<string>>
+}
+
+/**
+ * A field of a consumer's contract C (contractInput): its base's schema B decoding to the contract's host type M through
+ * the contract's checked mint, the contract beside it, by which den types the field's column.
+ */
+export type ContractInputSchema<C, M, B extends ContractBaseSchema> = Schema.decodeTo<
+	Schema.declare<M>,
+	B
+> & { readonly contract: C }
+
+/**
+ * What lowering reads of a contract input: its contract, a grizzle field, by its name, which the printed fragment imports
+ * under that name (lower/print.ts Placement `contracts`), and its base's schema.
+ */
+export interface ContractInputOf {
+	readonly contract: ContractField
+	readonly base: ContractBaseSchema
+}
+
+/** The contract and base of each contract input `contractInput` made, read by lowering. */
+const contractInputs = new WeakMap<Schema.Top, ContractInputOf>()
+
+/**
+ * A field of a consumer's contract, from its parser, grizzle's runtime contractParser(file, contract, key) over the
+ * contract's checker file, which only the key's holder builds and exports beside its mint, and its base's schema: decoding reads a value of the base, then the contract's
+ * check, minting the value under the key, or failing with the contract's refusal (its issue's `refusal`, grizzle's
+ * ContractRefused); encoding gives the value as its base holds it. A step's or a scope's value may hold one as a column,
+ * which lowers to a column of the contract itself (lower/schema.ts), so PostgreSQL holds every value den stores to the
+ * contract's domain and grizzle's column of it delivers the contract's host type back: den neither checks it again nor
+ * makes one, and the parse is the boundary's.
+ */
+export const contractInput = <
+	B extends ContractBaseSchema,
+	M extends B["Type"],
+	C extends ContractField
+>(
+	parser: ContractParserOf<B["Type"], M, C>,
+	base: B
+): ContractInputSchema<C, M, B> => {
+	const holds = Schema.is(base)
+	const minted = Schema.declare(
+		(value: unknown): value is M => holds(value) && Result.isSuccess(parser.parse(value))
+	)
+	const schema = Object.assign(
+		Schema.decodeTo<Schema.declare<M>, B>(minted, {
+			decode: SchemaGetter.transformEffect((value: B["Type"]) =>
+				Result.match(parser.parse(value), {
+					onSuccess: (contracted) => Effect.succeed(contracted),
+					onFailure: (refusal) =>
+						Effect.fail(
+							new SchemaIssue.InvalidValue(
+								{
+									message: `${refusal.contract} refuses ${String(value)}: ${refusal._tag}`,
+									refusal
+								},
+								value
+							)
+						)
+				})
+			),
+			encode: SchemaGetter.passthroughSubtype<B["Type"], M>()
+		})(base),
+		{ contract: parser.contract }
+	)
+	contractInputs.set(schema, { contract: parser.contract, base })
+	return schema
+}
+
+/** The contract and base of a schema `contractInput` made, none for any other schema. */
+export const contractInputOf = (schema: Schema.Top): Option.Option<ContractInputOf> =>
+	Option.fromNullishOr(contractInputs.get(schema))
+
+/**
+ * A column's schema: text, a bigint, a finite number, a boolean, a literal union of texts, a brand of one, a vector, or a
+ * consumer's contract over one of the first four (contractInput).
  * A number is `Schema.Finite`, which lowers to double precision under a row check that holds it finite.
  */
 export type ColumnSchema =
@@ -251,6 +343,7 @@ export type ColumnSchema =
 	| Schema.Literals<ReadonlyArray<string>>
 	| Schema.brand<Schema.String | Schema.BigInt | Schema.Finite | Schema.Boolean, string>
 	| VectorSchema
+	| ContractInputSchema<ContractField, ContractBaseSchema["Type"], ContractBaseSchema>
 
 /** The fields of a struct an array holds or a tagged union's variant carries: columns. */
 export type ColumnFields = { readonly [field: string]: ColumnSchema }

@@ -5,6 +5,7 @@ import {
 	type Ending,
 	atSpawn,
 	awaitFact,
+	contractInput,
 	derived,
 	dueAt,
 	edge,
@@ -34,6 +35,7 @@ import { laterOf } from "@bjornpagen/den/algebra/later"
 import { ChangeSet, query, Vector } from "@bjornpagen/grizzle"
 import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
 import { SliceBase } from "#integration/slice/base.ts"
+import { buildNumberParser } from "#integration/slice/contracts.ts"
 import { DecideReads, HourlyOf, PageReads, WantedOf } from "#integration/slice/reads.ts"
 import {
 	Assigned,
@@ -487,12 +489,15 @@ const SyncRun = root("SyncRun", {
 	}
 })
 
+/** A Gold build's number, BuildNumber's, decoded through its checked mint: den's column of it is BuildNumber itself. */
+const BuildInput = Schema.Struct({ build: contractInput(buildNumberParser, Schema.BigInt) })
+
 /** One Gold build. */
 const Build = step(
 	"Build",
 	{
-		input: Schema.Struct({ build: Schema.BigInt }),
-		output: Schema.Struct({ build: Schema.BigInt }),
+		input: BuildInput,
+		output: BuildInput,
 		error: Schema.Never,
 		reads: noReads,
 		awaits: [],
@@ -526,7 +531,7 @@ const Build = step(
 const Gold = root("Gold", {
 	trigger: operator,
 	from: given,
-	input: Schema.Struct({ build: Schema.BigInt }),
+	input: BuildInput,
 	children: [Build],
 	start: (input) => [Build.of(input)],
 	exclusive: shared,

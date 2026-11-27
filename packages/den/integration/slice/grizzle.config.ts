@@ -4,6 +4,7 @@ import { Config, Effect } from "effect"
 import pgDriver from "pg"
 import { App } from "#integration/slice/app.ts"
 import { AppLogin, Worker } from "#integration/slice/logins.ts"
+import { BuildNumber } from "#integration/slice/relations.ts"
 
 /**
  * The slice's configuration. `grizzle generate` and `grizzle check` never call its connection; `grizzle migrate` and
@@ -15,6 +16,7 @@ import { AppLogin, Worker } from "#integration/slice/logins.ts"
 export default defineConfig({
 	schemas: [App],
 	logins: [Worker, AppLogin],
+	contracts: [BuildNumber],
 	migrations: "migrations",
 	rolePrefixBytes: 13,
 	connection: () => ({

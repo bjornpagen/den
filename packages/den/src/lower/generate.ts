@@ -3,6 +3,7 @@ import { type AnyFlow, stepsOf } from "#algebra/flow.ts"
 import { Refused } from "#algebra/kinds.ts"
 import { lower } from "#lower/fragment.ts"
 import {
+	contractsOf,
 	type Placement,
 	printBinding,
 	printFragment,
@@ -19,8 +20,10 @@ export interface Printed {
 
 /**
  * A flow's modules, printed from its lowering. Each step's reads must be the placement's reads module's export of its
- * name, the one value the fragment builds the read's records from and the flow runs: a step whose reads are any other
- * value is refused, since no type can say which module a value came from.
+ * name, the one value the fragment builds the read's records from and the flow runs, and each consumer's contract a
+ * value of the flow holds the placement's contracts module's export of its name, the one the fragment declares its
+ * column by: a step whose reads, or a contract input whose contract, are any other value is refused, since no type can
+ * say which module a value came from.
  */
 export const printed = (flow: AnyFlow, place: Placement): Printed => {
 	Arr.forEach(stepsOf(flow.kinds), (step) => {
@@ -32,6 +35,14 @@ export const printed = (flow: AnyFlow, place: Placement): Printed => {
 		}
 	})
 	const lowered = lower(flow)
+	Arr.forEach(contractsOf(lowered), (contract) => {
+		if (place.contracts.exports[contract.name] !== contract) {
+			throw new Refused({
+				declaration: `contract ${contract.name}`,
+				why: `it is not ${place.contracts.from}'s export ${contract.name}, which den's fragment declares its column by`
+			})
+		}
+	})
 	return {
 		fragment: printFragment(lowered, place),
 		programs: printPrograms(lowered, place),

@@ -13,6 +13,7 @@ import {
 	writeback
 } from "#integration/slice/flows.ts"
 import * as slicesReads from "#integration/slice/reads.ts"
+import * as sliceRelations from "#integration/slice/relations.ts"
 
 /** `den generate` for the slice: each flow's fragment, programs and binding, into generated/. */
 const placement = (name: string) => ({
@@ -22,7 +23,8 @@ const placement = (name: string) => ({
 	schema: { from: "#integration/slice/app.ts", name: "App" },
 	writer: { from: "#integration/slice/roles.ts", name: "Loader" },
 	flow: { from: "#integration/slice/flows.ts", name },
-	reads: { from: "#integration/slice/reads.ts", exports: slicesReads }
+	reads: { from: "#integration/slice/reads.ts", exports: slicesReads },
+	contracts: { from: "#integration/slice/relations.ts", exports: sliceRelations }
 })
 
 const files = (name: string) => ({

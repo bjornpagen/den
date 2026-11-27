@@ -18,6 +18,7 @@ import {
 	sha256,
 	unit
 } from "@bjornpagen/grizzle"
+import { BuildNumber } from "#integration/slice/relations.ts"
 
 export const SyncKind = closed.unordered("SyncKind", [
 	"Copy",
@@ -114,7 +115,7 @@ export const SyncCopyInput = derivedName({ stem: "Sync", path: ["CopyInput"] }).
 )
 export const SyncBuildInput = derivedName({ stem: "Sync", path: ["BuildInput"] }).relation(
 	"SyncBuildInput",
-	{ root: sha256, step: sha256, build: pg.bigint },
+	{ root: sha256, step: sha256, build: BuildNumber },
 	["root", "step"]
 )
 export const SyncSyncRunInput = derivedName({ stem: "Sync", path: ["SyncRunInput"] }).relation(
@@ -124,7 +125,7 @@ export const SyncSyncRunInput = derivedName({ stem: "Sync", path: ["SyncRunInput
 )
 export const SyncGoldInput = derivedName({ stem: "Sync", path: ["GoldInput"] }).relation(
 	"SyncGoldInput",
-	{ root: sha256, scope: sha256, build: pg.bigint },
+	{ root: sha256, scope: sha256, build: BuildNumber },
 	["root", "scope"]
 )
 export const SyncCopyOutput = derivedName({ stem: "Sync", path: ["CopyOutput"] }).relation(
@@ -134,7 +135,7 @@ export const SyncCopyOutput = derivedName({ stem: "Sync", path: ["CopyOutput"] }
 )
 export const SyncBuildOutput = derivedName({ stem: "Sync", path: ["BuildOutput"] }).relation(
 	"SyncBuildOutput",
-	{ root: sha256, step: sha256, build: pg.bigint },
+	{ root: sha256, step: sha256, build: BuildNumber },
 	["root", "step"]
 )
 export const SyncSyncRunFinishOutput = derivedName({
