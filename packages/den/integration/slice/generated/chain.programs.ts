@@ -1,4 +1,4 @@
-import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant, denInstantKey } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Chain to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import {
 	ChangeSet,
@@ -21,9 +21,9 @@ import {
 	ChainOutcome,
 	ChainRetryWhy,
 	ChainPausable,
-	ChainPageInputFeed,
-	ChainChainRunInputFeed,
-	ChainOrderedInputFeed,
+	chain_page_input_feed_nlhfmgjplihkf,
+	chain_chain_run_input_feed_dcnlhjpledlkf,
+	chain_ordered_input_feed_hbpmfpphpfngm,
 	ChainScope,
 	ChainRoot,
 	ChainRequestedWith,
@@ -42,24 +42,24 @@ import {
 	ChainHeld,
 	ChainRefusal,
 	ChainExhausted,
-	ChainPageInput,
-	ChainPageInputAfter,
-	ChainChainRunInput,
-	ChainOrderedInput,
-	ChainPageOutput,
-	ChainPageOutputNext,
-	ChainChainRunFinishOutput,
-	ChainOrderedFinishOutput,
-	ChainNext,
-	ChainPageReadWeights,
-	ChainPageReadEarlier,
-	ChainPageReadTree,
+	chain_page_input_jhliinhchcgno,
+	chain_page_input_after_gdigbcabbnakb,
+	chain_chain_run_input_glnkafcnkbnnn,
+	chain_ordered_input_pbjpmafopnahk,
+	chain_page_output_dniojohpmhcee,
+	chain_page_output_next_pocjijjpkpono,
+	chain_chain_run_finish_output_lhniobmdeemdb,
+	chain_ordered_finish_output_nnemphmmfdblb,
+	chain_next_bbflpfpnlejpm,
+	chain_page_read_weights_agiabippcbobb,
+	chain_page_read_earlier_dgehlbgebidjc,
+	chain_page_read_tree_lakencnpkciin,
 	ChainPaused,
 	ChainResumed,
 	ChainServed,
-	ChainPageReadWeightsRecords,
-	ChainPageReadEarlierRecords,
-	ChainPageReadTreeRecords,
+	chain_page_read_weights_agiabippcbobbRecords,
+	chain_page_read_earlier_dgehlbgebidjcRecords,
+	chain_page_read_tree_lakencnpkciinRecords,
 	chainGraph,
 	chainCoordination
 } from "#integration/slice/generated/chain.fragment.ts"
@@ -90,23 +90,23 @@ export const ChainDen = role(
 			"ChainHeld",
 			"ChainRefusal",
 			"ChainExhausted",
-			"ChainPageInput",
-			"ChainPageInputAfter",
-			"ChainChainRunInput",
-			"ChainOrderedInput",
-			"ChainChainRunFinishOutput",
-			"ChainOrderedFinishOutput",
-			"ChainPageReadWeights",
-			"ChainPageReadEarlier",
-			"ChainPageReadTree",
-			...Arr.map(ChainPageReadWeightsRecords.relations, (rel) => rel.name),
-			...Arr.map(ChainPageReadEarlierRecords.relations, (rel) => rel.name),
-			...Arr.map(ChainPageReadTreeRecords.relations, (rel) => rel.name)
+			"chain_page_input_jhliinhchcgno",
+			"chain_page_input_after_gdigbcabbnakb",
+			"chain_chain_run_input_glnkafcnkbnnn",
+			"chain_ordered_input_pbjpmafopnahk",
+			"chain_chain_run_finish_output_lhniobmdeemdb",
+			"chain_ordered_finish_output_nnemphmmfdblb",
+			"chain_page_read_weights_agiabippcbobb",
+			"chain_page_read_earlier_dgehlbgebidjc",
+			"chain_page_read_tree_lakencnpkciin",
+			...Arr.map(chain_page_read_weights_agiabippcbobbRecords.relations, (rel) => rel.name),
+			...Arr.map(chain_page_read_earlier_dgehlbgebidjcRecords.relations, (rel) => rel.name),
+			...Arr.map(chain_page_read_tree_lakencnpkciinRecords.relations, (rel) => rel.name)
 		]
 	}
 )
 
-/** den's coordinator role for the flow Chain: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation. */
+/** den's coordinator role for the flow Chain: the turns of its exclusivity seats and pauses. It holds the coordination group's rosters and relations whole, no role holding a closed relation, and no live hold, which only den's role reads, over the graph it holds. */
 export const ChainCoordinator = role(
 	App,
 	"chain_coordinator",
@@ -116,9 +116,9 @@ export const ChainCoordinator = role(
 		ChainOutcome,
 		ChainRetryWhy,
 		ChainPausable,
-		ChainPageInputFeed,
-		ChainChainRunInputFeed,
-		ChainOrderedInputFeed,
+		chain_page_input_feed_nlhfmgjplihkf,
+		chain_chain_run_input_feed_dcnlhjpledlkf,
+		chain_ordered_input_feed_hbpmfpphpfngm,
 		ChainPaused,
 		ChainResumed,
 		ChainServed
@@ -165,7 +165,8 @@ const chainLatestServed = query(ChainDen).rule((r) => {
 export const chainDenPrograms = Object.freeze({
 	chainNow: clocked(
 		query(chainGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	chainReading: clocked(
 		query(ChainDen).reads({
@@ -183,7 +184,8 @@ export const chainDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.denNow": "millis" }
+		{ "now.denNow": "millis" },
+		{ "now.denNow": denInstantKey }
 	),
 	chainClaim: clocked(
 		ChangeSet.empty(chainGraph)
@@ -192,7 +194,8 @@ export const chainDenPrograms = Object.freeze({
 				{
 					until: Type.cast(
 						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
-						DenInstant
+						DenInstant,
+						denInstantKey
 					)
 				}
 			)
@@ -205,7 +208,8 @@ export const chainDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	chainRetry: clocked(
 		ChangeSet.empty(chainGraph)
@@ -221,14 +225,16 @@ export const chainDenPrograms = Object.freeze({
 								Type.base(r.param("denNow", DenInstant)),
 								Type.base(r.param("delay", DenDelay))
 							),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						why: r.param("why", ChainRetry.fields.why),
 						root: r.param("root", ChainRetry.fields.root)
 					})
 				)
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	chainFence: ChangeSet.empty(chainGraph).insert(ChainEnded, []).insert(ChainFenced, []),
 	chainRefuse: ChangeSet.empty(chainGraph)
@@ -247,8 +253,8 @@ export const chainDenPrograms = Object.freeze({
 			.insert(ChainFinish, [])
 			.insert(ChainStartStep, [])
 			.insert(ChainScope, [])
-			.insert(ChainPageInput, [])
-			.insert(ChainPageInputAfter, [])
+			.insert(chain_page_input_jhliinhchcgno, [])
+			.insert(chain_page_input_after_gdigbcabbnakb, [])
 			.insert(
 				ChainStep,
 				query(chainGraph).rule((r) => {
@@ -265,13 +271,15 @@ export const chainDenPrograms = Object.freeze({
 						scope,
 						due: Type.cast(
 							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						root: r.param("root", ChainStep.fields.root)
 					})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	chainSkip: ChangeSet.empty(chainGraph).insert(ChainSkipped, []),
 	chainSkippedOf: query(chainGraph).rule((r) => {
@@ -442,33 +450,42 @@ export const chainDenPrograms = Object.freeze({
 				.find({ target, turn })
 		})
 	}),
-	chainReadChainPageInput: query(chainGraph).rule((r) => {
-		const { root, step, feed, seq, pages } = v(ChainPageInput, "chainPageInput")
+	chainReadchain_page_input_jhliinhchcgno: query(chainGraph).rule((r) => {
+		const { root, step, feed, seq, pages } = v(
+			chain_page_input_jhliinhchcgno,
+			"chain_page_input_jhliinhchcgno"
+		)
 		return r
-			.match(ChainPageInput, { root, step, feed, seq, pages })
+			.match(chain_page_input_jhliinhchcgno, { root, step, feed, seq, pages })
 			.where(
-				r.eq(root, r.param("root", ChainPageInput.fields.root)),
-				r.eq(step, r.param("step", ChainPageInput.fields.step))
+				r.eq(root, r.param("root", chain_page_input_jhliinhchcgno.fields.root)),
+				r.eq(step, r.param("step", chain_page_input_jhliinhchcgno.fields.step))
 			)
 			.find({ root, step, feed, seq, pages })
 	}),
-	chainReadChainPageInputAfter: query(chainGraph).rule((r) => {
-		const { root, step, value } = v(ChainPageInputAfter, "chainPageInputAfter")
+	chainReadchain_page_input_after_gdigbcabbnakb: query(chainGraph).rule((r) => {
+		const { root, step, value } = v(
+			chain_page_input_after_gdigbcabbnakb,
+			"chain_page_input_after_gdigbcabbnakb"
+		)
 		return r
-			.match(ChainPageInputAfter, { root, step, value })
+			.match(chain_page_input_after_gdigbcabbnakb, { root, step, value })
 			.where(
-				r.eq(root, r.param("root", ChainPageInputAfter.fields.root)),
-				r.eq(step, r.param("step", ChainPageInputAfter.fields.step))
+				r.eq(root, r.param("root", chain_page_input_after_gdigbcabbnakb.fields.root)),
+				r.eq(step, r.param("step", chain_page_input_after_gdigbcabbnakb.fields.step))
 			)
 			.find({ root, step, value })
 	}),
-	chainReadChainChainRunInput: query(chainGraph).rule((r) => {
-		const { root, scope, feed, pages } = v(ChainChainRunInput, "chainChainRunInput")
+	chainReadchain_chain_run_input_glnkafcnkbnnn: query(chainGraph).rule((r) => {
+		const { root, scope, feed, pages } = v(
+			chain_chain_run_input_glnkafcnkbnnn,
+			"chain_chain_run_input_glnkafcnkbnnn"
+		)
 		return r
-			.match(ChainChainRunInput, { root, scope, feed, pages })
+			.match(chain_chain_run_input_glnkafcnkbnnn, { root, scope, feed, pages })
 			.where(
-				r.eq(root, r.param("root", ChainChainRunInput.fields.root)),
-				r.eq(scope, r.param("scope", ChainChainRunInput.fields.scope))
+				r.eq(root, r.param("root", chain_chain_run_input_glnkafcnkbnnn.fields.root)),
+				r.eq(scope, r.param("scope", chain_chain_run_input_glnkafcnkbnnn.fields.scope))
 			)
 			.find({ root, scope, feed, pages })
 	}),
@@ -489,13 +506,13 @@ export const chainDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				ChainChainRunInput,
+				chain_chain_run_input_glnkafcnkbnnn,
 				query(chainGraph).rule((r) => {
-					const requested = r.relation("chainChainRunChainChainRunInput", {
-						root: ChainChainRunInput.fields.root,
-						scope: ChainChainRunInput.fields.scope,
-						feed: ChainChainRunInput.fields.feed,
-						pages: ChainChainRunInput.fields.pages
+					const requested = r.relation("chainChainRunchain_chain_run_input_glnkafcnkbnnn", {
+						root: chain_chain_run_input_glnkafcnkbnnn.fields.root,
+						scope: chain_chain_run_input_glnkafcnkbnnn.fields.scope,
+						feed: chain_chain_run_input_glnkafcnkbnnn.fields.feed,
+						pages: chain_chain_run_input_glnkafcnkbnnn.fields.pages
 					})
 					const { root, scope, feed, pages } = v(requested, "requested")
 					return r
@@ -556,14 +573,15 @@ export const chainDenPrograms = Object.freeze({
 						})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	chainOutputsChainRunPage: query(chainGraph).rule((r) => {
 		const { root, step, scope } = v(ChainStep, "step")
-		const { seq, items, earlier } = v(ChainPageOutput, "output")
+		const { seq, items, earlier } = v(chain_page_output_dniojohpmhcee, "output")
 		return r
 			.match(ChainStep, { root, step, kind: "Page", scope })
-			.match(ChainPageOutput, { root, step, seq, items, earlier })
+			.match(chain_page_output_dniojohpmhcee, { root, step, seq, items, earlier })
 			.where(
 				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope))
@@ -572,10 +590,10 @@ export const chainDenPrograms = Object.freeze({
 	}),
 	chainOutputsChainRunPageNext: query(chainGraph).rule((r) => {
 		const { root, step, scope } = v(ChainStep, "step")
-		const { value } = v(ChainPageOutputNext, "part")
+		const { value } = v(chain_page_output_next_pocjijjpkpono, "part")
 		return r
 			.match(ChainStep, { root, step, kind: "Page", scope })
-			.match(ChainPageOutputNext, { root, step, value })
+			.match(chain_page_output_next_pocjijjpkpono, { root, step, value })
 			.where(
 				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope))
@@ -584,10 +602,10 @@ export const chainDenPrograms = Object.freeze({
 	}),
 	chainInputsChainRunPage: query(chainGraph).rule((r) => {
 		const { root, step, scope } = v(ChainStep, "step")
-		const { feed, seq, pages } = v(ChainPageInput, "input")
+		const { feed, seq, pages } = v(chain_page_input_jhliinhchcgno, "input")
 		return r
 			.match(ChainStep, { root, step, kind: "Page", scope })
-			.match(ChainPageInput, { root, step, feed, seq, pages })
+			.match(chain_page_input_jhliinhchcgno, { root, step, feed, seq, pages })
 			.where(
 				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope))
@@ -596,10 +614,10 @@ export const chainDenPrograms = Object.freeze({
 	}),
 	chainInputsChainRunPageAfter: query(chainGraph).rule((r) => {
 		const { root, step, scope } = v(ChainStep, "step")
-		const { value } = v(ChainPageInputAfter, "part")
+		const { value } = v(chain_page_input_after_gdigbcabbnakb, "part")
 		return r
 			.match(ChainStep, { root, step, kind: "Page", scope })
-			.match(ChainPageInputAfter, { root, step, value })
+			.match(chain_page_input_after_gdigbcabbnakb, { root, step, value })
 			.where(
 				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope))
@@ -617,22 +635,25 @@ export const chainDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	chainReadChainOrderedInput: query(chainGraph).rule((r) => {
-		const { root, scope, feed, pages } = v(ChainOrderedInput, "chainOrderedInput")
+	chainReadchain_ordered_input_pbjpmafopnahk: query(chainGraph).rule((r) => {
+		const { root, scope, feed, pages } = v(
+			chain_ordered_input_pbjpmafopnahk,
+			"chain_ordered_input_pbjpmafopnahk"
+		)
 		return r
-			.match(ChainOrderedInput, { root, scope, feed, pages })
+			.match(chain_ordered_input_pbjpmafopnahk, { root, scope, feed, pages })
 			.where(
-				r.eq(root, r.param("root", ChainOrderedInput.fields.root)),
-				r.eq(scope, r.param("scope", ChainOrderedInput.fields.scope))
+				r.eq(root, r.param("root", chain_ordered_input_pbjpmafopnahk.fields.root)),
+				r.eq(scope, r.param("scope", chain_ordered_input_pbjpmafopnahk.fields.scope))
 			)
 			.find({ root, scope, feed, pages })
 	}),
 	chainOutputsOrderedPage: query(chainGraph).rule((r) => {
 		const { root, step, scope } = v(ChainStep, "step")
-		const { seq, items, earlier } = v(ChainPageOutput, "output")
+		const { seq, items, earlier } = v(chain_page_output_dniojohpmhcee, "output")
 		return r
 			.match(ChainStep, { root, step, kind: "Page", scope })
-			.match(ChainPageOutput, { root, step, seq, items, earlier })
+			.match(chain_page_output_dniojohpmhcee, { root, step, seq, items, earlier })
 			.where(
 				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope))
@@ -641,10 +662,10 @@ export const chainDenPrograms = Object.freeze({
 	}),
 	chainOutputsOrderedPageNext: query(chainGraph).rule((r) => {
 		const { root, step, scope } = v(ChainStep, "step")
-		const { value } = v(ChainPageOutputNext, "part")
+		const { value } = v(chain_page_output_next_pocjijjpkpono, "part")
 		return r
 			.match(ChainStep, { root, step, kind: "Page", scope })
-			.match(ChainPageOutputNext, { root, step, value })
+			.match(chain_page_output_next_pocjijjpkpono, { root, step, value })
 			.where(
 				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope))
@@ -653,10 +674,10 @@ export const chainDenPrograms = Object.freeze({
 	}),
 	chainInputsOrderedPage: query(chainGraph).rule((r) => {
 		const { root, step, scope } = v(ChainStep, "step")
-		const { feed, seq, pages } = v(ChainPageInput, "input")
+		const { feed, seq, pages } = v(chain_page_input_jhliinhchcgno, "input")
 		return r
 			.match(ChainStep, { root, step, kind: "Page", scope })
-			.match(ChainPageInput, { root, step, feed, seq, pages })
+			.match(chain_page_input_jhliinhchcgno, { root, step, feed, seq, pages })
 			.where(
 				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope))
@@ -665,10 +686,10 @@ export const chainDenPrograms = Object.freeze({
 	}),
 	chainInputsOrderedPageAfter: query(chainGraph).rule((r) => {
 		const { root, step, scope } = v(ChainStep, "step")
-		const { value } = v(ChainPageInputAfter, "part")
+		const { value } = v(chain_page_input_after_gdigbcabbnakb, "part")
 		return r
 			.match(ChainStep, { root, step, kind: "Page", scope })
-			.match(ChainPageInputAfter, { root, step, value })
+			.match(chain_page_input_after_gdigbcabbnakb, { root, step, value })
 			.where(
 				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope))
@@ -702,7 +723,8 @@ export const chainCoordinatorPrograms = Object.freeze({
 				})
 			)
 		),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	chainPause: ChangeSet.empty(chainCoordination).insert(ChainPaused, []),
 	chainResume: ChangeSet.empty(chainCoordination).insert(ChainResumed, []),
@@ -744,18 +766,18 @@ export const ChainRetirer = role(
 			"ChainHeld",
 			"ChainRefusal",
 			"ChainExhausted",
-			"ChainPageInput",
-			"ChainPageInputAfter",
-			"ChainChainRunInput",
-			"ChainOrderedInput",
-			"ChainPageOutput",
-			"ChainPageOutputNext",
-			"ChainChainRunFinishOutput",
-			"ChainOrderedFinishOutput",
-			"ChainNext",
-			"ChainPageReadWeights",
-			"ChainPageReadEarlier",
-			"ChainPageReadTree"
+			"chain_page_input_jhliinhchcgno",
+			"chain_page_input_after_gdigbcabbnakb",
+			"chain_chain_run_input_glnkafcnkbnnn",
+			"chain_ordered_input_pbjpmafopnahk",
+			"chain_page_output_dniojohpmhcee",
+			"chain_page_output_next_pocjijjpkpono",
+			"chain_chain_run_finish_output_lhniobmdeemdb",
+			"chain_ordered_finish_output_nnemphmmfdblb",
+			"chain_next_bbflpfpnlejpm",
+			"chain_page_read_weights_agiabippcbobb",
+			"chain_page_read_earlier_dgehlbgebidjc",
+			"chain_page_read_tree_lakencnpkciin"
 		]
 	}
 )
@@ -778,18 +800,18 @@ export const chainRetirerPrograms = Object.freeze({
 		ChainHeld: { root: param("root", ChainRoot.fields.root) },
 		ChainRefusal: { root: param("root", ChainRoot.fields.root) },
 		ChainExhausted: { root: param("root", ChainRoot.fields.root) },
-		ChainPageInput: { root: param("root", ChainRoot.fields.root) },
-		ChainPageInputAfter: { root: param("root", ChainRoot.fields.root) },
-		ChainChainRunInput: { root: param("root", ChainRoot.fields.root) },
-		ChainOrderedInput: { root: param("root", ChainRoot.fields.root) },
-		ChainPageOutput: { root: param("root", ChainRoot.fields.root) },
-		ChainPageOutputNext: { root: param("root", ChainRoot.fields.root) },
-		ChainChainRunFinishOutput: { root: param("root", ChainRoot.fields.root) },
-		ChainOrderedFinishOutput: { root: param("root", ChainRoot.fields.root) },
-		ChainNext: { root: param("root", ChainRoot.fields.root) },
-		ChainPageReadWeights: { root: param("root", ChainRoot.fields.root) },
-		ChainPageReadEarlier: { root: param("root", ChainRoot.fields.root) },
-		ChainPageReadTree: { root: param("root", ChainRoot.fields.root) }
+		chain_page_input_jhliinhchcgno: { root: param("root", ChainRoot.fields.root) },
+		chain_page_input_after_gdigbcabbnakb: { root: param("root", ChainRoot.fields.root) },
+		chain_chain_run_input_glnkafcnkbnnn: { root: param("root", ChainRoot.fields.root) },
+		chain_ordered_input_pbjpmafopnahk: { root: param("root", ChainRoot.fields.root) },
+		chain_page_output_dniojohpmhcee: { root: param("root", ChainRoot.fields.root) },
+		chain_page_output_next_pocjijjpkpono: { root: param("root", ChainRoot.fields.root) },
+		chain_chain_run_finish_output_lhniobmdeemdb: { root: param("root", ChainRoot.fields.root) },
+		chain_ordered_finish_output_nnemphmmfdblb: { root: param("root", ChainRoot.fields.root) },
+		chain_next_bbflpfpnlejpm: { root: param("root", ChainRoot.fields.root) },
+		chain_page_read_weights_agiabippcbobb: { root: param("root", ChainRoot.fields.root) },
+		chain_page_read_earlier_dgehlbgebidjc: { root: param("root", ChainRoot.fields.root) },
+		chain_page_read_tree_lakencnpkciin: { root: param("root", ChainRoot.fields.root) }
 	})
 })
 
@@ -799,7 +821,8 @@ export const chainRetirerWorkload = workload(ChainRetirer, chainRetirerPrograms)
 export const chainCommitPrograms = Object.freeze({
 	chainAuthenticated: clocked(
 		query(chainGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	chainCommitPage: clocked(
 		ChangeSet.union(
@@ -807,21 +830,21 @@ export const chainCommitPrograms = Object.freeze({
 				.insert(ChainResult, [])
 				.insert(ChainDone, [])
 				.insert(ChainHeld, [])
-				.insert(ChainPageOutput, [])
-				.insert(ChainPageOutputNext, [])
-				.insert(ChainPageReadWeights, [])
-				.insert(ChainPageReadEarlier, [])
-				.insert(ChainPageReadTree, [])
+				.insert(chain_page_output_dniojohpmhcee, [])
+				.insert(chain_page_output_next_pocjijjpkpono, [])
+				.insert(chain_page_read_weights_agiabippcbobb, [])
+				.insert(chain_page_read_earlier_dgehlbgebidjc, [])
+				.insert(chain_page_read_tree_lakencnpkciin, [])
 				.insert(ChainScope, [])
 				.insert(ChainAdmitted, [])
 				.insert(ChainFinish, [])
 				.insert(ChainStartStep, [])
-				.insert(ChainPageInput, [])
-				.insert(ChainPageInputAfter, [])
-				.insert(ChainNext, [])
-				.insertAll(recordsFacts(chainGraph, ChainPageReadWeightsRecords)([]))
-				.insertAll(recordsFacts(chainGraph, ChainPageReadEarlierRecords)([]))
-				.insertAll(recordsFacts(chainGraph, ChainPageReadTreeRecords)([]))
+				.insert(chain_page_input_jhliinhchcgno, [])
+				.insert(chain_page_input_after_gdigbcabbnakb, [])
+				.insert(chain_next_bbflpfpnlejpm, [])
+				.insertAll(recordsFacts(chainGraph, chain_page_read_weights_agiabippcbobbRecords)([]))
+				.insertAll(recordsFacts(chainGraph, chain_page_read_earlier_dgehlbgebidjcRecords)([]))
+				.insertAll(recordsFacts(chainGraph, chain_page_read_tree_lakencnpkciinRecords)([]))
 				.insert(
 					ChainStep,
 					query(chainGraph).rule((r) => {
@@ -838,7 +861,8 @@ export const chainCommitPrograms = Object.freeze({
 							scope,
 							due: Type.cast(
 								Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
-								DenInstant
+								DenInstant,
+								denInstantKey
 							),
 							root: r.param("root", ChainStep.fields.root)
 						})
@@ -846,7 +870,8 @@ export const chainCommitPrograms = Object.freeze({
 				),
 			declaredFlow.kinds[0].writes.changes(Loader)
 		),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	chainReadPage: query(Loader).reads(declaredFlow.kinds[0].reads.named),
 	chainCommitChainRunFinish: ChangeSet.union(
@@ -854,7 +879,7 @@ export const chainCommitPrograms = Object.freeze({
 			.insert(ChainResult, [])
 			.insert(ChainDone, [])
 			.insert(ChainHeld, [])
-			.insert(ChainChainRunFinishOutput, []),
+			.insert(chain_chain_run_finish_output_lhniobmdeemdb, []),
 		declaredFlow.kinds[1].finish.writes.changes(Loader)
 	),
 	chainCommitOrderedFinish: ChangeSet.union(
@@ -862,7 +887,7 @@ export const chainCommitPrograms = Object.freeze({
 			.insert(ChainResult, [])
 			.insert(ChainDone, [])
 			.insert(ChainHeld, [])
-			.insert(ChainOrderedFinishOutput, []),
+			.insert(chain_ordered_finish_output_nnemphmmfdblb, []),
 		declaredFlow.kinds[2].finish.writes.changes(Loader)
 	)
 })
@@ -887,13 +912,13 @@ export const chainRequests = Object.freeze({
 			})
 		)
 		.insert(
-			ChainOrderedInput,
+			chain_ordered_input_pbjpmafopnahk,
 			query(chainGraph).rule((r) => {
-				const requested = r.relation("chainOrderedChainOrderedInput", {
-					root: ChainOrderedInput.fields.root,
-					scope: ChainOrderedInput.fields.scope,
-					feed: ChainOrderedInput.fields.feed,
-					pages: ChainOrderedInput.fields.pages
+				const requested = r.relation("chainOrderedchain_ordered_input_pbjpmafopnahk", {
+					root: chain_ordered_input_pbjpmafopnahk.fields.root,
+					scope: chain_ordered_input_pbjpmafopnahk.fields.scope,
+					feed: chain_ordered_input_pbjpmafopnahk.fields.feed,
+					pages: chain_ordered_input_pbjpmafopnahk.fields.pages
 				})
 				const { root, scope, feed, pages } = v(requested, "requested")
 				return r
@@ -958,5 +983,10 @@ export const chainRequests = Object.freeze({
 
 /** What each of the flow's requests inserts, by its root: a role whose write composes a request inserts these beside its write's own, and none of den's step commits; a role composing several of the flow's requests names each relation in its insert list once. */
 export const chainRequestWrites = Object.freeze({
-	Ordered: ["ChainScope", "ChainOrderedInput", "ChainRequestedWith", "ChainRoot"] as const
+	Ordered: [
+		"ChainScope",
+		"chain_ordered_input_pbjpmafopnahk",
+		"ChainRequestedWith",
+		"ChainRoot"
+	] as const
 })

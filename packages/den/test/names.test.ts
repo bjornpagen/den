@@ -1,29 +1,49 @@
 import {
-	CompileError,
+	closedId,
+	conversionOf,
+	type FieldBase,
 	natural,
+	parseDeclaredName,
+	pg,
 	query,
-	records,
+	recordPaths,
 	relation,
 	schema,
 	sha256,
 	v
 } from "@bjornpagen/grizzle"
-import { exhaust } from "@bjornpagen/testing/explore"
-import { requiredInSpace } from "@bjornpagen/testing/features"
-import { element } from "@bjornpagen/testing/gen"
+import { lawsOf } from "@bjornpagen/grizzle/compile"
+import * as Dynamic from "@bjornpagen/grizzle/dynamic"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { array, element, type Gen, int, map, uniqueArray } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { testWorkers } from "@bjornpagen/testing/workers"
 import { assert, it } from "@effect/vitest"
 import { regex } from "arkregex"
-import { Array as Arr, Effect, Formatter, Option, Schema, String as Str } from "effect"
-import { flow } from "#algebra/flow.ts"
 import {
+	Array as Arr,
+	Effect,
+	Formatter,
+	Option,
+	Record as Rec,
+	Schema,
+	String as Str
+} from "effect"
+import { type AnyFlow, flow, stepsOf } from "#algebra/flow.ts"
+import {
+	type AnyEdge,
+	type AnyStepKind,
 	always,
 	atSpawn,
+	edge,
 	given,
 	none,
 	operator,
-	reads,
+	type ReadsOver,
+	nameBytes,
+	Refused,
 	root,
 	shared,
 	step,
@@ -31,224 +51,165 @@ import {
 	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
-import { lower } from "#lower/fragment.ts"
-import { Text } from "#lower/keys.ts"
-import { type Placement, printFragment } from "#lower/print.ts"
+import { type FieldType, type Lowered, lower } from "#lower/fragment.ts"
+import { DenEnvironment, DenInstant, Text } from "#lower/keys.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
- * A step's reads state relation names for their records, and den forwards them to grizzle's records(...) of each named
- * query (kinds.ts ReadsNames): metis's one read of an item's documents, the item's document with its scan and each
- * stimulus's document with its own, under den's stem for the read, `EssayGradingItemReadDoc`, derives names past
- * PostgreSQL's 63 bytes for the scans' repeated paths (a node's document row's declaration's standalone), which grizzle
- * refuses as RecordNameTooLong naming the path, and stating a name for each scan's document row, under which its
- * children's names chain, makes every name fit.
+ * den's naming door (lower/names.ts): every name den derives from a flow's names takes one form, `<stem>_<digest>`, a
+ * stem of its identity's segments cut to a fixed budget and a digest of its whole identity, whatever its length, so no
+ * nesting and no length of a flow's names carries a name past PostgreSQL's 63 bytes; a flow's own singletons stay
+ * readable, `<P><Word>`, and a flow whose name cannot hold den's words is refused at den's door, naming the flow, before
+ * grizzle sees it; two identities never meet under one name; and a read's records are named by den at every attachment
+ * path its query has (grizzle's recordPaths), records deriving none.
  *
- * Oracle (specification): grizzle's records(...) over the arguments den prints, its stem, the read's query, a digest
- * owner and the read's stated names: the read that states its names compiles, every relation's name within PostgreSQL's
- * 63 bytes, and the one that states none is refused as RecordNameTooLong at the path past them; den prints the names'
- * forwarding exactly where its reads state them. Mutant it kills: printing no names, which prints a read's records
- * without them.
+ * Property: over drawn flows, a flow's name, its steps' names, their input fields' names and forms, their reads' names
+ * and an edge's name each of one to six words drawn from a vocabulary whose words compose into one another (so a
+ * readable concatenation of two identities' names can be one name) and run long, and each read's query nested to any of
+ * the depths its box holds under attachments of long names: a flow whose name fits den's longest word beside it and
+ * whose steps' names fit a roster's handle is lowered, never refused, and any other is refused at den's door, naming
+ * the flow or the step; every name it lowers to, each records' root and each attachment path's name among them, is
+ * admitted by grizzle's declared-name rule; every name is the flow's singleton or of the one derived form, its
+ * conversion itself and its last segment a digest; no two declarations share a conversion; every attachment path of
+ * every read is named; and a schema of every relation and roster the lowering names, and every relation of every
+ * read's records, compiles through grizzle.
+ *
+ * Kept case: metis's essay flow, whose item step reads the stimuli its item cites with each stimulus's document and the
+ * document's scan nested under the citation (metis packages/essay-grading/src/documents.ts and reads.ts, delivery's
+ * scannedDocument, pantry's documentScanOf), where den's readable composition named the deepest path
+ * `EssayItemReadCitedDocumentScanDocumentRowDeclarationStandalone`, past PostgreSQL's bytes: it must reach that.
+ *
+ * Oracle (specification): grizzle's declared-name rule (parseDeclaredName), its conversion (conversionOf), its
+ * recordPaths and its compile of a schema (lawsOf), and the derived form the naming door states. Mutants it kills: a
+ * derived name of its stem alone, the digest dropped (`name: Arr.join(stemOf(segments), "_")`), whose two identities of
+ * one cut stem meet under one name and whose names hold no digest; and a derived name readable wherever it fits, hashed
+ * only past the budget (`Arr.join(segments, "_").length <= stemBudget ? Arr.join(segments, "_") : …`), whose short
+ * names hold no digest and whose readable concatenations of two identities meet.
  */
 
-/** Whether the read states a name for the path above the overlong one, or none. */
-const Stating = Schema.Literals(["states the path above the overlong one", "states none"])
-type Stating = typeof Stating.Type
+/** The level the reads are over: the nodes of documents, one relation every query of the box reads. */
+const Node = relation("Node", { doc: Text, at: natural }, ["doc", "at"])
+const Docs = schema("Docs", [Node], [])
 
-const Document = relation("Document", { package: Text, path: Text }, ["package", "path"])
-const Node = relation("Node", { package: Text, path: Text, start: natural, chars: Text }, [
-	"package",
-	"path",
-	"start"
-])
-const XmlDecl = relation("XmlDecl", { package: Text, path: Text, version: Text }, [
-	"package",
-	"path"
-])
-const SdDecl = relation("SdDecl", { package: Text, path: Text, standalone: Text }, [
-	"package",
-	"path"
-])
-const Cite = relation("Cite", { package: Text, path: Text, start: natural, target: Text }, [
-	"package",
-	"path",
-	"start"
-])
-const Bank = schema("Bank", [Document, Node, XmlDecl, SdDecl, Cite], [])
+/** A query of every node: each level of a box's query, whose head names none of its attachments. */
+const nodes = () =>
+	query(Docs).rule((r) => {
+		const { doc, at } = v(Node, "node")
+		return r.match(Node, { doc, at }).find({ doc, at })
+	})
 
 /**
- * An item's document by its key with its scan, and each stimulus it cites with its document and that document's scan,
- * each scan's node with its document's row, the row's declaration and the declaration's standalone (documentScanOf's
- * shape, metis's one read of an item's documents): the scan's names repeat under the item and under each stimulus, so
- * records chain each repeated name under its parent's.
+ * metis's item read of its cited stimuli: each citation with its stimulus's document, the document with its scan, and
+ * each scanned node with what documentScanOf attaches to it, the document row's declaration with its encoding and its
+ * standalone, an attribute's entities among them. Every child is an array of nodes: a records' relation is named by its
+ * path alone, never by its delivery.
  */
-const itemDocuments = query(Bank)
-	.rule((r) => {
-		const { package: pkg, path } = v(Document, "document")
-		return r
-			.match(Document, { package: pkg, path })
-			.where(
-				r.eq(pkg, r.param("package", Document.fields.package)),
-				r.eq(path, r.param("path", Document.fields.path))
-			)
-			.find({ package: pkg, path })
-	})
-	.attach(
-		"scan",
-		(document) =>
-			query(Bank)
-				.rule((r) => {
-					const { start, chars } = v(Node, "node")
-					return r
-						.match(Node, { package: document.package, path: document.path, start, chars })
-						.find({ package: document.package, path: document.path, start, chars })
-				})
-				.attach(
-					"documentRow",
-					(node) =>
-						query(Bank)
-							.rule((r) =>
-								r
-									.match(Document, { package: node.package, path: node.path })
-									.find({ package: node.package, path: node.path })
-							)
-							.attach(
+const citedWithScans = nodes().attach(
+	"document",
+	() =>
+		nodes().attach(
+			"scan",
+			() =>
+				nodes()
+					.attach("comment", () => nodes(), "array")
+					.attach("pi", () => nodes(), "array")
+					.attach("doctype", () => nodes(), "array")
+					.attach("elementType", () => nodes(), "array")
+					.attach("openElementType", () => nodes(), "array")
+					.attach("openElementName", () => nodes(), "array")
+					.attach(
+						"documentRow",
+						() =>
+							nodes().attach(
 								"declaration",
-								(row) =>
-									query(Bank)
-										.rule((r) => {
-											const { version } = v(XmlDecl, "declaration")
-											return r
-												.match(XmlDecl, { package: row.package, path: row.path, version })
-												.find({ package: row.package, path: row.path, version })
-										})
-										.attach(
-											"standalone",
-											(declaration) =>
-												query(Bank).rule((r) => {
-													const { standalone } = v(SdDecl, "standalone")
-													return r
-														.match(SdDecl, {
-															package: declaration.package,
-															path: declaration.path,
-															standalone
-														})
-														.find({ standalone })
-												}),
-											"option"
-										),
-								"option"
-							),
-					"option"
-				)
-				.orderBy(["start", "asc"]),
-		"array"
-	)
-	.attach(
-		"stimuli",
-		(item) =>
-			query(Bank)
-				.rule((r) => {
-					const { start, target } = v(Cite, "cite")
-					return r
-						.match(Cite, { package: item.package, path: item.path, start, target })
-						.find({ package: item.package, start, target })
-				})
-				.attach(
-					"document",
-					(cite) =>
-						query(Bank)
-							.rule((r) =>
-								r
-									.match(Document, { package: cite.package, path: cite.target })
-									.find({ package: cite.package, path: cite.target })
-							)
-							.attach(
-								"scan",
-								(document) =>
-									query(Bank)
-										.rule((r) => {
-											const { start, chars } = v(Node, "node")
-											return r
-												.match(Node, {
-													package: document.package,
-													path: document.path,
-													start,
-													chars
-												})
-												.find({ package: document.package, path: document.path, start, chars })
-										})
-										.attach(
-											"documentRow",
-											(node) =>
-												query(Bank)
-													.rule((r) =>
-														r
-															.match(Document, { package: node.package, path: node.path })
-															.find({ package: node.package, path: node.path })
-													)
-													.attach(
-														"declaration",
-														(row) =>
-															query(Bank)
-																.rule((r) => {
-																	const { version } = v(XmlDecl, "declaration")
-																	return r
-																		.match(XmlDecl, {
-																			package: row.package,
-																			path: row.path,
-																			version
-																		})
-																		.find({ package: row.package, path: row.path, version })
-																})
-																.attach(
-																	"standalone",
-																	(declaration) =>
-																		query(Bank).rule((r) => {
-																			const { standalone } = v(SdDecl, "standalone")
-																			return r
-																				.match(SdDecl, {
-																					package: declaration.package,
-																					path: declaration.path,
-																					standalone
-																				})
-																				.find({ standalone })
-																		}),
-																	"option"
-																),
-														"option"
-													),
-											"option"
-										)
-										.orderBy(["start", "asc"]),
+								() =>
+									nodes()
+										.attach("encoding", () => nodes(), "array")
+										.attach("standalone", () => nodes(), "array"),
 								"array"
 							),
-					"option"
-				)
-				.orderBy(["start", "asc"]),
-		"array"
-	)
+						"array"
+					)
+					.attach("attributes", () => nodes().attach("entities", () => nodes(), "array"), "array")
+					.attach(
+						"openAttributes",
+						() => nodes().attach("entities", () => nodes(), "array"),
+						"array"
+					)
+					.attach("namespaces", () => nodes(), "array"),
+			"array"
+		),
+	"array"
+)
 
-const params = (item: { readonly package: string; readonly path: string }) => ({
-	"doc.package": item.package,
-	"doc.path": item.path
-})
+/** An attachment's name longer than any identifier: a path of one already passes PostgreSQL's bytes. */
+const deeper = "everyDocumentTheCitationNamesWithEachScannedNodeOfItAndTheEntitiesOfItsAttributes"
+
+/** A query nested six levels deep under the one long attachment name, repeated at every level. */
+const deep1 = nodes().attach(deeper, () => nodes(), "array")
+const deep2 = nodes().attach(deeper, () => deep1, "array")
+const deep3 = nodes().attach(deeper, () => deep2, "array")
+const deep4 = nodes().attach(deeper, () => deep3, "array")
+const deep5 = nodes().attach(deeper, () => deep4, "array")
+const deep6 = nodes().attach(deeper, () => deep5, "array")
+
+/** The queries a read is drawn from: flat, nested one to six levels under a long name, and metis's citations. */
+const box = [nodes(), deep1, deep2, deep3, deep4, deep5, deep6, citedWithScans] as const
 
 /**
- * The item's reads, stating a name for each scan's document row, the item's and its stimuli's, under which each row's
- * declaration and standalone chain their names.
+ * The words a name is drawn of: den's own words among them, so a flow's names compose into the names den composes (an
+ * edge named as a step's input's option), and long ones, so a name runs past PostgreSQL's bytes.
  */
-const ItemReadsNamed = reads(Bank, { doc: itemDocuments }, params, {
-	names: {
-		doc: {
-			"scan.documentRow": "EssayItemRow",
-			"stimuli.document.scan.documentRow": "EssayStimulusRow"
-		}
-	}
-})
+const words = [
+	"Page",
+	"Input",
+	"Output",
+	"Read",
+	"Value",
+	"Key",
+	"Row",
+	"Item",
+	"Documentation",
+	"CitationOfTheStimulus"
+] as const
 
-/** The item's reads, stating no name. */
-const ItemReadsDerived = reads(Bank, { doc: itemDocuments }, params)
+/** A PascalCase name of one to `most` words. */
+const pascal = (most: number): Gen<string> =>
+	map(array(element(words), { min: 1, max: most }), (drawnWords) => Arr.join(drawnWords, ""))
+
+/** A camelCase name of one to `most` words. */
+const camel = (most: number): Gen<string> => map(pascal(most), Str.uncapitalize)
+
+/** What a drawn input field holds. */
+const Form = Schema.Literals(["text", "finite", "literals", "option", "array", "union"])
+type Form = typeof Form.Type
+
+/** A drawn flow: its name, its steps' names and fields, the first step's reads by their box index, and an edge's name. */
+interface Drawn {
+	readonly flow: string
+	readonly root: string
+	readonly steps: readonly [string, string]
+	readonly fields: ReadonlyArray<{ readonly name: string; readonly form: Form }>
+	readonly reads: ReadonlyArray<{ readonly name: string; readonly query: number }>
+	readonly edge: string
+}
+
+const fieldOf = (form: Form) => {
+	switch (form) {
+		case "text":
+			return Schema.String
+		case "finite":
+			return Schema.Finite
+		case "literals":
+			return Schema.Literals(["low", "high"])
+		case "option":
+			return Schema.Option(Schema.String)
+		case "array":
+			return Schema.Array(Schema.BigInt)
+		case "union":
+			return Schema.TaggedUnion({ Serve: { item: Schema.String }, Rest: {} })
+	}
+}
 
 const finishing = {
 	reads: [],
@@ -261,16 +222,31 @@ const finishing = {
 	body: () => Effect.succeed({ output: {} })
 } as const
 
-/** metis's essay grading, its item step reading the item's document. */
-const grading = (stating: Stating) => {
-	const Application = Schema.Struct({ package: Schema.String, path: Schema.String })
-	const Item = step(
-		"Item",
+/** The reads a step declares: each named query of the box, none where it reads nothing. */
+const readsOf = <I>(reads: Drawn["reads"]): ReadsOver<I> =>
+	Arr.isReadonlyArrayNonEmpty(reads)
+		? {
+				kind: "query",
+				over: Docs,
+				named: Rec.fromEntries(
+					Arr.map(reads, (read) => [read.name, Arr.getUnsafe(box, read.query)] as const)
+				),
+				params: () => ({})
+			}
+		: { kind: "none" }
+
+/** A drawn flow, built: its first step reading, its second spawned by the edge from it, both started by its root. */
+const built = (d: Drawn): AnyFlow => {
+	const input = Schema.Struct(
+		Rec.fromEntries(Arr.map(d.fields, (field) => [field.name, fieldOf(field.form)] as const))
+	)
+	const first = step(
+		d.steps[0],
 		{
-			input: Application,
+			input,
 			output: Schema.Struct({}),
 			error: Schema.Never,
-			reads: stating === "states none" ? ItemReadsDerived : ItemReadsNamed,
+			reads: readsOf(d.reads),
 			awaits: [],
 			uses: [],
 			retry: none,
@@ -280,137 +256,321 @@ const grading = (stating: Stating) => {
 		},
 		() => Effect.succeed({ output: {} })
 	)
-	const Sitting = root("Sitting", {
+	const second = step(
+		d.steps[1],
+		{
+			input: Schema.Struct({}),
+			output: Schema.Struct({}),
+			error: Schema.Never,
+			reads: { kind: "none" },
+			awaits: [],
+			uses: [],
+			retry: none,
+			waits: none,
+			due: atSpawn,
+			writes: writesNothing
+		},
+		() => Effect.succeed({ output: {} })
+	)
+	const kinds: ReadonlyArray<AnyStepKind> = [first, second]
+	const edges: ReadonlyArray<AnyEdge> = [edge(d.edge, first, second, () => [{}])]
+	const run = root(d.root, {
 		trigger: operator,
 		from: given,
 		input: Schema.Struct({}),
-		children: [Item],
+		children: [first],
 		start: () => [],
 		exclusive: shared,
 		window: always,
 		precondition: unconditional,
 		finish: finishing
 	})
-	return flow("EssayGrading", {
-		writes: writer<{ readonly name: "grader" }>("grader"),
-		kinds: [Item, Sitting],
-		edges: []
+	return flow(d.flow, {
+		writes: writer<{ readonly name: "loader" }>("loader"),
+		kinds: [...kinds, run],
+		edges
 	})
 }
 
-/** Where the fragment is placed; it is printed, never loaded. */
-const placement: Placement = {
-	fragment: "#fragment.ts",
-	programs: "#programs.ts",
-	relations: "#relations.ts",
-	schema: { from: "#app.ts", name: "App" },
-	writer: { from: "#roles.ts", name: "Grader" },
-	flow: { from: "#flows.ts", name: "flow" },
-	reads: { from: "#reads.ts", exports: {} }
+/**
+ * The longest word den lowers a flow's singletons by, in its conversion's bytes: `RequestedWith`, every flow's, whose
+ * conversion is `requested_with`; a flow whose name's conversion leaves it room fits every singleton but a seat's.
+ */
+const longestWordBytes = Str.length("_requested_with")
+
+/** A derived name's digest: its last segment, thirteen letters from a to p. */
+const DIGEST = regex("^[a-p]{13}$")
+
+/** The suffix grizzle's records give the stem of a read's records, their root's. */
+const ROW = regex("Row$")
+
+/** Whether a name is of the derived form: its conversion itself, its last segment a digest. */
+const derivedForm = (name: string): boolean =>
+	conversionOf(name) === name && DIGEST.test(Arr.lastNonEmpty(Str.split(name, "_")))
+
+/** A field as grizzle declares it, for the schema that compiles the lowering's names. */
+const fieldExpr = (
+	type: FieldType,
+	rosters: ReadonlyMap<string, ReturnType<typeof Dynamic.closed.unordered>>
+): FieldBase => {
+	switch (type.kind) {
+		case "key":
+			return type.contract === "DenInstant" ? DenInstant : DenEnvironment
+		case "digest":
+			return sha256
+		case "natural":
+		case "place":
+		case "drawn":
+			return natural
+		case "closed":
+			return Option.match(Option.fromNullishOr(rosters.get(type.roster)), {
+				onNone: () => Text,
+				onSome: (roster) => closedId(roster)
+			})
+		case "brand":
+		case "app":
+		case "vector":
+			return Text
+		case "base":
+			switch (type.base) {
+				case "text":
+					return Text
+				case "bigint":
+					return pg.bigint
+				case "double":
+					return pg["double precision"]
+				case "boolean":
+					return pg.boolean
+			}
+	}
+}
+
+/** Every name a lowering gives grizzle's one namespace: its relations, rosters and each read's records'. */
+const namesOf = (lowered: Lowered): ReadonlyArray<string> => [
+	...Arr.map(lowered.relations, (r) => r.name),
+	...Arr.map(lowered.rosters, (r) => r.name),
+	...Arr.flatMap(Option.toArray(lowered.seats), (st) => [st.counts.name, st.live]),
+	...Arr.flatMap(lowered.steps, (s) =>
+		Arr.flatMap(s.reads, (read) => [`${read.stem}Row`, ...Arr.map(read.paths, (at) => at.name)])
+	)
+]
+
+/** Whatever a lowering's names hold, checked against grizzle (see the module's doc); `what` names the case. */
+const namesHold = (declaredFlow: AnyFlow, lowered: Lowered, what: string): void => {
+	const names = namesOf(lowered)
+	const checks = Arr.flatMap(lowered.laws, (law) => (law.kind === "check" ? [law.name] : []))
+	Arr.forEach([...names, ...checks], (name) => {
+		const parsed = parseDeclaredName(name)
+		assert.isTrue(parsed.ok, `${what}: grizzle admits ${name}`)
+		assert.isTrue(
+			Str.startsWith(lowered.prefix)(name) || derivedForm(Str.replace(ROW, "")(name)),
+			`${what}: ${name} is the flow's singleton or of the derived form`
+		)
+		assert.isAtMost(Str.length(conversionOf(name)), nameBytes, `${what}: ${name} fits`)
+	})
+	const conversions = Arr.map(names, conversionOf)
+	assert.strictEqual(
+		Arr.dedupe(conversions).length,
+		conversions.length,
+		`${what}: no two declarations meet under one name`
+	)
+	assert.strictEqual(Arr.dedupe(checks).length, checks.length, `${what}: no two checks meet`)
+	Arr.forEach(stepsOf(declaredFlow.kinds), (kind) =>
+		Arr.forEach(
+			kind.reads.kind === "query" ? Rec.toEntries(kind.reads.named) : [],
+			([readName, readQuery]) =>
+				assert.deepStrictEqual(
+					Arr.flatMap(lowered.steps, (s) =>
+						s.name === kind.name
+							? Arr.flatMap(s.reads, (read) =>
+									read.name === readName ? Arr.map(read.paths, (at) => at.path) : []
+								)
+							: []
+					),
+					recordPaths(readQuery),
+					`${what}: every attachment path of ${readName} is named`
+				)
+		)
+	)
+	const rosters = new Map(
+		Arr.map(lowered.rosters, (r) => [r.name, Dynamic.closed.unordered(r.name, r.handles)] as const)
+	)
+	const relations = Arr.map(lowered.relations, (r) =>
+		Dynamic.relation(
+			r.name,
+			Rec.fromEntries(Arr.map(r.fields, (f) => [f.name, fieldExpr(f.type, rosters)] as const)),
+			r.key
+		)
+	)
+	const records = Arr.flatMap(lowered.steps, (s) =>
+		Arr.flatMap(s.reads, (read) =>
+			Arr.map([`${read.stem}Row`, ...Arr.map(read.paths, (at) => at.name)], (name) =>
+				Dynamic.relation(name, { digest: sha256 }, ["digest"])
+			)
+		)
+	)
+	lawsOf(schema("Names", [...rosters.values(), ...relations, ...records], []))
 }
 
 /**
- * How records(...) refused: its compile error's reason's tag and the path it names (its attachment names, joined by
- * `.`).
+ * A drawn input field's name: of one to three of the short words, so it composes into den's names as the others do and
+ * fits grizzle's own door for a column, the author's name verbatim, a closed id's decoded column `<field>_name` beside
+ * it.
  */
-const refusalOf = (thrown: unknown): { readonly tag: string; readonly path: string } =>
-	thrown instanceof CompileError
-		? {
-				tag: thrown.reason._tag,
-				path: thrown.reason._tag === "RecordNameTooLong" ? Arr.join(thrown.reason.path, ".") : ""
-			}
-		: { tag: "another refusal", path: String(thrown) }
+const fieldGen: Gen<string> = map(
+	array(element(["page", "input", "output", "value", "key", "row", "item"] as const), {
+		min: 1,
+		max: 3
+	}),
+	(drawnWords) => Str.uncapitalize(Arr.join(Arr.map(drawnWords, Str.capitalize), ""))
+)
 
-/** PostgreSQL's identifiers, in bytes: what no relation name's conversion may pass. */
-const identifierBytes = 63
+/** A drawn flow (Drawn): every name of one to six words, the first step's reads each a query of the box. */
+const drawnFlow: Gen<Drawn> = (source) => {
+	const first = source.draw(pascal(6))
+	return {
+		flow: source.draw(pascal(5)),
+		root: "Run",
+		steps: [first, `${first}${source.draw(pascal(2))}`],
+		fields: source.draw(
+			uniqueArray(fieldGen, (name) => map(element(Form.literals), (form) => ({ name, form })), {
+				min: 0,
+				max: 3
+			})
+		),
+		reads: source.draw(
+			uniqueArray(camel(6), (name) => map(int(0, box.length - 1), (at) => ({ name, query: at })), {
+				min: 0,
+				max: 2
+			})
+		),
+		edge: source.draw(pascal(6))
+	}
+}
 
-/** A lowercase letter or a digit and the capital after it, where grizzle's conversion puts an underscore. */
-const WORD_BOUNDARY = regex("([a-z0-9])([A-Z])", "g")
+type Feature =
+	| "refused at den's door"
+	| "lowered"
+	| "a read nested two levels or more"
+	| "a flow's step whose readable names pass the stem's budget"
+	| "a records path whose readable name passes PostgreSQL's bytes"
 
-/** A relation's name as PostgreSQL holds it, grizzle's conversion: its words lowercased, joined by underscores. */
-const conversion = (name: string): string =>
-	Str.toLowerCase(Str.replaceAll(WORD_BOUNDARY, "$1_$2")(name))
+/**
+ * The readable name den once composed for the records at `path` of the read `read` of `stepName` of `flowName`: the
+ * flow's, the step's, `Read`, the read's and each attachment's names, capitalized and joined, which passes PostgreSQL's
+ * bytes where nesting runs deep.
+ */
+const readableRecordsName = (
+	flowName: string,
+	stepName: string,
+	read: string,
+	path: string
+): string =>
+	Arr.join(Arr.map([flowName, stepName, "Read", read, ...Str.split(path, ".")], Str.capitalize), "")
+
+/** Lowers a drawn flow: its refusal at den's door, or its names held against grizzle. */
+const lowersWithin = (d: Drawn, note: (feature: Feature) => void): Effect.Effect<void> =>
+	Effect.gen(function* () {
+		const fits =
+			Str.length(conversionOf(d.flow)) + longestWordBytes <= nameBytes &&
+			Arr.every(d.steps, (name) => Str.length(name) <= nameBytes)
+		const lowering = yield* Effect.result(
+			Effect.try({
+				try: () => {
+					const declaredFlow = built(d)
+					return { declaredFlow, lowered: lower(declaredFlow) }
+				},
+				catch: (thrown): Option.Option<Refused> =>
+					thrown instanceof Refused ? Option.some(thrown) : Option.none()
+			})
+		)
+		if (lowering._tag === "Failure") {
+			note("refused at den's door")
+			const refused = lowering.failure
+			assert.isTrue(
+				Option.exists(refused, (r) =>
+					Arr.contains(
+						[`flow ${d.flow}`, ...Arr.map(d.steps, (name) => `step ${name}`)],
+						r.declaration
+					)
+				),
+				`a refusal is den's, naming the flow or a step: ${Formatter.format(refused)}`
+			)
+			assert.isFalse(fits, `a flow whose names fit is never refused: ${Formatter.format(refused)}`)
+			return
+		}
+		note("lowered")
+		if (Arr.some(d.reads, (read) => read.query >= 2)) {
+			note("a read nested two levels or more")
+		}
+		if (Str.length(conversionOf(`${d.flow}${d.steps[0]}Output`)) > nameBytes) {
+			note("a flow's step whose readable names pass the stem's budget")
+		}
+		if (
+			Arr.some(d.reads, (read) =>
+				Arr.some(
+					recordPaths(Arr.getUnsafe(box, read.query)),
+					(path) => !parseDeclaredName(readableRecordsName(d.flow, d.steps[0], read.name, path)).ok
+				)
+			)
+		) {
+			note("a records path whose readable name passes PostgreSQL's bytes")
+		}
+		namesHold(lowering.success.declaredFlow, lowering.success.lowered, Formatter.format(d))
+	})
+
+/** The kept case's flow: metis's essay grading, its item step reading its citations with their scans nested. */
+const metisEssay: Drawn = {
+	flow: "Essay",
+	root: "Sitting",
+	steps: ["Item", "Xml"],
+	fields: [],
+	reads: [{ name: "cited", query: 7 }],
+	edge: "Cites"
+}
 
 it.effect(
-	"forwards a read's stated record names, which fit a deep read's names grizzle refuses without them",
+	"names every derived declaration in one form within PostgreSQL's bytes, each identity its own",
 	(ctx) =>
 		searched(
 			ctx,
-			exhaust(
+			explore(
 				{
-					suite: "record names",
-					generator: element(Stating.literals),
-					literal: Formatter.format,
-					coverage: requiredInSpace<Stating>(Stating.literals),
-					caseHang: caseHangMillis,
-					box: "metis's item read, a document with its scan, each node's document row, declaration and standalone",
+					suite: "den's names",
 					oracle: {
 						kind: "specification",
-						name: "grizzle's records(...) over the arguments den prints, and den's forwarding where names are stated"
+						name: "grizzle's declared-name rule, conversion, recordPaths and compile, and the derived form"
 					},
-					concurrency: testWorkers
-				},
-				(stating, c) =>
-					Effect.gen(function* () {
-						c.note(stating)
-						const lowered = lower(grading(stating))
-						const stem = Option.getOrThrow(
-							Arr.findFirst(
-								Arr.flatMap(lowered.steps, (s) => s.reads),
-								(read) => read.name === "doc"
-							)
-						).stem
-						assert.strictEqual(stem, "EssayGradingItemReadDoc")
-						const forwarded = ", { names: ItemReads.options[0].names.doc }"
-						assert.include(
-							printFragment(lowered, placement),
-							`records("EssayGradingItemReadDoc", ItemReads.named.doc, { digest: sha256 }, ["digest"]${stating === "states none" ? "" : forwarded})`,
-							"den prints the read's records with its stated names, and without where it states none"
-						)
-						if (stating === "states none") {
-							const refused = yield* Effect.flip(
-								Effect.try({
-									try: () =>
-										records(
-											"EssayGradingItemReadDoc",
-											ItemReadsDerived.named.doc,
-											{ digest: sha256 },
-											["digest"]
-										),
-									catch: refusalOf
-								})
-							)
-							assert.deepStrictEqual(
-								refused,
-								{ tag: "RecordNameTooLong", path: "scan.documentRow.declaration.standalone" },
-								"the derived names refuse a scan's deepest path, past PostgreSQL's bytes"
-							)
-						} else {
-							const made = yield* Effect.try({
-								try: () =>
-									records(
-										"EssayGradingItemReadDoc",
-										ItemReadsNamed.named.doc,
-										{ digest: sha256 },
-										["digest"],
-										{ names: ItemReadsNamed.options[0].names.doc }
-									),
-								catch: refusalOf
-							})
-							const names: ReadonlyArray<string> = Arr.map(
-								made.relations,
-								(rel): string => rel.name
-							)
-							assert.isTrue(
-								Arr.every(names, (name) => Str.length(conversion(name)) <= identifierBytes),
-								"every relation's name fits PostgreSQL's identifiers"
-							)
-							assert.isTrue(
-								Arr.contains(names, "EssayStimulusRowDeclarationStandalone"),
-								"a stated name leads its children's derived names"
-							)
+					draw: drawn(drawnFlow),
+					literal: Formatter.format,
+					coverage: required<Feature>(
+						[
+							"refused at den's door",
+							"lowered",
+							"a read nested two levels or more",
+							"a flow's step whose readable names pass the stem's budget",
+							"a records path whose readable name passes PostgreSQL's bytes"
+						],
+						{ cases: 60, sense: notesOnly }
+					),
+					kept: [
+						{
+							note: "metis's essay flow: its item step reads the stimuli its item cites with each stimulus's document and the document's scan nested under the citation, whose readable records name EssayItemReadCitedDocumentScanDocumentRowDeclarationStandalone passes PostgreSQL's bytes (metis packages/essay-grading/src/documents.ts and reads.ts, delivery's scannedDocument, pantry's documentScanOf)",
+							sketch: metisEssay,
+							draws: "",
+							reaches: [
+								"lowered",
+								"a read nested two levels or more",
+								"a records path whose readable name passes PostgreSQL's bytes"
+							]
 						}
-					})
+					],
+					runs: 120,
+					shrink: boundedShrink(40),
+					steerEvery: 16,
+					caseHang: caseHangMillis
+				},
+				(d, c) => lowersWithin(d, c.note)
 			)
 		)
 )

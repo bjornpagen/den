@@ -56,7 +56,7 @@ import { AttemptNumber, type FlowName, Host, type Ring, Transport, type Wake } f
  * @quote Maximum amount of time allowed to complete client authentication. [...] The default is one minute (1m).
  * @verified 2026-11-16
  */
-export const authenticationTimeoutSeconds = 60
+const authenticationTimeoutSeconds = 60
 
 /**
  * How far a claim's lease outlasts its turn's deadline. After its deadline a holder's last acts are its commit and the

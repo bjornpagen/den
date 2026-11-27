@@ -47,8 +47,8 @@ export const assignedAmong = 3
 
 /**
  * A page's reads: its feed's weight, the items its feed holds so far, and the weight once more as a tree, the items so
- * far attached under it and each item's page's first item under each, whose records' relation the reads name
- * themselves (`ChainPageTreeFirst`, in place of the derived `ChainPageReadTreeItemsFirst`).
+ * far attached under it and each item's page's first item under each, a relation of the records at each path, which den
+ * names.
  */
 export const PageReads = reads(
 	SliceBase,
@@ -102,8 +102,7 @@ export const PageReads = reads(
 		"weights.feed": page.feed,
 		"earlier.feed": page.feed,
 		"tree.feed": page.feed
-	}),
-	{ names: { tree: { "items.first": "ChainPageTreeFirst" } } }
+	})
 )
 
 /** A decision's reads: the passages of its topic nearest its question's vector, and the passages its learner has seen. */

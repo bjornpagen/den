@@ -10,7 +10,7 @@ import type {
 	ParamsOf,
 	ReadsChildren,
 	ReadsQuery,
-	RecordNames,
+	RecordedQuery,
 	SchemaSource,
 	Vector
 } from "@bjornpagen/grizzle"
@@ -71,6 +71,39 @@ export const named = (declaration: string, name: string): void => {
 	}
 }
 
+/**
+ * The most bytes a PostgreSQL name holds: an identifier past it is cut short, and a roster's handle, which grizzle
+ * stores in its roster's names constant, a name each, is refused past it.
+ *
+ * @limitKind published
+ * @owner PostgreSQL 19.0
+ * @unit bytes
+ * @scope a name: an identifier (a relation's, a roster's domain's, a row check's), a roster's handle
+ * @constraint compile-time constant
+ * @source https://github.com/postgres/postgres/blob/REL_19_0/doc/src/sgml/syntax.sgml#L133-L135
+ * @quote The system uses no more than NAMEDATALEN-1 bytes of an identifier; longer names can be written in commands,
+ *   but they will be truncated. By default, NAMEDATALEN is 64 so the maximum identifier length is 63 bytes.
+ * @verified 2026-11-26
+ */
+export const nameBytes = 63
+
+const utf8 = new TextEncoder()
+
+/**
+ * Refuses a name den lists as a roster's handle verbatim (a kind's, a resource's, a pause handle's, a variant's tag, a
+ * literal of a field) where its bytes pass nameBytes, at den's door, naming its declaration, before grizzle's roster sees
+ * it.
+ */
+export const handled = (declaration: string, handle: string): void => {
+	const bytes = utf8.encode(handle).length
+	if (bytes > nameBytes) {
+		throw new Refused({
+			declaration,
+			why: `${handle} takes ${String(bytes)} bytes, past the ${String(nameBytes)} a roster's handle holds`
+		})
+	}
+}
+
 const positive = (declaration: string, what: string, n: number): void => {
 	if (!Number.isSafeInteger(n) || n < 1) {
 		throw new Refused({ declaration, why: `${what} ${String(n)} is no positive integer` })
@@ -90,6 +123,7 @@ export interface Resource<Name extends string = string> {
 
 export const resource = <const Name extends string>(name: Name, seats: number): Resource<Name> => {
 	named("resource", name)
+	handled(`resource ${name}`, name)
 	positive(`resource ${name}`, "seats", seats)
 	return { _tag: "Resource", name, seats }
 }
@@ -107,6 +141,7 @@ export interface PauseHandle<Name extends string = string> {
 
 export const pauseHandle = <const Name extends string>(name: Name): PauseHandle<Name> => {
 	named("pause handle", name)
+	handled(`pause handle ${name}`, name)
 	return { _tag: "PauseHandle", name }
 }
 
@@ -344,32 +379,13 @@ const READ = regex("^[a-z][A-Za-z0-9]*$")
  * are a value of a module that depends on that level alone, `<Step>Reads`, never on the flow, whose type names its app
  * role (den generate's Placement `reads`).
  */
-export interface Reads<L, N extends ReadsChildren, I, O extends ReadsOptions<N>> {
+export interface Reads<L, N extends ReadsChildren, I> {
 	readonly kind: "query"
 	readonly over: L
 	/** The named queries over `over`. */
 	readonly named: N
 	readonly params: (input: I) => ParamArg<ParamsOf<ReadsQuery<L, N>>>
-	/** Its options as it was given them: none, or the relation names its records state (ReadsOptions). */
-	readonly options: O
 }
-
-/**
- * The relation names a step's reads state for their records, by named query: each grizzle's `names` of records(...),
- * an attachment's path (its attachment names from the query's root, joined by `.`) to its relation's name, which
- * replaces the name records derive from den's stem, `<P><Step>Read<Name>`, and the path. A derived name past PostgreSQL's
- * 63 bytes is refused as RecordNameTooLong, naming the path to state: metis reads an item's document and its stimuli's
- * in one step, each with its scan, a path den's stems leave too long.
- */
-export type ReadsNames<N> = { readonly [K in keyof N]?: RecordNames<N[K]> }
-
-/** A step's reads' options: none, or the relation names their records state (ReadsNames). */
-export type ReadsOptions<N> = readonly [] | readonly [options: { readonly names: ReadsNames<N> }]
-
-/** The options of any step's reads: none, or the relation names their records state by named query. */
-type AnyReadsOptions =
-	| readonly []
-	| readonly [options: { readonly names: { readonly [name: string]: unknown } }]
 
 /** A step's reads over its input `I`, whatever level and queries they name. */
 export type ReadsOver<I> =
@@ -377,20 +393,21 @@ export type ReadsOver<I> =
 	| {
 			readonly kind: "query"
 			readonly over: unknown
-			readonly named: { readonly [name: string]: unknown }
+			readonly named: { readonly [name: string]: RecordedQuery }
 			readonly params: (input: I) => unknown
-			readonly options: AnyReadsOptions
 	  }
 
-/** Any step's reads, as a flow and lowering read them. */
+/**
+ * Any step's reads, as a flow and lowering read them: each named query one records(...) takes, whose every attachment
+ * path the lowering names (grizzle's recordPaths).
+ */
 export type AnyReads =
 	| { readonly kind: "none" }
 	| {
 			readonly kind: "query"
 			readonly over: unknown
-			readonly named: { readonly [name: string]: unknown }
+			readonly named: { readonly [name: string]: RecordedQuery }
 			readonly params: (input: never) => unknown
-			readonly options: AnyReadsOptions
 	  }
 
 /** A step that reads nothing before its body. */
@@ -398,15 +415,13 @@ export const noReads: { readonly kind: "none" } = { kind: "none" }
 
 /**
  * A step's reads: the named queries `queries` over the level `over`, their parameters from the step's input, each
- * `<name>.<parameter>`, and its options, none or `{ names }`, the relation names their records state by named query
- * (ReadsNames), each forwarded to grizzle's records(...) of that query.
+ * `<name>.<parameter>`. Their records are den's relations, named by den alone (lower/names.ts): a flow names none.
  */
-export const reads = <L, const N extends ReadsChildren, I, const O extends ReadsOptions<N>>(
+export const reads = <L, const N extends ReadsChildren, I>(
 	over: L,
 	queries: N,
-	params: (input: I) => NoInfer<ParamArg<ParamsOf<ReadsQuery<L, N>>>>,
-	...options: O
-): Reads<L, N, I, O> => ({ kind: "query", over, named: queries, params, options })
+	params: (input: I) => NoInfer<ParamArg<ParamsOf<ReadsQuery<L, N>>>>
+): Reads<L, N, I> => ({ kind: "query", over, named: queries, params })
 
 /** What a body sees of its declared reads: each named query's rows, exactly as the query delivers them. */
 export type Found<D> = D extends {
@@ -602,6 +617,7 @@ export const step = <
 	body: Body<IS["Type"], Found<D>, OS["Type"], ES["Type"], T, R>
 ): StepKind<Name, IS, OS, ES, D, T, R> => {
 	named("step", name)
+	handled(`step ${name}`, name)
 	Arr.forEach(shape.reads.kind === "query" ? Rec.keys(shape.reads.named) : [], (read) =>
 		readNamed(`step ${name}`, read)
 	)
@@ -788,6 +804,7 @@ export const scope = <
 	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>>
 ): ScopeKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> => {
 	named("scope", name)
+	handled(`scope ${name}`, name)
 	return { _tag: "Scope", name, ...shape, of: spawnOf(name) }
 }
 
@@ -1008,6 +1025,7 @@ export const root = <
 		RootDeclared<IS["Type"], Tr, From>
 ): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>, Tr, From> => {
 	named("root", name)
+	handled(`root ${name}`, name)
 	const declared: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> &
 		RootShape<IS["Type"], Tr, From> = shape
 	return { ...declared, _tag: "Root" as const, name }

@@ -1,4 +1,4 @@
-import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant, denInstantKey } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Sync to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import { ChangeSet, Num, Type, clocked, param, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
@@ -28,14 +28,14 @@ import {
 	SyncHeld,
 	SyncRefusal,
 	SyncExhausted,
-	SyncCopyInput,
-	SyncBuildInput,
-	SyncSyncRunInput,
-	SyncGoldInput,
-	SyncCopyOutput,
-	SyncBuildOutput,
-	SyncSyncRunFinishOutput,
-	SyncGoldFinishOutput,
+	sync_copy_input_fijfgeannmgef,
+	sync_build_input_khidlilbdjpfi,
+	sync_sync_run_input_kmejgmkijpoho,
+	sync_gold_input_edhkhlceilnoh,
+	sync_copy_output_cfficoloepjbj,
+	sync_build_output_ianmlfhgbcfli,
+	sync_sync_run_finish_output_inlpehpebjlbl,
+	sync_gold_finish_output_hkddafacepdaa,
 	SyncExclusive,
 	SyncReleased,
 	SyncPaused,
@@ -81,17 +81,17 @@ export const SyncDen = role(
 			"SyncHeld",
 			"SyncRefusal",
 			"SyncExhausted",
-			"SyncCopyInput",
-			"SyncBuildInput",
-			"SyncSyncRunInput",
-			"SyncGoldInput",
-			"SyncSyncRunFinishOutput",
-			"SyncGoldFinishOutput"
+			"sync_copy_input_fijfgeannmgef",
+			"sync_build_input_khidlilbdjpfi",
+			"sync_sync_run_input_kmejgmkijpoho",
+			"sync_gold_input_edhkhlceilnoh",
+			"sync_sync_run_finish_output_inlpehpebjlbl",
+			"sync_gold_finish_output_hkddafacepdaa"
 		]
 	}
 )
 
-/** den's coordinator role for the flow Sync: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation. */
+/** den's coordinator role for the flow Sync: the turns of its exclusivity seats and pauses. It holds the coordination group's rosters and relations whole, no role holding a closed relation, and no live hold, which only den's role reads, over the graph it holds. */
 export const SyncCoordinator = role(
 	App,
 	"sync_coordinator",
@@ -154,7 +154,8 @@ const syncLatestServed = query(SyncDen).rule((r) => {
 export const syncDenPrograms = Object.freeze({
 	syncNow: clocked(
 		query(syncGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	syncReading: clocked(
 		query(SyncDen).reads({
@@ -172,7 +173,8 @@ export const syncDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.denNow": "millis" }
+		{ "now.denNow": "millis" },
+		{ "now.denNow": denInstantKey }
 	),
 	syncClaim: clocked(
 		ChangeSet.empty(syncGraph)
@@ -181,7 +183,8 @@ export const syncDenPrograms = Object.freeze({
 				{
 					until: Type.cast(
 						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
-						DenInstant
+						DenInstant,
+						denInstantKey
 					)
 				}
 			)
@@ -194,7 +197,8 @@ export const syncDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	syncRetry: clocked(
 		ChangeSet.empty(syncGraph)
@@ -210,14 +214,16 @@ export const syncDenPrograms = Object.freeze({
 								Type.base(r.param("denNow", DenInstant)),
 								Type.base(r.param("delay", DenDelay))
 							),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						why: r.param("why", SyncRetry.fields.why),
 						root: r.param("root", SyncRetry.fields.root)
 					})
 				)
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	syncFence: ChangeSet.empty(syncGraph).insert(SyncEnded, []).insert(SyncFenced, []),
 	syncRefuse: ChangeSet.empty(syncGraph)
@@ -236,8 +242,8 @@ export const syncDenPrograms = Object.freeze({
 			.insert(SyncFinish, [])
 			.insert(SyncStartStep, [])
 			.insert(SyncScope, [])
-			.insert(SyncCopyInput, [])
-			.insert(SyncBuildInput, [])
+			.insert(sync_copy_input_fijfgeannmgef, [])
+			.insert(sync_build_input_khidlilbdjpfi, [])
 			.insert(
 				SyncStep,
 				query(syncGraph).rule((r) => {
@@ -254,13 +260,15 @@ export const syncDenPrograms = Object.freeze({
 						scope,
 						due: Type.cast(
 							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						root: r.param("root", SyncStep.fields.root)
 					})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	syncSkip: ChangeSet.empty(syncGraph).insert(SyncSkipped, []),
 	syncSkippedOf: query(syncGraph).rule((r) => {
@@ -455,33 +463,42 @@ export const syncDenPrograms = Object.freeze({
 		}),
 		busyChain: syncBusyChainRead
 	}),
-	syncReadSyncCopyInput: query(syncGraph).rule((r) => {
-		const { root, step, relation, run } = v(SyncCopyInput, "syncCopyInput")
+	syncReadsync_copy_input_fijfgeannmgef: query(syncGraph).rule((r) => {
+		const { root, step, relation, run } = v(
+			sync_copy_input_fijfgeannmgef,
+			"sync_copy_input_fijfgeannmgef"
+		)
 		return r
-			.match(SyncCopyInput, { root, step, relation, run })
+			.match(sync_copy_input_fijfgeannmgef, { root, step, relation, run })
 			.where(
-				r.eq(root, r.param("root", SyncCopyInput.fields.root)),
-				r.eq(step, r.param("step", SyncCopyInput.fields.step))
+				r.eq(root, r.param("root", sync_copy_input_fijfgeannmgef.fields.root)),
+				r.eq(step, r.param("step", sync_copy_input_fijfgeannmgef.fields.step))
 			)
 			.find({ root, step, relation, run })
 	}),
-	syncReadSyncBuildInput: query(syncGraph).rule((r) => {
-		const { root, step, build } = v(SyncBuildInput, "syncBuildInput")
+	syncReadsync_build_input_khidlilbdjpfi: query(syncGraph).rule((r) => {
+		const { root, step, build } = v(
+			sync_build_input_khidlilbdjpfi,
+			"sync_build_input_khidlilbdjpfi"
+		)
 		return r
-			.match(SyncBuildInput, { root, step, build })
+			.match(sync_build_input_khidlilbdjpfi, { root, step, build })
 			.where(
-				r.eq(root, r.param("root", SyncBuildInput.fields.root)),
-				r.eq(step, r.param("step", SyncBuildInput.fields.step))
+				r.eq(root, r.param("root", sync_build_input_khidlilbdjpfi.fields.root)),
+				r.eq(step, r.param("step", sync_build_input_khidlilbdjpfi.fields.step))
 			)
 			.find({ root, step, build })
 	}),
-	syncReadSyncSyncRunInput: query(syncGraph).rule((r) => {
-		const { root, scope, relation, run } = v(SyncSyncRunInput, "syncSyncRunInput")
+	syncReadsync_sync_run_input_kmejgmkijpoho: query(syncGraph).rule((r) => {
+		const { root, scope, relation, run } = v(
+			sync_sync_run_input_kmejgmkijpoho,
+			"sync_sync_run_input_kmejgmkijpoho"
+		)
 		return r
-			.match(SyncSyncRunInput, { root, scope, relation, run })
+			.match(sync_sync_run_input_kmejgmkijpoho, { root, scope, relation, run })
 			.where(
-				r.eq(root, r.param("root", SyncSyncRunInput.fields.root)),
-				r.eq(scope, r.param("scope", SyncSyncRunInput.fields.scope))
+				r.eq(root, r.param("root", sync_sync_run_input_kmejgmkijpoho.fields.root)),
+				r.eq(scope, r.param("scope", sync_sync_run_input_kmejgmkijpoho.fields.scope))
 			)
 			.find({ root, scope, relation, run })
 	}),
@@ -518,13 +535,13 @@ export const syncDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				SyncSyncRunInput,
+				sync_sync_run_input_kmejgmkijpoho,
 				query(syncGraph).rule((r) => {
-					const requested = r.relation("syncSyncRunSyncSyncRunInput", {
-						root: SyncSyncRunInput.fields.root,
-						scope: SyncSyncRunInput.fields.scope,
-						relation: SyncSyncRunInput.fields.relation,
-						run: SyncSyncRunInput.fields.run
+					const requested = r.relation("syncSyncRunsync_sync_run_input_kmejgmkijpoho", {
+						root: sync_sync_run_input_kmejgmkijpoho.fields.root,
+						scope: sync_sync_run_input_kmejgmkijpoho.fields.scope,
+						relation: sync_sync_run_input_kmejgmkijpoho.fields.relation,
+						run: sync_sync_run_input_kmejgmkijpoho.fields.run
 					})
 					const { root, scope, relation, run } = v(requested, "requested")
 					return r
@@ -585,15 +602,16 @@ export const syncDenPrograms = Object.freeze({
 						})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
-	syncReadSyncGoldInput: query(syncGraph).rule((r) => {
-		const { root, scope, build } = v(SyncGoldInput, "syncGoldInput")
+	syncReadsync_gold_input_edhkhlceilnoh: query(syncGraph).rule((r) => {
+		const { root, scope, build } = v(sync_gold_input_edhkhlceilnoh, "sync_gold_input_edhkhlceilnoh")
 		return r
-			.match(SyncGoldInput, { root, scope, build })
+			.match(sync_gold_input_edhkhlceilnoh, { root, scope, build })
 			.where(
-				r.eq(root, r.param("root", SyncGoldInput.fields.root)),
-				r.eq(scope, r.param("scope", SyncGoldInput.fields.scope))
+				r.eq(root, r.param("root", sync_gold_input_edhkhlceilnoh.fields.root)),
+				r.eq(scope, r.param("scope", sync_gold_input_edhkhlceilnoh.fields.scope))
 			)
 			.find({ root, scope, build })
 	}),
@@ -614,12 +632,12 @@ export const syncDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				SyncGoldInput,
+				sync_gold_input_edhkhlceilnoh,
 				query(syncGraph).rule((r) => {
-					const requested = r.relation("syncGoldSyncGoldInput", {
-						root: SyncGoldInput.fields.root,
-						scope: SyncGoldInput.fields.scope,
-						build: SyncGoldInput.fields.build
+					const requested = r.relation("syncGoldsync_gold_input_edhkhlceilnoh", {
+						root: sync_gold_input_edhkhlceilnoh.fields.root,
+						scope: sync_gold_input_edhkhlceilnoh.fields.scope,
+						build: sync_gold_input_edhkhlceilnoh.fields.build
 					})
 					const { root, scope, build } = v(requested, "requested")
 					return r
@@ -680,7 +698,8 @@ export const syncDenPrograms = Object.freeze({
 						})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	)
 })
 
@@ -711,7 +730,8 @@ export const syncCoordinatorPrograms = Object.freeze({
 				})
 			)
 		),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	syncPause: ChangeSet.empty(syncCoordination).insert(SyncPaused, []),
 	syncResume: ChangeSet.empty(syncCoordination).insert(SyncResumed, []),
@@ -754,14 +774,14 @@ export const SyncRetirer = role(
 			"SyncHeld",
 			"SyncRefusal",
 			"SyncExhausted",
-			"SyncCopyInput",
-			"SyncBuildInput",
-			"SyncSyncRunInput",
-			"SyncGoldInput",
-			"SyncCopyOutput",
-			"SyncBuildOutput",
-			"SyncSyncRunFinishOutput",
-			"SyncGoldFinishOutput"
+			"sync_copy_input_fijfgeannmgef",
+			"sync_build_input_khidlilbdjpfi",
+			"sync_sync_run_input_kmejgmkijpoho",
+			"sync_gold_input_edhkhlceilnoh",
+			"sync_copy_output_cfficoloepjbj",
+			"sync_build_output_ianmlfhgbcfli",
+			"sync_sync_run_finish_output_inlpehpebjlbl",
+			"sync_gold_finish_output_hkddafacepdaa"
 		]
 	}
 )
@@ -785,14 +805,14 @@ export const syncRetirerPrograms = Object.freeze({
 		SyncHeld: { root: param("root", SyncRoot.fields.root) },
 		SyncRefusal: { root: param("root", SyncRoot.fields.root) },
 		SyncExhausted: { root: param("root", SyncRoot.fields.root) },
-		SyncCopyInput: { root: param("root", SyncRoot.fields.root) },
-		SyncBuildInput: { root: param("root", SyncRoot.fields.root) },
-		SyncSyncRunInput: { root: param("root", SyncRoot.fields.root) },
-		SyncGoldInput: { root: param("root", SyncRoot.fields.root) },
-		SyncCopyOutput: { root: param("root", SyncRoot.fields.root) },
-		SyncBuildOutput: { root: param("root", SyncRoot.fields.root) },
-		SyncSyncRunFinishOutput: { root: param("root", SyncRoot.fields.root) },
-		SyncGoldFinishOutput: { root: param("root", SyncRoot.fields.root) }
+		sync_copy_input_fijfgeannmgef: { root: param("root", SyncRoot.fields.root) },
+		sync_build_input_khidlilbdjpfi: { root: param("root", SyncRoot.fields.root) },
+		sync_sync_run_input_kmejgmkijpoho: { root: param("root", SyncRoot.fields.root) },
+		sync_gold_input_edhkhlceilnoh: { root: param("root", SyncRoot.fields.root) },
+		sync_copy_output_cfficoloepjbj: { root: param("root", SyncRoot.fields.root) },
+		sync_build_output_ianmlfhgbcfli: { root: param("root", SyncRoot.fields.root) },
+		sync_sync_run_finish_output_inlpehpebjlbl: { root: param("root", SyncRoot.fields.root) },
+		sync_gold_finish_output_hkddafacepdaa: { root: param("root", SyncRoot.fields.root) }
 	})
 })
 
@@ -802,14 +822,15 @@ export const syncRetirerWorkload = workload(SyncRetirer, syncRetirerPrograms)
 export const syncCommitPrograms = Object.freeze({
 	syncAuthenticated: clocked(
 		query(syncGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	syncCommitCopy: ChangeSet.union(
 		ChangeSet.empty(syncGraph)
 			.insert(SyncResult, [])
 			.insert(SyncDone, [])
 			.insert(SyncHeld, [])
-			.insert(SyncCopyOutput, []),
+			.insert(sync_copy_output_cfficoloepjbj, []),
 		declaredFlow.kinds[0].writes.changes(Loader)
 	),
 	syncCommitBuild: ChangeSet.union(
@@ -817,19 +838,19 @@ export const syncCommitPrograms = Object.freeze({
 			.insert(SyncResult, [])
 			.insert(SyncDone, [])
 			.insert(SyncHeld, [])
-			.insert(SyncBuildOutput, []),
+			.insert(sync_build_output_ianmlfhgbcfli, []),
 		declaredFlow.kinds[2].writes.changes(Loader)
 	),
 	syncCommitSyncRunFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncDone, [])
 		.insert(SyncHeld, [])
-		.insert(SyncSyncRunFinishOutput, []),
+		.insert(sync_sync_run_finish_output_inlpehpebjlbl, []),
 	syncCommitGoldFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncDone, [])
 		.insert(SyncHeld, [])
-		.insert(SyncGoldFinishOutput, [])
+		.insert(sync_gold_finish_output_hkddafacepdaa, [])
 })
 
 export const syncCommits = workload(Loader, syncCommitPrograms)

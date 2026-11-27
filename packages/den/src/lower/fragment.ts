@@ -1,4 +1,4 @@
-import type { ClockUnit } from "@bjornpagen/grizzle"
+import { type ClockUnit, recordPaths } from "@bjornpagen/grizzle"
 import { Array as Arr, Option, Record, String as Str } from "effect"
 import {
 	type AnyFlow,
@@ -18,6 +18,23 @@ import {
 	type Stored,
 	type Trigger
 } from "#algebra/kinds.ts"
+import {
+	censusOf,
+	declared,
+	type Derived,
+	type DerivedKind,
+	derivedOf,
+	handleOf,
+	type Named,
+	namedBrand,
+	namedDerived,
+	namedReadable,
+	namedRecordsRow,
+	type Piece,
+	readableOf,
+	under,
+	word
+} from "#lower/names.ts"
 import {
 	type ArrayField,
 	type Base,
@@ -224,16 +241,16 @@ export interface EdgeIR {
 /**
  * One named query of a step's declared reads, lowered: its name; the stem its records are named by, the relations
  * grizzle's `records` makes of the query when the fragment loads (`${stem}Row`, keyed by a row's digest alone, so a row
- * every root that found it shares is stored once, and a relation per attachment under it, each the stem and a suffix),
- * which den names nothing of but the root and which no root's unit holds; and the relation of the step's references to
- * the rows it found, by ordinal, named the stem itself, which no records name is, a body of its root's unit.
+ * every root that found it shares is stored once, and a relation per attachment under it), which no root's unit holds;
+ * the name den gives the relation of each attachment path of the query, every one (grizzle's recordPaths), so records
+ * derive none; and the relation of the step's references to the rows it found, by ordinal, named the stem itself, which
+ * no records name is, a body of its root's unit. The records are den's own relations: no flow names them.
  */
 export interface ReadIR {
 	readonly name: string
 	readonly stem: string
 	readonly record: string
-	/** Whether its step's reads state relation names for its records (kinds.ts ReadsNames), which den forwards. */
-	readonly statesNames: boolean
+	readonly paths: ReadonlyArray<{ readonly path: string; readonly name: string }>
 }
 
 /**
@@ -312,10 +329,10 @@ const derivable = (type: ColumnType): boolean => type.kind === "base" && type.ba
 export const recordsRequestOf = (from: InputFrom["kind"]): boolean => from === "given"
 
 /**
- * A derived root's key, its kind's `<P><Root>Key`: the relation that keeps the key's fields beside its Root, the
- * fields, in its key struct's order, and the fields PostgreSQL stores beside them as the SHA-256 digest of each text
- * field (`<field>Digest`, `of` the field it digests): a B-tree keys no text of no byte bound, so the key's law keys
- * each text by its digest.
+ * A derived root's key, its kind's key relation (a derived name, lower/names.ts): the relation that keeps the key's
+ * fields beside its Root, the fields, in its key struct's order, and the fields PostgreSQL stores beside them as the
+ * SHA-256 digest of each text field (`<field>Digest`, `of` the field it digests): a B-tree keys no text of no byte
+ * bound, so the key's law keys each text by its digest.
  */
 export interface KeyIR {
 	readonly relation: string
@@ -419,22 +436,33 @@ const keyOf = (relation: string, terms: ReadonlyArray<string>): LawIR => ({
 	side: side(relation, terms)
 })
 
-const capitalized = (text: string): string => Str.capitalize(text)
-
 /** The relation names a writes declaration names. */
-const writesOf = (declared: AnyCommit): CommitIR => {
-	switch (declared.kind) {
+const writesOf = (commit: AnyCommit): CommitIR => {
+	switch (commit.kind) {
 		case "nothing":
-			return declared
+			return commit
 		case "through":
-			return { kind: "through", clock: Record.toEntries(declared.clock) }
+			return { kind: "through", clock: Record.toEntries(commit.clock) }
 	}
 }
 
 /** Lowers a flow to its fragment, refusing a name two of its relations, rosters or brands would share. */
 export const lower = (flow: AnyFlow): Lowered => {
 	const p = flow.name
-	const name = (suffix: string) => `${p}${suffix}`
+	/** Every name the lowering mints, readable or derived, for the census of its names. */
+	const minted: Array<Named> = []
+	/** One of the flow's singletons, `<P><Word>`, readable, refused as the flow's where it passes PostgreSQL's bytes. */
+	const name = (singleton: string): string => {
+		const readable = readableOf(p, singleton)
+		minted.push(namedReadable(readable))
+		return readable
+	}
+	/** A name derived from the flow's names, of its one form (lower/names.ts). */
+	const derive = (kind: DerivedKind, pieces: ReadonlyArray<Piece>): Derived => {
+		const derived = derivedOf(kind, pieces)
+		minted.push(namedDerived(derived))
+		return derived
+	}
 	const relations: Array<RelationIR> = []
 	const laws: Array<LawIR> = []
 	const rosters: Array<RosterIR> = []
@@ -453,9 +481,10 @@ export const lower = (flow: AnyFlow): Lowered => {
 		}
 		if (Option.isNone(held)) {
 			brands.push(b)
+			minted.push(namedBrand(b.name))
 		}
 	}
-	const fieldOf = (owner: string, column: Column): FieldType => {
+	const fieldOf = (owner: Derived, column: Column): FieldType => {
 		switch (column.type.kind) {
 			case "base":
 				return { kind: "base", base: column.type.base }
@@ -467,23 +496,23 @@ export const lower = (flow: AnyFlow): Lowered => {
 			case "vector":
 				return { kind: "vector", dimensions: column.type.dimensions }
 			case "roster": {
-				const roster = `${owner}${capitalized(column.name)}`
+				const roster = derive("roster", [under(owner), declared(column.name)]).name
 				rosters.push({ name: roster, handles: column.type.handles })
 				return { kind: "closed", roster }
 			}
 		}
 	}
 	/**
-	 * Holds every double column of `relationName` finite by a row check, as `Schema.Finite`, the one number schema den
-	 * lowers, states of its values.
+	 * Holds every double column of `owner` finite by a row check, as `Schema.Finite`, the one number schema den lowers,
+	 * states of its values.
 	 */
-	const finite = (relationName: string, columns: ReadonlyArray<Column>): void =>
+	const finite = (owner: Derived, columns: ReadonlyArray<Column>): void =>
 		Arr.forEach(columns, (c) => {
 			if ((c.type.kind === "base" || c.type.kind === "brand") && c.type.base === "double") {
 				laws.push({
 					kind: "check",
-					name: `${relationName}${capitalized(c.name)}Finite`,
-					relation: relationName,
+					name: derive("finite", [under(owner), declared(c.name), word("Finite")]).name,
+					relation: owner.name,
 					field: c.name,
 					holds: { kind: "finite" }
 				})
@@ -505,7 +534,12 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const drawnCount: FieldType = { kind: "drawn" }
 	const ownerKey = (owner: "step" | "scope"): FieldType => (owner === "step" ? stepKey : scopeKey)
 
-	const kindNames = [...Arr.map(steps, (s) => s.name), ...Arr.map(joins, finishName)]
+	const kindNames = [
+		...Arr.map(steps, (s) => s.name),
+		...Arr.map(joins, (j) =>
+			handleOf(`${j._tag === "Root" ? "root" : "scope"} ${j.name}`, finishName(j))
+		)
+	]
 	const rootNames = Arr.map(roots, (r) => r.name)
 	const childNames = Arr.map(
 		Arr.filter(joins, (j) => j._tag === "Scope"),
@@ -815,7 +849,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	 * names is typed as the app's key field it holds (an awaited fact's), so the printed programs join it to that field.
 	 */
 	const valued = (
-		relationName: string,
+		named: Derived,
 		owner: "step" | "scope",
 		schema: Stored | Shape,
 		declaration: string,
@@ -837,19 +871,18 @@ export const lower = (flow: AnyFlow): Lowered => {
 				})
 			}
 		})
+		const relationName = named.name
 		relation({
 			name: relationName,
 			fields: [
 				{ name: key, type: ownerKey(owner) },
 				...Arr.map(shape.columns, (c) => ({
 					name: c.name,
-					type: Option.getOrElse(Option.fromNullishOr(keyed.get(c.name)), () =>
-						fieldOf(relationName, c)
-					)
+					type: Option.getOrElse(Option.fromNullishOr(keyed.get(c.name)), () => fieldOf(named, c))
 				})),
 				...Arr.map(shape.unions, (u) => ({
 					name: u.name,
-					type: fieldOf(relationName, {
+					type: fieldOf(named, {
 						name: u.name,
 						type: { kind: "roster", handles: Arr.map(u.variants, (variant) => variant.tag) }
 					})
@@ -858,32 +891,33 @@ export const lower = (flow: AnyFlow): Lowered => {
 			key: [key]
 		})
 		Arr.forEach(owned, (to) => laws.push(into(side(relationName, [key]), to)))
-		finite(relationName, shape.columns)
+		finite(named, shape.columns)
 		const sidecars = Arr.map(shape.options, (column) => {
+			const option = derive("option", [under(named), declared(column.name)])
 			const sidecar = relation({
-				name: `${relationName}${capitalized(column.name)}`,
+				name: option.name,
 				fields: [
 					{ name: key, type: ownerKey(owner) },
-					{ name: "value", type: fieldOf(`${relationName}${capitalized(column.name)}`, column) }
+					{ name: "value", type: fieldOf(option, column) }
 				],
 				key: [key]
 			})
 			laws.push(into(side(sidecar, [key]), side(relationName, [key])))
-			finite(sidecar, [{ name: "value", type: column.type }])
+			finite(option, [{ name: "value", type: column.type }])
 			return { column, relation: sidecar }
 		})
 		const families = Arr.map(shape.arrays, (field) => {
-			const familyName = `${relationName}${capitalized(field.name)}`
+			const array = derive("array", [under(named), declared(field.name)])
 			const columns =
 				field.element.kind === "value"
 					? [{ name: "value", type: field.element.type }]
 					: field.element.columns
 			const family = relation({
-				name: familyName,
+				name: array.name,
 				fields: [
 					{ name: key, type: ownerKey(owner) },
 					{ name: "ordinal", type: natural },
-					...Arr.map(columns, (c) => ({ name: c.name, type: fieldOf(familyName, c) }))
+					...Arr.map(columns, (c) => ({ name: c.name, type: fieldOf(array, c) }))
 				],
 				key: [key, "ordinal"]
 			})
@@ -901,28 +935,35 @@ export const lower = (flow: AnyFlow): Lowered => {
 					side(family, [key, "ordinal"])
 				)
 			)
-			finite(family, columns)
+			finite(array, columns)
 			return { field, relation: family }
 		})
 		const unions = Arr.map(shape.unions, (field) => ({
 			field,
 			variants: Arr.map(field.variants, (variant) => {
-				const variantName = `${relationName}${capitalized(field.name)}${variant.tag}`
+				const variantNamed = derive("variant", [
+					under(named),
+					declared(field.name),
+					declared(variant.tag)
+				])
 				const tagged = sideOf(relationName, [key], {
 					kind: "handle",
 					field: field.name,
 					handle: variant.tag
 				})
 				const held = relation({
-					name: variantName,
+					name: variantNamed.name,
 					fields: [
 						{ name: key, type: ownerKey(owner) },
-						...Arr.map(variant.columns, (c) => ({ name: c.name, type: fieldOf(variantName, c) }))
+						...Arr.map(variant.columns, (c) => ({
+							name: c.name,
+							type: fieldOf(variantNamed, c)
+						}))
 					],
 					key: [key]
 				})
 				laws.push(into(side(held, [key]), tagged), into(tagged, side(held, [key])))
-				finite(held, variant.columns)
+				finite(variantNamed, variant.columns)
 				return { variant, relation: held }
 			})
 		}))
@@ -970,7 +1011,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		inputs.set(
 			s.name,
 			valued(
-				name(`${s.name}Input`),
+				derive("input", [declared(p), declared(s.name), word("Input")]),
 				"step",
 				s.input,
 				`step ${s.name}`,
@@ -983,7 +1024,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		inputs.set(
 			j.name,
 			valued(
-				name(`${j.name}Input`),
+				derive("input", [declared(p), declared(j.name), word("Input")]),
 				"scope",
 				j.input,
 				`${j._tag === "Root" ? "root" : "scope"} ${j.name}`,
@@ -1003,7 +1044,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 
 	/**
 	 * Each derived root's key, by its kind's name: the fields its request names, kept beside its Root in
-	 * `<P><Root>Key`, keyed by the root, closed and outside the cleared unit like the Root itself, contained in the
+	 * its kind's key relation, keyed by the root, closed and outside the cleared unit like the Root itself, contained in the
 	 * kind's Root and containing it, so no derived root stands without its key, nor a key without its root, a retired
 	 * root's among them. Its fields and its input's are columns of a text, a bigint or a boolean (`derivable`), so its
 	 * text is one way (runtime/bind.ts derivedKey) and its read is bound by them as its params and delivers its input
@@ -1018,7 +1059,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 			return
 		}
 		const declaration = `root ${j.name}'s key`
-		const relationName = name(`${j.name}Key`)
+		const keyNamed = derive("key", [declared(p), declared(j.name), word("Key")])
+		const relationName = keyNamed.name
 		const shape = shapeOf(declaration, j.from.key)
 		Arr.forEach(
 			[
@@ -1075,7 +1117,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			name: relationName,
 			fields: [
 				{ name: "root", type: scopeKey },
-				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(relationName, c) }))
+				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(keyNamed, c) }))
 			],
 			key: ["root"]
 		})
@@ -1109,7 +1151,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		outputs.set(
 			s.name,
 			valued(
-				name(`${s.name}Output`),
+				derive("output", [declared(p), declared(s.name), word("Output")]),
 				"step",
 				s.output,
 				`step ${s.name}`,
@@ -1122,7 +1164,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		outputs.set(
 			j.name,
 			valued(
-				name(`${finishName(j)}Output`),
+				derive("output", [declared(p), declared(j.name), word("Finish"), word("Output")]),
 				"step",
 				j.finish.output,
 				`${j._tag === "Root" ? "root" : "scope"} ${j.name}`,
@@ -1144,7 +1186,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const edgesIR: ReadonlyArray<EdgeIR> = Arr.map(flow.edges, (e, index) => {
 		const to = spawnedOf(e.to)
 		const edgeRelation = relation({
-			name: name(e.name),
+			name: derive("edge", [declared(p), declared(e.name)]).name,
 			fields: [
 				{ name: "from", type: stepKey },
 				{ name: "ordinal", type: natural },
@@ -1169,9 +1211,14 @@ export const lower = (flow: AnyFlow): Lowered => {
 		if (s.reads.kind === "none") {
 			return []
 		}
-		const stated = Arr.flatMap(s.reads.options, (options) => Record.keys(options.names))
-		return Arr.map(Record.keys(s.reads.named), (readName): ReadIR => {
-			const stem = name(`${s.name}Read${capitalized(readName)}`)
+		return Arr.map(Record.toEntries(s.reads.named), ([readName, query]): ReadIR => {
+			const read = derive("read", [declared(p), declared(s.name), word("Read"), declared(readName)])
+			const stem = read.name
+			minted.push(namedRecordsRow(read))
+			const paths = Arr.map(recordPaths(query), (path) => ({
+				path,
+				name: derive("attachment", [under(read), ...Arr.map(Str.split(path, "."), declared)]).name
+			}))
 			const record = relation({
 				name: stem,
 				fields: [
@@ -1185,7 +1232,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				into(side(record, ["step"]), side(Result, ["step"])),
 				into(side(record, ["digest"]), side(`${stem}Row`, ["digest"]))
 			)
-			return { name: readName, stem, record, statesNames: Arr.contains(stated, readName) }
+			return { name: readName, stem, record, paths }
 		})
 	}
 
@@ -1230,7 +1277,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		const output = outputOf(s.name)
 		const error = Option.map(errorShapeOf(declaration, s.error), (shape) =>
 			valued(
-				name(`${s.name}Error`),
+				derive("error", [declared(p), declared(s.name), word("Error")]),
 				"step",
 				shape,
 				declaration,
@@ -1259,7 +1306,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		const finish = finishName(j)
 		const error = Option.map(errorShapeOf(declaration, j.finish.error), (shape) =>
 			valued(
-				name(`${finish}Error`),
+				derive("error", [declared(p), declared(j.name), word("Finish"), word("Error")]),
 				"step",
 				shape,
 				declaration,
@@ -1448,7 +1495,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	 * relation but the root's own record carries its root as `root`, first in its key and on both sides of every
 	 * containment and key between them, so every write of a graph's rows holds its root. A root's record is closed, the
 	 * fact that it was requested, and so is what it was requested with (RequestedWith) and a derived root's key
-	 * (`<P><Root>Key`); every other graph relation is mutable inside the unit, since a finished root's graph is cleared
+	 * (its kind's key relation); every other graph relation is mutable inside the unit, since a finished root's graph is cleared
 	 * under its root, every row of it deleted but those. A claim's holds sit under the flow's seat unit and are cleared
 	 * with their claims. The coordination group is no part of any unit: its chains of turns outlive the graphs whose
 	 * steps took them.
@@ -1551,20 +1598,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		)
 	]
 
-	const names = [
-		...Arr.map(relations, (r) => r.name),
-		...Arr.map(rosters, (r) => r.name),
-		...Arr.map(brands, (b) => b.name),
-		...Arr.flatMap(Option.toArray(seats), (st) => [st.counts.name, st.live])
-	]
-	Arr.forEach(names, (n, i) => {
-		if (Arr.some(Arr.take(names, i), (earlier) => earlier === n)) {
-			throw new Refused({
-				declaration: `flow ${p}`,
-				why: `two of its lowered declarations are named ${n}`
-			})
-		}
-	})
+	censusOf(p, minted)
 
 	return {
 		prefix: p,

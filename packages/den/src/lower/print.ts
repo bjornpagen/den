@@ -22,7 +22,7 @@ import {
 	recordsRequestOf,
 	valueRelations
 } from "#lower/fragment.ts"
-import type { Base } from "#lower/schema.ts"
+import { type Base, type ColumnType, denContracts } from "#lower/schema.ts"
 import { framedText } from "#runtime/identity.ts"
 
 /**
@@ -71,6 +71,60 @@ const indented =
 const lines = (parts: ReadonlyArray<string>): string => Arr.join(parts, "\n")
 const commas = (parts: ReadonlyArray<string>): string => Arr.join(parts, ", ")
 const lower1 = (text: string): string => Str.uncapitalize(text)
+/** The key a brand's contract is its fragment module's under, the symbol only that module holds. */
+const brandKey = (brand: string): string => `${lower1(brand)}Key`
+/** The mint of a brand's host type, its fragment module's, under its key (`brandKey`). */
+const brandMint = (brand: string): string => `${lower1(brand)}Mint`
+
+/** The mint of each of den's own contracts' host types (lower/keys.ts). */
+const denMints = {
+	DenInstant: "mintInstant",
+	DenEnvironment: "mintEnvironment"
+} as const satisfies Record<keyof typeof denContracts, string>
+
+/** The TypeScript type of a base's host value. */
+const baseHostType = {
+	text: "string",
+	bigint: "bigint",
+	double: "number",
+	boolean: "boolean"
+} as const satisfies Record<Base, string>
+
+/**
+ * A column's value as grizzle's host type holds it, from `value`, the body's: a contract's, den's own or a brand's, is
+ * its key's mint of it (its host type is its base's under its consumer's key, which grizzle's types read), and any other
+ * column's is its value as it is.
+ */
+const hostValue = (type: ColumnType, value: string): string => {
+	switch (type.kind) {
+		case "brand":
+			return `${brandMint(type.brand)}(${value})`
+		case "den":
+			return `${denMints[type.contract]}(${value})`
+		case "base":
+		case "roster":
+		case "vector":
+			return value
+	}
+}
+
+/**
+ * A column's value as the body's Effect Schema types it, from `value`, grizzle's host type: a contract's is the brand of
+ * its name on its base (`Brand.nominal`, the brand Effect's `Schema.brand` types), and any other column's is its value
+ * as it is.
+ */
+const bodyValue = (type: ColumnType, value: string): string => {
+	switch (type.kind) {
+		case "brand":
+			return `Brand.nominal<${baseHostType[type.base]} & Brand.Brand<${q(type.brand)}>>()(${value})`
+		case "den":
+			return `Brand.nominal<${baseHostType[denContracts[type.contract]]} & Brand.Brand<${q(type.contract)}>>()(${value})`
+		case "base":
+		case "roster":
+		case "vector":
+			return value
+	}
+}
 
 /**
  * The names a printed rule cannot bind a variable to: the words ECMAScript reserves in a module, whose code is strict
@@ -262,6 +316,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		"fragment",
 		...(digested ? ["generated"] : []),
 		"key",
+		...(Arr.isReadonlyArrayNonEmpty(l.brands) ? ["mintOf"] : []),
 		"mutable",
 		...(used("natural") || used("drawn") ? ["natural"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "check" && law.holds.kind === "finite")
@@ -769,7 +824,12 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 				]
 			: []),
 		"",
-		...Arr.map(l.brands, (b) => `const ${b.name} = contract(${q(b.name)}, ${baseExpr(b.base)})`),
+		...Arr.flatMap(l.brands, (b) => [
+			`const ${brandKey(b.name)} = Symbol(${q(b.name)})`,
+			`const ${b.name} = contract<typeof ${brandKey(b.name)}>()(${q(b.name)}, ${baseExpr(b.base)})`,
+			`/** The mint of ${b.name}'s host type, which the flow's binding writes a value of the brand ${b.name} by. */`,
+			`export const ${brandMint(b.name)} = mintOf(${brandKey(b.name)})`
+		]),
 		"",
 		...Arr.map(
 			l.rosters,
@@ -787,8 +847,8 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		),
 		"",
 		...Arr.flatMap(readsOfFlow(l), ({ step, read }) => [
-			`/** The records of the rows step ${step.name}'s read \`${read.name}\` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */`,
-			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256 }, ["digest"]${read.statesNames ? `, { names: ${readsExport(step.name)}.options[0].names.${read.name} }` : ""})`,
+			`/** The records of the rows step ${step.name}'s read \`${read.name}\` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, named by den, keyed by a row's digest alone, so every root that found a row shares it. */`,
+			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256 }, ["digest"]${Arr.isReadonlyArrayNonEmpty(read.paths) ? `, { names: { ${commas(Arr.map(read.paths, (at) => `${q(at.path)}: ${q(at.name)}`))} } }` : ""})`,
 			`export const ${read.stem}Row = ${read.stem}Records.row`,
 			""
 		]),
@@ -915,7 +975,7 @@ const liveHoldsOf = (role: string, st: SeatsIR): string => {
 const claimOf = (graph: string, r: (s: string) => string): string => `clocked(
 	ChangeSet.empty(${graph})
 		.insertAllComputed({ ${r("Claim")}: [] }, {
-			until: Type.cast(Num.add(Type.base(param("${denClock}", DenInstant)), Type.base(param("budget", DenDelay))), DenInstant)
+			until: Type.cast(Num.add(Type.base(param("${denClock}", DenInstant)), Type.base(param("budget", DenDelay))), DenInstant, denInstantKey)
 		})
 		.insert(${r("Ended")}, [])
 		.read("held", (delta) =>
@@ -924,7 +984,8 @@ const claimOf = (graph: string, r: (s: string) => string): string => `clocked(
 				return r.match(delta.added(${r("Claim")}), { step, root, attempt }).find({ step, root, attempt })
 			})
 		),
-	{ ${denClock}: "millis" }
+	{ ${denClock}: "millis" },
+	{ ${denClock}: denInstantKey }
 )`
 
 /** A query over `role` of each chain's live turn: every turn of `held` that no row of `ended` ends. */
@@ -989,7 +1050,7 @@ const commitOf = (
 	const united =
 		commit.kind === "through" ? `ChangeSet.union(${den}, ${kind}.writes.changes(${writer}))` : den
 	return Arr.isReadonlyArrayNonEmpty(clock)
-		? `clocked(${united}, { ${commas(Arr.map(clock, ([param, unit]) => `${param}: ${q(unit)}`))} })`
+		? `clocked(${united}, { ${commas(Arr.map(clock, ([param, unit]) => `${param}: ${q(unit)}`))} }${Option.isSome(spawns) ? `, { ${denClock}: denInstantKey }` : ""})`
 		: united
 }
 
@@ -1011,7 +1072,7 @@ const spawnedStepsOf = (graph: string, step: string, timed: boolean): string => 
 				step,
 				kind,
 				scope,
-				due: Type.cast(Num.add(Type.base(r.param("${denClock}", DenInstant)), Type.base(delay)), DenInstant),
+				due: Type.cast(Num.add(Type.base(r.param("${denClock}", DenInstant)), Type.base(delay)), DenInstant, denInstantKey),
 				root: r.param("root", ${step}.fields.root)
 			})
 	})${
@@ -1222,7 +1283,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const denPrograms: Array<readonly [string, string]> = [
 		[
 			n.program("Now"),
-			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("${denClock}", DenInstant) })), { ${denClock}: "millis" })`
+			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("${denClock}", DenInstant) })), { ${denClock}: "millis" }, { ${denClock}: denInstantKey })`
 		],
 		[
 			n.program("Reading"),
@@ -1237,7 +1298,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				.find({ deployment })
 		})
 	}),
-	{ "now.${denClock}": "millis" }
+	{ "now.${denClock}": "millis" },
+	{ "now.${denClock}": denInstantKey }
 )`
 		],
 		[n.program("Claim"), claimOf(n.graph, r)],
@@ -1252,13 +1314,14 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				r.find({
 					step: r.param("step", ${r("Retry")}.fields.step),
 					attempt: r.param("attempt", ${r("Retry")}.fields.attempt),
-					at: Type.cast(Num.add(Type.base(r.param("${denClock}", DenInstant)), Type.base(r.param("delay", DenDelay))), DenInstant),
+					at: Type.cast(Num.add(Type.base(r.param("${denClock}", DenInstant)), Type.base(r.param("delay", DenDelay))), DenInstant, denInstantKey),
 					why: r.param("why", ${r("Retry")}.fields.why),
 					root: r.param("root", ${r("Retry")}.fields.root)
 				})
 			)
 		),
-	{ ${denClock}: "millis" }
+	{ ${denClock}: "millis" },
+	{ ${denClock}: denInstantKey }
 )`
 		],
 		[
@@ -1281,7 +1344,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			n.program("Admit"),
 			`clocked(ChangeSet.empty(${n.graph})${members(
 				Arr.filter(admittingOf(l), (rel) => rel !== r("Step"))
-			)}${spawnedStepsOf(n.graph, r("Step"), timedKinds(l))}, { ${denClock}: "millis" })`
+			)}${spawnedStepsOf(n.graph, r("Step"), timedKinds(l))}, { ${denClock}: "millis" }, { ${denClock}: denInstantKey })`
 		],
 		[n.program("Skip"), `ChangeSet.empty(${n.graph}).insert(${r("Skipped")}, [])`],
 		[n.program("SkippedOf"), ownedBy(l, n.graph, r("Skipped"), "scope")],
@@ -1431,7 +1494,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			const request = requestOfRoot(l, j, requestOver(j))
 			denPrograms.push([
 				n.program(`Request${j.name}`),
-				`clocked(${request}, { ${denClock}: "millis" })`
+				`clocked(${request}, { ${denClock}: "millis" }, { ${denClock}: denInstantKey })`
 			])
 		}
 		Arr.forEach(j.finish.reads, (read) => {
@@ -1561,7 +1624,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	coordinatorPrograms.push(
 		[
 			n.program("Promote"),
-			`clocked(ChangeSet.empty(${n.coordination}).insert(${r("Served")}, query(${n.coordination}).rule((r) => r.find({ environment: r.param("environment", ${r("Served")}.fields.environment), at: r.param("${denClock}", ${r("Served")}.fields.at), deployment: r.param("deployment", ${r("Served")}.fields.deployment) }))), { ${denClock}: "millis" })`
+			`clocked(ChangeSet.empty(${n.coordination}).insert(${r("Served")}, query(${n.coordination}).rule((r) => r.find({ environment: r.param("environment", ${r("Served")}.fields.environment), at: r.param("${denClock}", ${r("Served")}.fields.at), deployment: r.param("deployment", ${r("Served")}.fields.deployment) }))), { ${denClock}: "millis" }, { ${denClock}: denInstantKey })`
 		],
 		[n.program("Pause"), insertInto(r("Paused"))],
 		[n.program("Resume"), insertInto(r("Resumed"))],
@@ -1572,7 +1635,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const commitPrograms: Array<readonly [string, string]> = [
 		[
 			n.program("Authenticated"),
-			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("${denClock}", DenInstant) })), { ${denClock}: "millis" })`
+			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("${denClock}", DenInstant) })), { ${denClock}: "millis" }, { ${denClock}: denInstantKey })`
 		]
 	]
 	/**
@@ -1655,8 +1718,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains${Option.isSome(l.seats) ? ", live holds" : ""}${Arr.isReadonlyArrayNonEmpty(derivedLevels) ? ", the levels its derived roots' reads are over, whole," : ""} and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */`,
 		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...derivedLevels, ...l.coordination, ...liveEntry, ...idleEntries, ...awaitedEntries])} }, { insert: [${commas([...Arr.map(den, q), ...recordNames(l)])}] })`,
 		"",
-		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation${Option.isSome(l.seats) ? ", and reads its seats' live holds through the seat level the app's schema states, so a schema without it fails to typecheck" : ""}. */`,
-		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination, ...liveEntry])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
+		`/** den's coordinator role for the flow ${P}: the turns of its exclusivity seats and pauses. It holds the coordination group's rosters and relations whole, no role holding a closed relation, and no live hold, which only den's role reads, over the graph it holds. */`,
+		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
 		"",
 		...Arr.flatMap(sharedDeclarations, ([name, program]) => [`const ${name} = ${program}`, ""]),
 		...block(n.denPrograms, denPrograms),
@@ -1698,7 +1761,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
 		`import { ${commas(Arr.filter(["ChangeSet", "Num", "Type", "clocked", "param", "query", "recordsFacts", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
-		`import { ${commas(Arr.filter(["DenDelay", "DenInstant"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
+		`import { ${commas(Arr.filter(["DenDelay", "DenInstant", "denInstantKey"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
 		...(tokens.has("Arr") ? [`import { Array as Arr } from "effect"`] : []),
 		...Arr.map(
 			Rec.toEntries(Arr.groupBy([place.schema, place.writer], (exported) => exported.from)),
@@ -1737,13 +1800,13 @@ const factRowsOf = (
 		`[{ ${commas([
 			`${v.owner}: ${key}`,
 			`root: ${root}`,
-			...Arr.map(v.shape.columns, (c) => `${c.name}: ${x}.${c.name}`),
+			...Arr.map(v.shape.columns, (c) => `${c.name}: ${hostValue(c.type, `${x}.${c.name}`)}`),
 			...Arr.map(v.unions, (u) => `${u.field.name}: ${x}.${u.field.name}._tag`)
 		])} }]`
 	],
 	...Arr.map(v.sidecars, (s): readonly [string, string] => [
 		s.relation,
-		`Option.toArray(Option.map(${x}.${s.column.name}, (value) => ({ ${v.owner}: ${key}, root: ${root}, value })))`
+		`Option.toArray(Option.map(${x}.${s.column.name}, (value) => ({ ${v.owner}: ${key}, root: ${root}, value: ${hostValue(s.column.type, "value")} })))`
 	]),
 	...Arr.map(v.families, (f): readonly [string, string] => [
 		f.relation,
@@ -1752,8 +1815,11 @@ const factRowsOf = (
 			`root: ${root}`,
 			"ordinal: BigInt(index)",
 			...(f.field.element.kind === "value"
-				? ["value: element"]
-				: Arr.map(f.field.element.columns, (c) => `${c.name}: element.${c.name}`))
+				? [`value: ${hostValue(f.field.element.type, "element")}`]
+				: Arr.map(
+						f.field.element.columns,
+						(c) => `${c.name}: ${hostValue(c.type, `element.${c.name}`)}`
+					))
 		])} }))`
 	]),
 	...Arr.flatMap(v.unions, (u) =>
@@ -1763,7 +1829,10 @@ const factRowsOf = (
 				[
 					`${v.owner}: ${key}`,
 					`root: ${root}`,
-					...Arr.map(vr.variant.columns, (c) => `${c.name}: variant.${c.name}`)
+					...Arr.map(
+						vr.variant.columns,
+						(c) => `${c.name}: ${hostValue(c.type, `variant.${c.name}`)}`
+					)
 				]
 			)} }] : []))`
 		])
@@ -1788,7 +1857,7 @@ const unionOf = (v: ValueIR, at: number, row: string, parts: Parts): string => {
 		const vr = Arr.getUnsafe(u.variants, j)
 		const fields = commas([
 			`_tag: ${q(vr.variant.tag)} as const`,
-			...Arr.map(vr.variant.columns, (c) => `${c.name}: part.${c.name}`)
+			...Arr.map(vr.variant.columns, (c) => `${c.name}: ${bodyValue(c.type, `part.${c.name}`)}`)
 		])
 		const mapped = `Option.map(${parts.variant(at, j)}, (${Arr.isReadonlyArrayNonEmpty(vr.variant.columns) ? "part" : ""}) => ({ ${fields} }))`
 		return j === u.variants.length - 1
@@ -1804,18 +1873,19 @@ const unionOf = (v: ValueIR, at: number, row: string, parts: Parts): string => {
  */
 const valueOf = (v: ValueIR, row: string, parts: Parts): string => {
 	const object = `({ ${commas([
-		...Arr.map(v.shape.columns, (c) => `${c.name}: ${row}.${c.name}`),
+		...Arr.map(v.shape.columns, (c) => `${c.name}: ${bodyValue(c.type, `${row}.${c.name}`)}`),
 		...Arr.map(
 			v.sidecars,
-			(s, i) => `${s.column.name}: Option.map(${parts.side(i)}, (o) => o.value)`
+			(s, i) =>
+				`${s.column.name}: Option.map(${parts.side(i)}, (o) => ${bodyValue(s.column.type, "o.value")})`
 		),
 		...Arr.map(
 			v.families,
 			(f, i) =>
 				`${f.field.name}: Arr.map(ordered(${parts.family(i)}), (e) => ${
 					f.field.element.kind === "value"
-						? "e.value"
-						: `({ ${commas(Arr.map(f.field.element.columns, (c) => `${c.name}: e.${c.name}`))} })`
+						? bodyValue(f.field.element.type, "e.value")
+						: `({ ${commas(Arr.map(f.field.element.columns, (c) => `${c.name}: ${bodyValue(c.type, `e.${c.name}`)}`))} })`
 				})`
 		),
 		...Arr.map(v.unions, (u) => `${u.field.name}: unions.${u.field.name}`)
@@ -1824,6 +1894,20 @@ const valueOf = (v: ValueIR, row: string, parts: Parts): string => {
 		? object
 		: `Option.map(Option.all({ ${commas(Arr.map(v.unions, (u, i) => `${u.field.name}: ${unionOf(v, i, row, parts)}`))} }), (unions) => ${object})`
 }
+
+/** The type of every column a value holds: its own, each option's, each array's elements' and each variant's. */
+const columnTypesOf = (v: ValueIR): ReadonlyArray<ColumnType> => [
+	...Arr.map(v.shape.columns, (c) => c.type),
+	...Arr.map(v.sidecars, (sd) => sd.column.type),
+	...Arr.flatMap(v.families, (f) =>
+		f.field.element.kind === "value"
+			? [f.field.element.type]
+			: Arr.map(f.field.element.columns, (c) => c.type)
+	),
+	...Arr.flatMap(v.unions, (u) =>
+		Arr.flatMap(u.variants, (vr) => Arr.map(vr.variant.columns, (c) => c.type))
+	)
+]
 
 /** Whether a value holds a tagged union, so that reading it back answers an Option. */
 const unioned = (v: ValueIR): boolean => Arr.isReadonlyArrayNonEmpty(v.unions)
@@ -2386,11 +2470,27 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		)
 	)
 	const fragmentValues = Arr.dedupe([
+		...Arr.map(l.brands, (b) => brandMint(b.name)),
 		...boundRostersOf(l),
 		...recordsValues,
 		...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? [n.graph] : []),
 		...digestedRelations
 	])
+	/** The contract columns of the flow's values, each converted where it crosses between a body and grizzle. */
+	const contracted = Arr.filter(
+		Arr.flatMap(
+			[
+				...Arr.flatMap(l.steps, (st) => [st.input, st.output, ...Option.toArray(st.error)]),
+				...Arr.flatMap(l.joins, (j) => [
+					j.input,
+					j.finish.output,
+					...Option.toArray(j.finish.error)
+				])
+			],
+			columnTypesOf
+		),
+		(t) => t.kind === "brand" || t.kind === "den"
+	)
 	const fragmentImports = Arr.dedupe([...spawning, r("Kind"), r("RootKind"), ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
 	const valueReaders = [...Arr.map(l.steps, (s) => s.input), ...Arr.map(l.joins, (j) => j.input)]
@@ -2437,7 +2537,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`import { settled } from "@bjornpagen/den/runtime/settled"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
 		`import { FlowName } from "@bjornpagen/den/transport"`,
-		`import { ${commas(["Array as Arr", "Effect", "Option", "pipe", ...(Arr.some(roots, recordsRequest) ? ["Result"] : []), "Stream"])} } from "effect"`,
+		`import { ${commas(["mintEnvironment", ...(Arr.some(contracted, (t) => t.kind === "den" && t.contract === "DenInstant") ? ["mintInstant"] : [])])} } from "@bjornpagen/den/lower/keys"`,
+		`import { ${commas(["Array as Arr", ...(Arr.isReadonlyArrayNonEmpty(contracted) ? ["Brand"] : []), "Effect", "Option", "pipe", ...(Arr.some(roots, recordsRequest) ? ["Result"] : []), "Stream"])} } from "effect"`,
 		`import { ${F} } from ${q(place.flow.from)}`,
 		`import { ${commas(fragmentValues)} } from ${q(place.fragment)}`,
 		`import type { ${commas(fragmentTypes)} } from ${q(place.fragment)}`,
@@ -2530,8 +2631,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tconst ledger: Ledger<FlowNeeds<typeof ${F}>> = {`,
 		`\t\tflow: FlowName.make(${q(P)}),`,
 		`\t\tnow: Effect.flatMap(settled(h.den.${n.program("Now")}.once({ params: {}, facts: {} })), readingOf),`,
-		`\t\treading: (environment) => Effect.flatMap(settled(h.den.${n.program("Reading")}.once({ params: { "serving.environment": environment }, facts: {} })), (rows) => Effect.flatMap(only(rows), (row) => Effect.map(readingOf(row.now), (now) => ({ now, serving: Option.map(Arr.head(row.serving), (served) => served.deployment) })))),`,
-		`\t\tpromote: (host) => Effect.asVoid(settled(h.coordinator.${n.program("Promote")}.once({ params: { environment: host.environment, deployment: host.deployment }, facts: {} }))),`,
+		`\t\treading: (environment) => Effect.flatMap(settled(h.den.${n.program("Reading")}.once({ params: { "serving.environment": mintEnvironment(environment) }, facts: {} })), (rows) => Effect.flatMap(only(rows), (row) => Effect.map(readingOf(row.now), (now) => ({ now, serving: Option.map(Arr.head(row.serving), (served) => served.deployment) })))),`,
+		`\t\tpromote: (host) => Effect.asVoid(settled(h.coordinator.${n.program("Promote")}.once({ params: { environment: mintEnvironment(host.environment), deployment: host.deployment }, facts: {} }))),`,
 		`\t\tauthenticated: Effect.asVoid(settled(h.commits.${n.program("Authenticated")}.once({ params: {}, facts: {} }))),`,
 		resources
 			? `\t\tholds: Effect.map(settled(h.den.${n.program("Holds")}.once({ params: {}, facts: {} })), rowsOf),`

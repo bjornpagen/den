@@ -2,6 +2,7 @@ import { Array as Arr, Option, Record, Schema } from "effect"
 import {
 	dimensionsOf,
 	type ElementSchema,
+	handled,
 	type ErrorSchema,
 	type FieldSchema,
 	named,
@@ -120,6 +121,7 @@ const textsOf = (
 	if (texts.length !== literals.length || !Arr.isReadonlyArrayNonEmpty(texts)) {
 		throw new Refused({ declaration, why: `field ${field} is a literal union of more than texts` })
 	}
+	Arr.forEach(texts, (text) => handled(`${declaration}, field ${field}`, text))
 	return texts
 }
 
@@ -200,6 +202,7 @@ const variantsOf = (
 ): readonly [Variant, ...Array<Variant>] => {
 	const variants = Arr.map(Record.toEntries(schema.cases), ([tag, variant]): Variant => {
 		named(`${declaration}, field ${field}`, tag)
+		handled(`${declaration}, field ${field}`, tag)
 		const { _tag: _, ...fields } = variant.fields
 		return { tag, columns: columnsOf(declaration, field, fields, ["step", "scope"]) }
 	})

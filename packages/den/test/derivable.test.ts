@@ -36,6 +36,7 @@ import {
 } from "#algebra/kinds.ts"
 import { lower } from "#lower/fragment.ts"
 import { Text } from "#lower/keys.ts"
+import { declared, derivedOf, word } from "#lower/names.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
@@ -520,8 +521,12 @@ it.effect(
 								edges: []
 							})
 						)
-						const record =
-							recorded === "a derived root's key" ? `Wants${kind.name}Key` : "WantsRequestedWith"
+						const keyRelation = derivedOf("key", [
+							declared("Wants"),
+							declared(kind.name),
+							word("Key")
+						]).name
+						const record = recorded === "a derived root's key" ? keyRelation : "WantsRequestedWith"
 						const contains = (from: string, to: string) =>
 							Arr.some(
 								lowered.laws,
@@ -548,7 +553,7 @@ it.effect(
 							"retirement keeps the record with the root"
 						)
 						assert.strictEqual(
-							Arr.some(lowered.relations, (r) => r.name === `Wants${kind.name}Key`),
+							Arr.some(lowered.relations, (r) => r.name === keyRelation),
 							recorded === "a derived root's key",
 							"only a derived root keeps a key"
 						)

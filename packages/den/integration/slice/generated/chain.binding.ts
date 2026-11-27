@@ -1,3 +1,4 @@
+import { mintEnvironment } from "@bjornpagen/den/lower/keys"
 import {
 	any,
 	committedFacts,
@@ -42,25 +43,26 @@ import { FlowName } from "@bjornpagen/den/transport"
 import { type Addition, recordsFacts, Sha256 } from "@bjornpagen/grizzle"
 import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
+import { Array as Arr, Brand, Effect, Option, pipe, Result, Stream } from "effect"
 import { chain } from "#integration/slice/flows.ts"
 import {
+	seqMint,
 	ChainPausable,
-	ChainPageReadWeightsRecords,
-	ChainPageReadEarlierRecords,
-	ChainPageReadTreeRecords,
+	chain_page_read_weights_agiabippcbobbRecords,
+	chain_page_read_earlier_dgehlbgebidjcRecords,
+	chain_page_read_tree_lakencnpkciinRecords,
 	chainGraph,
-	ChainChainRunInput,
-	ChainOrderedInput
+	chain_chain_run_input_glnkafcnkbnnn,
+	chain_ordered_input_pbjpmafopnahk
 } from "#integration/slice/generated/chain.fragment.ts"
 import type {
 	ChainScope,
 	ChainAdmitted,
 	ChainFinish,
 	ChainStartStep,
-	ChainPageInput,
-	ChainPageInputAfter,
-	ChainNext,
+	chain_page_input_jhliinhchcgno,
+	chain_page_input_after_gdigbcabbnakb,
+	chain_next_bbflpfpnlejpm,
 	ChainKind,
 	ChainRootKind
 } from "#integration/slice/generated/chain.fragment.ts"
@@ -72,28 +74,28 @@ import type {
 } from "#integration/slice/generated/chain.programs.ts"
 
 /** The text of a row step Page's read `weights` found, its digest's input. */
-const ChainPageReadWeightsText = recordText(chain.kinds[0].reads.named.weights)
+const chain_page_read_weights_agiabippcbobbText = recordText(chain.kinds[0].reads.named.weights)
 /** The text of a row step Page's read `earlier` found, its digest's input. */
-const ChainPageReadEarlierText = recordText(chain.kinds[0].reads.named.earlier)
+const chain_page_read_earlier_dgehlbgebidjcText = recordText(chain.kinds[0].reads.named.earlier)
 /** The text of a row step Page's read `tree` found, its digest's input. */
-const ChainPageReadTreeText = recordText(chain.kinds[0].reads.named.tree)
-/** The codec text of each declared field of ChainChainRunInput, a request's input row, bound once (grizzle's codecText). */
-const chainChainRunInputTexts = Object.freeze({
-	feed: codecText(ChainChainRunInput.fields.feed),
-	pages: codecText(ChainChainRunInput.fields.pages)
+const chain_page_read_tree_lakencnpkciinText = recordText(chain.kinds[0].reads.named.tree)
+/** The codec text of each declared field of chain_chain_run_input_glnkafcnkbnnn, a request's input row, bound once (grizzle's codecText). */
+const chain_chain_run_input_glnkafcnkbnnnTexts = Object.freeze({
+	feed: codecText(chain_chain_run_input_glnkafcnkbnnn.fields.feed),
+	pages: codecText(chain_chain_run_input_glnkafcnkbnnn.fields.pages)
 })
-/** The codec text of each declared field of ChainOrderedInput, a request's input row, bound once (grizzle's codecText). */
-const chainOrderedInputTexts = Object.freeze({
-	feed: codecText(ChainOrderedInput.fields.feed),
-	pages: codecText(ChainOrderedInput.fields.pages)
+/** The codec text of each declared field of chain_ordered_input_pbjpmafopnahk, a request's input row, bound once (grizzle's codecText). */
+const chain_ordered_input_pbjpmafopnahkTexts = Object.freeze({
+	feed: codecText(chain_ordered_input_pbjpmafopnahk.fields.feed),
+	pages: codecText(chain_ordered_input_pbjpmafopnahk.fields.pages)
 })
 /** The fingerprint of root kind ChainRun's input heading, taken once. */
 const chainChainRunHeading = inputFingerprint(
-	'102:18:ChainChainRunInput57:4:feed48:8:closedId22:ChainChainRunInputFeed4:news5:sport18:5:pages9:pg.bigint236:6:digest224:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("ChainChainRunInput"), chainChainRunInputTexts.feed(row.feed), chainChainRunInputTexts.pages(row.pages)]))]'
+	'137:35:chain_chain_run_input_glnkafcnkbnnn75:4:feed66:8:closedId40:chain_chain_run_input_feed_dcnlhjpledlkf4:news5:sport18:5:pages9:pg.bigint287:6:digest275:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("chain_chain_run_input_glnkafcnkbnnn"), chain_chain_run_input_glnkafcnkbnnnTexts.feed(row.feed), chain_chain_run_input_glnkafcnkbnnnTexts.pages(row.pages)]))]'
 )
 /** The fingerprint of root kind Ordered's input heading, taken once. */
 const chainOrderedHeading = inputFingerprint(
-	'100:17:ChainOrderedInput56:4:feed47:8:closedId21:ChainOrderedInputFeed4:news5:sport18:5:pages9:pg.bigint233:6:digest221:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("ChainOrderedInput"), chainOrderedInputTexts.feed(row.feed), chainOrderedInputTexts.pages(row.pages)]))]'
+	'133:33:chain_ordered_input_pbjpmafopnahk73:4:feed64:8:closedId38:chain_ordered_input_feed_hbpmfpphpfngm4:news5:sport18:5:pages9:pg.bigint281:6:digest269:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("chain_ordered_input_pbjpmafopnahk"), chain_ordered_input_pbjpmafopnahkTexts.feed(row.feed), chain_ordered_input_pbjpmafopnahkTexts.pages(row.pages)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
@@ -121,9 +123,13 @@ interface Rows {
 	readonly ChainAdmitted: ReadonlyArray<Addition<typeof ChainAdmitted>>
 	readonly ChainFinish: ReadonlyArray<Addition<typeof ChainFinish>>
 	readonly ChainStartStep: ReadonlyArray<Addition<typeof ChainStartStep>>
-	readonly ChainPageInput: ReadonlyArray<Addition<typeof ChainPageInput>>
-	readonly ChainPageInputAfter: ReadonlyArray<Addition<typeof ChainPageInputAfter>>
-	readonly ChainNext: ReadonlyArray<Addition<typeof ChainNext>>
+	readonly chain_page_input_jhliinhchcgno: ReadonlyArray<
+		Addition<typeof chain_page_input_jhliinhchcgno>
+	>
+	readonly chain_page_input_after_gdigbcabbnakb: ReadonlyArray<
+		Addition<typeof chain_page_input_after_gdigbcabbnakb>
+	>
+	readonly chain_next_bbflpfpnlejpm: ReadonlyArray<Addition<typeof chain_next_bbflpfpnlejpm>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -150,7 +156,7 @@ export const chainAppRequests = Object.freeze({
 				chainOrderedScope: scope,
 				chainOrderedKey: key,
 				chainOrderedChainScope: [{ scope, root: scope }],
-				chainOrderedChainOrderedInput: [
+				chainOrderedchain_ordered_input_pbjpmafopnahk: [
 					{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
 				],
 				chainOrderedChainRequestedWith: Option.toArray(
@@ -159,9 +165,9 @@ export const chainAppRequests = Object.freeze({
 							...pipe(
 								[{ scope: scope, root: scope, feed: input.feed, pages: input.pages }],
 								Arr.flatMap((row) => [
-									Result.succeed("ChainOrderedInput"),
-									chainOrderedInputTexts.feed(row.feed),
-									chainOrderedInputTexts.pages(row.pages)
+									Result.succeed("chain_ordered_input_pbjpmafopnahk"),
+									chain_ordered_input_pbjpmafopnahkTexts.feed(row.feed),
+									chain_ordered_input_pbjpmafopnahkTexts.pages(row.pages)
 								])
 							)
 						]),
@@ -183,9 +189,9 @@ export const chainLedger = (h: ChainHandles) => {
 		ChainAdmitted: [],
 		ChainFinish: [],
 		ChainStartStep: [],
-		ChainPageInput: [],
-		ChainPageInputAfter: [],
-		ChainNext: []
+		chain_page_input_jhliinhchcgno: [],
+		chain_page_input_after_gdigbcabbnakb: [],
+		chain_next_bbflpfpnlejpm: []
 	}
 	const nothingGrown: Grown = {
 		rows: noRows,
@@ -201,9 +207,18 @@ export const chainLedger = (h: ChainHandles) => {
 			ChainAdmitted: [...a.rows.ChainAdmitted, ...b.rows.ChainAdmitted],
 			ChainFinish: [...a.rows.ChainFinish, ...b.rows.ChainFinish],
 			ChainStartStep: [...a.rows.ChainStartStep, ...b.rows.ChainStartStep],
-			ChainPageInput: [...a.rows.ChainPageInput, ...b.rows.ChainPageInput],
-			ChainPageInputAfter: [...a.rows.ChainPageInputAfter, ...b.rows.ChainPageInputAfter],
-			ChainNext: [...a.rows.ChainNext, ...b.rows.ChainNext]
+			chain_page_input_jhliinhchcgno: [
+				...a.rows.chain_page_input_jhliinhchcgno,
+				...b.rows.chain_page_input_jhliinhchcgno
+			],
+			chain_page_input_after_gdigbcabbnakb: [
+				...a.rows.chain_page_input_after_gdigbcabbnakb,
+				...b.rows.chain_page_input_after_gdigbcabbnakb
+			],
+			chain_next_bbflpfpnlejpm: [
+				...a.rows.chain_next_bbflpfpnlejpm,
+				...b.rows.chain_next_bbflpfpnlejpm
+			]
 		},
 		steps: [...a.steps, ...b.steps],
 		timed: [...a.timed, ...b.timed],
@@ -223,17 +238,17 @@ export const chainLedger = (h: ChainHandles) => {
 					rows: {
 						...noRows,
 						ChainStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						ChainPageInput: [
+						chain_page_input_jhliinhchcgno: [
 							{
 								step: key,
 								root: root,
 								feed: spawn.input.feed,
-								seq: spawn.input.seq,
+								seq: seqMint(spawn.input.seq),
 								pages: spawn.input.pages
 							}
 						],
-						ChainPageInputAfter: Option.toArray(
-							Option.map(spawn.input.after, (value) => ({ step: key, root: root, value }))
+						chain_page_input_after_gdigbcabbnakb: Option.toArray(
+							Option.map(spawn.input.after, (value) => ({ step: key, root: root, value: value }))
 						)
 					},
 					...spawnedOf(
@@ -256,17 +271,17 @@ export const chainLedger = (h: ChainHandles) => {
 					rows: {
 						...noRows,
 						ChainStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						ChainPageInput: [
+						chain_page_input_jhliinhchcgno: [
 							{
 								step: key,
 								root: root,
 								feed: spawn.input.feed,
-								seq: spawn.input.seq,
+								seq: seqMint(spawn.input.seq),
 								pages: spawn.input.pages
 							}
 						],
-						ChainPageInputAfter: Option.toArray(
-							Option.map(spawn.input.after, (value) => ({ step: key, root: root, value }))
+						chain_page_input_after_gdigbcabbnakb: Option.toArray(
+							Option.map(spawn.input.after, (value) => ({ step: key, root: root, value: value }))
 						)
 					},
 					...spawnedOf(
@@ -278,35 +293,52 @@ export const chainLedger = (h: ChainHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readChainPageInput = (root: Sha256, step: Sha256) =>
+	const readchain_page_input_jhliinhchcgno = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.chainReadChainPageInput.once({ params: { root, step }, facts: {} })),
+				settled(
+					h.den.chainReadchain_page_input_jhliinhchcgno.once({ params: { root, step }, facts: {} })
+				),
 				one
 			)
 			const side0 = yield* Effect.map(
-				settled(h.den.chainReadChainPageInputAfter.once({ params: { root, step }, facts: {} })),
+				settled(
+					h.den.chainReadchain_page_input_after_gdigbcabbnakb.once({
+						params: { root, step },
+						facts: {}
+					})
+				),
 				one
 			)
 			return Option.map(row, (found) => ({
 				feed: found.feed,
-				seq: found.seq,
+				seq: Brand.nominal<bigint & Brand.Brand<"Seq">>()(found.seq),
 				pages: found.pages,
 				after: Option.map(side0, (o) => o.value)
 			}))
 		})
-	const readChainChainRunInput = (root: Sha256, scope: Sha256) =>
+	const readchain_chain_run_input_glnkafcnkbnnn = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.chainReadChainChainRunInput.once({ params: { root, scope }, facts: {} })),
+				settled(
+					h.den.chainReadchain_chain_run_input_glnkafcnkbnnn.once({
+						params: { root, scope },
+						facts: {}
+					})
+				),
 				one
 			)
 			return Option.map(row, (found) => ({ feed: found.feed, pages: found.pages }))
 		})
-	const readChainOrderedInput = (root: Sha256, scope: Sha256) =>
+	const readchain_ordered_input_pbjpmafopnahk = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.chainReadChainOrderedInput.once({ params: { root, scope }, facts: {} })),
+				settled(
+					h.den.chainReadchain_ordered_input_pbjpmafopnahk.once({
+						params: { root, scope },
+						facts: {}
+					})
+				),
 				one
 			)
 			return Option.map(row, (found) => ({ feed: found.feed, pages: found.pages }))
@@ -352,7 +384,7 @@ export const chainLedger = (h: ChainHandles) => {
 							chainChainRunScope: scope,
 							chainChainRunKey: key,
 							chainChainRunChainScope: [{ scope, root: scope }],
-							chainChainRunChainChainRunInput: [
+							chainChainRunchain_chain_run_input_glnkafcnkbnnn: [
 								{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
 							],
 							chainChainRunChainRequestedWith: Option.toArray(
@@ -361,9 +393,9 @@ export const chainLedger = (h: ChainHandles) => {
 										...pipe(
 											[{ scope: scope, root: scope, feed: input.feed, pages: input.pages }],
 											Arr.flatMap((row) => [
-												Result.succeed("ChainChainRunInput"),
-												chainChainRunInputTexts.feed(row.feed),
-												chainChainRunInputTexts.pages(row.pages)
+												Result.succeed("chain_chain_run_input_glnkafcnkbnnn"),
+												chain_chain_run_input_glnkafcnkbnnnTexts.feed(row.feed),
+												chain_chain_run_input_glnkafcnkbnnnTexts.pages(row.pages)
 											])
 										)
 									]),
@@ -387,7 +419,7 @@ export const chainLedger = (h: ChainHandles) => {
 		Page: runnerOf(
 			chain.kinds[0],
 			{
-				input: ({ root, step }) => readChainPageInput(root, step),
+				input: ({ root, step }) => readchain_page_input_jhliinhchcgno(root, step),
 				read: (input) =>
 					Effect.flatMap(
 						settled(
@@ -407,7 +439,7 @@ export const chainLedger = (h: ChainHandles) => {
 										pipe(edgeStep(done.turn.step, "Next", ordinal), (key): Grown => ({
 											rows: {
 												...noRows,
-												ChainNext: [
+												chain_next_bbflpfpnlejpm: [
 													{
 														from: done.turn.step,
 														ordinal: BigInt(ordinal),
@@ -415,20 +447,20 @@ export const chainLedger = (h: ChainHandles) => {
 														root: done.turn.root
 													}
 												],
-												ChainPageInput: [
+												chain_page_input_jhliinhchcgno: [
 													{
 														step: key,
 														root: done.turn.root,
 														feed: input.feed,
-														seq: input.seq,
+														seq: seqMint(input.seq),
 														pages: input.pages
 													}
 												],
-												ChainPageInputAfter: Option.toArray(
+												chain_page_input_after_gdigbcabbnakb: Option.toArray(
 													Option.map(input.after, (value) => ({
 														step: key,
 														root: done.turn.root,
-														value
+														value: value
 													}))
 												)
 											},
@@ -446,7 +478,7 @@ export const chainLedger = (h: ChainHandles) => {
 							joined
 						)
 						const recordedWeights = yield* Effect.forEach(done.rows.weights, (row) =>
-							Effect.map(ChainPageReadWeightsText(row), (text) => ({
+							Effect.map(chain_page_read_weights_agiabippcbobbText(row), (text) => ({
 								row,
 								digest: rowDigest("weights", text)
 							}))
@@ -455,7 +487,7 @@ export const chainLedger = (h: ChainHandles) => {
 							Sha256.equals(a.digest, b.digest)
 						)
 						const recordedEarlier = yield* Effect.forEach(done.rows.earlier, (row) =>
-							Effect.map(ChainPageReadEarlierText(row), (text) => ({
+							Effect.map(chain_page_read_earlier_dgehlbgebidjcText(row), (text) => ({
 								row,
 								digest: rowDigest("earlier", text)
 							}))
@@ -464,7 +496,7 @@ export const chainLedger = (h: ChainHandles) => {
 							Sha256.equals(a.digest, b.digest)
 						)
 						const recordedTree = yield* Effect.forEach(done.rows.tree, (row) =>
-							Effect.map(ChainPageReadTreeText(row), (text) => ({
+							Effect.map(chain_page_read_tree_lakencnpkciinText(row), (text) => ({
 								row,
 								digest: rowDigest("tree", text)
 							}))
@@ -486,67 +518,76 @@ export const chainLedger = (h: ChainHandles) => {
 											ChainHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											ChainPageOutput: [
+											chain_page_output_dniojohpmhcee: [
 												{
 													step: done.turn.step,
 													root: done.turn.root,
-													seq: done.output.seq,
+													seq: seqMint(done.output.seq),
 													items: done.output.items,
 													earlier: done.output.earlier
 												}
 											],
-											ChainPageOutputNext: Option.toArray(
+											chain_page_output_next_pocjijjpkpono: Option.toArray(
 												Option.map(done.output.next, (value) => ({
 													step: done.turn.step,
 													root: done.turn.root,
-													value
+													value: value
 												}))
 											),
 											...recordsFacts(
 												chainGraph,
-												ChainPageReadWeightsRecords
+												chain_page_read_weights_agiabippcbobbRecords
 											)(
 												Arr.map(
 													uniqueWeights,
 													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
-											ChainPageReadWeights: Arr.map(recordedWeights, (found, ordinal) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal),
-												digest: found.digest
-											})),
+											chain_page_read_weights_agiabippcbobb: Arr.map(
+												recordedWeights,
+												(found, ordinal) => ({
+													step: done.turn.step,
+													root: done.turn.root,
+													ordinal: BigInt(ordinal),
+													digest: found.digest
+												})
+											),
 											...recordsFacts(
 												chainGraph,
-												ChainPageReadEarlierRecords
+												chain_page_read_earlier_dgehlbgebidjcRecords
 											)(
 												Arr.map(
 													uniqueEarlier,
 													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
-											ChainPageReadEarlier: Arr.map(recordedEarlier, (found, ordinal) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal),
-												digest: found.digest
-											})),
+											chain_page_read_earlier_dgehlbgebidjc: Arr.map(
+												recordedEarlier,
+												(found, ordinal) => ({
+													step: done.turn.step,
+													root: done.turn.root,
+													ordinal: BigInt(ordinal),
+													digest: found.digest
+												})
+											),
 											...recordsFacts(
 												chainGraph,
-												ChainPageReadTreeRecords
+												chain_page_read_tree_lakencnpkciinRecords
 											)(
 												Arr.map(
 													uniqueTree,
 													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
-											ChainPageReadTree: Arr.map(recordedTree, (found, ordinal) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal),
-												digest: found.digest
-											}))
+											chain_page_read_tree_lakencnpkciin: Arr.map(
+												recordedTree,
+												(found, ordinal) => ({
+													step: done.turn.step,
+													root: done.turn.root,
+													ordinal: BigInt(ordinal),
+													digest: found.digest
+												})
+											)
 										}
 									},
 									done.writes.facts
@@ -582,7 +623,7 @@ export const chainLedger = (h: ChainHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readChainChainRunInput(root, scope)
+						const input = yield* readchain_chain_run_input_glnkafcnkbnnn(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -616,7 +657,7 @@ export const chainLedger = (h: ChainHandles) => {
 									Arr.findFirst(inputPageRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({
 										feed: row.feed,
-										seq: row.seq,
+										seq: Brand.nominal<bigint & Brand.Brand<"Seq">>()(row.seq),
 										pages: row.pages,
 										after: Option.map(
 											Arr.findFirst(inputPageSide0, (o) => Sha256.equals(o.step, row.step)),
@@ -631,7 +672,7 @@ export const chainLedger = (h: ChainHandles) => {
 									Effect.all({
 										input: inputPage(row.step),
 										output: Effect.succeed({
-											seq: row.seq,
+											seq: Brand.nominal<bigint & Brand.Brand<"Seq">>()(row.seq),
 											items: row.items,
 											earlier: row.earlier,
 											next: Option.map(
@@ -669,7 +710,9 @@ export const chainLedger = (h: ChainHandles) => {
 											ChainHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											ChainChainRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+											chain_chain_run_finish_output_lhniobmdeemdb: [
+												{ step: done.turn.step, root: done.turn.root }
+											]
 										}
 									},
 									done.writes.facts
@@ -705,7 +748,7 @@ export const chainLedger = (h: ChainHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readChainOrderedInput(root, scope)
+						const input = yield* readchain_ordered_input_pbjpmafopnahk(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -739,7 +782,7 @@ export const chainLedger = (h: ChainHandles) => {
 									Arr.findFirst(inputPageRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({
 										feed: row.feed,
-										seq: row.seq,
+										seq: Brand.nominal<bigint & Brand.Brand<"Seq">>()(row.seq),
 										pages: row.pages,
 										after: Option.map(
 											Arr.findFirst(inputPageSide0, (o) => Sha256.equals(o.step, row.step)),
@@ -754,7 +797,7 @@ export const chainLedger = (h: ChainHandles) => {
 									Effect.all({
 										input: inputPage(row.step),
 										output: Effect.succeed({
-											seq: row.seq,
+											seq: Brand.nominal<bigint & Brand.Brand<"Seq">>()(row.seq),
 											items: row.items,
 											earlier: row.earlier,
 											next: Option.map(
@@ -792,7 +835,9 @@ export const chainLedger = (h: ChainHandles) => {
 											ChainHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											ChainOrderedFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+											chain_ordered_finish_output_nnemphmmfdblb: [
+												{ step: done.turn.step, root: done.turn.root }
+											]
 										}
 									},
 									done.writes.facts
@@ -812,7 +857,7 @@ export const chainLedger = (h: ChainHandles) => {
 			precondition: chain.kinds[1].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readChainChainRunInput(scope, scope)
+					const input = yield* readchain_chain_run_input_glnkafcnkbnnn(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -837,8 +882,9 @@ export const chainLedger = (h: ChainHandles) => {
 								insert: {
 									ChainScope: grown.rows.ChainScope,
 									ChainStartStep: grown.rows.ChainStartStep,
-									ChainPageInput: grown.rows.ChainPageInput,
-									ChainPageInputAfter: grown.rows.ChainPageInputAfter,
+									chain_page_input_jhliinhchcgno: grown.rows.chain_page_input_jhliinhchcgno,
+									chain_page_input_after_gdigbcabbnakb:
+										grown.rows.chain_page_input_after_gdigbcabbnakb,
 									ChainAdmitted: admitted,
 									ChainFinish: finishes
 								}
@@ -859,7 +905,7 @@ export const chainLedger = (h: ChainHandles) => {
 			precondition: chain.kinds[2].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readChainOrderedInput(scope, scope)
+					const input = yield* readchain_ordered_input_pbjpmafopnahk(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -884,8 +930,9 @@ export const chainLedger = (h: ChainHandles) => {
 								insert: {
 									ChainScope: grown.rows.ChainScope,
 									ChainStartStep: grown.rows.ChainStartStep,
-									ChainPageInput: grown.rows.ChainPageInput,
-									ChainPageInputAfter: grown.rows.ChainPageInputAfter,
+									chain_page_input_jhliinhchcgno: grown.rows.chain_page_input_jhliinhchcgno,
+									chain_page_input_after_gdigbcabbnakb:
+										grown.rows.chain_page_input_after_gdigbcabbnakb,
 									ChainAdmitted: admitted,
 									ChainFinish: finishes
 								}
@@ -908,7 +955,10 @@ export const chainLedger = (h: ChainHandles) => {
 		reading: (environment) =>
 			Effect.flatMap(
 				settled(
-					h.den.chainReading.once({ params: { "serving.environment": environment }, facts: {} })
+					h.den.chainReading.once({
+						params: { "serving.environment": mintEnvironment(environment) },
+						facts: {}
+					})
 				),
 				(rows) =>
 					Effect.flatMap(only(rows), (row) =>
@@ -922,7 +972,7 @@ export const chainLedger = (h: ChainHandles) => {
 			Effect.asVoid(
 				settled(
 					h.coordinator.chainPromote.once({
-						params: { environment: host.environment, deployment: host.deployment },
+						params: { environment: mintEnvironment(host.environment), deployment: host.deployment },
 						facts: {}
 					})
 				)

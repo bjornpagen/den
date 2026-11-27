@@ -1,4 +1,5 @@
 import { denClock } from "@bjornpagen/den/algebra/kinds"
+import { denInstantKey } from "@bjornpagen/den/lower/keys"
 import { derivedKey, exclusiveRows } from "@bjornpagen/den/runtime/bind"
 import { instantOf, rootScope } from "@bjornpagen/den/runtime/identity"
 import { refusedLaws } from "@bjornpagen/den/runtime/ledger"
@@ -393,7 +394,8 @@ const wantRunBy = (writes: ReadonlyArray<WantedWrite>) => {
 				ChangeSet.sequence(ChangeSet.empty(another).insert(Want, []), fanRequests.Wanted),
 				{
 					[denClock]: "millis"
-				}
+				},
+				{ [denClock]: denInstantKey }
 			)
 		})
 	])
@@ -411,7 +413,8 @@ const orderBy = (writes: ReadonlyArray<OrderedWrite>) => {
 				),
 				{
 					[denClock]: "millis"
-				}
+				},
+				{ [denClock]: denInstantKey }
 			)
 		})
 	])
@@ -481,7 +484,8 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 											ChangeSet.empty(Loader).insert(Want, []),
 											fanRequests.Wanted
 										),
-										{ [denClock]: "millis" }
+										{ [denClock]: "millis" },
+										{ [denClock]: denInstantKey }
 									)
 								})
 							])
@@ -513,26 +517,22 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 			},
 			{
 				file: "packages/den/integration/slice/generated/fan.programs.ts",
-				original:
-					'\tWanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput", "FanRoot"] as const\n',
-				replacement:
-					'\tWanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput"] as const\n',
+				original: '\t\t"fan_wanted_input_nfecjpihiaope",\n\t\t"FanRoot"\n\t] as const\n',
+				replacement: '\t\t"fan_wanted_input_nfecjpihiaope"\n\t] as const\n',
 				why: "The request's insert list omits its Root: a role that inserts what the list names cannot write the request, and its workload's compile is refused."
 			},
 			{
 				file: "packages/den/integration/slice/generated/fan.programs.ts",
-				original:
-					'\tWanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput", "FanRoot"] as const\n',
+				original: '\t\t"fan_wanted_input_nfecjpihiaope",\n\t\t"FanRoot"\n\t] as const\n',
 				replacement:
-					'\tWanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput", "FanRoot", "FanResult"] as const\n',
+					'\t\t"fan_wanted_input_nfecjpihiaope",\n\t\t"FanRoot",\n\t\t"FanResult"\n\t] as const\n',
 				why: "The request's insert list names a relation the request never inserts, a step commit's: a role without it still writes the request, so the list grants more than the request needs."
 			},
 			{
 				file: "packages/den/integration/slice/generated/chain.programs.ts",
-				original:
-					'\tOrdered: ["ChainScope", "ChainOrderedInput", "ChainRequestedWith", "ChainRoot"] as const\n',
+				original: '\t\t"ChainRequestedWith",\n\t\t"ChainRoot"\n\t] as const\n',
 				replacement:
-					'\tOrdered: ["ChainScope", "ChainOrderedInput", "ChainRequestedWith", "ChainRoot", "ChainResult"] as const\n',
+					'\t\t"ChainRequestedWith",\n\t\t"ChainRoot",\n\t\t"ChainResult"\n\t] as const\n',
 				why: "A given root's request's insert list names a step commit's relation too: a role without it still writes the request, so the list grants more than the request needs."
 			}
 		]
@@ -613,7 +613,8 @@ export const aKeysFieldsNameOneRoot = property.exhaust(finite(renamings), {
 								error.kind === "refused" &&
 								Arr.some(
 									refusedLaws(error.refused),
-									({ law }) => law.kind === "key" && law.side.relation === "FanWantedKey"
+									({ law }) =>
+										law.kind === "key" && law.side.relation === "fan_wanted_key_ldjmcglkghhjb"
 								)
 						)
 						assert.equal(
@@ -638,7 +639,7 @@ export const aKeysFieldsNameOneRoot = property.exhaust(finite(renamings), {
 	kills: [
 		{
 			file: "packages/den/integration/slice/generated/fan.fragment.ts",
-			original: '\t\tkey(on(FanWantedKey, "batchDigest")),\n',
+			original: '\t\tkey(on(fan_wanted_key_ldjmcglkghhjb, "batchDigest")),\n',
 			replacement: "",
 			why: "No law keys the key's fields: the installed index still refuses the renamed text's root, but as no law of the code's, so the refusal names no key law and the request fails for something else."
 		}

@@ -248,15 +248,20 @@
   a step whose reads are any other.
   - Rejected: a record schema of den's beside the query, a second spelling of its rows; a row's text stored, a blob;
     wire cells as texts, which a field of the query types better.
-- **A step's reads may state their records' relation names (main's ruling on metis's documents, 2026-11-22).** grizzle
-  derives a records relation's name from den's stem for the read, `<P><Step>Read<Name>`, and the attachment's path,
-  chaining a repeated name under its parent's, and refuses one past PostgreSQL's 63 bytes as RecordNameTooLong, naming
-  the path; metis's one read of an item's documents, the item's scan and each stimulus's below it, derives such names,
-  which made it read each document in a step of its own (a workaround). So `reads(over, named, params, { names })`
-  takes, by named query, the relation names its records state, an attachment's path to a name (grizzle's `names` of
-  records(...), typed by the query's paths), and den forwards each read's to its records' call,
-  `records(stem, <Step>Reads.named.<name>, owner, key, { names: <Step>Reads.options[0].names.<name> })`, from the reads'
-  own value, so a name is stated once, where the read is.
+- **Every name den derives takes one form, and a read's records are den's to name (grizzle main's ruling on metis's
+  nested scans, 2026-11-26).** A name den makes from a flow's names (a kind's or a join's input, output and error
+  relations and their options, arrays and variants, a column's roster, a double's row check, a derived root's key, an
+  edge, a read's records and every attachment path of them) is `<stem>_<digest>`, always: its identity's segments cut at
+  a segment boundary to a fixed budget, and a digest of its identity's whole canonical encoding, as grizzle's naming door
+  hashes what it derives (lower/names.ts). It never changes form for its length, so no nesting and no length of a
+  flow's names carries one past PostgreSQL's 63 bytes. A flow's singletons, its name and one of den's words
+  (`<P>Scope`, `<P>Step`, …), stay readable, as grizzle's `<schema>__<name>`, and a name a flow declares that den lists
+  as a roster's handle stays verbatim; either is refused at den's door, naming its declaration, where it cannot fit.
+  A census refuses two identities under one conversion. den names every attachment path of a read's query (grizzle's
+  recordPaths), so records derive no name; a flow states none: the records are den's own relations.
+  - Rejected: names a flow states for its records (`reads(…, { names })`), the author naming den's tables; a name
+    readable where it fits and hashed past it, which changes form with its length; a readable concatenation of names,
+    which two identities can share.
 - **A read's records are content-addressed: a row is stored once, however many roots found it (main's ruling on
   metis's volume, 2026-11-22).** Keyed by a row's digest and its root, the records held each root's own copy of every
   row it read: measured on metis's rehearsal QTI data in grizzle's records layout, an item's document read is about 680
@@ -265,7 +270,7 @@
   step's records state what it read; nothing runs it again from them (a step that dies before its commit reads again,
   and a finished step's output is its record). So the records are keyed by the digest of a row's text alone, as git
   stores an object once however many trees name it: a row any step of any root found is one row, an insert of one
-  already stored no change, and a root keeps only its step's references to it, `<P><Step>Read<Name>(step, ordinal,
+  already stored no change, and a root keeps only its step's references to it, the read's relation `(step, ordinal,
   digest, root)`, a body of its unit contained in the row by its digest. A record is as faithful as a copy: its digest
   is of the row as the step found it, so a later edit of the source is a new row and leaves the old one as it was
   (integration/records.test.ts holds this against a model of the per-root copies, through edits of the sources).
@@ -358,7 +363,7 @@
   root, so a derived root stands exactly where its input derives, at its request's commit, and records nothing: its
   input is a derived fact. A request again of the key, its graph standing or retired, starts nothing and leaves the
   input as it was, whatever the read finds now; a request whose read finds nothing inserts nothing and is answered as no
-  fresh root. Its key is kept as `<P><Root>Key`, keyed by the root, closed and kept through retirement, containing the
+  fresh root. Its key is kept in its kind's key relation, keyed by the root, closed and kept through retirement, containing the
   kind's Root and contained in it, so no derived root stands without its key, and a kind moved from a given input to a
   derived one is refused while any of its roots stands, as the record's move is (above). Its idempotency key is its
   key's fields' names and texts, framed, by the fields' names (runtime/bind.ts derivedKey), so a struct that only

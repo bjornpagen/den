@@ -3,6 +3,7 @@ import { rowText } from "@bjornpagen/grizzle/compile"
 import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Order, Predicate, Result, Stream } from "effect"
 import type { Due, Exclusive } from "#algebra/kinds.ts"
+import { mintInstant } from "#lower/keys.ts"
 import {
 	atOnce,
 	type Delay,
@@ -102,7 +103,7 @@ export const dueOf = <I>(due: Due<I>, input: I): SpawnDue => {
 		case "after":
 			return { kind: "after", delay: delayOf(due.millis) }
 		case "at":
-			return { kind: "at", instant: due.instant(input) }
+			return { kind: "at", instant: mintInstant(due.instant(input)) }
 	}
 }
 

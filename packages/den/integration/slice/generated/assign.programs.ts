@@ -1,4 +1,4 @@
-import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant, denInstantKey } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Assign to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import {
 	ChangeSet,
@@ -21,10 +21,10 @@ import {
 	AssignOutcome,
 	AssignRetryWhy,
 	AssignPausable,
-	AssignEmbedInputMode,
-	AssignDecideInputMode,
-	AssignAssignmentInputMode,
-	AssignDecideOutputStage,
+	assign_embed_input_mode_pblkjdhncepei,
+	assign_decide_input_mode_beoibaghjodnf,
+	assign_assignment_input_mode_pgalmghonldnf,
+	assign_decide_output_stage_bjoijbfcegdbp,
 	AssignScope,
 	AssignRoot,
 	AssignRequestedWith,
@@ -43,34 +43,34 @@ import {
 	AssignHeld,
 	AssignRefusal,
 	AssignExhausted,
-	AssignEmbedInput,
-	AssignEmbedInputNear,
-	AssignEmbedInputExclude,
-	AssignEmbedInputModeNearest,
-	AssignEmbedInputModeWithin,
-	AssignDecideInput,
-	AssignDecideInputExclude,
-	AssignDecideInputModeNearest,
-	AssignDecideInputModeWithin,
-	AssignAssignmentInput,
-	AssignAssignmentInputNear,
-	AssignAssignmentInputExclude,
-	AssignAssignmentInputModeNearest,
-	AssignAssignmentInputModeWithin,
-	AssignEmbedOutput,
-	AssignDecideOutput,
-	AssignDecideOutputWeighed,
-	AssignDecideOutputStageServe,
-	AssignDecideOutputStageRest,
-	AssignAssignmentFinishOutput,
-	AssignAsked,
-	AssignDecideReadNearest,
-	AssignDecideReadSeen,
+	assign_embed_input_kmlepfpdepkmo,
+	assign_embed_input_near_dhffcaodkgemm,
+	assign_embed_input_exclude_gcjikbkjkcefj,
+	assign_embed_input_mode_nearest_bdiihcbmhfojp,
+	assign_embed_input_mode_within_oiehjhalkkkfi,
+	assign_decide_input_ffhdojphbdjfc,
+	assign_decide_input_exclude_bpjgmijefddch,
+	assign_decide_input_mode_nearest_ijgbegdphofca,
+	assign_decide_input_mode_within_fgbilcoafbdcg,
+	assign_assignment_input_kijoknpmnpomn,
+	assign_assignment_input_near_acilimddcfjog,
+	assign_assignment_input_exclude_paaebdpkimebl,
+	assign_assignment_input_mode_nearest_jdmfgbfmpepjd,
+	assign_assignment_input_mode_within_iahlinklmdadj,
+	assign_embed_output_ghdpbieopfmkd,
+	assign_decide_output_fkgbaoobeoima,
+	assign_decide_output_weighed_gpdibcghlfbhb,
+	assign_decide_output_stage_serve_chfjeagmkjoef,
+	assign_decide_output_stage_rest_gohjkdlkfnkca,
+	assign_assignment_finish_output_dehjnhpeahpgb,
+	assign_asked_fobgfofknpfgd,
+	assign_decide_read_nearest_mlemoegfgpbbi,
+	assign_decide_read_seen_oahojgbpphboo,
 	AssignPaused,
 	AssignResumed,
 	AssignServed,
-	AssignDecideReadNearestRecords,
-	AssignDecideReadSeenRecords,
+	assign_decide_read_nearest_mlemoegfgpbbiRecords,
+	assign_decide_read_seen_oahojgbpphbooRecords,
 	assignGraph,
 	assignCoordination
 } from "#integration/slice/generated/assign.fragment.ts"
@@ -101,30 +101,30 @@ export const AssignDen = role(
 			"AssignHeld",
 			"AssignRefusal",
 			"AssignExhausted",
-			"AssignEmbedInput",
-			"AssignEmbedInputNear",
-			"AssignEmbedInputExclude",
-			"AssignEmbedInputModeNearest",
-			"AssignEmbedInputModeWithin",
-			"AssignDecideInput",
-			"AssignDecideInputExclude",
-			"AssignDecideInputModeNearest",
-			"AssignDecideInputModeWithin",
-			"AssignAssignmentInput",
-			"AssignAssignmentInputNear",
-			"AssignAssignmentInputExclude",
-			"AssignAssignmentInputModeNearest",
-			"AssignAssignmentInputModeWithin",
-			"AssignAssignmentFinishOutput",
-			"AssignDecideReadNearest",
-			"AssignDecideReadSeen",
-			...Arr.map(AssignDecideReadNearestRecords.relations, (rel) => rel.name),
-			...Arr.map(AssignDecideReadSeenRecords.relations, (rel) => rel.name)
+			"assign_embed_input_kmlepfpdepkmo",
+			"assign_embed_input_near_dhffcaodkgemm",
+			"assign_embed_input_exclude_gcjikbkjkcefj",
+			"assign_embed_input_mode_nearest_bdiihcbmhfojp",
+			"assign_embed_input_mode_within_oiehjhalkkkfi",
+			"assign_decide_input_ffhdojphbdjfc",
+			"assign_decide_input_exclude_bpjgmijefddch",
+			"assign_decide_input_mode_nearest_ijgbegdphofca",
+			"assign_decide_input_mode_within_fgbilcoafbdcg",
+			"assign_assignment_input_kijoknpmnpomn",
+			"assign_assignment_input_near_acilimddcfjog",
+			"assign_assignment_input_exclude_paaebdpkimebl",
+			"assign_assignment_input_mode_nearest_jdmfgbfmpepjd",
+			"assign_assignment_input_mode_within_iahlinklmdadj",
+			"assign_assignment_finish_output_dehjnhpeahpgb",
+			"assign_decide_read_nearest_mlemoegfgpbbi",
+			"assign_decide_read_seen_oahojgbpphboo",
+			...Arr.map(assign_decide_read_nearest_mlemoegfgpbbiRecords.relations, (rel) => rel.name),
+			...Arr.map(assign_decide_read_seen_oahojgbpphbooRecords.relations, (rel) => rel.name)
 		]
 	}
 )
 
-/** den's coordinator role for the flow Assign: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation. */
+/** den's coordinator role for the flow Assign: the turns of its exclusivity seats and pauses. It holds the coordination group's rosters and relations whole, no role holding a closed relation, and no live hold, which only den's role reads, over the graph it holds. */
 export const AssignCoordinator = role(
 	App,
 	"assign_coordinator",
@@ -134,10 +134,10 @@ export const AssignCoordinator = role(
 		AssignOutcome,
 		AssignRetryWhy,
 		AssignPausable,
-		AssignEmbedInputMode,
-		AssignDecideInputMode,
-		AssignAssignmentInputMode,
-		AssignDecideOutputStage,
+		assign_embed_input_mode_pblkjdhncepei,
+		assign_decide_input_mode_beoibaghjodnf,
+		assign_assignment_input_mode_pgalmghonldnf,
+		assign_decide_output_stage_bjoijbfcegdbp,
 		AssignPaused,
 		AssignResumed,
 		AssignServed
@@ -184,7 +184,8 @@ const assignLatestServed = query(AssignDen).rule((r) => {
 export const assignDenPrograms = Object.freeze({
 	assignNow: clocked(
 		query(assignGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	assignReading: clocked(
 		query(AssignDen).reads({
@@ -202,7 +203,8 @@ export const assignDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.denNow": "millis" }
+		{ "now.denNow": "millis" },
+		{ "now.denNow": denInstantKey }
 	),
 	assignClaim: clocked(
 		ChangeSet.empty(assignGraph)
@@ -211,7 +213,8 @@ export const assignDenPrograms = Object.freeze({
 				{
 					until: Type.cast(
 						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
-						DenInstant
+						DenInstant,
+						denInstantKey
 					)
 				}
 			)
@@ -224,7 +227,8 @@ export const assignDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	assignRetry: clocked(
 		ChangeSet.empty(assignGraph)
@@ -240,14 +244,16 @@ export const assignDenPrograms = Object.freeze({
 								Type.base(r.param("denNow", DenInstant)),
 								Type.base(r.param("delay", DenDelay))
 							),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						why: r.param("why", AssignRetry.fields.why),
 						root: r.param("root", AssignRetry.fields.root)
 					})
 				)
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	assignFence: ChangeSet.empty(assignGraph).insert(AssignEnded, []).insert(AssignFenced, []),
 	assignRefuse: ChangeSet.empty(assignGraph)
@@ -266,15 +272,15 @@ export const assignDenPrograms = Object.freeze({
 			.insert(AssignFinish, [])
 			.insert(AssignStartStep, [])
 			.insert(AssignScope, [])
-			.insert(AssignEmbedInput, [])
-			.insert(AssignEmbedInputNear, [])
-			.insert(AssignEmbedInputExclude, [])
-			.insert(AssignEmbedInputModeNearest, [])
-			.insert(AssignEmbedInputModeWithin, [])
-			.insert(AssignDecideInput, [])
-			.insert(AssignDecideInputExclude, [])
-			.insert(AssignDecideInputModeNearest, [])
-			.insert(AssignDecideInputModeWithin, [])
+			.insert(assign_embed_input_kmlepfpdepkmo, [])
+			.insert(assign_embed_input_near_dhffcaodkgemm, [])
+			.insert(assign_embed_input_exclude_gcjikbkjkcefj, [])
+			.insert(assign_embed_input_mode_nearest_bdiihcbmhfojp, [])
+			.insert(assign_embed_input_mode_within_oiehjhalkkkfi, [])
+			.insert(assign_decide_input_ffhdojphbdjfc, [])
+			.insert(assign_decide_input_exclude_bpjgmijefddch, [])
+			.insert(assign_decide_input_mode_nearest_ijgbegdphofca, [])
+			.insert(assign_decide_input_mode_within_fgbilcoafbdcg, [])
 			.insert(
 				AssignStep,
 				query(assignGraph).rule((r) => {
@@ -291,13 +297,15 @@ export const assignDenPrograms = Object.freeze({
 						scope,
 						due: Type.cast(
 							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						root: r.param("root", AssignStep.fields.root)
 					})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	assignSkip: ChangeSet.empty(assignGraph).insert(AssignSkipped, []),
 	assignSkippedOf: query(assignGraph).rule((r) => {
@@ -468,146 +476,176 @@ export const assignDenPrograms = Object.freeze({
 				.find({ target, turn })
 		})
 	}),
-	assignReadAssignEmbedInput: query(assignGraph).rule((r) => {
-		const { root, step, learner, topic, mode } = v(AssignEmbedInput, "assignEmbedInput")
+	assignReadassign_embed_input_kmlepfpdepkmo: query(assignGraph).rule((r) => {
+		const { root, step, learner, topic, mode } = v(
+			assign_embed_input_kmlepfpdepkmo,
+			"assign_embed_input_kmlepfpdepkmo"
+		)
 		return r
-			.match(AssignEmbedInput, { root, step, learner, topic, mode })
+			.match(assign_embed_input_kmlepfpdepkmo, { root, step, learner, topic, mode })
 			.where(
-				r.eq(root, r.param("root", AssignEmbedInput.fields.root)),
-				r.eq(step, r.param("step", AssignEmbedInput.fields.step))
+				r.eq(root, r.param("root", assign_embed_input_kmlepfpdepkmo.fields.root)),
+				r.eq(step, r.param("step", assign_embed_input_kmlepfpdepkmo.fields.step))
 			)
 			.find({ root, step, learner, topic, mode })
 	}),
-	assignReadAssignEmbedInputModeNearest: query(assignGraph).rule((r) => {
-		const { root, step } = v(AssignEmbedInputModeNearest, "assignEmbedInputModeNearest")
+	assignReadassign_embed_input_mode_nearest_bdiihcbmhfojp: query(assignGraph).rule((r) => {
+		const { root, step } = v(
+			assign_embed_input_mode_nearest_bdiihcbmhfojp,
+			"assign_embed_input_mode_nearest_bdiihcbmhfojp"
+		)
 		return r
-			.match(AssignEmbedInputModeNearest, { root, step })
+			.match(assign_embed_input_mode_nearest_bdiihcbmhfojp, { root, step })
 			.where(
-				r.eq(root, r.param("root", AssignEmbedInputModeNearest.fields.root)),
-				r.eq(step, r.param("step", AssignEmbedInputModeNearest.fields.step))
+				r.eq(root, r.param("root", assign_embed_input_mode_nearest_bdiihcbmhfojp.fields.root)),
+				r.eq(step, r.param("step", assign_embed_input_mode_nearest_bdiihcbmhfojp.fields.step))
 			)
 			.find({ root, step })
 	}),
-	assignReadAssignEmbedInputModeWithin: query(assignGraph).rule((r) => {
-		const { root, step, radius } = v(AssignEmbedInputModeWithin, "assignEmbedInputModeWithin")
+	assignReadassign_embed_input_mode_within_oiehjhalkkkfi: query(assignGraph).rule((r) => {
+		const { root, step, radius } = v(
+			assign_embed_input_mode_within_oiehjhalkkkfi,
+			"assign_embed_input_mode_within_oiehjhalkkkfi"
+		)
 		return r
-			.match(AssignEmbedInputModeWithin, { root, step, radius })
+			.match(assign_embed_input_mode_within_oiehjhalkkkfi, { root, step, radius })
 			.where(
-				r.eq(root, r.param("root", AssignEmbedInputModeWithin.fields.root)),
-				r.eq(step, r.param("step", AssignEmbedInputModeWithin.fields.step))
+				r.eq(root, r.param("root", assign_embed_input_mode_within_oiehjhalkkkfi.fields.root)),
+				r.eq(step, r.param("step", assign_embed_input_mode_within_oiehjhalkkkfi.fields.step))
 			)
 			.find({ root, step, radius })
 	}),
-	assignReadAssignEmbedInputNear: query(assignGraph).rule((r) => {
-		const { root, step, ordinal, value } = v(AssignEmbedInputNear, "part")
+	assignReadassign_embed_input_near_dhffcaodkgemm: query(assignGraph).rule((r) => {
+		const { root, step, ordinal, value } = v(assign_embed_input_near_dhffcaodkgemm, "part")
 		return r
-			.match(AssignEmbedInputNear, { root, step, ordinal, value })
+			.match(assign_embed_input_near_dhffcaodkgemm, { root, step, ordinal, value })
 			.where(
-				r.eq(root, r.param("root", AssignEmbedInputNear.fields.root)),
-				r.eq(step, r.param("step", AssignEmbedInputNear.fields.step))
+				r.eq(root, r.param("root", assign_embed_input_near_dhffcaodkgemm.fields.root)),
+				r.eq(step, r.param("step", assign_embed_input_near_dhffcaodkgemm.fields.step))
 			)
 			.find({ root, step, ordinal, value })
 	}),
-	assignReadAssignEmbedInputExclude: query(assignGraph).rule((r) => {
-		const { root, step, ordinal, value } = v(AssignEmbedInputExclude, "part")
+	assignReadassign_embed_input_exclude_gcjikbkjkcefj: query(assignGraph).rule((r) => {
+		const { root, step, ordinal, value } = v(assign_embed_input_exclude_gcjikbkjkcefj, "part")
 		return r
-			.match(AssignEmbedInputExclude, { root, step, ordinal, value })
+			.match(assign_embed_input_exclude_gcjikbkjkcefj, { root, step, ordinal, value })
 			.where(
-				r.eq(root, r.param("root", AssignEmbedInputExclude.fields.root)),
-				r.eq(step, r.param("step", AssignEmbedInputExclude.fields.step))
+				r.eq(root, r.param("root", assign_embed_input_exclude_gcjikbkjkcefj.fields.root)),
+				r.eq(step, r.param("step", assign_embed_input_exclude_gcjikbkjkcefj.fields.step))
 			)
 			.find({ root, step, ordinal, value })
 	}),
-	assignReadAssignDecideInput: query(assignGraph).rule((r) => {
-		const { root, step, learner, topic, vector, mode } = v(AssignDecideInput, "assignDecideInput")
+	assignReadassign_decide_input_ffhdojphbdjfc: query(assignGraph).rule((r) => {
+		const { root, step, learner, topic, vector, mode } = v(
+			assign_decide_input_ffhdojphbdjfc,
+			"assign_decide_input_ffhdojphbdjfc"
+		)
 		return r
-			.match(AssignDecideInput, { root, step, learner, topic, vector, mode })
+			.match(assign_decide_input_ffhdojphbdjfc, { root, step, learner, topic, vector, mode })
 			.where(
-				r.eq(root, r.param("root", AssignDecideInput.fields.root)),
-				r.eq(step, r.param("step", AssignDecideInput.fields.step))
+				r.eq(root, r.param("root", assign_decide_input_ffhdojphbdjfc.fields.root)),
+				r.eq(step, r.param("step", assign_decide_input_ffhdojphbdjfc.fields.step))
 			)
 			.find({ root, step, learner, topic, vector, mode })
 	}),
-	assignReadAssignDecideInputModeNearest: query(assignGraph).rule((r) => {
-		const { root, step } = v(AssignDecideInputModeNearest, "assignDecideInputModeNearest")
+	assignReadassign_decide_input_mode_nearest_ijgbegdphofca: query(assignGraph).rule((r) => {
+		const { root, step } = v(
+			assign_decide_input_mode_nearest_ijgbegdphofca,
+			"assign_decide_input_mode_nearest_ijgbegdphofca"
+		)
 		return r
-			.match(AssignDecideInputModeNearest, { root, step })
+			.match(assign_decide_input_mode_nearest_ijgbegdphofca, { root, step })
 			.where(
-				r.eq(root, r.param("root", AssignDecideInputModeNearest.fields.root)),
-				r.eq(step, r.param("step", AssignDecideInputModeNearest.fields.step))
+				r.eq(root, r.param("root", assign_decide_input_mode_nearest_ijgbegdphofca.fields.root)),
+				r.eq(step, r.param("step", assign_decide_input_mode_nearest_ijgbegdphofca.fields.step))
 			)
 			.find({ root, step })
 	}),
-	assignReadAssignDecideInputModeWithin: query(assignGraph).rule((r) => {
-		const { root, step, radius } = v(AssignDecideInputModeWithin, "assignDecideInputModeWithin")
+	assignReadassign_decide_input_mode_within_fgbilcoafbdcg: query(assignGraph).rule((r) => {
+		const { root, step, radius } = v(
+			assign_decide_input_mode_within_fgbilcoafbdcg,
+			"assign_decide_input_mode_within_fgbilcoafbdcg"
+		)
 		return r
-			.match(AssignDecideInputModeWithin, { root, step, radius })
+			.match(assign_decide_input_mode_within_fgbilcoafbdcg, { root, step, radius })
 			.where(
-				r.eq(root, r.param("root", AssignDecideInputModeWithin.fields.root)),
-				r.eq(step, r.param("step", AssignDecideInputModeWithin.fields.step))
+				r.eq(root, r.param("root", assign_decide_input_mode_within_fgbilcoafbdcg.fields.root)),
+				r.eq(step, r.param("step", assign_decide_input_mode_within_fgbilcoafbdcg.fields.step))
 			)
 			.find({ root, step, radius })
 	}),
-	assignReadAssignDecideInputExclude: query(assignGraph).rule((r) => {
-		const { root, step, ordinal, value } = v(AssignDecideInputExclude, "part")
+	assignReadassign_decide_input_exclude_bpjgmijefddch: query(assignGraph).rule((r) => {
+		const { root, step, ordinal, value } = v(assign_decide_input_exclude_bpjgmijefddch, "part")
 		return r
-			.match(AssignDecideInputExclude, { root, step, ordinal, value })
+			.match(assign_decide_input_exclude_bpjgmijefddch, { root, step, ordinal, value })
 			.where(
-				r.eq(root, r.param("root", AssignDecideInputExclude.fields.root)),
-				r.eq(step, r.param("step", AssignDecideInputExclude.fields.step))
+				r.eq(root, r.param("root", assign_decide_input_exclude_bpjgmijefddch.fields.root)),
+				r.eq(step, r.param("step", assign_decide_input_exclude_bpjgmijefddch.fields.step))
 			)
 			.find({ root, step, ordinal, value })
 	}),
-	assignReadAssignAssignmentInput: query(assignGraph).rule((r) => {
-		const { root, scope, learner, topic, mode } = v(AssignAssignmentInput, "assignAssignmentInput")
+	assignReadassign_assignment_input_kijoknpmnpomn: query(assignGraph).rule((r) => {
+		const { root, scope, learner, topic, mode } = v(
+			assign_assignment_input_kijoknpmnpomn,
+			"assign_assignment_input_kijoknpmnpomn"
+		)
 		return r
-			.match(AssignAssignmentInput, { root, scope, learner, topic, mode })
+			.match(assign_assignment_input_kijoknpmnpomn, { root, scope, learner, topic, mode })
 			.where(
-				r.eq(root, r.param("root", AssignAssignmentInput.fields.root)),
-				r.eq(scope, r.param("scope", AssignAssignmentInput.fields.scope))
+				r.eq(root, r.param("root", assign_assignment_input_kijoknpmnpomn.fields.root)),
+				r.eq(scope, r.param("scope", assign_assignment_input_kijoknpmnpomn.fields.scope))
 			)
 			.find({ root, scope, learner, topic, mode })
 	}),
-	assignReadAssignAssignmentInputModeNearest: query(assignGraph).rule((r) => {
-		const { root, scope } = v(AssignAssignmentInputModeNearest, "assignAssignmentInputModeNearest")
+	assignReadassign_assignment_input_mode_nearest_jdmfgbfmpepjd: query(assignGraph).rule((r) => {
+		const { root, scope } = v(
+			assign_assignment_input_mode_nearest_jdmfgbfmpepjd,
+			"assign_assignment_input_mode_nearest_jdmfgbfmpepjd"
+		)
 		return r
-			.match(AssignAssignmentInputModeNearest, { root, scope })
+			.match(assign_assignment_input_mode_nearest_jdmfgbfmpepjd, { root, scope })
 			.where(
-				r.eq(root, r.param("root", AssignAssignmentInputModeNearest.fields.root)),
-				r.eq(scope, r.param("scope", AssignAssignmentInputModeNearest.fields.scope))
+				r.eq(root, r.param("root", assign_assignment_input_mode_nearest_jdmfgbfmpepjd.fields.root)),
+				r.eq(
+					scope,
+					r.param("scope", assign_assignment_input_mode_nearest_jdmfgbfmpepjd.fields.scope)
+				)
 			)
 			.find({ root, scope })
 	}),
-	assignReadAssignAssignmentInputModeWithin: query(assignGraph).rule((r) => {
+	assignReadassign_assignment_input_mode_within_iahlinklmdadj: query(assignGraph).rule((r) => {
 		const { root, scope, radius } = v(
-			AssignAssignmentInputModeWithin,
-			"assignAssignmentInputModeWithin"
+			assign_assignment_input_mode_within_iahlinklmdadj,
+			"assign_assignment_input_mode_within_iahlinklmdadj"
 		)
 		return r
-			.match(AssignAssignmentInputModeWithin, { root, scope, radius })
+			.match(assign_assignment_input_mode_within_iahlinklmdadj, { root, scope, radius })
 			.where(
-				r.eq(root, r.param("root", AssignAssignmentInputModeWithin.fields.root)),
-				r.eq(scope, r.param("scope", AssignAssignmentInputModeWithin.fields.scope))
+				r.eq(root, r.param("root", assign_assignment_input_mode_within_iahlinklmdadj.fields.root)),
+				r.eq(
+					scope,
+					r.param("scope", assign_assignment_input_mode_within_iahlinklmdadj.fields.scope)
+				)
 			)
 			.find({ root, scope, radius })
 	}),
-	assignReadAssignAssignmentInputNear: query(assignGraph).rule((r) => {
-		const { root, scope, ordinal, value } = v(AssignAssignmentInputNear, "part")
+	assignReadassign_assignment_input_near_acilimddcfjog: query(assignGraph).rule((r) => {
+		const { root, scope, ordinal, value } = v(assign_assignment_input_near_acilimddcfjog, "part")
 		return r
-			.match(AssignAssignmentInputNear, { root, scope, ordinal, value })
+			.match(assign_assignment_input_near_acilimddcfjog, { root, scope, ordinal, value })
 			.where(
-				r.eq(root, r.param("root", AssignAssignmentInputNear.fields.root)),
-				r.eq(scope, r.param("scope", AssignAssignmentInputNear.fields.scope))
+				r.eq(root, r.param("root", assign_assignment_input_near_acilimddcfjog.fields.root)),
+				r.eq(scope, r.param("scope", assign_assignment_input_near_acilimddcfjog.fields.scope))
 			)
 			.find({ root, scope, ordinal, value })
 	}),
-	assignReadAssignAssignmentInputExclude: query(assignGraph).rule((r) => {
-		const { root, scope, ordinal, value } = v(AssignAssignmentInputExclude, "part")
+	assignReadassign_assignment_input_exclude_paaebdpkimebl: query(assignGraph).rule((r) => {
+		const { root, scope, ordinal, value } = v(assign_assignment_input_exclude_paaebdpkimebl, "part")
 		return r
-			.match(AssignAssignmentInputExclude, { root, scope, ordinal, value })
+			.match(assign_assignment_input_exclude_paaebdpkimebl, { root, scope, ordinal, value })
 			.where(
-				r.eq(root, r.param("root", AssignAssignmentInputExclude.fields.root)),
-				r.eq(scope, r.param("scope", AssignAssignmentInputExclude.fields.scope))
+				r.eq(root, r.param("root", assign_assignment_input_exclude_paaebdpkimebl.fields.root)),
+				r.eq(scope, r.param("scope", assign_assignment_input_exclude_paaebdpkimebl.fields.scope))
 			)
 			.find({ root, scope, ordinal, value })
 	}),
@@ -628,14 +666,14 @@ export const assignDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				AssignAssignmentInput,
+				assign_assignment_input_kijoknpmnpomn,
 				query(assignGraph).rule((r) => {
-					const requested = r.relation("assignAssignmentAssignAssignmentInput", {
-						root: AssignAssignmentInput.fields.root,
-						scope: AssignAssignmentInput.fields.scope,
-						learner: AssignAssignmentInput.fields.learner,
-						topic: AssignAssignmentInput.fields.topic,
-						mode: AssignAssignmentInput.fields.mode
+					const requested = r.relation("assignAssignmentassign_assignment_input_kijoknpmnpomn", {
+						root: assign_assignment_input_kijoknpmnpomn.fields.root,
+						scope: assign_assignment_input_kijoknpmnpomn.fields.scope,
+						learner: assign_assignment_input_kijoknpmnpomn.fields.learner,
+						topic: assign_assignment_input_kijoknpmnpomn.fields.topic,
+						mode: assign_assignment_input_kijoknpmnpomn.fields.mode
 					})
 					const { root, scope, learner, topic, mode } = v(requested, "requested")
 					return r
@@ -645,14 +683,17 @@ export const assignDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				AssignAssignmentInputNear,
+				assign_assignment_input_near_acilimddcfjog,
 				query(assignGraph).rule((r) => {
-					const requested = r.relation("assignAssignmentAssignAssignmentInputNear", {
-						root: AssignAssignmentInputNear.fields.root,
-						scope: AssignAssignmentInputNear.fields.scope,
-						ordinal: AssignAssignmentInputNear.fields.ordinal,
-						value: AssignAssignmentInputNear.fields.value
-					})
+					const requested = r.relation(
+						"assignAssignmentassign_assignment_input_near_acilimddcfjog",
+						{
+							root: assign_assignment_input_near_acilimddcfjog.fields.root,
+							scope: assign_assignment_input_near_acilimddcfjog.fields.scope,
+							ordinal: assign_assignment_input_near_acilimddcfjog.fields.ordinal,
+							value: assign_assignment_input_near_acilimddcfjog.fields.value
+						}
+					)
 					const { root, scope, ordinal, value } = v(requested, "requested")
 					return r
 						.match(requested, { root, scope, ordinal, value })
@@ -661,14 +702,17 @@ export const assignDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				AssignAssignmentInputExclude,
+				assign_assignment_input_exclude_paaebdpkimebl,
 				query(assignGraph).rule((r) => {
-					const requested = r.relation("assignAssignmentAssignAssignmentInputExclude", {
-						root: AssignAssignmentInputExclude.fields.root,
-						scope: AssignAssignmentInputExclude.fields.scope,
-						ordinal: AssignAssignmentInputExclude.fields.ordinal,
-						value: AssignAssignmentInputExclude.fields.value
-					})
+					const requested = r.relation(
+						"assignAssignmentassign_assignment_input_exclude_paaebdpkimebl",
+						{
+							root: assign_assignment_input_exclude_paaebdpkimebl.fields.root,
+							scope: assign_assignment_input_exclude_paaebdpkimebl.fields.scope,
+							ordinal: assign_assignment_input_exclude_paaebdpkimebl.fields.ordinal,
+							value: assign_assignment_input_exclude_paaebdpkimebl.fields.value
+						}
+					)
 					const { root, scope, ordinal, value } = v(requested, "requested")
 					return r
 						.match(requested, { root, scope, ordinal, value })
@@ -677,12 +721,15 @@ export const assignDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				AssignAssignmentInputModeNearest,
+				assign_assignment_input_mode_nearest_jdmfgbfmpepjd,
 				query(assignGraph).rule((r) => {
-					const requested = r.relation("assignAssignmentAssignAssignmentInputModeNearest", {
-						root: AssignAssignmentInputModeNearest.fields.root,
-						scope: AssignAssignmentInputModeNearest.fields.scope
-					})
+					const requested = r.relation(
+						"assignAssignmentassign_assignment_input_mode_nearest_jdmfgbfmpepjd",
+						{
+							root: assign_assignment_input_mode_nearest_jdmfgbfmpepjd.fields.root,
+							scope: assign_assignment_input_mode_nearest_jdmfgbfmpepjd.fields.scope
+						}
+					)
 					const { root, scope } = v(requested, "requested")
 					return r
 						.match(requested, { root, scope })
@@ -691,13 +738,16 @@ export const assignDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				AssignAssignmentInputModeWithin,
+				assign_assignment_input_mode_within_iahlinklmdadj,
 				query(assignGraph).rule((r) => {
-					const requested = r.relation("assignAssignmentAssignAssignmentInputModeWithin", {
-						root: AssignAssignmentInputModeWithin.fields.root,
-						scope: AssignAssignmentInputModeWithin.fields.scope,
-						radius: AssignAssignmentInputModeWithin.fields.radius
-					})
+					const requested = r.relation(
+						"assignAssignmentassign_assignment_input_mode_within_iahlinklmdadj",
+						{
+							root: assign_assignment_input_mode_within_iahlinklmdadj.fields.root,
+							scope: assign_assignment_input_mode_within_iahlinklmdadj.fields.scope,
+							radius: assign_assignment_input_mode_within_iahlinklmdadj.fields.radius
+						}
+					)
 					const { root, scope, radius } = v(requested, "requested")
 					return r
 						.match(requested, { root, scope, radius })
@@ -757,14 +807,15 @@ export const assignDenPrograms = Object.freeze({
 						})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	assignOutputsAssignmentDecide: query(assignGraph).rule((r) => {
 		const { root, step, scope } = v(AssignStep, "step")
-		const { confidence, stage } = v(AssignDecideOutput, "output")
+		const { confidence, stage } = v(assign_decide_output_fkgbaoobeoima, "output")
 		return r
 			.match(AssignStep, { root, step, kind: "Decide", scope })
-			.match(AssignDecideOutput, { root, step, confidence, stage })
+			.match(assign_decide_output_fkgbaoobeoima, { root, step, confidence, stage })
 			.where(
 				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope))
@@ -773,10 +824,20 @@ export const assignDenPrograms = Object.freeze({
 	}),
 	assignOutputsAssignmentDecideWeighed: query(assignGraph).rule((r) => {
 		const { root, step, scope } = v(AssignStep, "step")
-		const { ordinal, passage, distance, passed } = v(AssignDecideOutputWeighed, "part")
+		const { ordinal, passage, distance, passed } = v(
+			assign_decide_output_weighed_gpdibcghlfbhb,
+			"part"
+		)
 		return r
 			.match(AssignStep, { root, step, kind: "Decide", scope })
-			.match(AssignDecideOutputWeighed, { root, step, ordinal, passage, distance, passed })
+			.match(assign_decide_output_weighed_gpdibcghlfbhb, {
+				root,
+				step,
+				ordinal,
+				passage,
+				distance,
+				passed
+			})
 			.where(
 				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope))
@@ -785,10 +846,10 @@ export const assignDenPrograms = Object.freeze({
 	}),
 	assignOutputsAssignmentDecideStageServe: query(assignGraph).rule((r) => {
 		const { root, step, scope } = v(AssignStep, "step")
-		const { passage, distance } = v(AssignDecideOutputStageServe, "part")
+		const { passage, distance } = v(assign_decide_output_stage_serve_chfjeagmkjoef, "part")
 		return r
 			.match(AssignStep, { root, step, kind: "Decide", scope })
-			.match(AssignDecideOutputStageServe, { root, step, passage, distance })
+			.match(assign_decide_output_stage_serve_chfjeagmkjoef, { root, step, passage, distance })
 			.where(
 				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope))
@@ -799,7 +860,7 @@ export const assignDenPrograms = Object.freeze({
 		const { root, step, scope } = v(AssignStep, "step")
 		return r
 			.match(AssignStep, { root, step, kind: "Decide", scope })
-			.match(AssignDecideOutputStageRest, { root, step })
+			.match(assign_decide_output_stage_rest_gohjkdlkfnkca, { root, step })
 			.where(
 				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope))
@@ -808,10 +869,10 @@ export const assignDenPrograms = Object.freeze({
 	}),
 	assignInputsAssignmentDecide: query(assignGraph).rule((r) => {
 		const { root, step, scope } = v(AssignStep, "step")
-		const { learner, topic, vector, mode } = v(AssignDecideInput, "input")
+		const { learner, topic, vector, mode } = v(assign_decide_input_ffhdojphbdjfc, "input")
 		return r
 			.match(AssignStep, { root, step, kind: "Decide", scope })
-			.match(AssignDecideInput, { root, step, learner, topic, vector, mode })
+			.match(assign_decide_input_ffhdojphbdjfc, { root, step, learner, topic, vector, mode })
 			.where(
 				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope))
@@ -820,10 +881,10 @@ export const assignDenPrograms = Object.freeze({
 	}),
 	assignInputsAssignmentDecideExclude: query(assignGraph).rule((r) => {
 		const { root, step, scope } = v(AssignStep, "step")
-		const { ordinal, value } = v(AssignDecideInputExclude, "part")
+		const { ordinal, value } = v(assign_decide_input_exclude_bpjgmijefddch, "part")
 		return r
 			.match(AssignStep, { root, step, kind: "Decide", scope })
-			.match(AssignDecideInputExclude, { root, step, ordinal, value })
+			.match(assign_decide_input_exclude_bpjgmijefddch, { root, step, ordinal, value })
 			.where(
 				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope))
@@ -834,7 +895,7 @@ export const assignDenPrograms = Object.freeze({
 		const { root, step, scope } = v(AssignStep, "step")
 		return r
 			.match(AssignStep, { root, step, kind: "Decide", scope })
-			.match(AssignDecideInputModeNearest, { root, step })
+			.match(assign_decide_input_mode_nearest_ijgbegdphofca, { root, step })
 			.where(
 				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope))
@@ -843,10 +904,10 @@ export const assignDenPrograms = Object.freeze({
 	}),
 	assignInputsAssignmentDecideModeWithin: query(assignGraph).rule((r) => {
 		const { root, step, scope } = v(AssignStep, "step")
-		const { radius } = v(AssignDecideInputModeWithin, "part")
+		const { radius } = v(assign_decide_input_mode_within_fgbilcoafbdcg, "part")
 		return r
 			.match(AssignStep, { root, step, kind: "Decide", scope })
-			.match(AssignDecideInputModeWithin, { root, step, radius })
+			.match(assign_decide_input_mode_within_fgbilcoafbdcg, { root, step, radius })
 			.where(
 				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope))
@@ -880,7 +941,8 @@ export const assignCoordinatorPrograms = Object.freeze({
 				})
 			)
 		),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	assignPause: ChangeSet.empty(assignCoordination).insert(AssignPaused, []),
 	assignResume: ChangeSet.empty(assignCoordination).insert(AssignResumed, []),
@@ -922,29 +984,29 @@ export const AssignRetirer = role(
 			"AssignHeld",
 			"AssignRefusal",
 			"AssignExhausted",
-			"AssignEmbedInput",
-			"AssignEmbedInputNear",
-			"AssignEmbedInputExclude",
-			"AssignEmbedInputModeNearest",
-			"AssignEmbedInputModeWithin",
-			"AssignDecideInput",
-			"AssignDecideInputExclude",
-			"AssignDecideInputModeNearest",
-			"AssignDecideInputModeWithin",
-			"AssignAssignmentInput",
-			"AssignAssignmentInputNear",
-			"AssignAssignmentInputExclude",
-			"AssignAssignmentInputModeNearest",
-			"AssignAssignmentInputModeWithin",
-			"AssignEmbedOutput",
-			"AssignDecideOutput",
-			"AssignDecideOutputWeighed",
-			"AssignDecideOutputStageServe",
-			"AssignDecideOutputStageRest",
-			"AssignAssignmentFinishOutput",
-			"AssignAsked",
-			"AssignDecideReadNearest",
-			"AssignDecideReadSeen"
+			"assign_embed_input_kmlepfpdepkmo",
+			"assign_embed_input_near_dhffcaodkgemm",
+			"assign_embed_input_exclude_gcjikbkjkcefj",
+			"assign_embed_input_mode_nearest_bdiihcbmhfojp",
+			"assign_embed_input_mode_within_oiehjhalkkkfi",
+			"assign_decide_input_ffhdojphbdjfc",
+			"assign_decide_input_exclude_bpjgmijefddch",
+			"assign_decide_input_mode_nearest_ijgbegdphofca",
+			"assign_decide_input_mode_within_fgbilcoafbdcg",
+			"assign_assignment_input_kijoknpmnpomn",
+			"assign_assignment_input_near_acilimddcfjog",
+			"assign_assignment_input_exclude_paaebdpkimebl",
+			"assign_assignment_input_mode_nearest_jdmfgbfmpepjd",
+			"assign_assignment_input_mode_within_iahlinklmdadj",
+			"assign_embed_output_ghdpbieopfmkd",
+			"assign_decide_output_fkgbaoobeoima",
+			"assign_decide_output_weighed_gpdibcghlfbhb",
+			"assign_decide_output_stage_serve_chfjeagmkjoef",
+			"assign_decide_output_stage_rest_gohjkdlkfnkca",
+			"assign_assignment_finish_output_dehjnhpeahpgb",
+			"assign_asked_fobgfofknpfgd",
+			"assign_decide_read_nearest_mlemoegfgpbbi",
+			"assign_decide_read_seen_oahojgbpphboo"
 		]
 	}
 )
@@ -967,29 +1029,33 @@ export const assignRetirerPrograms = Object.freeze({
 		AssignHeld: { root: param("root", AssignRoot.fields.root) },
 		AssignRefusal: { root: param("root", AssignRoot.fields.root) },
 		AssignExhausted: { root: param("root", AssignRoot.fields.root) },
-		AssignEmbedInput: { root: param("root", AssignRoot.fields.root) },
-		AssignEmbedInputNear: { root: param("root", AssignRoot.fields.root) },
-		AssignEmbedInputExclude: { root: param("root", AssignRoot.fields.root) },
-		AssignEmbedInputModeNearest: { root: param("root", AssignRoot.fields.root) },
-		AssignEmbedInputModeWithin: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideInput: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideInputExclude: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideInputModeNearest: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideInputModeWithin: { root: param("root", AssignRoot.fields.root) },
-		AssignAssignmentInput: { root: param("root", AssignRoot.fields.root) },
-		AssignAssignmentInputNear: { root: param("root", AssignRoot.fields.root) },
-		AssignAssignmentInputExclude: { root: param("root", AssignRoot.fields.root) },
-		AssignAssignmentInputModeNearest: { root: param("root", AssignRoot.fields.root) },
-		AssignAssignmentInputModeWithin: { root: param("root", AssignRoot.fields.root) },
-		AssignEmbedOutput: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideOutput: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideOutputWeighed: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideOutputStageServe: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideOutputStageRest: { root: param("root", AssignRoot.fields.root) },
-		AssignAssignmentFinishOutput: { root: param("root", AssignRoot.fields.root) },
-		AssignAsked: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideReadNearest: { root: param("root", AssignRoot.fields.root) },
-		AssignDecideReadSeen: { root: param("root", AssignRoot.fields.root) }
+		assign_embed_input_kmlepfpdepkmo: { root: param("root", AssignRoot.fields.root) },
+		assign_embed_input_near_dhffcaodkgemm: { root: param("root", AssignRoot.fields.root) },
+		assign_embed_input_exclude_gcjikbkjkcefj: { root: param("root", AssignRoot.fields.root) },
+		assign_embed_input_mode_nearest_bdiihcbmhfojp: { root: param("root", AssignRoot.fields.root) },
+		assign_embed_input_mode_within_oiehjhalkkkfi: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_input_ffhdojphbdjfc: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_input_exclude_bpjgmijefddch: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_input_mode_nearest_ijgbegdphofca: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_input_mode_within_fgbilcoafbdcg: { root: param("root", AssignRoot.fields.root) },
+		assign_assignment_input_kijoknpmnpomn: { root: param("root", AssignRoot.fields.root) },
+		assign_assignment_input_near_acilimddcfjog: { root: param("root", AssignRoot.fields.root) },
+		assign_assignment_input_exclude_paaebdpkimebl: { root: param("root", AssignRoot.fields.root) },
+		assign_assignment_input_mode_nearest_jdmfgbfmpepjd: {
+			root: param("root", AssignRoot.fields.root)
+		},
+		assign_assignment_input_mode_within_iahlinklmdadj: {
+			root: param("root", AssignRoot.fields.root)
+		},
+		assign_embed_output_ghdpbieopfmkd: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_output_fkgbaoobeoima: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_output_weighed_gpdibcghlfbhb: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_output_stage_serve_chfjeagmkjoef: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_output_stage_rest_gohjkdlkfnkca: { root: param("root", AssignRoot.fields.root) },
+		assign_assignment_finish_output_dehjnhpeahpgb: { root: param("root", AssignRoot.fields.root) },
+		assign_asked_fobgfofknpfgd: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_read_nearest_mlemoegfgpbbi: { root: param("root", AssignRoot.fields.root) },
+		assign_decide_read_seen_oahojgbpphboo: { root: param("root", AssignRoot.fields.root) }
 	})
 })
 
@@ -999,28 +1065,29 @@ export const assignRetirerWorkload = workload(AssignRetirer, assignRetirerProgra
 export const assignCommitPrograms = Object.freeze({
 	assignAuthenticated: clocked(
 		query(assignGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	assignCommitEmbed: clocked(
 		ChangeSet.empty(assignGraph)
 			.insert(AssignResult, [])
 			.insert(AssignDone, [])
 			.insert(AssignHeld, [])
-			.insert(AssignEmbedOutput, [])
+			.insert(assign_embed_output_ghdpbieopfmkd, [])
 			.insert(AssignScope, [])
 			.insert(AssignAdmitted, [])
 			.insert(AssignFinish, [])
 			.insert(AssignStartStep, [])
-			.insert(AssignEmbedInput, [])
-			.insert(AssignEmbedInputNear, [])
-			.insert(AssignEmbedInputExclude, [])
-			.insert(AssignEmbedInputModeNearest, [])
-			.insert(AssignEmbedInputModeWithin, [])
-			.insert(AssignDecideInput, [])
-			.insert(AssignDecideInputExclude, [])
-			.insert(AssignDecideInputModeNearest, [])
-			.insert(AssignDecideInputModeWithin, [])
-			.insert(AssignAsked, [])
+			.insert(assign_embed_input_kmlepfpdepkmo, [])
+			.insert(assign_embed_input_near_dhffcaodkgemm, [])
+			.insert(assign_embed_input_exclude_gcjikbkjkcefj, [])
+			.insert(assign_embed_input_mode_nearest_bdiihcbmhfojp, [])
+			.insert(assign_embed_input_mode_within_oiehjhalkkkfi, [])
+			.insert(assign_decide_input_ffhdojphbdjfc, [])
+			.insert(assign_decide_input_exclude_bpjgmijefddch, [])
+			.insert(assign_decide_input_mode_nearest_ijgbegdphofca, [])
+			.insert(assign_decide_input_mode_within_fgbilcoafbdcg, [])
+			.insert(assign_asked_fobgfofknpfgd, [])
 			.insert(
 				AssignStep,
 				query(assignGraph).rule((r) => {
@@ -1037,27 +1104,29 @@ export const assignCommitPrograms = Object.freeze({
 						scope,
 						due: Type.cast(
 							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						root: r.param("root", AssignStep.fields.root)
 					})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	assignCommitDecide: ChangeSet.union(
 		ChangeSet.empty(assignGraph)
 			.insert(AssignResult, [])
 			.insert(AssignDone, [])
 			.insert(AssignHeld, [])
-			.insert(AssignDecideOutput, [])
-			.insert(AssignDecideOutputWeighed, [])
-			.insert(AssignDecideOutputStageServe, [])
-			.insert(AssignDecideOutputStageRest, [])
-			.insert(AssignDecideReadNearest, [])
-			.insert(AssignDecideReadSeen, [])
-			.insertAll(recordsFacts(assignGraph, AssignDecideReadNearestRecords)([]))
-			.insertAll(recordsFacts(assignGraph, AssignDecideReadSeenRecords)([])),
+			.insert(assign_decide_output_fkgbaoobeoima, [])
+			.insert(assign_decide_output_weighed_gpdibcghlfbhb, [])
+			.insert(assign_decide_output_stage_serve_chfjeagmkjoef, [])
+			.insert(assign_decide_output_stage_rest_gohjkdlkfnkca, [])
+			.insert(assign_decide_read_nearest_mlemoegfgpbbi, [])
+			.insert(assign_decide_read_seen_oahojgbpphboo, [])
+			.insertAll(recordsFacts(assignGraph, assign_decide_read_nearest_mlemoegfgpbbiRecords)([]))
+			.insertAll(recordsFacts(assignGraph, assign_decide_read_seen_oahojgbpphbooRecords)([])),
 		declaredFlow.kinds[1].writes.changes(Loader)
 	),
 	assignReadDecide: query(Loader).reads(declaredFlow.kinds[1].reads.named),
@@ -1066,7 +1135,7 @@ export const assignCommitPrograms = Object.freeze({
 			.insert(AssignResult, [])
 			.insert(AssignDone, [])
 			.insert(AssignHeld, [])
-			.insert(AssignAssignmentFinishOutput, []),
+			.insert(assign_assignment_finish_output_dehjnhpeahpgb, []),
 		declaredFlow.kinds[2].finish.writes.changes(Loader)
 	)
 })

@@ -103,49 +103,49 @@ export const ClockExhausted = relation("ClockExhausted", { root: sha256, step: s
 	"root",
 	"step"
 ])
-export const ClockChimeInput = relation(
-	"ClockChimeInput",
+export const clock_chime_input_bfjhiocgaifco = relation(
+	"clock_chime_input_bfjhiocgaifco",
 	{ root: sha256, step: sha256, hour: pg.bigint, bell: Text },
 	["root", "step"]
 )
-export const ClockCloseInput = relation(
-	"ClockCloseInput",
+export const clock_close_input_bajjphdpmhlbc = relation(
+	"clock_close_input_bajjphdpmhlbc",
 	{ root: sha256, step: sha256, sitting: Text, deadline: DenInstant },
 	["root", "step"]
 )
-export const ClockHourlyInput = relation(
-	"ClockHourlyInput",
+export const clock_hourly_input_nknibbhbedpnl = relation(
+	"clock_hourly_input_nknibbhbedpnl",
 	{ root: sha256, scope: sha256, hour: pg.bigint, bell: Text },
 	["root", "scope"]
 )
-export const ClockSittingInput = relation(
-	"ClockSittingInput",
+export const clock_sitting_input_bckcjcndffgmo = relation(
+	"clock_sitting_input_bckcjcndffgmo",
 	{ root: sha256, scope: sha256, sitting: Text, deadline: DenInstant },
 	["root", "scope"]
 )
-export const ClockHourlyKey = relation.generated(
-	"ClockHourlyKey",
+export const clock_hourly_key_cnlgnmcbbcgma = relation.generated(
+	"clock_hourly_key_cnlgnmcbbcgma",
 	{ root: sha256, at: pg.bigint, member: Text },
 	["root"],
 	(row) => ({ memberDigest: generated(sha256, Crypto.sha256(row.member)) })
 )
-export const ClockChimeOutput = relation(
-	"ClockChimeOutput",
+export const clock_chime_output_bddonoddgecmi = relation(
+	"clock_chime_output_bddonoddgecmi",
 	{ root: sha256, step: sha256, hour: pg.bigint, bell: Text },
 	["root", "step"]
 )
-export const ClockCloseOutput = relation(
-	"ClockCloseOutput",
+export const clock_close_output_aoheikcdnbjpp = relation(
+	"clock_close_output_aoheikcdnbjpp",
 	{ root: sha256, step: sha256, sitting: Text, deadline: DenInstant },
 	["root", "step"]
 )
-export const ClockHourlyFinishOutput = relation(
-	"ClockHourlyFinishOutput",
+export const clock_hourly_finish_output_mgokiakijlfbi = relation(
+	"clock_hourly_finish_output_mgokiakijlfbi",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
-export const ClockSittingFinishOutput = relation(
-	"ClockSittingFinishOutput",
+export const clock_sitting_finish_output_aahppmdaoafco = relation(
+	"clock_sitting_finish_output_aahppmdaoafco",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
@@ -191,15 +191,15 @@ export const clockGraph = fragment(
 		ClockHeld,
 		ClockRefusal,
 		ClockExhausted,
-		ClockChimeInput,
-		ClockCloseInput,
-		ClockHourlyInput,
-		ClockSittingInput,
-		ClockHourlyKey,
-		ClockChimeOutput,
-		ClockCloseOutput,
-		ClockHourlyFinishOutput,
-		ClockSittingFinishOutput
+		clock_chime_input_bfjhiocgaifco,
+		clock_close_input_bajjphdpmhlbc,
+		clock_hourly_input_nknibbhbedpnl,
+		clock_sitting_input_bckcjcndffgmo,
+		clock_hourly_key_cnlgnmcbbcgma,
+		clock_chime_output_bddonoddgecmi,
+		clock_close_output_aoheikcdnbjpp,
+		clock_hourly_finish_output_mgokiakijlfbi,
+		clock_sitting_finish_output_aahppmdaoafco
 	],
 	[
 		unit("DenRoot", { root: sha256 }),
@@ -261,7 +261,7 @@ export const clockGraph = fragment(
 			on(ClockRequestedWith, "root")
 		),
 		contained(
-			on(ClockChimeInput, "root", "step"),
+			on(clock_chime_input_bfjhiocgaifco, "root", "step"),
 			on(
 				select(ClockStep, (row) => row.eq(row.kind, "Chime")),
 				"root",
@@ -269,7 +269,7 @@ export const clockGraph = fragment(
 			)
 		),
 		contained(
-			on(ClockCloseInput, "root", "step"),
+			on(clock_close_input_bajjphdpmhlbc, "root", "step"),
 			on(
 				select(ClockStep, (row) => row.eq(row.kind, "Close")),
 				"root",
@@ -277,22 +277,22 @@ export const clockGraph = fragment(
 			)
 		),
 		contained(
-			on(ClockHourlyInput, "scope"),
+			on(clock_hourly_input_nknibbhbedpnl, "scope"),
 			on(
 				select(ClockRoot, (row) => row.eq(row.kind, "Hourly")),
 				"root"
 			)
 		),
 		contained(
-			on(ClockSittingInput, "scope"),
+			on(clock_sitting_input_bckcjcndffgmo, "scope"),
 			on(
 				select(ClockRoot, (row) => row.eq(row.kind, "Sitting")),
 				"root"
 			)
 		),
-		key(on(ClockHourlyKey, "at", "memberDigest")),
+		key(on(clock_hourly_key_cnlgnmcbbcgma, "at", "memberDigest")),
 		contained(
-			on(ClockHourlyKey, "root"),
+			on(clock_hourly_key_cnlgnmcbbcgma, "root"),
 			on(
 				select(ClockRoot, (row) => row.eq(row.kind, "Hourly")),
 				"root"
@@ -303,14 +303,26 @@ export const clockGraph = fragment(
 				select(ClockRoot, (row) => row.eq(row.kind, "Hourly")),
 				"root"
 			),
-			on(ClockHourlyKey, "root")
+			on(clock_hourly_key_cnlgnmcbbcgma, "root")
 		),
-		contained(on(ClockChimeOutput, "root", "step"), on(ClockChimeInput, "root", "step")),
-		contained(on(ClockChimeOutput, "root", "step"), on(ClockDone, "root", "step")),
-		contained(on(ClockCloseOutput, "root", "step"), on(ClockCloseInput, "root", "step")),
-		contained(on(ClockCloseOutput, "root", "step"), on(ClockDone, "root", "step")),
-		contained(on(ClockHourlyFinishOutput, "root", "step"), on(ClockDone, "root", "step")),
-		contained(on(ClockSittingFinishOutput, "root", "step"), on(ClockDone, "root", "step")),
+		contained(
+			on(clock_chime_output_bddonoddgecmi, "root", "step"),
+			on(clock_chime_input_bfjhiocgaifco, "root", "step")
+		),
+		contained(on(clock_chime_output_bddonoddgecmi, "root", "step"), on(ClockDone, "root", "step")),
+		contained(
+			on(clock_close_output_aoheikcdnbjpp, "root", "step"),
+			on(clock_close_input_bajjphdpmhlbc, "root", "step")
+		),
+		contained(on(clock_close_output_aoheikcdnbjpp, "root", "step"), on(ClockDone, "root", "step")),
+		contained(
+			on(clock_hourly_finish_output_mgokiakijlfbi, "root", "step"),
+			on(ClockDone, "root", "step")
+		),
+		contained(
+			on(clock_sitting_finish_output_aahppmdaoafco, "root", "step"),
+			on(ClockDone, "root", "step")
+		),
 		contained(on(ClockScope, "root"), on(ClockRoot, "root")),
 		mutable(ClockScope),
 		mutable(ClockAdmitted),
@@ -340,22 +352,34 @@ export const clockGraph = fragment(
 		mutable(ClockRefusal),
 		contained(on(ClockExhausted, "root", "step"), on(ClockStep, "root", "step")),
 		mutable(ClockExhausted),
-		contained(on(ClockChimeInput, "root", "step"), on(ClockStep, "root", "step")),
-		mutable(ClockChimeInput),
-		contained(on(ClockCloseInput, "root", "step"), on(ClockStep, "root", "step")),
-		mutable(ClockCloseInput),
-		contained(on(ClockHourlyInput, "root", "scope"), on(ClockScope, "root", "scope")),
-		mutable(ClockHourlyInput),
-		contained(on(ClockSittingInput, "root", "scope"), on(ClockScope, "root", "scope")),
-		mutable(ClockSittingInput),
-		contained(on(ClockChimeOutput, "root", "step"), on(ClockStep, "root", "step")),
-		mutable(ClockChimeOutput),
-		contained(on(ClockCloseOutput, "root", "step"), on(ClockStep, "root", "step")),
-		mutable(ClockCloseOutput),
-		contained(on(ClockHourlyFinishOutput, "root", "step"), on(ClockStep, "root", "step")),
-		mutable(ClockHourlyFinishOutput),
-		contained(on(ClockSittingFinishOutput, "root", "step"), on(ClockStep, "root", "step")),
-		mutable(ClockSittingFinishOutput)
+		contained(on(clock_chime_input_bfjhiocgaifco, "root", "step"), on(ClockStep, "root", "step")),
+		mutable(clock_chime_input_bfjhiocgaifco),
+		contained(on(clock_close_input_bajjphdpmhlbc, "root", "step"), on(ClockStep, "root", "step")),
+		mutable(clock_close_input_bajjphdpmhlbc),
+		contained(
+			on(clock_hourly_input_nknibbhbedpnl, "root", "scope"),
+			on(ClockScope, "root", "scope")
+		),
+		mutable(clock_hourly_input_nknibbhbedpnl),
+		contained(
+			on(clock_sitting_input_bckcjcndffgmo, "root", "scope"),
+			on(ClockScope, "root", "scope")
+		),
+		mutable(clock_sitting_input_bckcjcndffgmo),
+		contained(on(clock_chime_output_bddonoddgecmi, "root", "step"), on(ClockStep, "root", "step")),
+		mutable(clock_chime_output_bddonoddgecmi),
+		contained(on(clock_close_output_aoheikcdnbjpp, "root", "step"), on(ClockStep, "root", "step")),
+		mutable(clock_close_output_aoheikcdnbjpp),
+		contained(
+			on(clock_hourly_finish_output_mgokiakijlfbi, "root", "step"),
+			on(ClockStep, "root", "step")
+		),
+		mutable(clock_hourly_finish_output_mgokiakijlfbi),
+		contained(
+			on(clock_sitting_finish_output_aahppmdaoafco, "root", "step"),
+			on(ClockStep, "root", "step")
+		),
+		mutable(clock_sitting_finish_output_aahppmdaoafco)
 	]
 )
 
@@ -382,8 +406,8 @@ export const clockWriter = [
 	"ClockResult",
 	"ClockDone",
 	"ClockHeld",
-	"ClockChimeOutput",
-	"ClockCloseOutput",
-	"ClockHourlyFinishOutput",
-	"ClockSittingFinishOutput"
+	"clock_chime_output_bddonoddgecmi",
+	"clock_close_output_aoheikcdnbjpp",
+	"clock_hourly_finish_output_mgokiakijlfbi",
+	"clock_sitting_finish_output_aahppmdaoafco"
 ] as const

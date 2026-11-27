@@ -5,7 +5,7 @@ import {
 	printFragment,
 	printPrograms
 } from "@bjornpagen/den/lower/print"
-import { authenticationTimeoutSeconds, type Ledgers, promote } from "@bjornpagen/den/runtime/turn"
+import { type Ledgers, promote } from "@bjornpagen/den/runtime/turn"
 import { DeploymentId, EnvironmentName, Host, inProcess } from "@bjornpagen/den/transport"
 import { compileServedMoved } from "@bjornpagen/grizzle/compile"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
@@ -47,7 +47,7 @@ import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import { writebackLedger } from "#integration/slice/generated/writeback.binding.ts"
 import { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261126213437_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/19700101000000_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -126,7 +126,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261126213437_init": initMigration
+	"19700101000000_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -444,12 +444,8 @@ const emptyTemplate = Template.database({
 	build: () => Effect.void
 })
 
-/**
- * A login's pool: four sessions, the most one case holds at once (a relay's watches beside a claim and a read), each
- * closed once idle as long as a connection attempt may take, the server's authentication_timeout, past which it closes
- * an unauthenticated connection itself, so no session outlives the cases that opened it for long.
- */
-const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: authenticationTimeoutSeconds * 1000 })
+/** A login's pool: four sessions, the most one case holds at once (a relay's watches beside a claim and a read). */
+const pool = Object.freeze({ max: 4 })
 
 /** The app's loader, which den's commits run under, over the case's moved clock. */
 const openLoader = Effect.flatMap(Instant, (instant) =>

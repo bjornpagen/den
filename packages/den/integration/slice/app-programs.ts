@@ -1,35 +1,36 @@
 import { denClock } from "@bjornpagen/den/algebra/kinds"
+import { denInstantKey } from "@bjornpagen/den/lower/keys"
 import { ChangeSet, clocked, query, recordsQuery, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
-	AssignDecideReadNearest,
-	AssignDecideReadNearestRow,
-	AssignDecideOutput,
-	AssignDecideOutputStageServe,
-	AssignDecideOutputWeighed,
-	AssignDecideReadSeen,
-	AssignDecideReadSeenRow,
+	assign_decide_read_nearest_mlemoegfgpbbi,
+	assign_decide_read_nearest_mlemoegfgpbbiRow,
+	assign_decide_output_fkgbaoobeoima,
+	assign_decide_output_stage_serve_chfjeagmkjoef,
+	assign_decide_output_weighed_gpdibcghlfbhb,
+	assign_decide_read_seen_oahojgbpphboo,
+	assign_decide_read_seen_oahojgbpphbooRow,
 	AssignResult,
 	AssignStep
 } from "#integration/slice/generated/assign.fragment.ts"
 import {
 	ChainAdmitted,
-	ChainChainRunInput,
+	chain_chain_run_input_glnkafcnkbnnn,
 	ChainClaim,
 	ChainFinish,
-	ChainNext,
-	ChainOrderedInput,
-	ChainPageInput,
-	ChainPageInputAfter,
-	ChainPageOutput,
-	ChainPageOutputNext,
-	ChainPageReadWeights,
-	ChainPageReadEarlierRow,
-	ChainPageReadTree,
-	ChainPageReadTreeRecords,
-	ChainPageReadTreeRow,
+	chain_next_bbflpfpnlejpm,
+	chain_ordered_input_pbjpmafopnahk,
+	chain_page_input_jhliinhchcgno,
+	chain_page_input_after_gdigbcabbnakb,
+	chain_page_output_dniojohpmhcee,
+	chain_page_output_next_pocjijjpkpono,
+	chain_page_read_weights_agiabippcbobb,
+	chain_page_read_earlier_dgehlbgebidjcRow,
+	chain_page_read_tree_lakencnpkciin,
+	chain_page_read_tree_lakencnpkciinRecords,
+	chain_page_read_tree_lakencnpkciinRow,
 	chainGraph,
-	ChainPageReadWeightsRow,
+	chain_page_read_weights_agiabippcbobbRow,
 	ChainRequestedWith,
 	ChainResult,
 	ChainRoot,
@@ -39,20 +40,20 @@ import {
 import { chainRequests } from "#integration/slice/generated/chain.programs.ts"
 import {
 	FanAdmitted,
-	FanBatchInput,
+	fan_batch_input_hjhhnklpfiilh,
 	FanClaim,
-	FanFanRunInput,
+	fan_fan_run_input_bghibckinpfgk,
 	FanFinish,
 	FanResult,
 	FanRoot,
 	FanScope,
-	FanSquareInput,
-	FanSquareOutput,
+	fan_square_input_ifddbjkaokoig,
+	fan_square_output_gofcfljmlelgo,
 	FanStartScope,
 	FanStartStep,
 	FanStep,
-	FanWantedInput,
-	FanWantedKey,
+	fan_wanted_input_nfecjpihiaope,
+	fan_wanted_key_ldjmcglkghhjb,
 	FanWithin,
 	fanGraph
 } from "#integration/slice/generated/fan.fragment.ts"
@@ -122,13 +123,13 @@ export const Auditor = role(
 	"auditor",
 	{
 		Assigned,
-		AssignDecideReadNearest,
-		AssignDecideReadNearestRow,
-		AssignDecideOutput,
-		AssignDecideOutputStageServe,
-		AssignDecideOutputWeighed,
-		AssignDecideReadSeen,
-		AssignDecideReadSeenRow,
+		assign_decide_read_nearest_mlemoegfgpbbi,
+		assign_decide_read_nearest_mlemoegfgpbbiRow,
+		assign_decide_output_fkgbaoobeoima,
+		assign_decide_output_stage_serve_chfjeagmkjoef,
+		assign_decide_output_weighed_gpdibcghlfbhb,
+		assign_decide_read_seen_oahojgbpphboo,
+		assign_decide_read_seen_oahojgbpphbooRow,
 		AssignResult,
 		AssignStep,
 		Audit,
@@ -139,21 +140,21 @@ export const Auditor = role(
 		Copied,
 		Cursor,
 		FanAdmitted,
-		FanBatchInput,
+		fan_batch_input_hjhhnklpfiilh,
 		FanClaim,
-		FanFanRunInput,
+		fan_fan_run_input_bghibckinpfgk,
 		FanFinish,
 		FanHold,
 		FanResult,
 		FanRoot,
 		FanScope,
-		FanSquareInput,
-		FanSquareOutput,
+		fan_square_input_ifddbjkaokoig,
+		fan_square_output_gofcfljmlelgo,
 		FanStartScope,
 		FanStartStep,
 		FanStep,
-		FanWantedInput,
-		FanWantedKey,
+		fan_wanted_input_nfecjpihiaope,
+		fan_wanted_key_ldjmcglkghhjb,
 		FanWithin,
 		Heard,
 		Item,
@@ -185,42 +186,44 @@ export const Auditor = role(
 /** Every page den read, as the typed row of its output, with the scope it ran in. */
 const pages = query(Auditor).rule((r) => {
 	const { step, scope } = v(ChainStep, "step")
-	const { seq, items, earlier } = v(ChainPageOutput, "output")
+	const { seq, items, earlier } = v(chain_page_output_dniojohpmhcee, "output")
 	return r
 		.match(ChainStep, { step, kind: "Page", scope })
-		.match(ChainPageOutput, { step, seq, items, earlier })
+		.match(chain_page_output_dniojohpmhcee, { step, seq, items, earlier })
 		.match(ChainResult, { step, outcome: "done" })
 		.find({ step, scope, seq, items, earlier })
 })
 
 /** The weight rows each page read before its body ran, recorded with its result: each reference with its row. */
 const pageReads = query(Auditor).rule((r) => {
-	const { step, ordinal, digest, root } = v(ChainPageReadWeights, "read")
-	const { feed, factor } = v(ChainPageReadWeightsRow, "row")
+	const { step, ordinal, digest, root } = v(chain_page_read_weights_agiabippcbobb, "read")
+	const { feed, factor } = v(chain_page_read_weights_agiabippcbobbRow, "row")
 	return r
-		.match(ChainPageReadWeights, { step, ordinal, digest, root })
-		.match(ChainPageReadWeightsRow, { digest, feed, factor })
+		.match(chain_page_read_weights_agiabippcbobb, { step, ordinal, digest, root })
+		.match(chain_page_read_weights_agiabippcbobbRow, { digest, feed, factor })
 		.find({ step, ordinal, feed, factor })
 })
 
 /** The items the chain's pages read of their feed before them, each recorded once, however many roots read it. */
 const earlierRows = query(Auditor).rule((r) => {
-	const { digest, feed, seq, n } = v(ChainPageReadEarlierRow, "row")
-	return r.match(ChainPageReadEarlierRow, { digest, feed, seq, n }).find({ digest, feed, seq, n })
+	const { digest, feed, seq, n } = v(chain_page_read_earlier_dgehlbgebidjcRow, "row")
+	return r
+		.match(chain_page_read_earlier_dgehlbgebidjcRow, { digest, feed, seq, n })
+		.find({ digest, feed, seq, n })
 })
 
 /** Each page's tree of its feed's weight, by its reference in its root: the row it found, by its digest. */
 const treeReads = query(Auditor).rule((r) => {
-	const { step, ordinal, digest, root } = v(ChainPageReadTree, "read")
-	const { feed, factor } = v(ChainPageReadTreeRow, "row")
+	const { step, ordinal, digest, root } = v(chain_page_read_tree_lakencnpkciin, "read")
+	const { feed, factor } = v(chain_page_read_tree_lakencnpkciinRow, "row")
 	return r
-		.match(ChainPageReadTree, { step, ordinal, digest, root })
-		.match(ChainPageReadTreeRow, { digest, feed, factor })
+		.match(chain_page_read_tree_lakencnpkciin, { step, ordinal, digest, root })
+		.match(chain_page_read_tree_lakencnpkciinRow, { digest, feed, factor })
 		.find({ step, ordinal, digest, root, feed, factor })
 })
 
 /** A recorded tree, read back by its digest: the rows of the read's query as it found them. */
-const treeRecords = recordsQuery(chainGraph, ChainPageReadTreeRecords)
+const treeRecords = recordsQuery(chainGraph, chain_page_read_tree_lakencnpkciinRecords)
 
 const weights = query(Auditor).rule((r) => {
 	const { feed, factor } = v(Weight, "weight")
@@ -402,59 +405,64 @@ const assignResults = query(Auditor).rule((r) => {
 
 /** The passages each decision's nearest read found, recorded with its result: each one's ordinal and distance. */
 const nearestReads = query(Auditor).rule((r) => {
-	const { step, ordinal, digest, root } = v(AssignDecideReadNearest, "read")
-	const { passage, topic, distance } = v(AssignDecideReadNearestRow, "row")
+	const { step, ordinal, digest, root } = v(assign_decide_read_nearest_mlemoegfgpbbi, "read")
+	const { passage, topic, distance } = v(assign_decide_read_nearest_mlemoegfgpbbiRow, "row")
 	return r
-		.match(AssignDecideReadNearest, { step, ordinal, digest, root })
-		.match(AssignDecideReadNearestRow, { digest, passage, topic, distance })
+		.match(assign_decide_read_nearest_mlemoegfgpbbi, { step, ordinal, digest, root })
+		.match(assign_decide_read_nearest_mlemoegfgpbbiRow, { digest, passage, topic, distance })
 		.find({ step, ordinal, digest, root, passage, topic, distance })
 })
 
 /** Every passage row any decision's nearest read found, stored once by its digest however many roots found it. */
 const nearestRows = query(Auditor).rule((r) => {
-	const { digest, passage, topic, distance } = v(AssignDecideReadNearestRow, "row")
+	const { digest, passage, topic, distance } = v(assign_decide_read_nearest_mlemoegfgpbbiRow, "row")
 	return r
-		.match(AssignDecideReadNearestRow, { digest, passage, topic, distance })
+		.match(assign_decide_read_nearest_mlemoegfgpbbiRow, { digest, passage, topic, distance })
 		.find({ digest, passage, topic, distance })
 })
 
 /** The seen passages each decision read, recorded with its result. */
 const seenReads = query(Auditor).rule((r) => {
-	const { step, ordinal, digest, root } = v(AssignDecideReadSeen, "read")
-	const { learner, passage } = v(AssignDecideReadSeenRow, "row")
+	const { step, ordinal, digest, root } = v(assign_decide_read_seen_oahojgbpphboo, "read")
+	const { learner, passage } = v(assign_decide_read_seen_oahojgbpphbooRow, "row")
 	return r
-		.match(AssignDecideReadSeen, { step, ordinal, digest, root })
-		.match(AssignDecideReadSeenRow, { digest, learner, passage })
+		.match(assign_decide_read_seen_oahojgbpphboo, { step, ordinal, digest, root })
+		.match(assign_decide_read_seen_oahojgbpphbooRow, { digest, learner, passage })
 		.find({ step, ordinal, digest, root, learner, passage })
 })
 
 /** Every seen row any decision read, stored once by its digest however many roots read it. */
 const seenRows = query(Auditor).rule((r) => {
-	const { digest, learner, passage } = v(AssignDecideReadSeenRow, "row")
+	const { digest, learner, passage } = v(assign_decide_read_seen_oahojgbpphbooRow, "row")
 	return r
-		.match(AssignDecideReadSeenRow, { digest, learner, passage })
+		.match(assign_decide_read_seen_oahojgbpphbooRow, { digest, learner, passage })
 		.find({ digest, learner, passage })
 })
 
 /** Each decision as its output row holds it: its stage's tag and its confidence. */
 const decisions = query(Auditor).rule((r) => {
-	const { step, stage, confidence } = v(AssignDecideOutput, "decision")
-	return r.match(AssignDecideOutput, { step, stage, confidence }).find({ step, stage, confidence })
+	const { step, stage, confidence } = v(assign_decide_output_fkgbaoobeoima, "decision")
+	return r
+		.match(assign_decide_output_fkgbaoobeoima, { step, stage, confidence })
+		.find({ step, stage, confidence })
 })
 
 /** The passage each decision that serves one serves, at its distance: its stage's variant. */
 const servings = query(Auditor).rule((r) => {
-	const { step, passage, distance } = v(AssignDecideOutputStageServe, "served")
+	const { step, passage, distance } = v(assign_decide_output_stage_serve_chfjeagmkjoef, "served")
 	return r
-		.match(AssignDecideOutputStageServe, { step, passage, distance })
+		.match(assign_decide_output_stage_serve_chfjeagmkjoef, { step, passage, distance })
 		.find({ step, passage, distance })
 })
 
 /** The passages each decision weighed, its array as an ordered family. */
 const weighings = query(Auditor).rule((r) => {
-	const { step, ordinal, passage, distance, passed } = v(AssignDecideOutputWeighed, "weighed")
+	const { step, ordinal, passage, distance, passed } = v(
+		assign_decide_output_weighed_gpdibcghlfbhb,
+		"weighed"
+	)
 	return r
-		.match(AssignDecideOutputWeighed, { step, ordinal, passage, distance, passed })
+		.match(assign_decide_output_weighed_gpdibcghlfbhb, { step, ordinal, passage, distance, passed })
 		.find({ step, ordinal, passage, distance, passed })
 })
 
@@ -480,8 +488,8 @@ const chainGraphRows = query(Auditor)
 		return r.match(ChainResult, { step, root }).find({ step, root })
 	})
 	.rule((r) => {
-		const { step, root } = v(ChainPageInput, "input")
-		return r.match(ChainPageInput, { step, root }).find({ step, root })
+		const { step, root } = v(chain_page_input_jhliinhchcgno, "input")
+		return r.match(chain_page_input_jhliinhchcgno, { step, root }).find({ step, root })
 	})
 
 /** What every chain root was requested with, by its root: its kind's input fingerprint, which a retirement keeps. */
@@ -501,8 +509,10 @@ const orders = query(Auditor).rule((r) => {
  * graph deletes.
  */
 const chainOrderedInputs = query(Auditor).rule((r) => {
-	const { root, pages: count } = v(ChainOrderedInput, "input")
-	return r.match(ChainOrderedInput, { root, pages: count }).find({ root, pages: count })
+	const { root, pages: count } = v(chain_ordered_input_pbjpmafopnahk, "input")
+	return r
+		.match(chain_ordered_input_pbjpmafopnahk, { root, pages: count })
+		.find({ root, pages: count })
 })
 
 /** Every chain root's scope, its record, which a clearing of its graph keeps. */
@@ -551,31 +561,33 @@ const every = Object.freeze({
 		return r.match(ChainResult, { step, outcome }).find({ step, outcome })
 	}),
 	chainNexts: query(Auditor).rule((r) => {
-		const { from, ordinal, to } = v(ChainNext, "s")
-		return r.match(ChainNext, { from, ordinal, to }).find({ from, ordinal, to })
+		const { from, ordinal, to } = v(chain_next_bbflpfpnlejpm, "s")
+		return r.match(chain_next_bbflpfpnlejpm, { from, ordinal, to }).find({ from, ordinal, to })
 	}),
 	chainPageInputs: query(Auditor).rule((r) => {
-		const { step, feed, seq, pages: count } = v(ChainPageInput, "s")
+		const { step, feed, seq, pages: count } = v(chain_page_input_jhliinhchcgno, "s")
 		return r
-			.match(ChainPageInput, { step, feed, seq, pages: count })
+			.match(chain_page_input_jhliinhchcgno, { step, feed, seq, pages: count })
 			.find({ step, feed, seq, pages: count })
 	}),
 	chainPageAfters: query(Auditor).rule((r) => {
-		const { step, value } = v(ChainPageInputAfter, "s")
-		return r.match(ChainPageInputAfter, { step, value }).find({ step, value })
+		const { step, value } = v(chain_page_input_after_gdigbcabbnakb, "s")
+		return r.match(chain_page_input_after_gdigbcabbnakb, { step, value }).find({ step, value })
 	}),
 	chainPageOutputs: query(Auditor).rule((r) => {
-		const { step, seq, items: count } = v(ChainPageOutput, "s")
-		return r.match(ChainPageOutput, { step, seq, items: count }).find({ step, seq, items: count })
+		const { step, seq, items: count } = v(chain_page_output_dniojohpmhcee, "s")
+		return r
+			.match(chain_page_output_dniojohpmhcee, { step, seq, items: count })
+			.find({ step, seq, items: count })
 	}),
 	chainPageNexts: query(Auditor).rule((r) => {
-		const { step, value } = v(ChainPageOutputNext, "s")
-		return r.match(ChainPageOutputNext, { step, value }).find({ step, value })
+		const { step, value } = v(chain_page_output_next_pocjijjpkpono, "s")
+		return r.match(chain_page_output_next_pocjijjpkpono, { step, value }).find({ step, value })
 	}),
 	chainRunInputs: query(Auditor).rule((r) => {
-		const { scope, feed, pages: count } = v(ChainChainRunInput, "s")
+		const { scope, feed, pages: count } = v(chain_chain_run_input_glnkafcnkbnnn, "s")
 		return r
-			.match(ChainChainRunInput, { scope, feed, pages: count })
+			.match(chain_chain_run_input_glnkafcnkbnnn, { scope, feed, pages: count })
 			.find({ scope, feed, pages: count })
 	}),
 	fanRoots: query(Auditor).rule((r) => {
@@ -607,28 +619,34 @@ const every = Object.freeze({
 		return r.match(FanResult, { step, outcome }).find({ step, outcome })
 	}),
 	fanSquareInputs: query(Auditor).rule((r) => {
-		const { step, batch, n } = v(FanSquareInput, "s")
-		return r.match(FanSquareInput, { step, batch, n }).find({ step, batch, n })
+		const { step, batch, n } = v(fan_square_input_ifddbjkaokoig, "s")
+		return r.match(fan_square_input_ifddbjkaokoig, { step, batch, n }).find({ step, batch, n })
 	}),
 	fanSquareOutputs: query(Auditor).rule((r) => {
-		const { step, square } = v(FanSquareOutput, "s")
-		return r.match(FanSquareOutput, { step, square }).find({ step, square })
+		const { step, square } = v(fan_square_output_gofcfljmlelgo, "s")
+		return r.match(fan_square_output_gofcfljmlelgo, { step, square }).find({ step, square })
 	}),
 	fanBatchInputs: query(Auditor).rule((r) => {
-		const { scope, batch, size } = v(FanBatchInput, "s")
-		return r.match(FanBatchInput, { scope, batch, size }).find({ scope, batch, size })
+		const { scope, batch, size } = v(fan_batch_input_hjhhnklpfiilh, "s")
+		return r
+			.match(fan_batch_input_hjhhnklpfiilh, { scope, batch, size })
+			.find({ scope, batch, size })
 	}),
 	fanRunInputs: query(Auditor).rule((r) => {
-		const { scope, batch, size } = v(FanFanRunInput, "s")
-		return r.match(FanFanRunInput, { scope, batch, size }).find({ scope, batch, size })
+		const { scope, batch, size } = v(fan_fan_run_input_bghibckinpfgk, "s")
+		return r
+			.match(fan_fan_run_input_bghibckinpfgk, { scope, batch, size })
+			.find({ scope, batch, size })
 	}),
 	fanWantedInputs: query(Auditor).rule((r) => {
-		const { scope, batch, size } = v(FanWantedInput, "s")
-		return r.match(FanWantedInput, { scope, batch, size }).find({ scope, batch, size })
+		const { scope, batch, size } = v(fan_wanted_input_nfecjpihiaope, "s")
+		return r
+			.match(fan_wanted_input_nfecjpihiaope, { scope, batch, size })
+			.find({ scope, batch, size })
 	}),
 	fanWantedKeys: query(Auditor).rule((r) => {
-		const { root, batch } = v(FanWantedKey, "s")
-		return r.match(FanWantedKey, { root, batch }).find({ root, batch })
+		const { root, batch } = v(fan_wanted_key_ldjmcglkghhjb, "s")
+		return r.match(fan_wanted_key_ldjmcglkghhjb, { root, batch }).find({ root, batch })
 	})
 })
 
@@ -696,7 +714,8 @@ export const appWorkload = workload(Loader, {
 		ChangeSet.union(ChangeSet.empty(Loader).insert(Order, []), chainRequests.Ordered),
 		{
 			[denClock]: "millis"
-		}
+		},
+		{ [denClock]: denInstantKey }
 	),
 	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, []),
 	want: ChangeSet.empty(Loader).insert(Want, []),
@@ -704,7 +723,8 @@ export const appWorkload = workload(Loader, {
 		ChangeSet.sequence(ChangeSet.empty(Loader).insert(Want, []), fanRequests.Wanted),
 		{
 			[denClock]: "millis"
-		}
+		},
+		{ [denClock]: denInstantKey }
 	),
 	hear: ChangeSet.empty(Loader).insert(Heard, []),
 	place: ChangeSet.empty(Loader).insert(Passage, []),

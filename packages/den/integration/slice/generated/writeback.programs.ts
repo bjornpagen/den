@@ -1,4 +1,4 @@
-import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant, denInstantKey } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Writeback to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import { ChangeSet, Num, Type, clocked, param, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
@@ -27,10 +27,10 @@ import {
 	WritebackHeld,
 	WritebackRefusal,
 	WritebackExhausted,
-	WritebackDeliverInput,
-	WritebackWritebackInput,
-	WritebackDeliverOutput,
-	WritebackWritebackFinishOutput,
+	writeback_deliver_input_libhnkibecamc,
+	writeback_writeback_input_ljafdhfgfeocc,
+	writeback_deliver_output_ppecogpmgbpek,
+	writeback_writeback_finish_output_mhjodpondhejh,
 	WritebackPaused,
 	WritebackResumed,
 	WritebackServed,
@@ -64,14 +64,14 @@ export const WritebackDen = role(
 			"WritebackHeld",
 			"WritebackRefusal",
 			"WritebackExhausted",
-			"WritebackDeliverInput",
-			"WritebackWritebackInput",
-			"WritebackWritebackFinishOutput"
+			"writeback_deliver_input_libhnkibecamc",
+			"writeback_writeback_input_ljafdhfgfeocc",
+			"writeback_writeback_finish_output_mhjodpondhejh"
 		]
 	}
 )
 
-/** den's coordinator role for the flow Writeback: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation. */
+/** den's coordinator role for the flow Writeback: the turns of its exclusivity seats and pauses. It holds the coordination group's rosters and relations whole, no role holding a closed relation, and no live hold, which only den's role reads, over the graph it holds. */
 export const WritebackCoordinator = role(
 	App,
 	"writeback_coordinator",
@@ -127,7 +127,8 @@ const writebackLatestServed = query(WritebackDen).rule((r) => {
 export const writebackDenPrograms = Object.freeze({
 	writebackNow: clocked(
 		query(writebackGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	writebackReading: clocked(
 		query(WritebackDen).reads({
@@ -145,7 +146,8 @@ export const writebackDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.denNow": "millis" }
+		{ "now.denNow": "millis" },
+		{ "now.denNow": denInstantKey }
 	),
 	writebackClaim: clocked(
 		ChangeSet.empty(writebackGraph)
@@ -154,7 +156,8 @@ export const writebackDenPrograms = Object.freeze({
 				{
 					until: Type.cast(
 						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
-						DenInstant
+						DenInstant,
+						denInstantKey
 					)
 				}
 			)
@@ -167,7 +170,8 @@ export const writebackDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	writebackRetry: clocked(
 		ChangeSet.empty(writebackGraph)
@@ -183,14 +187,16 @@ export const writebackDenPrograms = Object.freeze({
 								Type.base(r.param("denNow", DenInstant)),
 								Type.base(r.param("delay", DenDelay))
 							),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						why: r.param("why", WritebackRetry.fields.why),
 						root: r.param("root", WritebackRetry.fields.root)
 					})
 				)
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	writebackFence: ChangeSet.empty(writebackGraph)
 		.insert(WritebackEnded, [])
@@ -211,7 +217,7 @@ export const writebackDenPrograms = Object.freeze({
 			.insert(WritebackFinish, [])
 			.insert(WritebackStartStep, [])
 			.insert(WritebackScope, [])
-			.insert(WritebackDeliverInput, [])
+			.insert(writeback_deliver_input_libhnkibecamc, [])
 			.insert(
 				WritebackStep,
 				query(writebackGraph).rule((r) => {
@@ -228,13 +234,15 @@ export const writebackDenPrograms = Object.freeze({
 						scope,
 						due: Type.cast(
 							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
-							DenInstant
+							DenInstant,
+							denInstantKey
 						),
 						root: r.param("root", WritebackStep.fields.root)
 					})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	writebackSkip: ChangeSet.empty(writebackGraph).insert(WritebackSkipped, []),
 	writebackSkippedOf: query(writebackGraph).rule((r) => {
@@ -405,23 +413,29 @@ export const writebackDenPrograms = Object.freeze({
 				.find({ target, turn })
 		})
 	}),
-	writebackReadWritebackDeliverInput: query(writebackGraph).rule((r) => {
-		const { root, step, attempt } = v(WritebackDeliverInput, "writebackDeliverInput")
+	writebackReadwriteback_deliver_input_libhnkibecamc: query(writebackGraph).rule((r) => {
+		const { root, step, attempt } = v(
+			writeback_deliver_input_libhnkibecamc,
+			"writeback_deliver_input_libhnkibecamc"
+		)
 		return r
-			.match(WritebackDeliverInput, { root, step, attempt })
+			.match(writeback_deliver_input_libhnkibecamc, { root, step, attempt })
 			.where(
-				r.eq(root, r.param("root", WritebackDeliverInput.fields.root)),
-				r.eq(step, r.param("step", WritebackDeliverInput.fields.step))
+				r.eq(root, r.param("root", writeback_deliver_input_libhnkibecamc.fields.root)),
+				r.eq(step, r.param("step", writeback_deliver_input_libhnkibecamc.fields.step))
 			)
 			.find({ root, step, attempt })
 	}),
-	writebackReadWritebackWritebackInput: query(writebackGraph).rule((r) => {
-		const { root, scope, attempt } = v(WritebackWritebackInput, "writebackWritebackInput")
+	writebackReadwriteback_writeback_input_ljafdhfgfeocc: query(writebackGraph).rule((r) => {
+		const { root, scope, attempt } = v(
+			writeback_writeback_input_ljafdhfgfeocc,
+			"writeback_writeback_input_ljafdhfgfeocc"
+		)
 		return r
-			.match(WritebackWritebackInput, { root, scope, attempt })
+			.match(writeback_writeback_input_ljafdhfgfeocc, { root, scope, attempt })
 			.where(
-				r.eq(root, r.param("root", WritebackWritebackInput.fields.root)),
-				r.eq(scope, r.param("scope", WritebackWritebackInput.fields.scope))
+				r.eq(root, r.param("root", writeback_writeback_input_ljafdhfgfeocc.fields.root)),
+				r.eq(scope, r.param("scope", writeback_writeback_input_ljafdhfgfeocc.fields.scope))
 			)
 			.find({ root, scope, attempt })
 	}),
@@ -442,13 +456,16 @@ export const writebackDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
-				WritebackWritebackInput,
+				writeback_writeback_input_ljafdhfgfeocc,
 				query(writebackGraph).rule((r) => {
-					const requested = r.relation("writebackWritebackWritebackWritebackInput", {
-						root: WritebackWritebackInput.fields.root,
-						scope: WritebackWritebackInput.fields.scope,
-						attempt: WritebackWritebackInput.fields.attempt
-					})
+					const requested = r.relation(
+						"writebackWritebackwriteback_writeback_input_ljafdhfgfeocc",
+						{
+							root: writeback_writeback_input_ljafdhfgfeocc.fields.root,
+							scope: writeback_writeback_input_ljafdhfgfeocc.fields.scope,
+							attempt: writeback_writeback_input_ljafdhfgfeocc.fields.attempt
+						}
+					)
 					const { root, scope, attempt } = v(requested, "requested")
 					return r
 						.match(requested, { root, scope, attempt })
@@ -508,7 +525,8 @@ export const writebackDenPrograms = Object.freeze({
 						})
 				})
 			),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	)
 })
 
@@ -526,7 +544,8 @@ export const writebackCoordinatorPrograms = Object.freeze({
 				})
 			)
 		),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	writebackPause: ChangeSet.empty(writebackCoordination).insert(WritebackPaused, []),
 	writebackResume: ChangeSet.empty(writebackCoordination).insert(WritebackResumed, []),
@@ -571,10 +590,10 @@ export const WritebackRetirer = role(
 			"WritebackHeld",
 			"WritebackRefusal",
 			"WritebackExhausted",
-			"WritebackDeliverInput",
-			"WritebackWritebackInput",
-			"WritebackDeliverOutput",
-			"WritebackWritebackFinishOutput"
+			"writeback_deliver_input_libhnkibecamc",
+			"writeback_writeback_input_ljafdhfgfeocc",
+			"writeback_deliver_output_ppecogpmgbpek",
+			"writeback_writeback_finish_output_mhjodpondhejh"
 		]
 	}
 )
@@ -597,10 +616,12 @@ export const writebackRetirerPrograms = Object.freeze({
 		WritebackHeld: { root: param("root", WritebackRoot.fields.root) },
 		WritebackRefusal: { root: param("root", WritebackRoot.fields.root) },
 		WritebackExhausted: { root: param("root", WritebackRoot.fields.root) },
-		WritebackDeliverInput: { root: param("root", WritebackRoot.fields.root) },
-		WritebackWritebackInput: { root: param("root", WritebackRoot.fields.root) },
-		WritebackDeliverOutput: { root: param("root", WritebackRoot.fields.root) },
-		WritebackWritebackFinishOutput: { root: param("root", WritebackRoot.fields.root) }
+		writeback_deliver_input_libhnkibecamc: { root: param("root", WritebackRoot.fields.root) },
+		writeback_writeback_input_ljafdhfgfeocc: { root: param("root", WritebackRoot.fields.root) },
+		writeback_deliver_output_ppecogpmgbpek: { root: param("root", WritebackRoot.fields.root) },
+		writeback_writeback_finish_output_mhjodpondhejh: {
+			root: param("root", WritebackRoot.fields.root)
+		}
 	})
 })
 
@@ -610,21 +631,22 @@ export const writebackRetirerWorkload = workload(WritebackRetirer, writebackReti
 export const writebackCommitPrograms = Object.freeze({
 	writebackAuthenticated: clocked(
 		query(writebackGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-		{ denNow: "millis" }
+		{ denNow: "millis" },
+		{ denNow: denInstantKey }
 	),
 	writebackCommitDeliver: ChangeSet.union(
 		ChangeSet.empty(writebackGraph)
 			.insert(WritebackResult, [])
 			.insert(WritebackDone, [])
 			.insert(WritebackHeld, [])
-			.insert(WritebackDeliverOutput, []),
+			.insert(writeback_deliver_output_ppecogpmgbpek, []),
 		declaredFlow.kinds[0].writes.changes(Loader)
 	),
 	writebackCommitWritebackFinish: ChangeSet.empty(writebackGraph)
 		.insert(WritebackResult, [])
 		.insert(WritebackDone, [])
 		.insert(WritebackHeld, [])
-		.insert(WritebackWritebackFinishOutput, [])
+		.insert(writeback_writeback_finish_output_mhjodpondhejh, [])
 })
 
 export const writebackCommits = workload(Loader, writebackCommitPrograms)

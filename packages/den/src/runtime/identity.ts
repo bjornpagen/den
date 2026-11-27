@@ -1,6 +1,7 @@
-import { Sha256 } from "@bjornpagen/grizzle"
+import { type Marked, Sha256 } from "@bjornpagen/grizzle"
 import { Array as Arr, Option, Result } from "effect"
 import type { Brand } from "effect"
+import { type denDelayKey, type denInstantKey, mintDelay, mintInstant } from "#lower/keys.ts"
 
 /**
  * Identity, derived: a step's key is its parent, its edge kind and its ordinal; a scope's start child is its scope and
@@ -9,32 +10,20 @@ import type { Brand } from "effect"
  * step run twice spawns onto the same keys, which grizzle reads as no change.
  */
 
-/** An instant, milliseconds since the epoch: the ledger's `DenInstant`, as the database's clock reads it. */
-export type Instant = bigint & Brand.Brand<"DenInstant">
+/** An instant, milliseconds since the epoch: the ledger's `DenInstant`, its host type, as the database's clock reads it. */
+export type Instant = Marked<bigint, typeof denInstantKey>
 
 /**
- * A duration in milliseconds, never negative: the ledger's `DenDelay`, what a step waits after its spawn, a retry after
- * its attempt, and the instant the database computes from a reading of its clock plus it.
+ * A duration in milliseconds, never negative: the ledger's `DenDelay`, its host type, what a step waits after its spawn,
+ * a retry after its attempt, and the instant the database computes from a reading of its clock plus it.
  */
-export type Delay = bigint & Brand.Brand<"DenDelay">
+export type Delay = Marked<bigint, typeof denDelayKey>
 
-/** The claim behind each mint, unchecked: a value read here is an instant, or a delay, of den's. */
-const readInstant: (value: bigint) => asserts value is Instant = () => undefined
-const readDelay: (value: bigint) => asserts value is Delay = () => undefined
-
-/** The instant `millis` milliseconds after the epoch, the one mint of an Instant. */
-export const instantOf = (millis: number): Instant => {
-	const value = BigInt(millis)
-	readInstant(value)
-	return value
-}
+/** The instant `millis` milliseconds after the epoch, the one mint of an Instant on the host. */
+export const instantOf = (millis: number): Instant => mintInstant(BigInt(millis))
 
 /** A delay of `millis` milliseconds, the one mint of a Delay; DenDelay's law refuses a negative one where it is written. */
-export const delayOf = (millis: number): Delay => {
-	const value = BigInt(millis)
-	readDelay(value)
-	return value
-}
+export const delayOf = (millis: number): Delay => mintDelay(BigInt(millis))
 
 /** No delay: due at the call's own reading. */
 export const atOnce: Delay = delayOf(0)

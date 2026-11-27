@@ -184,7 +184,7 @@ output into `select(PResult, outcome = done)`) certifies.
    (`writes({ insert: [Item], put: [], delete: [] })`): a served Db runs only workload members, so no ChangeSet is built
    at run time.
 9. **A finish step** lives in the scope it finishes and is no child of it for completeness; a scope is done once its
-   finish step has a result (done or failed). It answers an output as a step does, `<P><J>FinishOutput`, which is the
+   finish step has a result (done or failed). It answers an output as a step does, its finish's output relation, which is the
    scope's: its parent's finish reads a child scope's ending with it, and an edge from the scope kind spawns the next
    stage in the scope's parent from the scope's input and that output, in the finish's own commit, so the parent never
    sees the scope ended without its successors (`review.test.ts`).

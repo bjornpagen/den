@@ -1,3 +1,11 @@
+import {
+	conversionOf,
+	pg,
+	query,
+	relation as declareRelation,
+	schema,
+	v
+} from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -31,6 +39,8 @@ import {
 	writesNothing
 } from "#algebra/kinds.ts"
 import { type LawIR, type Lowered, lower, type SideIR } from "#lower/fragment.ts"
+import { Text } from "#lower/keys.ts"
+import { declared, derivedOf, under, word } from "#lower/names.ts"
 import { type Placement, printFragment } from "#lower/print.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
@@ -146,19 +156,28 @@ const fieldOf = (form: Form): FieldSchema => {
 	}
 }
 
-/**
- * The reads a sketch's first step declares, by their names alone: lowering never runs a read's query, whose records
- * grizzle makes when the fragment loads, so a sketch's queries are no queries at all.
- */
+/** The level a sketch's reads are over: weights, each feed's. */
+const Weight = declareRelation("Weight", { feed: Text, factor: pg.bigint }, ["feed"])
+const Weights = schema("Weights", [Weight], [])
+
+/** A read of every weight: lowering reads its attachment paths (none) and never runs it. */
+const everyWeight = query(Weights).rule((r) => {
+	const { feed, factor } = v(Weight, "weight")
+	return r.match(Weight, { feed, factor }).find({ feed, factor })
+})
+
+/** The reads a sketch's first step declares: one or two named queries of the weights, whose records den names. */
 const readsOf = <I>(reading: typeof Reading.Type): ReadsOver<I> =>
 	reading === "none"
 		? noReads
 		: {
 				kind: "query",
-				over: {},
-				named: reading === "one" ? { weights: {} } : { weights: {}, passages: {} },
-				params: () => ({}),
-				options: []
+				over: Weights,
+				named:
+					reading === "one"
+						? { weights: everyWeight }
+						: { weights: everyWeight, passages: everyWeight },
+				params: () => ({})
 			}
 
 /**
@@ -429,8 +448,28 @@ it.effect(
 							...counts,
 							...Arr.map(lowered.rosters, (r) => r.name)
 						]
-						const has = (suffix: string) => Arr.contains(relations, `${P}${suffix}`)
-						assert.isTrue(Arr.every(names, Str.startsWith(P)))
+						const has = (name: string) => Arr.contains(relations, name)
+						/** The derived name of what `kind` names by these names of the flow's and words of den's. */
+						const derived = (
+							kind: Parameters<typeof derivedOf>[0],
+							...pieces: Parameters<typeof derivedOf>[1]
+						) => derivedOf(kind, pieces)
+						const s0Input = derived("input", declared(P), declared("S0"), word("Input"))
+						const s0Value = (kind: "option" | "array") =>
+							derived(kind, under(s0Input), declared("value")).name
+						const s0Array = s0Value("array")
+						const finishOutput = (join: string) =>
+							derived("output", declared(P), declared(join), word("Finish"), word("Output")).name
+						const stepOutput = (stepName: string) =>
+							derived("output", declared(P), declared(stepName), word("Output")).name
+						const readOf = (read: string) =>
+							derived("read", declared(P), declared("S0"), word("Read"), declared(read)).name
+						assert.isTrue(
+							Arr.every(
+								names,
+								(n) => Str.startsWith(P)(n) || Str.startsWith(`${conversionOf(P)}_`)(n)
+							)
+						)
 						const sides = Arr.flatMap(lowered.laws, (law) => {
 							switch (law.kind) {
 								case "contained":
@@ -449,7 +488,7 @@ it.effect(
 						})
 						assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
 						assert.strictEqual(
-							has("S0InputValue"),
+							has(s0Value("option")) || has(s0Array),
 							sketch.form === "option" || sketch.form === "array" || sketch.form === "structs"
 						)
 						const keyed = (name: string) =>
@@ -460,31 +499,30 @@ it.effect(
 						const lawsFrom = (name: string) =>
 							Arr.filter(containmentsOf(lowered.laws), (law) => law.from.relation === name)
 						if (sketch.form === "array" || sketch.form === "structs") {
+							assert.deepStrictEqual(keyed(s0Array), Option.some(["root", "step", "ordinal"]))
 							assert.deepStrictEqual(
-								keyed(`${P}S0InputValue`),
-								Option.some(["root", "step", "ordinal"])
-							)
-							assert.deepStrictEqual(
-								Arr.map(lawsFrom(`${P}S0InputValue`), (law) => [
+								Arr.map(lawsFrom(s0Array), (law) => [
 									law.to.relation,
 									Arr.map(law.from.terms, (t) => `${t.pred ? "pred:" : ""}${t.field}`)
 								]),
 								[
-									[`${P}S0Input`, ["root", "step"]],
-									[`${P}S0InputValue`, ["root", "step", "pred:ordinal"]],
+									[s0Input.name, ["root", "step"]],
+									[s0Array, ["root", "step", "pred:ordinal"]],
 									[`${P}Step`, ["root", "step"]]
 								]
 							)
 						}
+						const variantOf = (tag: string) =>
+							derived("variant", under(s0Input), declared("value"), declared(tag)).name
 						assert.strictEqual(
-							has("S0InputValueServe") && has("S0InputValueRest"),
+							has(variantOf("Serve")) && has(variantOf("Rest")),
 							sketch.form === "union"
 						)
 						if (sketch.form === "union") {
 							Arr.forEach(["Serve", "Rest"], (tag) => {
-								const variant = `${P}S0InputValue${tag}`
+								const variant = variantOf(tag)
 								const tagged = (law: Extract<LawIR, { readonly kind: "contained" }>["to"]) =>
-									law.relation === `${P}S0Input` &&
+									law.relation === s0Input.name &&
 									law.selection.kind === "handle" &&
 									law.selection.field === "value" &&
 									law.selection.handle === tag
@@ -519,36 +557,37 @@ it.effect(
 							Arr.map(into("failed"), (law) => law.from.relation),
 							[`${P}Failed`]
 						)
-						assert.isTrue(has("RunFinishOutput"))
-						assert.strictEqual(has("InnerFinishOutput"), sketch.scoped)
+						assert.isTrue(has(finishOutput("Run")))
+						assert.strictEqual(has(finishOutput("Inner")), sketch.scoped)
 						const leaves = (edgeName: string, output: string) =>
 							Arr.some(
 								containments,
 								(law) =>
-									law.from.relation === `${P}${edgeName}` &&
+									law.from.relation === derived("edge", declared(P), declared(edgeName)).name &&
 									Arr.some(law.from.terms, (t) => t.field === "from") &&
-									law.to.relation === `${P}${output}`
+									law.to.relation === output
 							)
 						Arr.forEach(lowered.edges, (e) =>
 							assert.isTrue(
-								leaves(e.name, e.name === "After" ? "InnerFinishOutput" : `${e.from}Output`)
+								leaves(e.name, e.name === "After" ? finishOutput("Inner") : stepOutput(e.from))
 							)
 						)
 						assert.strictEqual(
 							Arr.some(lowered.joins, (j) => Arr.some(j.finish.edges, (e) => e.name === "After")),
 							sketch.scoped
 						)
-						assert.strictEqual(has("S0Error"), sketch.typed)
+						const s0Error = derived("error", declared(P), declared("S0"), word("Error")).name
+						assert.strictEqual(has(s0Error), sketch.typed)
 						if (sketch.typed) {
 							assert.isTrue(
 								Arr.some(
 									containments,
-									(law) => law.from.relation === `${P}S0Error` && law.to.relation === `${P}Failed`
+									(law) => law.from.relation === s0Error && law.to.relation === `${P}Failed`
 								)
 							)
 						}
-						assert.strictEqual(has("S0ReadWeights"), reading.weights)
-						assert.strictEqual(has("S0ReadPassages"), reading.passages)
+						assert.strictEqual(has(readOf("weights")), reading.weights)
+						assert.strictEqual(has(readOf("passages")), reading.passages)
 						const fieldsOf = (name: string) =>
 							Option.map(
 								Arr.findFirst(lowered.relations, (r) => r.name === name),
@@ -556,7 +595,7 @@ it.effect(
 							)
 						if (reading.passages) {
 							assert.deepStrictEqual(
-								fieldsOf(`${P}S0ReadPassages`),
+								fieldsOf(readOf("passages")),
 								Option.some([
 									["root", "digest"],
 									["step", "digest"],
@@ -566,14 +605,14 @@ it.effect(
 							)
 						}
 						Arr.forEach(
-							[...(reading.weights ? ["Weights"] : []), ...(reading.passages ? ["Passages"] : [])],
+							[...(reading.weights ? ["weights"] : []), ...(reading.passages ? ["passages"] : [])],
 							(read) => {
 								assert.isTrue(
 									Arr.some(
 										containments,
 										(law) =>
-											law.from.relation === `${P}S0Read${read}` &&
-											law.to.relation === `${P}S0Read${read}Row` &&
+											law.from.relation === readOf(read) &&
+											law.to.relation === `${readOf(read)}Row` &&
 											Arr.join(
 												Arr.map(law.from.terms, (t) => t.field),
 												","
@@ -584,7 +623,7 @@ it.effect(
 								assert.isFalse(
 									Arr.some(
 										lowered.laws,
-										(law) => law.kind === "mutable" && law.relation === `${P}S0Read${read}Row`
+										(law) => law.kind === "mutable" && law.relation === `${readOf(read)}Row`
 									),
 									`${read}'s records are closed, under no root`
 								)
@@ -595,7 +634,7 @@ it.effect(
 								lowered.laws,
 								(law) =>
 									law.kind === "check" &&
-									law.relation === `${P}S0Input` &&
+									law.relation === s0Input.name &&
 									law.field === "value" &&
 									law.holds.kind === "finite"
 							),
@@ -690,9 +729,9 @@ it.effect(
 							rosterOf("Resource"),
 							sketch.resource ? Option.some(["Pool"]) : Option.none()
 						)
-						assert.strictEqual(has("ExclusiveKey"), sketch.exclusive)
-						assert.strictEqual(has("Within"), sketch.scoped)
-						assert.strictEqual(has("StartScope"), sketch.scoped)
+						assert.strictEqual(has(`${P}ExclusiveKey`), sketch.exclusive)
+						assert.strictEqual(has(`${P}Within`), sketch.scoped)
+						assert.strictEqual(has(`${P}StartScope`), sketch.scoped)
 						const kindOf = (suffix: string) =>
 							Option.flatMap(
 								Arr.findFirst(lowered.relations, (r) => r.name === `${P}${suffix}`),

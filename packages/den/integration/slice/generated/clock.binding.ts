@@ -1,3 +1,4 @@
+import { mintEnvironment, mintInstant } from "@bjornpagen/den/lower/keys"
 import {
 	any,
 	committedFacts,
@@ -40,16 +41,19 @@ import { FlowName } from "@bjornpagen/den/transport"
 import { type Addition, Sha256 } from "@bjornpagen/grizzle"
 import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
+import { Array as Arr, Brand, Effect, Option, pipe, Result, Stream } from "effect"
 import { clock } from "#integration/slice/flows.ts"
-import { ClockPausable, ClockSittingInput } from "#integration/slice/generated/clock.fragment.ts"
+import {
+	ClockPausable,
+	clock_sitting_input_bckcjcndffgmo
+} from "#integration/slice/generated/clock.fragment.ts"
 import type {
 	ClockScope,
 	ClockAdmitted,
 	ClockFinish,
 	ClockStartStep,
-	ClockChimeInput,
-	ClockCloseInput,
+	clock_chime_input_bfjhiocgaifco,
+	clock_close_input_bajjphdpmhlbc,
 	ClockKind,
 	ClockRootKind
 } from "#integration/slice/generated/clock.fragment.ts"
@@ -60,14 +64,14 @@ import type {
 	clockCommitPrograms
 } from "#integration/slice/generated/clock.programs.ts"
 
-/** The codec text of each declared field of ClockSittingInput, a request's input row, bound once (grizzle's codecText). */
-const clockSittingInputTexts = Object.freeze({
-	sitting: codecText(ClockSittingInput.fields.sitting),
-	deadline: codecText(ClockSittingInput.fields.deadline)
+/** The codec text of each declared field of clock_sitting_input_bckcjcndffgmo, a request's input row, bound once (grizzle's codecText). */
+const clock_sitting_input_bckcjcndffgmoTexts = Object.freeze({
+	sitting: codecText(clock_sitting_input_bckcjcndffgmo.fields.sitting),
+	deadline: codecText(clock_sitting_input_bckcjcndffgmo.fields.deadline)
 })
 /** The fingerprint of root kind Sitting's input heading, taken once. */
 const clockSittingHeading = inputFingerprint(
-	'64:17:ClockSittingInput15:7:sitting4:Text23:8:deadline10:DenInstant257:6:digest245:[...pipe([{ scope: scope, root: scope, sitting: input.sitting, deadline: input.deadline }], Arr.flatMap((row) => [Result.succeed("ClockSittingInput"), clockSittingInputTexts.sitting(row.sitting), clockSittingInputTexts.deadline(row.deadline)]))]'
+	'80:33:clock_sitting_input_bckcjcndffgmo15:7:sitting4:Text23:8:deadline10:DenInstant318:6:digest306:[...pipe([{ scope: scope, root: scope, sitting: input.sitting, deadline: mintInstant(input.deadline) }], Arr.flatMap((row) => [Result.succeed("clock_sitting_input_bckcjcndffgmo"), clock_sitting_input_bckcjcndffgmoTexts.sitting(row.sitting), clock_sitting_input_bckcjcndffgmoTexts.deadline(row.deadline)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
@@ -95,8 +99,12 @@ interface Rows {
 	readonly ClockAdmitted: ReadonlyArray<Addition<typeof ClockAdmitted>>
 	readonly ClockFinish: ReadonlyArray<Addition<typeof ClockFinish>>
 	readonly ClockStartStep: ReadonlyArray<Addition<typeof ClockStartStep>>
-	readonly ClockChimeInput: ReadonlyArray<Addition<typeof ClockChimeInput>>
-	readonly ClockCloseInput: ReadonlyArray<Addition<typeof ClockCloseInput>>
+	readonly clock_chime_input_bfjhiocgaifco: ReadonlyArray<
+		Addition<typeof clock_chime_input_bfjhiocgaifco>
+	>
+	readonly clock_close_input_bajjphdpmhlbc: ReadonlyArray<
+		Addition<typeof clock_close_input_bajjphdpmhlbc>
+	>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -120,8 +128,8 @@ export const clockLedger = (h: ClockHandles) => {
 		ClockAdmitted: [],
 		ClockFinish: [],
 		ClockStartStep: [],
-		ClockChimeInput: [],
-		ClockCloseInput: []
+		clock_chime_input_bfjhiocgaifco: [],
+		clock_close_input_bajjphdpmhlbc: []
 	}
 	const nothingGrown: Grown = {
 		rows: noRows,
@@ -137,8 +145,14 @@ export const clockLedger = (h: ClockHandles) => {
 			ClockAdmitted: [...a.rows.ClockAdmitted, ...b.rows.ClockAdmitted],
 			ClockFinish: [...a.rows.ClockFinish, ...b.rows.ClockFinish],
 			ClockStartStep: [...a.rows.ClockStartStep, ...b.rows.ClockStartStep],
-			ClockChimeInput: [...a.rows.ClockChimeInput, ...b.rows.ClockChimeInput],
-			ClockCloseInput: [...a.rows.ClockCloseInput, ...b.rows.ClockCloseInput]
+			clock_chime_input_bfjhiocgaifco: [
+				...a.rows.clock_chime_input_bfjhiocgaifco,
+				...b.rows.clock_chime_input_bfjhiocgaifco
+			],
+			clock_close_input_bajjphdpmhlbc: [
+				...a.rows.clock_close_input_bajjphdpmhlbc,
+				...b.rows.clock_close_input_bajjphdpmhlbc
+			]
 		},
 		steps: [...a.steps, ...b.steps],
 		timed: [...a.timed, ...b.timed],
@@ -158,7 +172,7 @@ export const clockLedger = (h: ClockHandles) => {
 					rows: {
 						...noRows,
 						ClockStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						ClockChimeInput: [
+						clock_chime_input_bfjhiocgaifco: [
 							{ step: key, root: root, hour: spawn.input.hour, bell: spawn.input.bell }
 						]
 					},
@@ -182,12 +196,12 @@ export const clockLedger = (h: ClockHandles) => {
 					rows: {
 						...noRows,
 						ClockStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						ClockCloseInput: [
+						clock_close_input_bajjphdpmhlbc: [
 							{
 								step: key,
 								root: root,
 								sitting: spawn.input.sitting,
-								deadline: spawn.input.deadline
+								deadline: mintInstant(spawn.input.deadline)
 							}
 						]
 					},
@@ -200,37 +214,57 @@ export const clockLedger = (h: ClockHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readClockChimeInput = (root: Sha256, step: Sha256) =>
+	const readclock_chime_input_bfjhiocgaifco = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.clockReadClockChimeInput.once({ params: { root, step }, facts: {} })),
+				settled(
+					h.den.clockReadclock_chime_input_bfjhiocgaifco.once({ params: { root, step }, facts: {} })
+				),
 				one
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
-	const readClockCloseInput = (root: Sha256, step: Sha256) =>
+	const readclock_close_input_bajjphdpmhlbc = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.clockReadClockCloseInput.once({ params: { root, step }, facts: {} })),
+				settled(
+					h.den.clockReadclock_close_input_bajjphdpmhlbc.once({ params: { root, step }, facts: {} })
+				),
 				one
 			)
-			return Option.map(row, (found) => ({ sitting: found.sitting, deadline: found.deadline }))
+			return Option.map(row, (found) => ({
+				sitting: found.sitting,
+				deadline: Brand.nominal<bigint & Brand.Brand<"DenInstant">>()(found.deadline)
+			}))
 		})
-	const readClockHourlyInput = (root: Sha256, scope: Sha256) =>
+	const readclock_hourly_input_nknibbhbedpnl = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.clockReadClockHourlyInput.once({ params: { root, scope }, facts: {} })),
+				settled(
+					h.den.clockReadclock_hourly_input_nknibbhbedpnl.once({
+						params: { root, scope },
+						facts: {}
+					})
+				),
 				one
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
-	const readClockSittingInput = (root: Sha256, scope: Sha256) =>
+	const readclock_sitting_input_bckcjcndffgmo = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.clockReadClockSittingInput.once({ params: { root, scope }, facts: {} })),
+				settled(
+					h.den.clockReadclock_sitting_input_bckcjcndffgmo.once({
+						params: { root, scope },
+						facts: {}
+					})
+				),
 				one
 			)
-			return Option.map(row, (found) => ({ sitting: found.sitting, deadline: found.deadline }))
+			return Option.map(row, (found) => ({
+				sitting: found.sitting,
+				deadline: Brand.nominal<bigint & Brand.Brand<"DenInstant">>()(found.deadline)
+			}))
 		})
 	const pauseChains: PauseChains<(typeof ClockPausable)["handles"][number]> = {
 		flow: FlowName.make("Clock"),
@@ -295,8 +329,13 @@ export const clockLedger = (h: ClockHandles) => {
 							clockSittingScope: scope,
 							clockSittingKey: key,
 							clockSittingClockScope: [{ scope, root: scope }],
-							clockSittingClockSittingInput: [
-								{ scope: scope, root: scope, sitting: input.sitting, deadline: input.deadline }
+							clockSittingclock_sitting_input_bckcjcndffgmo: [
+								{
+									scope: scope,
+									root: scope,
+									sitting: input.sitting,
+									deadline: mintInstant(input.deadline)
+								}
 							],
 							clockSittingClockRequestedWith: Option.toArray(
 								Option.map(
@@ -307,13 +346,13 @@ export const clockLedger = (h: ClockHandles) => {
 													scope: scope,
 													root: scope,
 													sitting: input.sitting,
-													deadline: input.deadline
+													deadline: mintInstant(input.deadline)
 												}
 											],
 											Arr.flatMap((row) => [
-												Result.succeed("ClockSittingInput"),
-												clockSittingInputTexts.sitting(row.sitting),
-												clockSittingInputTexts.deadline(row.deadline)
+												Result.succeed("clock_sitting_input_bckcjcndffgmo"),
+												clock_sitting_input_bckcjcndffgmoTexts.sitting(row.sitting),
+												clock_sitting_input_bckcjcndffgmoTexts.deadline(row.deadline)
 											])
 										)
 									]),
@@ -337,7 +376,7 @@ export const clockLedger = (h: ClockHandles) => {
 		Chime: runnerOf(
 			clock.kinds[0],
 			{
-				input: ({ root, step }) => readClockChimeInput(root, step),
+				input: ({ root, step }) => readclock_chime_input_bfjhiocgaifco(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -355,7 +394,7 @@ export const clockLedger = (h: ClockHandles) => {
 											ClockHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											ClockChimeOutput: [
+											clock_chime_output_bddonoddgecmi: [
 												{
 													step: done.turn.step,
 													root: done.turn.root,
@@ -378,7 +417,7 @@ export const clockLedger = (h: ClockHandles) => {
 		Close: runnerOf(
 			clock.kinds[2],
 			{
-				input: ({ root, step }) => readClockCloseInput(root, step),
+				input: ({ root, step }) => readclock_close_input_bajjphdpmhlbc(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -393,12 +432,12 @@ export const clockLedger = (h: ClockHandles) => {
 										ClockHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										ClockCloseOutput: [
+										clock_close_output_aoheikcdnbjpp: [
 											{
 												step: done.turn.step,
 												root: done.turn.root,
 												sitting: done.output.sitting,
-												deadline: done.output.deadline
+												deadline: mintInstant(done.output.deadline)
 											}
 										]
 									}
@@ -434,7 +473,7 @@ export const clockLedger = (h: ClockHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readClockHourlyInput(root, scope)
+						const input = yield* readclock_hourly_input_nknibbhbedpnl(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -454,7 +493,9 @@ export const clockLedger = (h: ClockHandles) => {
 										ClockHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										ClockHourlyFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+										clock_hourly_finish_output_mgokiakijlfbi: [
+											{ step: done.turn.step, root: done.turn.root }
+										]
 									}
 								}
 							})
@@ -488,7 +529,7 @@ export const clockLedger = (h: ClockHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readClockSittingInput(root, scope)
+						const input = yield* readclock_sitting_input_bckcjcndffgmo(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -508,7 +549,9 @@ export const clockLedger = (h: ClockHandles) => {
 										ClockHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										ClockSittingFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+										clock_sitting_finish_output_aahppmdaoafco: [
+											{ step: done.turn.step, root: done.turn.root }
+										]
 									}
 								}
 							})
@@ -526,7 +569,7 @@ export const clockLedger = (h: ClockHandles) => {
 			precondition: clock.kinds[1].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readClockHourlyInput(scope, scope)
+					const input = yield* readclock_hourly_input_nknibbhbedpnl(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -551,8 +594,8 @@ export const clockLedger = (h: ClockHandles) => {
 								insert: {
 									ClockScope: grown.rows.ClockScope,
 									ClockStartStep: grown.rows.ClockStartStep,
-									ClockChimeInput: grown.rows.ClockChimeInput,
-									ClockCloseInput: grown.rows.ClockCloseInput,
+									clock_chime_input_bfjhiocgaifco: grown.rows.clock_chime_input_bfjhiocgaifco,
+									clock_close_input_bajjphdpmhlbc: grown.rows.clock_close_input_bajjphdpmhlbc,
 									ClockAdmitted: admitted,
 									ClockFinish: finishes
 								}
@@ -573,7 +616,7 @@ export const clockLedger = (h: ClockHandles) => {
 			precondition: clock.kinds[3].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readClockSittingInput(scope, scope)
+					const input = yield* readclock_sitting_input_bckcjcndffgmo(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -598,8 +641,8 @@ export const clockLedger = (h: ClockHandles) => {
 								insert: {
 									ClockScope: grown.rows.ClockScope,
 									ClockStartStep: grown.rows.ClockStartStep,
-									ClockChimeInput: grown.rows.ClockChimeInput,
-									ClockCloseInput: grown.rows.ClockCloseInput,
+									clock_chime_input_bfjhiocgaifco: grown.rows.clock_chime_input_bfjhiocgaifco,
+									clock_close_input_bajjphdpmhlbc: grown.rows.clock_close_input_bajjphdpmhlbc,
 									ClockAdmitted: admitted,
 									ClockFinish: finishes
 								}
@@ -622,7 +665,10 @@ export const clockLedger = (h: ClockHandles) => {
 		reading: (environment) =>
 			Effect.flatMap(
 				settled(
-					h.den.clockReading.once({ params: { "serving.environment": environment }, facts: {} })
+					h.den.clockReading.once({
+						params: { "serving.environment": mintEnvironment(environment) },
+						facts: {}
+					})
 				),
 				(rows) =>
 					Effect.flatMap(only(rows), (row) =>
@@ -636,7 +682,7 @@ export const clockLedger = (h: ClockHandles) => {
 			Effect.asVoid(
 				settled(
 					h.coordinator.clockPromote.once({
-						params: { environment: host.environment, deployment: host.deployment },
+						params: { environment: mintEnvironment(host.environment), deployment: host.deployment },
 						facts: {}
 					})
 				)

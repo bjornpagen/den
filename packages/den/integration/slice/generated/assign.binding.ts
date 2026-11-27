@@ -1,3 +1,4 @@
+import { mintEnvironment } from "@bjornpagen/den/lower/keys"
 import {
 	any,
 	committedFacts,
@@ -47,29 +48,29 @@ import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { assign } from "#integration/slice/flows.ts"
 import {
 	AssignPausable,
-	AssignDecideReadNearestRecords,
-	AssignDecideReadSeenRecords,
+	assign_decide_read_nearest_mlemoegfgpbbiRecords,
+	assign_decide_read_seen_oahojgbpphbooRecords,
 	assignGraph,
-	AssignAssignmentInput,
-	AssignAssignmentInputNear,
-	AssignAssignmentInputExclude,
-	AssignAssignmentInputModeWithin
+	assign_assignment_input_kijoknpmnpomn,
+	assign_assignment_input_near_acilimddcfjog,
+	assign_assignment_input_exclude_paaebdpkimebl,
+	assign_assignment_input_mode_within_iahlinklmdadj
 } from "#integration/slice/generated/assign.fragment.ts"
 import type {
 	AssignScope,
 	AssignAdmitted,
 	AssignFinish,
 	AssignStartStep,
-	AssignEmbedInput,
-	AssignEmbedInputNear,
-	AssignEmbedInputExclude,
-	AssignEmbedInputModeNearest,
-	AssignEmbedInputModeWithin,
-	AssignDecideInput,
-	AssignDecideInputExclude,
-	AssignDecideInputModeNearest,
-	AssignDecideInputModeWithin,
-	AssignAsked,
+	assign_embed_input_kmlepfpdepkmo,
+	assign_embed_input_near_dhffcaodkgemm,
+	assign_embed_input_exclude_gcjikbkjkcefj,
+	assign_embed_input_mode_nearest_bdiihcbmhfojp,
+	assign_embed_input_mode_within_oiehjhalkkkfi,
+	assign_decide_input_ffhdojphbdjfc,
+	assign_decide_input_exclude_bpjgmijefddch,
+	assign_decide_input_mode_nearest_ijgbegdphofca,
+	assign_decide_input_mode_within_fgbilcoafbdcg,
+	assign_asked_fobgfofknpfgd,
 	AssignKind,
 	AssignRootKind
 } from "#integration/slice/generated/assign.fragment.ts"
@@ -81,32 +82,32 @@ import type {
 } from "#integration/slice/generated/assign.programs.ts"
 
 /** The text of a row step Decide's read `nearest` found, its digest's input. */
-const AssignDecideReadNearestText = recordText(assign.kinds[1].reads.named.nearest)
+const assign_decide_read_nearest_mlemoegfgpbbiText = recordText(assign.kinds[1].reads.named.nearest)
 /** The text of a row step Decide's read `seen` found, its digest's input. */
-const AssignDecideReadSeenText = recordText(assign.kinds[1].reads.named.seen)
-/** The codec text of each declared field of AssignAssignmentInput, a request's input row, bound once (grizzle's codecText). */
-const assignAssignmentInputTexts = Object.freeze({
-	learner: codecText(AssignAssignmentInput.fields.learner),
-	topic: codecText(AssignAssignmentInput.fields.topic),
-	mode: codecText(AssignAssignmentInput.fields.mode)
+const assign_decide_read_seen_oahojgbpphbooText = recordText(assign.kinds[1].reads.named.seen)
+/** The codec text of each declared field of assign_assignment_input_kijoknpmnpomn, a request's input row, bound once (grizzle's codecText). */
+const assign_assignment_input_kijoknpmnpomnTexts = Object.freeze({
+	learner: codecText(assign_assignment_input_kijoknpmnpomn.fields.learner),
+	topic: codecText(assign_assignment_input_kijoknpmnpomn.fields.topic),
+	mode: codecText(assign_assignment_input_kijoknpmnpomn.fields.mode)
 })
-/** The codec text of each declared field of AssignAssignmentInputNear, a request's input row, bound once (grizzle's codecText). */
-const assignAssignmentInputNearTexts = Object.freeze({
-	ordinal: codecText(AssignAssignmentInputNear.fields.ordinal),
-	value: codecText(AssignAssignmentInputNear.fields.value)
+/** The codec text of each declared field of assign_assignment_input_near_acilimddcfjog, a request's input row, bound once (grizzle's codecText). */
+const assign_assignment_input_near_acilimddcfjogTexts = Object.freeze({
+	ordinal: codecText(assign_assignment_input_near_acilimddcfjog.fields.ordinal),
+	value: codecText(assign_assignment_input_near_acilimddcfjog.fields.value)
 })
-/** The codec text of each declared field of AssignAssignmentInputExclude, a request's input row, bound once (grizzle's codecText). */
-const assignAssignmentInputExcludeTexts = Object.freeze({
-	ordinal: codecText(AssignAssignmentInputExclude.fields.ordinal),
-	value: codecText(AssignAssignmentInputExclude.fields.value)
+/** The codec text of each declared field of assign_assignment_input_exclude_paaebdpkimebl, a request's input row, bound once (grizzle's codecText). */
+const assign_assignment_input_exclude_paaebdpkimeblTexts = Object.freeze({
+	ordinal: codecText(assign_assignment_input_exclude_paaebdpkimebl.fields.ordinal),
+	value: codecText(assign_assignment_input_exclude_paaebdpkimebl.fields.value)
 })
-/** The codec text of each declared field of AssignAssignmentInputModeWithin, a request's input row, bound once (grizzle's codecText). */
-const assignAssignmentInputModeWithinTexts = Object.freeze({
-	radius: codecText(AssignAssignmentInputModeWithin.fields.radius)
+/** The codec text of each declared field of assign_assignment_input_mode_within_iahlinklmdadj, a request's input row, bound once (grizzle's codecText). */
+const assign_assignment_input_mode_within_iahlinklmdadjTexts = Object.freeze({
+	radius: codecText(assign_assignment_input_mode_within_iahlinklmdadj.fields.radius)
 })
 /** The fingerprint of root kind Assignment's input heading, taken once. */
 const assignAssignmentHeading = inputFingerprint(
-	'125:21:AssignAssignmentInput15:7:learner4:Text13:5:topic4:Text64:4:mode55:8:closedId25:AssignAssignmentInputMode7:Nearest6:Within84:25:AssignAssignmentInputNear18:7:ordinal7:natural32:5:value22:pg["double precision"]68:28:AssignAssignmentInputExclude18:7:ordinal7:natural13:5:value4:Text35:32:AssignAssignmentInputModeNearest70:31:AssignAssignmentInputModeWithin33:6:radius22:pg["double precision"]1376:6:digest1363:[...pipe([{ scope: scope, root: scope, learner: input.learner, topic: input.topic, mode: input.mode._tag }], Arr.flatMap((row) => [Result.succeed("AssignAssignmentInput"), assignAssignmentInputTexts.learner(row.learner), assignAssignmentInputTexts.topic(row.topic), assignAssignmentInputTexts.mode(row.mode)])), ...pipe(Arr.map(input.near, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputNear"), assignAssignmentInputNearTexts.ordinal(row.ordinal), assignAssignmentInputNearTexts.value(row.value)])), ...pipe(Arr.map(input.exclude, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputExclude"), assignAssignmentInputExcludeTexts.ordinal(row.ordinal), assignAssignmentInputExcludeTexts.value(row.value)])), ...Arr.map(Arr.flatMap([input.mode], (variant) => (variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : [])), () => Result.succeed("AssignAssignmentInputModeNearest")), ...pipe(Arr.flatMap([input.mode], (variant) => (variant._tag === "Within" ? [{ scope: scope, root: scope, radius: variant.radius }] : [])), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputModeWithin"), assignAssignmentInputModeWithinTexts.radius(row.radius)]))]'
+	'158:37:assign_assignment_input_kijoknpmnpomn15:7:learner4:Text13:5:topic4:Text81:4:mode72:8:closedId42:assign_assignment_input_mode_pgalmghonldnf7:Nearest6:Within101:42:assign_assignment_input_near_acilimddcfjog18:7:ordinal7:natural32:5:value22:pg["double precision"]85:45:assign_assignment_input_exclude_paaebdpkimebl18:7:ordinal7:natural13:5:value4:Text53:50:assign_assignment_input_mode_nearest_jdmfgbfmpepjd88:49:assign_assignment_input_mode_within_iahlinklmdadj33:6:radius22:pg["double precision"]1596:6:digest1583:[...pipe([{ scope: scope, root: scope, learner: input.learner, topic: input.topic, mode: input.mode._tag }], Arr.flatMap((row) => [Result.succeed("assign_assignment_input_kijoknpmnpomn"), assign_assignment_input_kijoknpmnpomnTexts.learner(row.learner), assign_assignment_input_kijoknpmnpomnTexts.topic(row.topic), assign_assignment_input_kijoknpmnpomnTexts.mode(row.mode)])), ...pipe(Arr.map(input.near, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("assign_assignment_input_near_acilimddcfjog"), assign_assignment_input_near_acilimddcfjogTexts.ordinal(row.ordinal), assign_assignment_input_near_acilimddcfjogTexts.value(row.value)])), ...pipe(Arr.map(input.exclude, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("assign_assignment_input_exclude_paaebdpkimebl"), assign_assignment_input_exclude_paaebdpkimeblTexts.ordinal(row.ordinal), assign_assignment_input_exclude_paaebdpkimeblTexts.value(row.value)])), ...Arr.map(Arr.flatMap([input.mode], (variant) => (variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : [])), () => Result.succeed("assign_assignment_input_mode_nearest_jdmfgbfmpepjd")), ...pipe(Arr.flatMap([input.mode], (variant) => (variant._tag === "Within" ? [{ scope: scope, root: scope, radius: variant.radius }] : [])), Arr.flatMap((row) => [Result.succeed("assign_assignment_input_mode_within_iahlinklmdadj"), assign_assignment_input_mode_within_iahlinklmdadjTexts.radius(row.radius)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
@@ -136,18 +137,34 @@ interface Rows {
 	readonly AssignAdmitted: ReadonlyArray<Addition<typeof AssignAdmitted>>
 	readonly AssignFinish: ReadonlyArray<Addition<typeof AssignFinish>>
 	readonly AssignStartStep: ReadonlyArray<Addition<typeof AssignStartStep>>
-	readonly AssignEmbedInput: ReadonlyArray<Addition<typeof AssignEmbedInput>>
-	readonly AssignEmbedInputNear: ReadonlyArray<Addition<typeof AssignEmbedInputNear>>
-	readonly AssignEmbedInputExclude: ReadonlyArray<Addition<typeof AssignEmbedInputExclude>>
-	readonly AssignEmbedInputModeNearest: ReadonlyArray<Addition<typeof AssignEmbedInputModeNearest>>
-	readonly AssignEmbedInputModeWithin: ReadonlyArray<Addition<typeof AssignEmbedInputModeWithin>>
-	readonly AssignDecideInput: ReadonlyArray<Addition<typeof AssignDecideInput>>
-	readonly AssignDecideInputExclude: ReadonlyArray<Addition<typeof AssignDecideInputExclude>>
-	readonly AssignDecideInputModeNearest: ReadonlyArray<
-		Addition<typeof AssignDecideInputModeNearest>
+	readonly assign_embed_input_kmlepfpdepkmo: ReadonlyArray<
+		Addition<typeof assign_embed_input_kmlepfpdepkmo>
 	>
-	readonly AssignDecideInputModeWithin: ReadonlyArray<Addition<typeof AssignDecideInputModeWithin>>
-	readonly AssignAsked: ReadonlyArray<Addition<typeof AssignAsked>>
+	readonly assign_embed_input_near_dhffcaodkgemm: ReadonlyArray<
+		Addition<typeof assign_embed_input_near_dhffcaodkgemm>
+	>
+	readonly assign_embed_input_exclude_gcjikbkjkcefj: ReadonlyArray<
+		Addition<typeof assign_embed_input_exclude_gcjikbkjkcefj>
+	>
+	readonly assign_embed_input_mode_nearest_bdiihcbmhfojp: ReadonlyArray<
+		Addition<typeof assign_embed_input_mode_nearest_bdiihcbmhfojp>
+	>
+	readonly assign_embed_input_mode_within_oiehjhalkkkfi: ReadonlyArray<
+		Addition<typeof assign_embed_input_mode_within_oiehjhalkkkfi>
+	>
+	readonly assign_decide_input_ffhdojphbdjfc: ReadonlyArray<
+		Addition<typeof assign_decide_input_ffhdojphbdjfc>
+	>
+	readonly assign_decide_input_exclude_bpjgmijefddch: ReadonlyArray<
+		Addition<typeof assign_decide_input_exclude_bpjgmijefddch>
+	>
+	readonly assign_decide_input_mode_nearest_ijgbegdphofca: ReadonlyArray<
+		Addition<typeof assign_decide_input_mode_nearest_ijgbegdphofca>
+	>
+	readonly assign_decide_input_mode_within_fgbilcoafbdcg: ReadonlyArray<
+		Addition<typeof assign_decide_input_mode_within_fgbilcoafbdcg>
+	>
+	readonly assign_asked_fobgfofknpfgd: ReadonlyArray<Addition<typeof assign_asked_fobgfofknpfgd>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -171,16 +188,16 @@ export const assignLedger = (h: AssignHandles) => {
 		AssignAdmitted: [],
 		AssignFinish: [],
 		AssignStartStep: [],
-		AssignEmbedInput: [],
-		AssignEmbedInputNear: [],
-		AssignEmbedInputExclude: [],
-		AssignEmbedInputModeNearest: [],
-		AssignEmbedInputModeWithin: [],
-		AssignDecideInput: [],
-		AssignDecideInputExclude: [],
-		AssignDecideInputModeNearest: [],
-		AssignDecideInputModeWithin: [],
-		AssignAsked: []
+		assign_embed_input_kmlepfpdepkmo: [],
+		assign_embed_input_near_dhffcaodkgemm: [],
+		assign_embed_input_exclude_gcjikbkjkcefj: [],
+		assign_embed_input_mode_nearest_bdiihcbmhfojp: [],
+		assign_embed_input_mode_within_oiehjhalkkkfi: [],
+		assign_decide_input_ffhdojphbdjfc: [],
+		assign_decide_input_exclude_bpjgmijefddch: [],
+		assign_decide_input_mode_nearest_ijgbegdphofca: [],
+		assign_decide_input_mode_within_fgbilcoafbdcg: [],
+		assign_asked_fobgfofknpfgd: []
 	}
 	const nothingGrown: Grown = {
 		rows: noRows,
@@ -196,34 +213,46 @@ export const assignLedger = (h: AssignHandles) => {
 			AssignAdmitted: [...a.rows.AssignAdmitted, ...b.rows.AssignAdmitted],
 			AssignFinish: [...a.rows.AssignFinish, ...b.rows.AssignFinish],
 			AssignStartStep: [...a.rows.AssignStartStep, ...b.rows.AssignStartStep],
-			AssignEmbedInput: [...a.rows.AssignEmbedInput, ...b.rows.AssignEmbedInput],
-			AssignEmbedInputNear: [...a.rows.AssignEmbedInputNear, ...b.rows.AssignEmbedInputNear],
-			AssignEmbedInputExclude: [
-				...a.rows.AssignEmbedInputExclude,
-				...b.rows.AssignEmbedInputExclude
+			assign_embed_input_kmlepfpdepkmo: [
+				...a.rows.assign_embed_input_kmlepfpdepkmo,
+				...b.rows.assign_embed_input_kmlepfpdepkmo
 			],
-			AssignEmbedInputModeNearest: [
-				...a.rows.AssignEmbedInputModeNearest,
-				...b.rows.AssignEmbedInputModeNearest
+			assign_embed_input_near_dhffcaodkgemm: [
+				...a.rows.assign_embed_input_near_dhffcaodkgemm,
+				...b.rows.assign_embed_input_near_dhffcaodkgemm
 			],
-			AssignEmbedInputModeWithin: [
-				...a.rows.AssignEmbedInputModeWithin,
-				...b.rows.AssignEmbedInputModeWithin
+			assign_embed_input_exclude_gcjikbkjkcefj: [
+				...a.rows.assign_embed_input_exclude_gcjikbkjkcefj,
+				...b.rows.assign_embed_input_exclude_gcjikbkjkcefj
 			],
-			AssignDecideInput: [...a.rows.AssignDecideInput, ...b.rows.AssignDecideInput],
-			AssignDecideInputExclude: [
-				...a.rows.AssignDecideInputExclude,
-				...b.rows.AssignDecideInputExclude
+			assign_embed_input_mode_nearest_bdiihcbmhfojp: [
+				...a.rows.assign_embed_input_mode_nearest_bdiihcbmhfojp,
+				...b.rows.assign_embed_input_mode_nearest_bdiihcbmhfojp
 			],
-			AssignDecideInputModeNearest: [
-				...a.rows.AssignDecideInputModeNearest,
-				...b.rows.AssignDecideInputModeNearest
+			assign_embed_input_mode_within_oiehjhalkkkfi: [
+				...a.rows.assign_embed_input_mode_within_oiehjhalkkkfi,
+				...b.rows.assign_embed_input_mode_within_oiehjhalkkkfi
 			],
-			AssignDecideInputModeWithin: [
-				...a.rows.AssignDecideInputModeWithin,
-				...b.rows.AssignDecideInputModeWithin
+			assign_decide_input_ffhdojphbdjfc: [
+				...a.rows.assign_decide_input_ffhdojphbdjfc,
+				...b.rows.assign_decide_input_ffhdojphbdjfc
 			],
-			AssignAsked: [...a.rows.AssignAsked, ...b.rows.AssignAsked]
+			assign_decide_input_exclude_bpjgmijefddch: [
+				...a.rows.assign_decide_input_exclude_bpjgmijefddch,
+				...b.rows.assign_decide_input_exclude_bpjgmijefddch
+			],
+			assign_decide_input_mode_nearest_ijgbegdphofca: [
+				...a.rows.assign_decide_input_mode_nearest_ijgbegdphofca,
+				...b.rows.assign_decide_input_mode_nearest_ijgbegdphofca
+			],
+			assign_decide_input_mode_within_fgbilcoafbdcg: [
+				...a.rows.assign_decide_input_mode_within_fgbilcoafbdcg,
+				...b.rows.assign_decide_input_mode_within_fgbilcoafbdcg
+			],
+			assign_asked_fobgfofknpfgd: [
+				...a.rows.assign_asked_fobgfofknpfgd,
+				...b.rows.assign_asked_fobgfofknpfgd
+			]
 		},
 		steps: [...a.steps, ...b.steps],
 		timed: [...a.timed, ...b.timed],
@@ -243,7 +272,7 @@ export const assignLedger = (h: AssignHandles) => {
 					rows: {
 						...noRows,
 						AssignStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-						AssignEmbedInput: [
+						assign_embed_input_kmlepfpdepkmo: [
 							{
 								step: key,
 								root: root,
@@ -252,23 +281,29 @@ export const assignLedger = (h: AssignHandles) => {
 								mode: spawn.input.mode._tag
 							}
 						],
-						AssignEmbedInputNear: Arr.map(spawn.input.near, (element, index) => ({
+						assign_embed_input_near_dhffcaodkgemm: Arr.map(spawn.input.near, (element, index) => ({
 							step: key,
 							root: root,
 							ordinal: BigInt(index),
 							value: element
 						})),
-						AssignEmbedInputExclude: Arr.map(spawn.input.exclude, (element, index) => ({
-							step: key,
-							root: root,
-							ordinal: BigInt(index),
-							value: element
-						})),
-						AssignEmbedInputModeNearest: Arr.flatMap([spawn.input.mode], (variant) =>
-							variant._tag === "Nearest" ? [{ step: key, root: root }] : []
+						assign_embed_input_exclude_gcjikbkjkcefj: Arr.map(
+							spawn.input.exclude,
+							(element, index) => ({
+								step: key,
+								root: root,
+								ordinal: BigInt(index),
+								value: element
+							})
 						),
-						AssignEmbedInputModeWithin: Arr.flatMap([spawn.input.mode], (variant) =>
-							variant._tag === "Within" ? [{ step: key, root: root, radius: variant.radius }] : []
+						assign_embed_input_mode_nearest_bdiihcbmhfojp: Arr.flatMap(
+							[spawn.input.mode],
+							(variant) => (variant._tag === "Nearest" ? [{ step: key, root: root }] : [])
+						),
+						assign_embed_input_mode_within_oiehjhalkkkfi: Arr.flatMap(
+							[spawn.input.mode],
+							(variant) =>
+								variant._tag === "Within" ? [{ step: key, root: root, radius: variant.radius }] : []
 						)
 					},
 					...spawnedOf(
@@ -280,31 +315,50 @@ export const assignLedger = (h: AssignHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readAssignEmbedInput = (root: Sha256, step: Sha256) =>
+	const readassign_embed_input_kmlepfpdepkmo = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.assignReadAssignEmbedInput.once({ params: { root, step }, facts: {} })),
+				settled(
+					h.den.assignReadassign_embed_input_kmlepfpdepkmo.once({
+						params: { root, step },
+						facts: {}
+					})
+				),
 				one
 			)
 			const family0 = yield* Effect.map(
-				settled(h.den.assignReadAssignEmbedInputNear.once({ params: { root, step }, facts: {} })),
+				settled(
+					h.den.assignReadassign_embed_input_near_dhffcaodkgemm.once({
+						params: { root, step },
+						facts: {}
+					})
+				),
 				rowsOf
 			)
 			const family1 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignEmbedInputExclude.once({ params: { root, step }, facts: {} })
+					h.den.assignReadassign_embed_input_exclude_gcjikbkjkcefj.once({
+						params: { root, step },
+						facts: {}
+					})
 				),
 				rowsOf
 			)
 			const variant0_0 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignEmbedInputModeNearest.once({ params: { root, step }, facts: {} })
+					h.den.assignReadassign_embed_input_mode_nearest_bdiihcbmhfojp.once({
+						params: { root, step },
+						facts: {}
+					})
 				),
 				one
 			)
 			const variant0_1 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignEmbedInputModeWithin.once({ params: { root, step }, facts: {} })
+					h.den.assignReadassign_embed_input_mode_within_oiehjhalkkkfi.once({
+						params: { root, step },
+						facts: {}
+					})
 				),
 				one
 			)
@@ -329,27 +383,41 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const readAssignDecideInput = (root: Sha256, step: Sha256) =>
+	const readassign_decide_input_ffhdojphbdjfc = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.assignReadAssignDecideInput.once({ params: { root, step }, facts: {} })),
+				settled(
+					h.den.assignReadassign_decide_input_ffhdojphbdjfc.once({
+						params: { root, step },
+						facts: {}
+					})
+				),
 				one
 			)
 			const family0 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignDecideInputExclude.once({ params: { root, step }, facts: {} })
+					h.den.assignReadassign_decide_input_exclude_bpjgmijefddch.once({
+						params: { root, step },
+						facts: {}
+					})
 				),
 				rowsOf
 			)
 			const variant0_0 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignDecideInputModeNearest.once({ params: { root, step }, facts: {} })
+					h.den.assignReadassign_decide_input_mode_nearest_ijgbegdphofca.once({
+						params: { root, step },
+						facts: {}
+					})
 				),
 				one
 			)
 			const variant0_1 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignDecideInputModeWithin.once({ params: { root, step }, facts: {} })
+					h.den.assignReadassign_decide_input_mode_within_fgbilcoafbdcg.once({
+						params: { root, step },
+						facts: {}
+					})
 				),
 				one
 			)
@@ -374,27 +442,38 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const readAssignAssignmentInput = (root: Sha256, scope: Sha256) =>
+	const readassign_assignment_input_kijoknpmnpomn = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.assignReadAssignAssignmentInput.once({ params: { root, scope }, facts: {} })),
+				settled(
+					h.den.assignReadassign_assignment_input_kijoknpmnpomn.once({
+						params: { root, scope },
+						facts: {}
+					})
+				),
 				one
 			)
 			const family0 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignAssignmentInputNear.once({ params: { root, scope }, facts: {} })
+					h.den.assignReadassign_assignment_input_near_acilimddcfjog.once({
+						params: { root, scope },
+						facts: {}
+					})
 				),
 				rowsOf
 			)
 			const family1 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignAssignmentInputExclude.once({ params: { root, scope }, facts: {} })
+					h.den.assignReadassign_assignment_input_exclude_paaebdpkimebl.once({
+						params: { root, scope },
+						facts: {}
+					})
 				),
 				rowsOf
 			)
 			const variant0_0 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignAssignmentInputModeNearest.once({
+					h.den.assignReadassign_assignment_input_mode_nearest_jdmfgbfmpepjd.once({
 						params: { root, scope },
 						facts: {}
 					})
@@ -403,7 +482,7 @@ export const assignLedger = (h: AssignHandles) => {
 			)
 			const variant0_1 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignAssignmentInputModeWithin.once({
+					h.den.assignReadassign_assignment_input_mode_within_iahlinklmdadj.once({
 						params: { root, scope },
 						facts: {}
 					})
@@ -475,7 +554,7 @@ export const assignLedger = (h: AssignHandles) => {
 							assignAssignmentScope: scope,
 							assignAssignmentKey: key,
 							assignAssignmentAssignScope: [{ scope, root: scope }],
-							assignAssignmentAssignAssignmentInput: [
+							assignAssignmentassign_assignment_input_kijoknpmnpomn: [
 								{
 									scope: scope,
 									root: scope,
@@ -484,13 +563,16 @@ export const assignLedger = (h: AssignHandles) => {
 									mode: input.mode._tag
 								}
 							],
-							assignAssignmentAssignAssignmentInputNear: Arr.map(input.near, (element, index) => ({
-								scope: scope,
-								root: scope,
-								ordinal: BigInt(index),
-								value: element
-							})),
-							assignAssignmentAssignAssignmentInputExclude: Arr.map(
+							assignAssignmentassign_assignment_input_near_acilimddcfjog: Arr.map(
+								input.near,
+								(element, index) => ({
+									scope: scope,
+									root: scope,
+									ordinal: BigInt(index),
+									value: element
+								})
+							),
+							assignAssignmentassign_assignment_input_exclude_paaebdpkimebl: Arr.map(
 								input.exclude,
 								(element, index) => ({
 									scope: scope,
@@ -499,11 +581,11 @@ export const assignLedger = (h: AssignHandles) => {
 									value: element
 								})
 							),
-							assignAssignmentAssignAssignmentInputModeNearest: Arr.flatMap(
+							assignAssignmentassign_assignment_input_mode_nearest_jdmfgbfmpepjd: Arr.flatMap(
 								[input.mode],
 								(variant) => (variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : [])
 							),
-							assignAssignmentAssignAssignmentInputModeWithin: Arr.flatMap(
+							assignAssignmentassign_assignment_input_mode_within_iahlinklmdadj: Arr.flatMap(
 								[input.mode],
 								(variant) =>
 									variant._tag === "Within"
@@ -524,10 +606,10 @@ export const assignLedger = (h: AssignHandles) => {
 												}
 											],
 											Arr.flatMap((row) => [
-												Result.succeed("AssignAssignmentInput"),
-												assignAssignmentInputTexts.learner(row.learner),
-												assignAssignmentInputTexts.topic(row.topic),
-												assignAssignmentInputTexts.mode(row.mode)
+												Result.succeed("assign_assignment_input_kijoknpmnpomn"),
+												assign_assignment_input_kijoknpmnpomnTexts.learner(row.learner),
+												assign_assignment_input_kijoknpmnpomnTexts.topic(row.topic),
+												assign_assignment_input_kijoknpmnpomnTexts.mode(row.mode)
 											])
 										),
 										...pipe(
@@ -538,9 +620,9 @@ export const assignLedger = (h: AssignHandles) => {
 												value: element
 											})),
 											Arr.flatMap((row) => [
-												Result.succeed("AssignAssignmentInputNear"),
-												assignAssignmentInputNearTexts.ordinal(row.ordinal),
-												assignAssignmentInputNearTexts.value(row.value)
+												Result.succeed("assign_assignment_input_near_acilimddcfjog"),
+												assign_assignment_input_near_acilimddcfjogTexts.ordinal(row.ordinal),
+												assign_assignment_input_near_acilimddcfjogTexts.value(row.value)
 											])
 										),
 										...pipe(
@@ -551,16 +633,16 @@ export const assignLedger = (h: AssignHandles) => {
 												value: element
 											})),
 											Arr.flatMap((row) => [
-												Result.succeed("AssignAssignmentInputExclude"),
-												assignAssignmentInputExcludeTexts.ordinal(row.ordinal),
-												assignAssignmentInputExcludeTexts.value(row.value)
+												Result.succeed("assign_assignment_input_exclude_paaebdpkimebl"),
+												assign_assignment_input_exclude_paaebdpkimeblTexts.ordinal(row.ordinal),
+												assign_assignment_input_exclude_paaebdpkimeblTexts.value(row.value)
 											])
 										),
 										...Arr.map(
 											Arr.flatMap([input.mode], (variant) =>
 												variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : []
 											),
-											() => Result.succeed("AssignAssignmentInputModeNearest")
+											() => Result.succeed("assign_assignment_input_mode_nearest_jdmfgbfmpepjd")
 										),
 										...pipe(
 											Arr.flatMap([input.mode], (variant) =>
@@ -569,8 +651,8 @@ export const assignLedger = (h: AssignHandles) => {
 													: []
 											),
 											Arr.flatMap((row) => [
-												Result.succeed("AssignAssignmentInputModeWithin"),
-												assignAssignmentInputModeWithinTexts.radius(row.radius)
+												Result.succeed("assign_assignment_input_mode_within_iahlinklmdadj"),
+												assign_assignment_input_mode_within_iahlinklmdadjTexts.radius(row.radius)
 											])
 										)
 									]),
@@ -594,7 +676,7 @@ export const assignLedger = (h: AssignHandles) => {
 		Embed: runnerOf(
 			assign.kinds[0],
 			{
-				input: ({ root, step }) => readAssignEmbedInput(root, step),
+				input: ({ root, step }) => readassign_embed_input_kmlepfpdepkmo(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -605,7 +687,7 @@ export const assignLedger = (h: AssignHandles) => {
 										pipe(edgeStep(done.turn.step, "Asked", ordinal), (key): Grown => ({
 											rows: {
 												...noRows,
-												AssignAsked: [
+												assign_asked_fobgfofknpfgd: [
 													{
 														from: done.turn.step,
 														ordinal: BigInt(ordinal),
@@ -613,7 +695,7 @@ export const assignLedger = (h: AssignHandles) => {
 														root: done.turn.root
 													}
 												],
-												AssignDecideInput: [
+												assign_decide_input_ffhdojphbdjfc: [
 													{
 														step: key,
 														root: done.turn.root,
@@ -623,19 +705,26 @@ export const assignLedger = (h: AssignHandles) => {
 														mode: input.mode._tag
 													}
 												],
-												AssignDecideInputExclude: Arr.map(input.exclude, (element, index) => ({
-													step: key,
-													root: done.turn.root,
-													ordinal: BigInt(index),
-													value: element
-												})),
-												AssignDecideInputModeNearest: Arr.flatMap([input.mode], (variant) =>
-													variant._tag === "Nearest" ? [{ step: key, root: done.turn.root }] : []
+												assign_decide_input_exclude_bpjgmijefddch: Arr.map(
+													input.exclude,
+													(element, index) => ({
+														step: key,
+														root: done.turn.root,
+														ordinal: BigInt(index),
+														value: element
+													})
 												),
-												AssignDecideInputModeWithin: Arr.flatMap([input.mode], (variant) =>
-													variant._tag === "Within"
-														? [{ step: key, root: done.turn.root, radius: variant.radius }]
-														: []
+												assign_decide_input_mode_nearest_ijgbegdphofca: Arr.flatMap(
+													[input.mode],
+													(variant) =>
+														variant._tag === "Nearest" ? [{ step: key, root: done.turn.root }] : []
+												),
+												assign_decide_input_mode_within_fgbilcoafbdcg: Arr.flatMap(
+													[input.mode],
+													(variant) =>
+														variant._tag === "Within"
+															? [{ step: key, root: done.turn.root, radius: variant.radius }]
+															: []
 												)
 											},
 											...spawnedOf(
@@ -662,7 +751,7 @@ export const assignLedger = (h: AssignHandles) => {
 										AssignHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										AssignEmbedOutput: [
+										assign_embed_output_ghdpbieopfmkd: [
 											{ step: done.turn.step, root: done.turn.root, vector: done.output.vector }
 										]
 									}
@@ -678,7 +767,7 @@ export const assignLedger = (h: AssignHandles) => {
 		Decide: runnerOf(
 			assign.kinds[1],
 			{
-				input: ({ root, step }) => readAssignDecideInput(root, step),
+				input: ({ root, step }) => readassign_decide_input_ffhdojphbdjfc(root, step),
 				read: (input) =>
 					Effect.flatMap(
 						settled(
@@ -693,7 +782,7 @@ export const assignLedger = (h: AssignHandles) => {
 					Effect.gen(function* () {
 						const grown = nothingGrown
 						const recordedNearest = yield* Effect.forEach(done.rows.nearest, (row) =>
-							Effect.map(AssignDecideReadNearestText(row), (text) => ({
+							Effect.map(assign_decide_read_nearest_mlemoegfgpbbiText(row), (text) => ({
 								row,
 								digest: rowDigest("nearest", text)
 							}))
@@ -702,7 +791,7 @@ export const assignLedger = (h: AssignHandles) => {
 							Sha256.equals(a.digest, b.digest)
 						)
 						const recordedSeen = yield* Effect.forEach(done.rows.seen, (row) =>
-							Effect.map(AssignDecideReadSeenText(row), (text) => ({
+							Effect.map(assign_decide_read_seen_oahojgbpphbooText(row), (text) => ({
 								row,
 								digest: rowDigest("seen", text)
 							}))
@@ -723,7 +812,7 @@ export const assignLedger = (h: AssignHandles) => {
 											AssignHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											AssignDecideOutput: [
+											assign_decide_output_fkgbaoobeoima: [
 												{
 													step: done.turn.step,
 													root: done.turn.root,
@@ -731,61 +820,74 @@ export const assignLedger = (h: AssignHandles) => {
 													stage: done.output.stage._tag
 												}
 											],
-											AssignDecideOutputWeighed: Arr.map(done.output.weighed, (element, index) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(index),
-												passage: element.passage,
-												distance: element.distance,
-												passed: element.passed
-											})),
-											AssignDecideOutputStageServe: Arr.flatMap([done.output.stage], (variant) =>
-												variant._tag === "Serve"
-													? [
-															{
-																step: done.turn.step,
-																root: done.turn.root,
-																passage: variant.passage,
-																distance: variant.distance
-															}
-														]
-													: []
+											assign_decide_output_weighed_gpdibcghlfbhb: Arr.map(
+												done.output.weighed,
+												(element, index) => ({
+													step: done.turn.step,
+													root: done.turn.root,
+													ordinal: BigInt(index),
+													passage: element.passage,
+													distance: element.distance,
+													passed: element.passed
+												})
 											),
-											AssignDecideOutputStageRest: Arr.flatMap([done.output.stage], (variant) =>
-												variant._tag === "Rest"
-													? [{ step: done.turn.step, root: done.turn.root }]
-													: []
+											assign_decide_output_stage_serve_chfjeagmkjoef: Arr.flatMap(
+												[done.output.stage],
+												(variant) =>
+													variant._tag === "Serve"
+														? [
+																{
+																	step: done.turn.step,
+																	root: done.turn.root,
+																	passage: variant.passage,
+																	distance: variant.distance
+																}
+															]
+														: []
+											),
+											assign_decide_output_stage_rest_gohjkdlkfnkca: Arr.flatMap(
+												[done.output.stage],
+												(variant) =>
+													variant._tag === "Rest"
+														? [{ step: done.turn.step, root: done.turn.root }]
+														: []
 											),
 											...recordsFacts(
 												assignGraph,
-												AssignDecideReadNearestRecords
+												assign_decide_read_nearest_mlemoegfgpbbiRecords
 											)(
 												Arr.map(
 													uniqueNearest,
 													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
-											AssignDecideReadNearest: Arr.map(recordedNearest, (found, ordinal) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal),
-												digest: found.digest
-											})),
+											assign_decide_read_nearest_mlemoegfgpbbi: Arr.map(
+												recordedNearest,
+												(found, ordinal) => ({
+													step: done.turn.step,
+													root: done.turn.root,
+													ordinal: BigInt(ordinal),
+													digest: found.digest
+												})
+											),
 											...recordsFacts(
 												assignGraph,
-												AssignDecideReadSeenRecords
+												assign_decide_read_seen_oahojgbpphbooRecords
 											)(
 												Arr.map(
 													uniqueSeen,
 													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
-											AssignDecideReadSeen: Arr.map(recordedSeen, (found, ordinal) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal),
-												digest: found.digest
-											}))
+											assign_decide_read_seen_oahojgbpphboo: Arr.map(
+												recordedSeen,
+												(found, ordinal) => ({
+													step: done.turn.step,
+													root: done.turn.root,
+													ordinal: BigInt(ordinal),
+													digest: found.digest
+												})
+											)
 										}
 									},
 									done.writes.facts
@@ -821,7 +923,7 @@ export const assignLedger = (h: AssignHandles) => {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readAssignAssignmentInput(root, scope)
+						const input = yield* readassign_assignment_input_kijoknpmnpomn(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -1005,7 +1107,9 @@ export const assignLedger = (h: AssignHandles) => {
 											AssignHeld: [
 												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 											],
-											AssignAssignmentFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+											assign_assignment_finish_output_dehjnhpeahpgb: [
+												{ step: done.turn.step, root: done.turn.root }
+											]
 										}
 									},
 									done.writes.facts
@@ -1025,7 +1129,7 @@ export const assignLedger = (h: AssignHandles) => {
 			precondition: assign.kinds[2].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readAssignAssignmentInput(scope, scope)
+					const input = yield* readassign_assignment_input_kijoknpmnpomn(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1050,15 +1154,22 @@ export const assignLedger = (h: AssignHandles) => {
 								insert: {
 									AssignScope: grown.rows.AssignScope,
 									AssignStartStep: grown.rows.AssignStartStep,
-									AssignEmbedInput: grown.rows.AssignEmbedInput,
-									AssignEmbedInputNear: grown.rows.AssignEmbedInputNear,
-									AssignEmbedInputExclude: grown.rows.AssignEmbedInputExclude,
-									AssignEmbedInputModeNearest: grown.rows.AssignEmbedInputModeNearest,
-									AssignEmbedInputModeWithin: grown.rows.AssignEmbedInputModeWithin,
-									AssignDecideInput: grown.rows.AssignDecideInput,
-									AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
-									AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
-									AssignDecideInputModeWithin: grown.rows.AssignDecideInputModeWithin,
+									assign_embed_input_kmlepfpdepkmo: grown.rows.assign_embed_input_kmlepfpdepkmo,
+									assign_embed_input_near_dhffcaodkgemm:
+										grown.rows.assign_embed_input_near_dhffcaodkgemm,
+									assign_embed_input_exclude_gcjikbkjkcefj:
+										grown.rows.assign_embed_input_exclude_gcjikbkjkcefj,
+									assign_embed_input_mode_nearest_bdiihcbmhfojp:
+										grown.rows.assign_embed_input_mode_nearest_bdiihcbmhfojp,
+									assign_embed_input_mode_within_oiehjhalkkkfi:
+										grown.rows.assign_embed_input_mode_within_oiehjhalkkkfi,
+									assign_decide_input_ffhdojphbdjfc: grown.rows.assign_decide_input_ffhdojphbdjfc,
+									assign_decide_input_exclude_bpjgmijefddch:
+										grown.rows.assign_decide_input_exclude_bpjgmijefddch,
+									assign_decide_input_mode_nearest_ijgbegdphofca:
+										grown.rows.assign_decide_input_mode_nearest_ijgbegdphofca,
+									assign_decide_input_mode_within_fgbilcoafbdcg:
+										grown.rows.assign_decide_input_mode_within_fgbilcoafbdcg,
 									AssignAdmitted: admitted,
 									AssignFinish: finishes
 								}
@@ -1081,7 +1192,10 @@ export const assignLedger = (h: AssignHandles) => {
 		reading: (environment) =>
 			Effect.flatMap(
 				settled(
-					h.den.assignReading.once({ params: { "serving.environment": environment }, facts: {} })
+					h.den.assignReading.once({
+						params: { "serving.environment": mintEnvironment(environment) },
+						facts: {}
+					})
 				),
 				(rows) =>
 					Effect.flatMap(only(rows), (row) =>
@@ -1095,7 +1209,7 @@ export const assignLedger = (h: AssignHandles) => {
 			Effect.asVoid(
 				settled(
 					h.coordinator.assignPromote.once({
-						params: { environment: host.environment, deployment: host.deployment },
+						params: { environment: mintEnvironment(host.environment), deployment: host.deployment },
 						facts: {}
 					})
 				)

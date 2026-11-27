@@ -142,76 +142,79 @@ export const FanExhausted = relation("FanExhausted", { root: sha256, step: sha25
 	"root",
 	"step"
 ])
-export const FanSquareInput = relation(
-	"FanSquareInput",
+export const fan_square_input_ifddbjkaokoig = relation(
+	"fan_square_input_ifddbjkaokoig",
 	{ root: sha256, step: sha256, batch: Text, n: pg.bigint },
 	["root", "step"]
 )
-export const FanDustInput = relation("FanDustInput", { root: sha256, step: sha256, sweep: Text }, [
-	"root",
-	"step"
-])
-export const FanMopInput = relation("FanMopInput", { root: sha256, step: sha256, sweep: Text }, [
-	"root",
-	"step"
-])
-export const FanBatchInput = relation(
-	"FanBatchInput",
+export const fan_dust_input_lelfhikaelkja = relation(
+	"fan_dust_input_lelfhikaelkja",
+	{ root: sha256, step: sha256, sweep: Text },
+	["root", "step"]
+)
+export const fan_mop_input_ngghbiaegmghl = relation(
+	"fan_mop_input_ngghbiaegmghl",
+	{ root: sha256, step: sha256, sweep: Text },
+	["root", "step"]
+)
+export const fan_batch_input_hjhhnklpfiilh = relation(
+	"fan_batch_input_hjhhnklpfiilh",
 	{ root: sha256, scope: sha256, batch: Text, size: pg.bigint },
 	["root", "scope"]
 )
-export const FanFanRunInput = relation(
-	"FanFanRunInput",
+export const fan_fan_run_input_bghibckinpfgk = relation(
+	"fan_fan_run_input_bghibckinpfgk",
 	{ root: sha256, scope: sha256, batch: Text, size: pg.bigint },
 	["root", "scope"]
 )
-export const FanSweepInput = relation(
-	"FanSweepInput",
+export const fan_sweep_input_bnmfcblhkahec = relation(
+	"fan_sweep_input_bnmfcblhkahec",
 	{ root: sha256, scope: sha256, sweep: Text },
 	["root", "scope"]
 )
-export const FanWantedInput = relation(
-	"FanWantedInput",
+export const fan_wanted_input_nfecjpihiaope = relation(
+	"fan_wanted_input_nfecjpihiaope",
 	{ root: sha256, scope: sha256, batch: Text, size: pg.bigint },
 	["root", "scope"]
 )
-export const FanWantedKey = relation.generated(
-	"FanWantedKey",
+export const fan_wanted_key_ldjmcglkghhjb = relation.generated(
+	"fan_wanted_key_ldjmcglkghhjb",
 	{ root: sha256, batch: Text },
 	["root"],
 	(row) => ({ batchDigest: generated(sha256, Crypto.sha256(row.batch)) })
 )
-export const FanSquareOutput = relation(
-	"FanSquareOutput",
+export const fan_square_output_gofcfljmlelgo = relation(
+	"fan_square_output_gofcfljmlelgo",
 	{ root: sha256, step: sha256, square: pg.bigint },
 	["root", "step"]
 )
-export const FanDustOutput = relation(
-	"FanDustOutput",
+export const fan_dust_output_pgpcjjjdmhkim = relation(
+	"fan_dust_output_pgpcjjjdmhkim",
 	{ root: sha256, step: sha256, sweep: Text },
 	["root", "step"]
 )
-export const FanMopOutput = relation("FanMopOutput", { root: sha256, step: sha256, sweep: Text }, [
-	"root",
-	"step"
-])
-export const FanBatchFinishOutput = relation(
-	"FanBatchFinishOutput",
+export const fan_mop_output_okmfngilefbec = relation(
+	"fan_mop_output_okmfngilefbec",
+	{ root: sha256, step: sha256, sweep: Text },
+	["root", "step"]
+)
+export const fan_batch_finish_output_djinnhndkglgj = relation(
+	"fan_batch_finish_output_djinnhndkglgj",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
-export const FanFanRunFinishOutput = relation(
-	"FanFanRunFinishOutput",
+export const fan_fan_run_finish_output_kcmicfckgdcip = relation(
+	"fan_fan_run_finish_output_kcmicfckgdcip",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
-export const FanSweepFinishOutput = relation(
-	"FanSweepFinishOutput",
+export const fan_sweep_finish_output_nebomlkgaabji = relation(
+	"fan_sweep_finish_output_nebomlkgaabji",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
-export const FanWantedFinishOutput = relation(
-	"FanWantedFinishOutput",
+export const fan_wanted_finish_output_lmjmjmcffnbda = relation(
+	"fan_wanted_finish_output_lmjmjmcffnbda",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
@@ -282,21 +285,21 @@ export const fanGraph = fragment(
 		FanHeld,
 		FanRefusal,
 		FanExhausted,
-		FanSquareInput,
-		FanDustInput,
-		FanMopInput,
-		FanBatchInput,
-		FanFanRunInput,
-		FanSweepInput,
-		FanWantedInput,
-		FanWantedKey,
-		FanSquareOutput,
-		FanDustOutput,
-		FanMopOutput,
-		FanBatchFinishOutput,
-		FanFanRunFinishOutput,
-		FanSweepFinishOutput,
-		FanWantedFinishOutput,
+		fan_square_input_ifddbjkaokoig,
+		fan_dust_input_lelfhikaelkja,
+		fan_mop_input_ngghbiaegmghl,
+		fan_batch_input_hjhhnklpfiilh,
+		fan_fan_run_input_bghibckinpfgk,
+		fan_sweep_input_bnmfcblhkahec,
+		fan_wanted_input_nfecjpihiaope,
+		fan_wanted_key_ldjmcglkghhjb,
+		fan_square_output_gofcfljmlelgo,
+		fan_dust_output_pgpcjjjdmhkim,
+		fan_mop_output_okmfngilefbec,
+		fan_batch_finish_output_djinnhndkglgj,
+		fan_fan_run_finish_output_kcmicfckgdcip,
+		fan_sweep_finish_output_nebomlkgaabji,
+		fan_wanted_finish_output_lmjmjmcffnbda,
 		FanHold
 	],
 	[
@@ -369,7 +372,7 @@ export const fanGraph = fragment(
 			on(FanRequestedWith, "root")
 		),
 		contained(
-			on(FanSquareInput, "root", "step"),
+			on(fan_square_input_ifddbjkaokoig, "root", "step"),
 			on(
 				select(FanStep, (row) => row.eq(row.kind, "Square")),
 				"root",
@@ -377,7 +380,7 @@ export const fanGraph = fragment(
 			)
 		),
 		contained(
-			on(FanDustInput, "root", "step"),
+			on(fan_dust_input_lelfhikaelkja, "root", "step"),
 			on(
 				select(FanStep, (row) => row.eq(row.kind, "Dust")),
 				"root",
@@ -385,7 +388,7 @@ export const fanGraph = fragment(
 			)
 		),
 		contained(
-			on(FanMopInput, "root", "step"),
+			on(fan_mop_input_ngghbiaegmghl, "root", "step"),
 			on(
 				select(FanStep, (row) => row.eq(row.kind, "Mop")),
 				"root",
@@ -393,7 +396,7 @@ export const fanGraph = fragment(
 			)
 		),
 		contained(
-			on(FanBatchInput, "root", "scope"),
+			on(fan_batch_input_hjhhnklpfiilh, "root", "scope"),
 			on(
 				select(FanWithin, (row) => row.eq(row.kind, "Batch")),
 				"root",
@@ -401,29 +404,29 @@ export const fanGraph = fragment(
 			)
 		),
 		contained(
-			on(FanFanRunInput, "scope"),
+			on(fan_fan_run_input_bghibckinpfgk, "scope"),
 			on(
 				select(FanRoot, (row) => row.eq(row.kind, "FanRun")),
 				"root"
 			)
 		),
 		contained(
-			on(FanSweepInput, "scope"),
+			on(fan_sweep_input_bnmfcblhkahec, "scope"),
 			on(
 				select(FanRoot, (row) => row.eq(row.kind, "Sweep")),
 				"root"
 			)
 		),
 		contained(
-			on(FanWantedInput, "scope"),
+			on(fan_wanted_input_nfecjpihiaope, "scope"),
 			on(
 				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
 				"root"
 			)
 		),
-		key(on(FanWantedKey, "batchDigest")),
+		key(on(fan_wanted_key_ldjmcglkghhjb, "batchDigest")),
 		contained(
-			on(FanWantedKey, "root"),
+			on(fan_wanted_key_ldjmcglkghhjb, "root"),
 			on(
 				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
 				"root"
@@ -434,18 +437,39 @@ export const fanGraph = fragment(
 				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
 				"root"
 			),
-			on(FanWantedKey, "root")
+			on(fan_wanted_key_ldjmcglkghhjb, "root")
 		),
-		contained(on(FanSquareOutput, "root", "step"), on(FanSquareInput, "root", "step")),
-		contained(on(FanSquareOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanDustOutput, "root", "step"), on(FanDustInput, "root", "step")),
-		contained(on(FanDustOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanMopOutput, "root", "step"), on(FanMopInput, "root", "step")),
-		contained(on(FanMopOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanBatchFinishOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanFanRunFinishOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanSweepFinishOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanWantedFinishOutput, "root", "step"), on(FanDone, "root", "step")),
+		contained(
+			on(fan_square_output_gofcfljmlelgo, "root", "step"),
+			on(fan_square_input_ifddbjkaokoig, "root", "step")
+		),
+		contained(on(fan_square_output_gofcfljmlelgo, "root", "step"), on(FanDone, "root", "step")),
+		contained(
+			on(fan_dust_output_pgpcjjjdmhkim, "root", "step"),
+			on(fan_dust_input_lelfhikaelkja, "root", "step")
+		),
+		contained(on(fan_dust_output_pgpcjjjdmhkim, "root", "step"), on(FanDone, "root", "step")),
+		contained(
+			on(fan_mop_output_okmfngilefbec, "root", "step"),
+			on(fan_mop_input_ngghbiaegmghl, "root", "step")
+		),
+		contained(on(fan_mop_output_okmfngilefbec, "root", "step"), on(FanDone, "root", "step")),
+		contained(
+			on(fan_batch_finish_output_djinnhndkglgj, "root", "step"),
+			on(FanDone, "root", "step")
+		),
+		contained(
+			on(fan_fan_run_finish_output_kcmicfckgdcip, "root", "step"),
+			on(FanDone, "root", "step")
+		),
+		contained(
+			on(fan_sweep_finish_output_nebomlkgaabji, "root", "step"),
+			on(FanDone, "root", "step")
+		),
+		contained(
+			on(fan_wanted_finish_output_lmjmjmcffnbda, "root", "step"),
+			on(FanDone, "root", "step")
+		),
 		unit("FanSeat", { resource: closedId(FanResource) }),
 		ordered(on(FanHold, "root", "step", "attempt", "at"), fin(FanClaim, "holds")),
 		mutable(FanHold),
@@ -482,34 +506,46 @@ export const fanGraph = fragment(
 		mutable(FanRefusal),
 		contained(on(FanExhausted, "root", "step"), on(FanStep, "root", "step")),
 		mutable(FanExhausted),
-		contained(on(FanSquareInput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanSquareInput),
-		contained(on(FanDustInput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanDustInput),
-		contained(on(FanMopInput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanMopInput),
-		contained(on(FanBatchInput, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanBatchInput),
-		contained(on(FanFanRunInput, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanFanRunInput),
-		contained(on(FanSweepInput, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanSweepInput),
-		contained(on(FanWantedInput, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanWantedInput),
-		contained(on(FanSquareOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanSquareOutput),
-		contained(on(FanDustOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanDustOutput),
-		contained(on(FanMopOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanMopOutput),
-		contained(on(FanBatchFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanBatchFinishOutput),
-		contained(on(FanFanRunFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanFanRunFinishOutput),
-		contained(on(FanSweepFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanSweepFinishOutput),
-		contained(on(FanWantedFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanWantedFinishOutput)
+		contained(on(fan_square_input_ifddbjkaokoig, "root", "step"), on(FanStep, "root", "step")),
+		mutable(fan_square_input_ifddbjkaokoig),
+		contained(on(fan_dust_input_lelfhikaelkja, "root", "step"), on(FanStep, "root", "step")),
+		mutable(fan_dust_input_lelfhikaelkja),
+		contained(on(fan_mop_input_ngghbiaegmghl, "root", "step"), on(FanStep, "root", "step")),
+		mutable(fan_mop_input_ngghbiaegmghl),
+		contained(on(fan_batch_input_hjhhnklpfiilh, "root", "scope"), on(FanScope, "root", "scope")),
+		mutable(fan_batch_input_hjhhnklpfiilh),
+		contained(on(fan_fan_run_input_bghibckinpfgk, "root", "scope"), on(FanScope, "root", "scope")),
+		mutable(fan_fan_run_input_bghibckinpfgk),
+		contained(on(fan_sweep_input_bnmfcblhkahec, "root", "scope"), on(FanScope, "root", "scope")),
+		mutable(fan_sweep_input_bnmfcblhkahec),
+		contained(on(fan_wanted_input_nfecjpihiaope, "root", "scope"), on(FanScope, "root", "scope")),
+		mutable(fan_wanted_input_nfecjpihiaope),
+		contained(on(fan_square_output_gofcfljmlelgo, "root", "step"), on(FanStep, "root", "step")),
+		mutable(fan_square_output_gofcfljmlelgo),
+		contained(on(fan_dust_output_pgpcjjjdmhkim, "root", "step"), on(FanStep, "root", "step")),
+		mutable(fan_dust_output_pgpcjjjdmhkim),
+		contained(on(fan_mop_output_okmfngilefbec, "root", "step"), on(FanStep, "root", "step")),
+		mutable(fan_mop_output_okmfngilefbec),
+		contained(
+			on(fan_batch_finish_output_djinnhndkglgj, "root", "step"),
+			on(FanStep, "root", "step")
+		),
+		mutable(fan_batch_finish_output_djinnhndkglgj),
+		contained(
+			on(fan_fan_run_finish_output_kcmicfckgdcip, "root", "step"),
+			on(FanStep, "root", "step")
+		),
+		mutable(fan_fan_run_finish_output_kcmicfckgdcip),
+		contained(
+			on(fan_sweep_finish_output_nebomlkgaabji, "root", "step"),
+			on(FanStep, "root", "step")
+		),
+		mutable(fan_sweep_finish_output_nebomlkgaabji),
+		contained(
+			on(fan_wanted_finish_output_lmjmjmcffnbda, "root", "step"),
+			on(FanStep, "root", "step")
+		),
+		mutable(fan_wanted_finish_output_lmjmjmcffnbda)
 	]
 )
 
@@ -571,16 +607,16 @@ export const fanWriter = [
 	"FanResult",
 	"FanDone",
 	"FanHeld",
-	"FanSquareOutput",
-	"FanDustOutput",
-	"FanMopOutput",
-	"FanBatchFinishOutput",
-	"FanFanRunFinishOutput",
-	"FanSweepFinishOutput",
-	"FanWantedFinishOutput",
+	"fan_square_output_gofcfljmlelgo",
+	"fan_dust_output_pgpcjjjdmhkim",
+	"fan_mop_output_okmfngilefbec",
+	"fan_batch_finish_output_djinnhndkglgj",
+	"fan_fan_run_finish_output_kcmicfckgdcip",
+	"fan_sweep_finish_output_nebomlkgaabji",
+	"fan_wanted_finish_output_lmjmjmcffnbda",
 	"FanScope",
 	"FanExclusiveKey",
-	"FanWantedKey",
-	"FanWantedInput",
+	"fan_wanted_key_ldjmcglkghhjb",
+	"fan_wanted_input_nfecjpihiaope",
 	"FanRoot"
 ] as const

@@ -314,9 +314,10 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 	kills: [
 		{
 			file: "packages/den/integration/slice/generated/assign.binding.ts",
-			original: "AssignDecideReadNearest: Arr.map(recordedNearest, (found, ordinal) => ({",
+			original:
+				"assign_decide_read_nearest_mlemoegfgpbbi: Arr.map(\n\t\t\t\t\t\t\t\t\t\t\t\trecordedNearest,",
 			replacement:
-				"AssignDecideReadNearest: Arr.map(Arr.take(recordedNearest, 1), (found, ordinal) => ({",
+				"assign_decide_read_nearest_mlemoegfgpbbi: Arr.map(\n\t\t\t\t\t\t\t\t\t\t\t\tArr.take(recordedNearest, 1),",
 			why: "the binding records only the first passage the nearest read found, so the record is no longer what the body saw"
 		}
 	]

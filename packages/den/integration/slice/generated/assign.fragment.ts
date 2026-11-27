@@ -28,19 +28,22 @@ export const AssignRootKind = closed.unordered("AssignRootKind", ["Assignment"])
 export const AssignOutcome = closed.unordered("AssignOutcome", ["done", "failed"])
 export const AssignRetryWhy = closed.unordered("AssignRetryWhy", ["spent", "transient", "later"])
 export const AssignPausable = closed.unordered("AssignPausable", ["Assignment"])
-export const AssignEmbedInputMode = closed.unordered("AssignEmbedInputMode", ["Nearest", "Within"])
-export const AssignDecideInputMode = closed.unordered("AssignDecideInputMode", [
-	"Nearest",
-	"Within"
-])
-export const AssignAssignmentInputMode = closed.unordered("AssignAssignmentInputMode", [
-	"Nearest",
-	"Within"
-])
-export const AssignDecideOutputStage = closed.unordered("AssignDecideOutputStage", [
-	"Serve",
-	"Rest"
-])
+export const assign_embed_input_mode_pblkjdhncepei = closed.unordered(
+	"assign_embed_input_mode_pblkjdhncepei",
+	["Nearest", "Within"]
+)
+export const assign_decide_input_mode_beoibaghjodnf = closed.unordered(
+	"assign_decide_input_mode_beoibaghjodnf",
+	["Nearest", "Within"]
+)
+export const assign_assignment_input_mode_pgalmghonldnf = closed.unordered(
+	"assign_assignment_input_mode_pgalmghonldnf",
+	["Nearest", "Within"]
+)
+export const assign_decide_output_stage_bjoijbfcegdbp = closed.unordered(
+	"assign_decide_output_stage_bjoijbfcegdbp",
+	["Serve", "Rest"]
+)
 
 export const AssignScope = relation("AssignScope", { root: sha256, scope: sha256 }, [
 	"root",
@@ -122,106 +125,112 @@ export const AssignExhausted = relation("AssignExhausted", { root: sha256, step:
 	"root",
 	"step"
 ])
-export const AssignEmbedInput = relation(
-	"AssignEmbedInput",
-	{ root: sha256, step: sha256, learner: Text, topic: Text, mode: closedId(AssignEmbedInputMode) },
+export const assign_embed_input_kmlepfpdepkmo = relation(
+	"assign_embed_input_kmlepfpdepkmo",
+	{
+		root: sha256,
+		step: sha256,
+		learner: Text,
+		topic: Text,
+		mode: closedId(assign_embed_input_mode_pblkjdhncepei)
+	},
 	["root", "step"]
 )
-export const AssignEmbedInputNear = relation(
-	"AssignEmbedInputNear",
+export const assign_embed_input_near_dhffcaodkgemm = relation(
+	"assign_embed_input_near_dhffcaodkgemm",
 	{ root: sha256, step: sha256, ordinal: natural, value: pg["double precision"] },
 	["root", "step", "ordinal"]
 )
-export const AssignEmbedInputExclude = relation(
-	"AssignEmbedInputExclude",
+export const assign_embed_input_exclude_gcjikbkjkcefj = relation(
+	"assign_embed_input_exclude_gcjikbkjkcefj",
 	{ root: sha256, step: sha256, ordinal: natural, value: Text },
 	["root", "step", "ordinal"]
 )
-export const AssignEmbedInputModeNearest = relation(
-	"AssignEmbedInputModeNearest",
+export const assign_embed_input_mode_nearest_bdiihcbmhfojp = relation(
+	"assign_embed_input_mode_nearest_bdiihcbmhfojp",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
-export const AssignEmbedInputModeWithin = relation(
-	"AssignEmbedInputModeWithin",
+export const assign_embed_input_mode_within_oiehjhalkkkfi = relation(
+	"assign_embed_input_mode_within_oiehjhalkkkfi",
 	{ root: sha256, step: sha256, radius: pg["double precision"] },
 	["root", "step"]
 )
-export const AssignDecideInput = relation(
-	"AssignDecideInput",
+export const assign_decide_input_ffhdojphbdjfc = relation(
+	"assign_decide_input_ffhdojphbdjfc",
 	{
 		root: sha256,
 		step: sha256,
 		learner: Text,
 		topic: Text,
 		vector: pg.vector(4),
-		mode: closedId(AssignDecideInputMode)
+		mode: closedId(assign_decide_input_mode_beoibaghjodnf)
 	},
 	["root", "step"]
 )
-export const AssignDecideInputExclude = relation(
-	"AssignDecideInputExclude",
+export const assign_decide_input_exclude_bpjgmijefddch = relation(
+	"assign_decide_input_exclude_bpjgmijefddch",
 	{ root: sha256, step: sha256, ordinal: natural, value: Text },
 	["root", "step", "ordinal"]
 )
-export const AssignDecideInputModeNearest = relation(
-	"AssignDecideInputModeNearest",
+export const assign_decide_input_mode_nearest_ijgbegdphofca = relation(
+	"assign_decide_input_mode_nearest_ijgbegdphofca",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
-export const AssignDecideInputModeWithin = relation(
-	"AssignDecideInputModeWithin",
+export const assign_decide_input_mode_within_fgbilcoafbdcg = relation(
+	"assign_decide_input_mode_within_fgbilcoafbdcg",
 	{ root: sha256, step: sha256, radius: pg["double precision"] },
 	["root", "step"]
 )
-export const AssignAssignmentInput = relation(
-	"AssignAssignmentInput",
+export const assign_assignment_input_kijoknpmnpomn = relation(
+	"assign_assignment_input_kijoknpmnpomn",
 	{
 		root: sha256,
 		scope: sha256,
 		learner: Text,
 		topic: Text,
-		mode: closedId(AssignAssignmentInputMode)
+		mode: closedId(assign_assignment_input_mode_pgalmghonldnf)
 	},
 	["root", "scope"]
 )
-export const AssignAssignmentInputNear = relation(
-	"AssignAssignmentInputNear",
+export const assign_assignment_input_near_acilimddcfjog = relation(
+	"assign_assignment_input_near_acilimddcfjog",
 	{ root: sha256, scope: sha256, ordinal: natural, value: pg["double precision"] },
 	["root", "scope", "ordinal"]
 )
-export const AssignAssignmentInputExclude = relation(
-	"AssignAssignmentInputExclude",
+export const assign_assignment_input_exclude_paaebdpkimebl = relation(
+	"assign_assignment_input_exclude_paaebdpkimebl",
 	{ root: sha256, scope: sha256, ordinal: natural, value: Text },
 	["root", "scope", "ordinal"]
 )
-export const AssignAssignmentInputModeNearest = relation(
-	"AssignAssignmentInputModeNearest",
+export const assign_assignment_input_mode_nearest_jdmfgbfmpepjd = relation(
+	"assign_assignment_input_mode_nearest_jdmfgbfmpepjd",
 	{ root: sha256, scope: sha256 },
 	["root", "scope"]
 )
-export const AssignAssignmentInputModeWithin = relation(
-	"AssignAssignmentInputModeWithin",
+export const assign_assignment_input_mode_within_iahlinklmdadj = relation(
+	"assign_assignment_input_mode_within_iahlinklmdadj",
 	{ root: sha256, scope: sha256, radius: pg["double precision"] },
 	["root", "scope"]
 )
-export const AssignEmbedOutput = relation(
-	"AssignEmbedOutput",
+export const assign_embed_output_ghdpbieopfmkd = relation(
+	"assign_embed_output_ghdpbieopfmkd",
 	{ root: sha256, step: sha256, vector: pg.vector(4) },
 	["root", "step"]
 )
-export const AssignDecideOutput = relation(
-	"AssignDecideOutput",
+export const assign_decide_output_fkgbaoobeoima = relation(
+	"assign_decide_output_fkgbaoobeoima",
 	{
 		root: sha256,
 		step: sha256,
 		confidence: pg["double precision"],
-		stage: closedId(AssignDecideOutputStage)
+		stage: closedId(assign_decide_output_stage_bjoijbfcegdbp)
 	},
 	["root", "step"]
 )
-export const AssignDecideOutputWeighed = relation(
-	"AssignDecideOutputWeighed",
+export const assign_decide_output_weighed_gpdibcghlfbhb = relation(
+	"assign_decide_output_weighed_gpdibcghlfbhb",
 	{
 		root: sha256,
 		step: sha256,
@@ -232,33 +241,33 @@ export const AssignDecideOutputWeighed = relation(
 	},
 	["root", "step", "ordinal"]
 )
-export const AssignDecideOutputStageServe = relation(
-	"AssignDecideOutputStageServe",
+export const assign_decide_output_stage_serve_chfjeagmkjoef = relation(
+	"assign_decide_output_stage_serve_chfjeagmkjoef",
 	{ root: sha256, step: sha256, passage: Text, distance: pg["double precision"] },
 	["root", "step"]
 )
-export const AssignDecideOutputStageRest = relation(
-	"AssignDecideOutputStageRest",
+export const assign_decide_output_stage_rest_gohjkdlkfnkca = relation(
+	"assign_decide_output_stage_rest_gohjkdlkfnkca",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
-export const AssignAssignmentFinishOutput = relation(
-	"AssignAssignmentFinishOutput",
+export const assign_assignment_finish_output_dehjnhpeahpgb = relation(
+	"assign_assignment_finish_output_dehjnhpeahpgb",
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
-export const AssignAsked = relation(
-	"AssignAsked",
+export const assign_asked_fobgfofknpfgd = relation(
+	"assign_asked_fobgfofknpfgd",
 	{ root: sha256, from: sha256, ordinal: natural, to: sha256 },
 	["root", "from", "ordinal"]
 )
-export const AssignDecideReadNearest = relation(
-	"AssignDecideReadNearest",
+export const assign_decide_read_nearest_mlemoegfgpbbi = relation(
+	"assign_decide_read_nearest_mlemoegfgpbbi",
 	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
 	["root", "step", "ordinal"]
 )
-export const AssignDecideReadSeen = relation(
-	"AssignDecideReadSeen",
+export const assign_decide_read_seen_oahojgbpphboo = relation(
+	"assign_decide_read_seen_oahojgbpphboo",
 	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
 	["root", "step", "ordinal"]
 )
@@ -278,23 +287,25 @@ export const AssignServed = relation(
 	["environment", "at"]
 )
 
-/** The records of the rows step Decide's read `nearest` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */
-export const AssignDecideReadNearestRecords = records(
-	"AssignDecideReadNearest",
+/** The records of the rows step Decide's read `nearest` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, named by den, keyed by a row's digest alone, so every root that found a row shares it. */
+export const assign_decide_read_nearest_mlemoegfgpbbiRecords = records(
+	"assign_decide_read_nearest_mlemoegfgpbbi",
 	DecideReads.named.nearest,
 	{ digest: sha256 },
 	["digest"]
 )
-export const AssignDecideReadNearestRow = AssignDecideReadNearestRecords.row
+export const assign_decide_read_nearest_mlemoegfgpbbiRow =
+	assign_decide_read_nearest_mlemoegfgpbbiRecords.row
 
-/** The records of the rows step Decide's read `seen` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */
-export const AssignDecideReadSeenRecords = records(
-	"AssignDecideReadSeen",
+/** The records of the rows step Decide's read `seen` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, named by den, keyed by a row's digest alone, so every root that found a row shares it. */
+export const assign_decide_read_seen_oahojgbpphbooRecords = records(
+	"assign_decide_read_seen_oahojgbpphboo",
 	DecideReads.named.seen,
 	{ digest: sha256 },
 	["digest"]
 )
-export const AssignDecideReadSeenRow = AssignDecideReadSeenRecords.row
+export const assign_decide_read_seen_oahojgbpphbooRow =
+	assign_decide_read_seen_oahojgbpphbooRecords.row
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
 export const assignGraph = fragment(
@@ -304,10 +315,10 @@ export const assignGraph = fragment(
 		AssignOutcome,
 		AssignRetryWhy,
 		AssignPausable,
-		AssignEmbedInputMode,
-		AssignDecideInputMode,
-		AssignAssignmentInputMode,
-		AssignDecideOutputStage,
+		assign_embed_input_mode_pblkjdhncepei,
+		assign_decide_input_mode_beoibaghjodnf,
+		assign_assignment_input_mode_pgalmghonldnf,
+		assign_decide_output_stage_bjoijbfcegdbp,
 		AssignScope,
 		AssignRoot,
 		AssignRequestedWith,
@@ -326,31 +337,31 @@ export const assignGraph = fragment(
 		AssignHeld,
 		AssignRefusal,
 		AssignExhausted,
-		AssignEmbedInput,
-		AssignEmbedInputNear,
-		AssignEmbedInputExclude,
-		AssignEmbedInputModeNearest,
-		AssignEmbedInputModeWithin,
-		AssignDecideInput,
-		AssignDecideInputExclude,
-		AssignDecideInputModeNearest,
-		AssignDecideInputModeWithin,
-		AssignAssignmentInput,
-		AssignAssignmentInputNear,
-		AssignAssignmentInputExclude,
-		AssignAssignmentInputModeNearest,
-		AssignAssignmentInputModeWithin,
-		AssignEmbedOutput,
-		AssignDecideOutput,
-		AssignDecideOutputWeighed,
-		AssignDecideOutputStageServe,
-		AssignDecideOutputStageRest,
-		AssignAssignmentFinishOutput,
-		AssignAsked,
-		AssignDecideReadNearest,
-		AssignDecideReadSeen,
-		...AssignDecideReadNearestRecords.relations,
-		...AssignDecideReadSeenRecords.relations
+		assign_embed_input_kmlepfpdepkmo,
+		assign_embed_input_near_dhffcaodkgemm,
+		assign_embed_input_exclude_gcjikbkjkcefj,
+		assign_embed_input_mode_nearest_bdiihcbmhfojp,
+		assign_embed_input_mode_within_oiehjhalkkkfi,
+		assign_decide_input_ffhdojphbdjfc,
+		assign_decide_input_exclude_bpjgmijefddch,
+		assign_decide_input_mode_nearest_ijgbegdphofca,
+		assign_decide_input_mode_within_fgbilcoafbdcg,
+		assign_assignment_input_kijoknpmnpomn,
+		assign_assignment_input_near_acilimddcfjog,
+		assign_assignment_input_exclude_paaebdpkimebl,
+		assign_assignment_input_mode_nearest_jdmfgbfmpepjd,
+		assign_assignment_input_mode_within_iahlinklmdadj,
+		assign_embed_output_ghdpbieopfmkd,
+		assign_decide_output_fkgbaoobeoima,
+		assign_decide_output_weighed_gpdibcghlfbhb,
+		assign_decide_output_stage_serve_chfjeagmkjoef,
+		assign_decide_output_stage_rest_gohjkdlkfnkca,
+		assign_assignment_finish_output_dehjnhpeahpgb,
+		assign_asked_fobgfofknpfgd,
+		assign_decide_read_nearest_mlemoegfgpbbi,
+		assign_decide_read_seen_oahojgbpphboo,
+		...assign_decide_read_nearest_mlemoegfgpbbiRecords.relations,
+		...assign_decide_read_seen_oahojgbpphbooRecords.relations
 	],
 	[
 		unit("DenRoot", { root: sha256 }),
@@ -421,261 +432,319 @@ export const assignGraph = fragment(
 			on(AssignRequestedWith, "root")
 		),
 		contained(
-			on(AssignEmbedInput, "root", "step"),
+			on(assign_embed_input_kmlepfpdepkmo, "root", "step"),
 			on(
 				select(AssignStep, (row) => row.eq(row.kind, "Embed")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(AssignEmbedInputNear, "root", "step"), on(AssignEmbedInput, "root", "step")),
+		contained(
+			on(assign_embed_input_near_dhffcaodkgemm, "root", "step"),
+			on(assign_embed_input_kmlepfpdepkmo, "root", "step")
+		),
 		contained(
 			on(
-				select(AssignEmbedInputNear, (row) => row.ge(row.ordinal, 1n)),
+				select(assign_embed_input_near_dhffcaodkgemm, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
 				pred("ordinal")
 			),
-			on(AssignEmbedInputNear, "root", "step", "ordinal")
+			on(assign_embed_input_near_dhffcaodkgemm, "root", "step", "ordinal")
 		),
-		check("AssignEmbedInputNearValueFinite", AssignEmbedInputNear, (row) =>
-			Num.isFinite(row.value)
+		check(
+			"assign_embed_input_near_value_finite_ahmgcoehfjngc",
+			assign_embed_input_near_dhffcaodkgemm,
+			(row) => Num.isFinite(row.value)
 		),
-		contained(on(AssignEmbedInputExclude, "root", "step"), on(AssignEmbedInput, "root", "step")),
+		contained(
+			on(assign_embed_input_exclude_gcjikbkjkcefj, "root", "step"),
+			on(assign_embed_input_kmlepfpdepkmo, "root", "step")
+		),
 		contained(
 			on(
-				select(AssignEmbedInputExclude, (row) => row.ge(row.ordinal, 1n)),
+				select(assign_embed_input_exclude_gcjikbkjkcefj, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
 				pred("ordinal")
 			),
-			on(AssignEmbedInputExclude, "root", "step", "ordinal")
+			on(assign_embed_input_exclude_gcjikbkjkcefj, "root", "step", "ordinal")
 		),
 		contained(
-			on(AssignEmbedInputModeNearest, "root", "step"),
+			on(assign_embed_input_mode_nearest_bdiihcbmhfojp, "root", "step"),
 			on(
-				select(AssignEmbedInput, (row) => row.eq(row.mode, "Nearest")),
+				select(assign_embed_input_kmlepfpdepkmo, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"step"
 			)
 		),
 		contained(
 			on(
-				select(AssignEmbedInput, (row) => row.eq(row.mode, "Nearest")),
+				select(assign_embed_input_kmlepfpdepkmo, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"step"
 			),
-			on(AssignEmbedInputModeNearest, "root", "step")
+			on(assign_embed_input_mode_nearest_bdiihcbmhfojp, "root", "step")
 		),
 		contained(
-			on(AssignEmbedInputModeWithin, "root", "step"),
+			on(assign_embed_input_mode_within_oiehjhalkkkfi, "root", "step"),
 			on(
-				select(AssignEmbedInput, (row) => row.eq(row.mode, "Within")),
+				select(assign_embed_input_kmlepfpdepkmo, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"step"
 			)
 		),
 		contained(
 			on(
-				select(AssignEmbedInput, (row) => row.eq(row.mode, "Within")),
+				select(assign_embed_input_kmlepfpdepkmo, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"step"
 			),
-			on(AssignEmbedInputModeWithin, "root", "step")
+			on(assign_embed_input_mode_within_oiehjhalkkkfi, "root", "step")
 		),
-		check("AssignEmbedInputModeWithinRadiusFinite", AssignEmbedInputModeWithin, (row) =>
-			Num.isFinite(row.radius)
+		check(
+			"assign_embed_input_mode_within_radius_finite_lgaddooipdeme",
+			assign_embed_input_mode_within_oiehjhalkkkfi,
+			(row) => Num.isFinite(row.radius)
 		),
 		contained(
-			on(AssignDecideInput, "root", "step"),
+			on(assign_decide_input_ffhdojphbdjfc, "root", "step"),
 			on(
 				select(AssignStep, (row) => row.eq(row.kind, "Decide")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(AssignDecideInputExclude, "root", "step"), on(AssignDecideInput, "root", "step")),
+		contained(
+			on(assign_decide_input_exclude_bpjgmijefddch, "root", "step"),
+			on(assign_decide_input_ffhdojphbdjfc, "root", "step")
+		),
 		contained(
 			on(
-				select(AssignDecideInputExclude, (row) => row.ge(row.ordinal, 1n)),
+				select(assign_decide_input_exclude_bpjgmijefddch, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
 				pred("ordinal")
 			),
-			on(AssignDecideInputExclude, "root", "step", "ordinal")
+			on(assign_decide_input_exclude_bpjgmijefddch, "root", "step", "ordinal")
 		),
 		contained(
-			on(AssignDecideInputModeNearest, "root", "step"),
+			on(assign_decide_input_mode_nearest_ijgbegdphofca, "root", "step"),
 			on(
-				select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
+				select(assign_decide_input_ffhdojphbdjfc, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"step"
 			)
 		),
 		contained(
 			on(
-				select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
+				select(assign_decide_input_ffhdojphbdjfc, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"step"
 			),
-			on(AssignDecideInputModeNearest, "root", "step")
+			on(assign_decide_input_mode_nearest_ijgbegdphofca, "root", "step")
 		),
 		contained(
-			on(AssignDecideInputModeWithin, "root", "step"),
+			on(assign_decide_input_mode_within_fgbilcoafbdcg, "root", "step"),
 			on(
-				select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
+				select(assign_decide_input_ffhdojphbdjfc, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"step"
 			)
 		),
 		contained(
 			on(
-				select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
+				select(assign_decide_input_ffhdojphbdjfc, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"step"
 			),
-			on(AssignDecideInputModeWithin, "root", "step")
+			on(assign_decide_input_mode_within_fgbilcoafbdcg, "root", "step")
 		),
-		check("AssignDecideInputModeWithinRadiusFinite", AssignDecideInputModeWithin, (row) =>
-			Num.isFinite(row.radius)
+		check(
+			"assign_decide_input_mode_within_radius_finite_mliibcfoddjpg",
+			assign_decide_input_mode_within_fgbilcoafbdcg,
+			(row) => Num.isFinite(row.radius)
 		),
 		contained(
-			on(AssignAssignmentInput, "scope"),
+			on(assign_assignment_input_kijoknpmnpomn, "scope"),
 			on(
 				select(AssignRoot, (row) => row.eq(row.kind, "Assignment")),
 				"root"
 			)
 		),
 		contained(
-			on(AssignAssignmentInputNear, "root", "scope"),
-			on(AssignAssignmentInput, "root", "scope")
+			on(assign_assignment_input_near_acilimddcfjog, "root", "scope"),
+			on(assign_assignment_input_kijoknpmnpomn, "root", "scope")
 		),
 		contained(
 			on(
-				select(AssignAssignmentInputNear, (row) => row.ge(row.ordinal, 1n)),
+				select(assign_assignment_input_near_acilimddcfjog, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"scope",
 				pred("ordinal")
 			),
-			on(AssignAssignmentInputNear, "root", "scope", "ordinal")
+			on(assign_assignment_input_near_acilimddcfjog, "root", "scope", "ordinal")
 		),
-		check("AssignAssignmentInputNearValueFinite", AssignAssignmentInputNear, (row) =>
-			Num.isFinite(row.value)
+		check(
+			"assign_assignment_input_near_value_finite_kpcjlfeibffeg",
+			assign_assignment_input_near_acilimddcfjog,
+			(row) => Num.isFinite(row.value)
 		),
 		contained(
-			on(AssignAssignmentInputExclude, "root", "scope"),
-			on(AssignAssignmentInput, "root", "scope")
+			on(assign_assignment_input_exclude_paaebdpkimebl, "root", "scope"),
+			on(assign_assignment_input_kijoknpmnpomn, "root", "scope")
 		),
 		contained(
 			on(
-				select(AssignAssignmentInputExclude, (row) => row.ge(row.ordinal, 1n)),
+				select(assign_assignment_input_exclude_paaebdpkimebl, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"scope",
 				pred("ordinal")
 			),
-			on(AssignAssignmentInputExclude, "root", "scope", "ordinal")
+			on(assign_assignment_input_exclude_paaebdpkimebl, "root", "scope", "ordinal")
 		),
 		contained(
-			on(AssignAssignmentInputModeNearest, "root", "scope"),
+			on(assign_assignment_input_mode_nearest_jdmfgbfmpepjd, "root", "scope"),
 			on(
-				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
+				select(assign_assignment_input_kijoknpmnpomn, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"scope"
 			)
 		),
 		contained(
 			on(
-				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
+				select(assign_assignment_input_kijoknpmnpomn, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"scope"
 			),
-			on(AssignAssignmentInputModeNearest, "root", "scope")
+			on(assign_assignment_input_mode_nearest_jdmfgbfmpepjd, "root", "scope")
 		),
 		contained(
-			on(AssignAssignmentInputModeWithin, "root", "scope"),
+			on(assign_assignment_input_mode_within_iahlinklmdadj, "root", "scope"),
 			on(
-				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
+				select(assign_assignment_input_kijoknpmnpomn, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"scope"
 			)
 		),
 		contained(
 			on(
-				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
+				select(assign_assignment_input_kijoknpmnpomn, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"scope"
 			),
-			on(AssignAssignmentInputModeWithin, "root", "scope")
+			on(assign_assignment_input_mode_within_iahlinklmdadj, "root", "scope")
 		),
-		check("AssignAssignmentInputModeWithinRadiusFinite", AssignAssignmentInputModeWithin, (row) =>
-			Num.isFinite(row.radius)
-		),
-		contained(on(AssignEmbedOutput, "root", "step"), on(AssignEmbedInput, "root", "step")),
-		contained(on(AssignEmbedOutput, "root", "step"), on(AssignDone, "root", "step")),
-		contained(on(AssignDecideOutput, "root", "step"), on(AssignDecideInput, "root", "step")),
-		contained(on(AssignDecideOutput, "root", "step"), on(AssignDone, "root", "step")),
-		check("AssignDecideOutputConfidenceFinite", AssignDecideOutput, (row) =>
-			Num.isFinite(row.confidence)
+		check(
+			"assign_assignment_input_mode_within_radius_njplimeeipeph",
+			assign_assignment_input_mode_within_iahlinklmdadj,
+			(row) => Num.isFinite(row.radius)
 		),
 		contained(
-			on(AssignDecideOutputWeighed, "root", "step"),
-			on(AssignDecideOutput, "root", "step")
+			on(assign_embed_output_ghdpbieopfmkd, "root", "step"),
+			on(assign_embed_input_kmlepfpdepkmo, "root", "step")
+		),
+		contained(
+			on(assign_embed_output_ghdpbieopfmkd, "root", "step"),
+			on(AssignDone, "root", "step")
+		),
+		contained(
+			on(assign_decide_output_fkgbaoobeoima, "root", "step"),
+			on(assign_decide_input_ffhdojphbdjfc, "root", "step")
+		),
+		contained(
+			on(assign_decide_output_fkgbaoobeoima, "root", "step"),
+			on(AssignDone, "root", "step")
+		),
+		check(
+			"assign_decide_output_confidence_finite_jkfldpdgbfbba",
+			assign_decide_output_fkgbaoobeoima,
+			(row) => Num.isFinite(row.confidence)
+		),
+		contained(
+			on(assign_decide_output_weighed_gpdibcghlfbhb, "root", "step"),
+			on(assign_decide_output_fkgbaoobeoima, "root", "step")
 		),
 		contained(
 			on(
-				select(AssignDecideOutputWeighed, (row) => row.ge(row.ordinal, 1n)),
+				select(assign_decide_output_weighed_gpdibcghlfbhb, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
 				pred("ordinal")
 			),
-			on(AssignDecideOutputWeighed, "root", "step", "ordinal")
+			on(assign_decide_output_weighed_gpdibcghlfbhb, "root", "step", "ordinal")
 		),
-		check("AssignDecideOutputWeighedDistanceFinite", AssignDecideOutputWeighed, (row) =>
-			Num.isFinite(row.distance)
+		check(
+			"assign_decide_output_weighed_distance_finite_icehkmadhmajc",
+			assign_decide_output_weighed_gpdibcghlfbhb,
+			(row) => Num.isFinite(row.distance)
 		),
 		contained(
-			on(AssignDecideOutputStageServe, "root", "step"),
+			on(assign_decide_output_stage_serve_chfjeagmkjoef, "root", "step"),
 			on(
-				select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
+				select(assign_decide_output_fkgbaoobeoima, (row) => row.eq(row.stage, "Serve")),
 				"root",
 				"step"
 			)
 		),
 		contained(
 			on(
-				select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
+				select(assign_decide_output_fkgbaoobeoima, (row) => row.eq(row.stage, "Serve")),
 				"root",
 				"step"
 			),
-			on(AssignDecideOutputStageServe, "root", "step")
+			on(assign_decide_output_stage_serve_chfjeagmkjoef, "root", "step")
 		),
-		check("AssignDecideOutputStageServeDistanceFinite", AssignDecideOutputStageServe, (row) =>
-			Num.isFinite(row.distance)
+		check(
+			"assign_decide_output_stage_serve_distance_gcbpokkoipkec",
+			assign_decide_output_stage_serve_chfjeagmkjoef,
+			(row) => Num.isFinite(row.distance)
 		),
 		contained(
-			on(AssignDecideOutputStageRest, "root", "step"),
+			on(assign_decide_output_stage_rest_gohjkdlkfnkca, "root", "step"),
 			on(
-				select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
+				select(assign_decide_output_fkgbaoobeoima, (row) => row.eq(row.stage, "Rest")),
 				"root",
 				"step"
 			)
 		),
 		contained(
 			on(
-				select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
+				select(assign_decide_output_fkgbaoobeoima, (row) => row.eq(row.stage, "Rest")),
 				"root",
 				"step"
 			),
-			on(AssignDecideOutputStageRest, "root", "step")
+			on(assign_decide_output_stage_rest_gohjkdlkfnkca, "root", "step")
 		),
-		contained(on(AssignAssignmentFinishOutput, "root", "step"), on(AssignDone, "root", "step")),
-		contained(on(AssignAsked, "root", "from"), on(AssignEmbedOutput, "root", "step")),
-		contained(on(AssignAsked, "root", "to"), on(AssignDecideInput, "root", "step")),
-		key(on(AssignAsked, "root", "to")),
-		contained(on(AssignDecideReadNearest, "root", "step"), on(AssignResult, "root", "step")),
-		contained(on(AssignDecideReadNearest, "digest"), on(AssignDecideReadNearestRow, "digest")),
-		contained(on(AssignDecideReadSeen, "root", "step"), on(AssignResult, "root", "step")),
-		contained(on(AssignDecideReadSeen, "digest"), on(AssignDecideReadSeenRow, "digest")),
+		contained(
+			on(assign_assignment_finish_output_dehjnhpeahpgb, "root", "step"),
+			on(AssignDone, "root", "step")
+		),
+		contained(
+			on(assign_asked_fobgfofknpfgd, "root", "from"),
+			on(assign_embed_output_ghdpbieopfmkd, "root", "step")
+		),
+		contained(
+			on(assign_asked_fobgfofknpfgd, "root", "to"),
+			on(assign_decide_input_ffhdojphbdjfc, "root", "step")
+		),
+		key(on(assign_asked_fobgfofknpfgd, "root", "to")),
+		contained(
+			on(assign_decide_read_nearest_mlemoegfgpbbi, "root", "step"),
+			on(AssignResult, "root", "step")
+		),
+		contained(
+			on(assign_decide_read_nearest_mlemoegfgpbbi, "digest"),
+			on(assign_decide_read_nearest_mlemoegfgpbbiRow, "digest")
+		),
+		contained(
+			on(assign_decide_read_seen_oahojgbpphboo, "root", "step"),
+			on(AssignResult, "root", "step")
+		),
+		contained(
+			on(assign_decide_read_seen_oahojgbpphboo, "digest"),
+			on(assign_decide_read_seen_oahojgbpphbooRow, "digest")
+		),
 		contained(on(AssignScope, "root"), on(AssignRoot, "root")),
 		mutable(AssignScope),
 		mutable(AssignAdmitted),
@@ -705,60 +774,117 @@ export const assignGraph = fragment(
 		mutable(AssignRefusal),
 		contained(on(AssignExhausted, "root", "step"), on(AssignStep, "root", "step")),
 		mutable(AssignExhausted),
-		contained(on(AssignEmbedInput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInput),
-		contained(on(AssignEmbedInputNear, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInputNear),
-		contained(on(AssignEmbedInputExclude, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInputExclude),
-		contained(on(AssignEmbedInputModeNearest, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInputModeNearest),
-		contained(on(AssignEmbedInputModeWithin, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInputModeWithin),
-		contained(on(AssignDecideInput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideInput),
-		contained(on(AssignDecideInputExclude, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideInputExclude),
-		contained(on(AssignDecideInputModeNearest, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideInputModeNearest),
-		contained(on(AssignDecideInputModeWithin, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideInputModeWithin),
-		contained(on(AssignAssignmentInput, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignAssignmentInput),
-		contained(on(AssignAssignmentInputNear, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignAssignmentInputNear),
-		contained(on(AssignAssignmentInputExclude, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignAssignmentInputExclude),
+		contained(on(assign_embed_input_kmlepfpdepkmo, "root", "step"), on(AssignStep, "root", "step")),
+		mutable(assign_embed_input_kmlepfpdepkmo),
 		contained(
-			on(AssignAssignmentInputModeNearest, "root", "scope"),
+			on(assign_embed_input_near_dhffcaodkgemm, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_embed_input_near_dhffcaodkgemm),
+		contained(
+			on(assign_embed_input_exclude_gcjikbkjkcefj, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_embed_input_exclude_gcjikbkjkcefj),
+		contained(
+			on(assign_embed_input_mode_nearest_bdiihcbmhfojp, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_embed_input_mode_nearest_bdiihcbmhfojp),
+		contained(
+			on(assign_embed_input_mode_within_oiehjhalkkkfi, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_embed_input_mode_within_oiehjhalkkkfi),
+		contained(
+			on(assign_decide_input_ffhdojphbdjfc, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_input_ffhdojphbdjfc),
+		contained(
+			on(assign_decide_input_exclude_bpjgmijefddch, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_input_exclude_bpjgmijefddch),
+		contained(
+			on(assign_decide_input_mode_nearest_ijgbegdphofca, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_input_mode_nearest_ijgbegdphofca),
+		contained(
+			on(assign_decide_input_mode_within_fgbilcoafbdcg, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_input_mode_within_fgbilcoafbdcg),
+		contained(
+			on(assign_assignment_input_kijoknpmnpomn, "root", "scope"),
 			on(AssignScope, "root", "scope")
 		),
-		mutable(AssignAssignmentInputModeNearest),
+		mutable(assign_assignment_input_kijoknpmnpomn),
 		contained(
-			on(AssignAssignmentInputModeWithin, "root", "scope"),
+			on(assign_assignment_input_near_acilimddcfjog, "root", "scope"),
 			on(AssignScope, "root", "scope")
 		),
-		mutable(AssignAssignmentInputModeWithin),
-		contained(on(AssignEmbedOutput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedOutput),
-		contained(on(AssignDecideOutput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideOutput),
-		contained(on(AssignDecideOutputWeighed, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideOutputWeighed),
-		contained(on(AssignDecideOutputStageServe, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideOutputStageServe),
-		contained(on(AssignDecideOutputStageRest, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideOutputStageRest),
-		contained(on(AssignAssignmentFinishOutput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignAssignmentFinishOutput),
-		contained(on(AssignAsked, "root", "from"), on(AssignStep, "root", "step")),
-		mutable(AssignAsked),
-		contained(on(AssignDecideReadNearest, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideReadNearest),
-		contained(on(AssignDecideReadSeen, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideReadSeen),
-		...AssignDecideReadNearestRecords.rules,
-		...AssignDecideReadSeenRecords.rules
+		mutable(assign_assignment_input_near_acilimddcfjog),
+		contained(
+			on(assign_assignment_input_exclude_paaebdpkimebl, "root", "scope"),
+			on(AssignScope, "root", "scope")
+		),
+		mutable(assign_assignment_input_exclude_paaebdpkimebl),
+		contained(
+			on(assign_assignment_input_mode_nearest_jdmfgbfmpepjd, "root", "scope"),
+			on(AssignScope, "root", "scope")
+		),
+		mutable(assign_assignment_input_mode_nearest_jdmfgbfmpepjd),
+		contained(
+			on(assign_assignment_input_mode_within_iahlinklmdadj, "root", "scope"),
+			on(AssignScope, "root", "scope")
+		),
+		mutable(assign_assignment_input_mode_within_iahlinklmdadj),
+		contained(
+			on(assign_embed_output_ghdpbieopfmkd, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_embed_output_ghdpbieopfmkd),
+		contained(
+			on(assign_decide_output_fkgbaoobeoima, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_output_fkgbaoobeoima),
+		contained(
+			on(assign_decide_output_weighed_gpdibcghlfbhb, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_output_weighed_gpdibcghlfbhb),
+		contained(
+			on(assign_decide_output_stage_serve_chfjeagmkjoef, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_output_stage_serve_chfjeagmkjoef),
+		contained(
+			on(assign_decide_output_stage_rest_gohjkdlkfnkca, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_output_stage_rest_gohjkdlkfnkca),
+		contained(
+			on(assign_assignment_finish_output_dehjnhpeahpgb, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_assignment_finish_output_dehjnhpeahpgb),
+		contained(on(assign_asked_fobgfofknpfgd, "root", "from"), on(AssignStep, "root", "step")),
+		mutable(assign_asked_fobgfofknpfgd),
+		contained(
+			on(assign_decide_read_nearest_mlemoegfgpbbi, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_read_nearest_mlemoegfgpbbi),
+		contained(
+			on(assign_decide_read_seen_oahojgbpphboo, "root", "step"),
+			on(AssignStep, "root", "step")
+		),
+		mutable(assign_decide_read_seen_oahojgbpphboo),
+		...assign_decide_read_nearest_mlemoegfgpbbiRecords.rules,
+		...assign_decide_read_seen_oahojgbpphbooRecords.rules
 	]
 )
 
@@ -770,10 +896,10 @@ export const assignCoordination = fragment(
 		AssignOutcome,
 		AssignRetryWhy,
 		AssignPausable,
-		AssignEmbedInputMode,
-		AssignDecideInputMode,
-		AssignAssignmentInputMode,
-		AssignDecideOutputStage,
+		assign_embed_input_mode_pblkjdhncepei,
+		assign_decide_input_mode_beoibaghjodnf,
+		assign_assignment_input_mode_pgalmghonldnf,
+		assign_decide_output_stage_bjoijbfcegdbp,
 		AssignPaused,
 		AssignResumed,
 		AssignServed
@@ -789,29 +915,29 @@ export const assignWriter = [
 	"AssignResult",
 	"AssignDone",
 	"AssignHeld",
-	"AssignEmbedOutput",
-	"AssignDecideOutput",
-	"AssignDecideOutputWeighed",
-	"AssignDecideOutputStageServe",
-	"AssignDecideOutputStageRest",
-	"AssignAssignmentFinishOutput",
-	"AssignDecideReadNearest",
-	"AssignDecideReadSeen",
+	"assign_embed_output_ghdpbieopfmkd",
+	"assign_decide_output_fkgbaoobeoima",
+	"assign_decide_output_weighed_gpdibcghlfbhb",
+	"assign_decide_output_stage_serve_chfjeagmkjoef",
+	"assign_decide_output_stage_rest_gohjkdlkfnkca",
+	"assign_assignment_finish_output_dehjnhpeahpgb",
+	"assign_decide_read_nearest_mlemoegfgpbbi",
+	"assign_decide_read_seen_oahojgbpphboo",
 	"AssignStep",
 	"AssignScope",
 	"AssignAdmitted",
 	"AssignFinish",
 	"AssignStartStep",
-	"AssignEmbedInput",
-	"AssignEmbedInputNear",
-	"AssignEmbedInputExclude",
-	"AssignEmbedInputModeNearest",
-	"AssignEmbedInputModeWithin",
-	"AssignDecideInput",
-	"AssignDecideInputExclude",
-	"AssignDecideInputModeNearest",
-	"AssignDecideInputModeWithin",
-	"AssignAsked",
-	...Arr.map(AssignDecideReadNearestRecords.relations, (rel) => rel.name),
-	...Arr.map(AssignDecideReadSeenRecords.relations, (rel) => rel.name)
+	"assign_embed_input_kmlepfpdepkmo",
+	"assign_embed_input_near_dhffcaodkgemm",
+	"assign_embed_input_exclude_gcjikbkjkcefj",
+	"assign_embed_input_mode_nearest_bdiihcbmhfojp",
+	"assign_embed_input_mode_within_oiehjhalkkkfi",
+	"assign_decide_input_ffhdojphbdjfc",
+	"assign_decide_input_exclude_bpjgmijefddch",
+	"assign_decide_input_mode_nearest_ijgbegdphofca",
+	"assign_decide_input_mode_within_fgbilcoafbdcg",
+	"assign_asked_fobgfofknpfgd",
+	...Arr.map(assign_decide_read_nearest_mlemoegfgpbbiRecords.relations, (rel) => rel.name),
+	...Arr.map(assign_decide_read_seen_oahojgbpphbooRecords.relations, (rel) => rel.name)
 ] as const

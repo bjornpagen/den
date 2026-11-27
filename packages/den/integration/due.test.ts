@@ -1,3 +1,4 @@
+import { instant } from "@bjornpagen/den/algebra/kinds"
 import { tick } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
@@ -76,7 +77,10 @@ export const aStepDueAtItsInputsInstantRunsAtItAndNotBefore = property.explore(s
 							Effect.gen(function* () {
 								const deadline = instantOf(Number(opened) + offset * 1000)
 								const key = `sitting${String(index)}`
-								const requested = yield* clock.request.Sitting(key, { sitting: key, deadline })
+								const requested = yield* clock.request.Sitting(key, {
+									sitting: key,
+									deadline: instant.make(deadline)
+								})
 								const admitting = yield* endsFrom
 								const admitted = yield* serve(
 									ledgers,
@@ -180,7 +184,7 @@ export const aStepDueAtItsInputsInstantRunsAtItAndNotBefore = property.explore(s
 	kills: [
 		{
 			file: "packages/den/src/runtime/bind.ts",
-			original: '\t\t\treturn { kind: "at", instant: due.instant(input) }',
+			original: '\t\t\treturn { kind: "at", instant: mintInstant(due.instant(input)) }',
 			replacement: '\t\t\treturn { kind: "after", delay: atOnce }',
 			why: "A step due at its input's instant is due at once: a timed sitting closes the moment it starts, long before its deadline."
 		},

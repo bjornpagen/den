@@ -85,7 +85,7 @@ for the coordination group, and DBCLOCK:
   containment in its root's record follows through its holder's. `<P>Root` is keyed by `root`, closed: the fact that the
   root was requested, never updated or deleted, and so is `<P>RequestedWith`, keyed by `root` and contained in `<P>Root`
   (and, for a kind whose input its request gives, containing it): what the root was requested with, its kind's input
-  fingerprint and its input's digest; and so is a derived root's key, `<P><Root>Key`, keyed by `root`, contained in its
+  fingerprint and its input's digest; and so is a derived root's key, its kind's key relation, keyed by `root`, contained in its
   kind's `<P>Root` and containing it. A claim's seats sit under the flow's seat unit, `unit("<P>Seat", { resource:
   closedId(<P>Resource) })`: `<P>Hold` is keyed `(resource, root, step, attempt)`, the claim's ordered family written
   nested in the claim's one write, which supplies the attempt the database stamps, so every write of a resource's holds
