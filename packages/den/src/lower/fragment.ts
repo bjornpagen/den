@@ -224,7 +224,12 @@ export const valueRelations = (value: ValueIR): ReadonlyArray<string> => [
  */
 export type CommitIR =
 	| { readonly kind: "nothing" }
-	| { readonly kind: "through"; readonly clock: ReadonlyArray<readonly [string, ClockUnit]> }
+	| {
+			readonly kind: "through"
+			readonly clock: ReadonlyArray<readonly [string, ClockUnit]>
+			/** The parameters of its clock whose consumers' contracts its declaration keys (algebra/kinds.ts ClockKeys). */
+			readonly keyed: ReadonlyArray<string>
+	  }
 
 /**
  * An edge, lowered: the relation of its facts, the node it leaves (a step kind, or a child scope kind whose finish's
@@ -442,7 +447,11 @@ const writesOf = (commit: AnyCommit): CommitIR => {
 		case "nothing":
 			return commit
 		case "through":
-			return { kind: "through", clock: Record.toEntries(commit.clock) }
+			return {
+				kind: "through",
+				clock: Record.toEntries(commit.clock),
+				keyed: Arr.flatMap(commit.keys, (keys) => Record.keys(keys))
+			}
 	}
 }
 

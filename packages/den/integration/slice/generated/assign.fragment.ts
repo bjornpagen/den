@@ -636,7 +636,7 @@ export const assignGraph = fragment(
 			on(assign_assignment_input_mode_within_iahlinklmdadj, "root", "scope")
 		),
 		check(
-			"assign_assignment_input_mode_within_radius_njplimeeipeph",
+			"assign_assignment_input_mode_within_radius_finite_njplimeeipeph",
 			assign_assignment_input_mode_within_iahlinklmdadj,
 			(row) => Num.isFinite(row.radius)
 		),
@@ -696,7 +696,7 @@ export const assignGraph = fragment(
 			on(assign_decide_output_stage_serve_chfjeagmkjoef, "root", "step")
 		),
 		check(
-			"assign_decide_output_stage_serve_distance_gcbpokkoipkec",
+			"assign_decide_output_stage_serve_distance_finite_gcbpokkoipkec",
 			assign_decide_output_stage_serve_chfjeagmkjoef,
 			(row) => Num.isFinite(row.distance)
 		),

@@ -833,13 +833,17 @@ export const syncCommitPrograms = Object.freeze({
 			.insert(sync_copy_output_cfficoloepjbj, []),
 		declaredFlow.kinds[0].writes.changes(Loader)
 	),
-	syncCommitBuild: ChangeSet.union(
-		ChangeSet.empty(syncGraph)
-			.insert(SyncResult, [])
-			.insert(SyncDone, [])
-			.insert(SyncHeld, [])
-			.insert(sync_build_output_ianmlfhgbcfli, []),
-		declaredFlow.kinds[2].writes.changes(Loader)
+	syncCommitBuild: clocked(
+		ChangeSet.union(
+			ChangeSet.empty(syncGraph)
+				.insert(SyncResult, [])
+				.insert(SyncDone, [])
+				.insert(SyncHeld, [])
+				.insert(sync_build_output_ianmlfhgbcfli, []),
+			declaredFlow.kinds[2].writes.changes(Loader)
+		),
+		{ builtAt: "millis" },
+		{ ...declaredFlow.kinds[2].writes.keys[0] }
 	),
 	syncCommitSyncRunFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])

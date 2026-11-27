@@ -6,6 +6,7 @@ CREATE TABLE "slice"."assigned" (
 
 CREATE TABLE "slice"."built" (
   "build" "slice"."__domain_gfw43vigph" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__built_pk_5tj25hcq6k" PRIMARY KEY ("build")
 );
 
@@ -163,7 +164,7 @@ CREATE TABLE "slice_den"."assign_assignment_input_mode_within_iahlinklmdadj" (
   "scope" "slice"."__sha256" NOT NULL,
   "radius" double precision NOT NULL,
   CONSTRAINT "__assign_assignment_input_mode_within_iahlinklmdadj_k3dzzitlnz" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "assign_assignment_input_mode_within_radius_njplimeeipeph" CHECK (("radius" > '-Infinity'::double precision AND "radius" < 'Infinity'::double precision) IS TRUE)
+  CONSTRAINT "assign_assignment_input_mode_within_radius_finite_njplimeeipeph" CHECK (("radius" > '-Infinity'::double precision AND "radius" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice_den"."assign_assignment_input_near_acilimddcfjog" (
@@ -243,7 +244,7 @@ CREATE TABLE "slice_den"."assign_decide_output_stage_serve_chfjeagmkjoef" (
   "passage" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "distance" double precision NOT NULL,
   CONSTRAINT "__assign_decide_output_stage_serve_chfjeagmkjoef_pk_tctme2k4gh" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "assign_decide_output_stage_serve_distance_gcbpokkoipkec" CHECK (("distance" > '-Infinity'::double precision AND "distance" < 'Infinity'::double precision) IS TRUE)
+  CONSTRAINT "assign_decide_output_stage_serve_distance_finite_gcbpokkoipkec" CHECK (("distance" > '-Infinity'::double precision AND "distance" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice_den"."assign_decide_output_weighed_gpdibcghlfbhb" (
@@ -267,27 +268,12 @@ CREATE TABLE "slice_den"."assign_decide_read_nearest_mlemoegfgpbbi" (
   CONSTRAINT "__assign_decide_read_nearest_mlemoegfgpbbi_pk_hgofogcnrm" PRIMARY KEY ("root", "step", "ordinal")
 );
 
-CREATE TABLE "slice_den"."assign_decide_read_nearest_mlemoegfgpbbi_row" (
-  "digest" "slice"."__sha256" NOT NULL,
-  "passage" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "topic" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "distance" double precision NOT NULL,
-  CONSTRAINT "__assign_decide_read_nearest_mlemoegfgpbbi_row_pk_kw4c6ij55o" PRIMARY KEY ("digest")
-);
-
 CREATE TABLE "slice_den"."assign_decide_read_seen_oahojgbpphboo" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "digest" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_read_seen_oahojgbpphboo_pk_uhxwelhv6p" PRIMARY KEY ("root", "step", "ordinal")
-);
-
-CREATE TABLE "slice_den"."assign_decide_read_seen_oahojgbpphboo_row" (
-  "digest" "slice"."__sha256" NOT NULL,
-  "learner" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "passage" "slice"."__text_t4rwovzmqj" NOT NULL,
-  CONSTRAINT "__assign_decide_read_seen_oahojgbpphboo_row_pk_hmwq5jneqq" PRIMARY KEY ("digest")
 );
 
 CREATE TABLE "slice_den"."assign_done" (
@@ -630,14 +616,6 @@ CREATE TABLE "slice_den"."chain_page_read_earlier_dgehlbgebidjc" (
   CONSTRAINT "__chain_page_read_earlier_dgehlbgebidjc_pk_f3kwzbcmi6" PRIMARY KEY ("root", "step", "ordinal")
 );
 
-CREATE TABLE "slice_den"."chain_page_read_earlier_dgehlbgebidjc_row" (
-  "digest" "slice"."__sha256" NOT NULL,
-  "feed" "slice"."feed" NOT NULL,
-  "seq" bigint NOT NULL,
-  "n" "slice"."__domain_gfw43vigph" NOT NULL,
-  CONSTRAINT "__chain_page_read_earlier_dgehlbgebidjc_row_pk_elsmuyerwp" PRIMARY KEY ("digest")
-);
-
 CREATE TABLE "slice_den"."chain_page_read_tree_items_cokakfjlndgem" (
   "digest" "slice"."__sha256" NOT NULL,
   "at" "slice"."__domain_gfw43vigph" NOT NULL,
@@ -665,29 +643,12 @@ CREATE TABLE "slice_den"."chain_page_read_tree_lakencnpkciin" (
   CONSTRAINT "__chain_page_read_tree_lakencnpkciin_pk_3jp64uzlas" PRIMARY KEY ("root", "step", "ordinal")
 );
 
-CREATE TABLE "slice_den"."chain_page_read_tree_lakencnpkciin_row" (
-  "digest" "slice"."__sha256" NOT NULL,
-  "feed" "slice"."feed" NOT NULL,
-  "factor" "slice"."__domain_gfw43vigph" NOT NULL,
-  "items" "slice"."__domain_gfw43vigph" NOT NULL,
-  "__pred_items_3qltx5cx27" bigint GENERATED ALWAYS AS (CASE WHEN "items" > 0::bigint THEN "items"::numeric - (1::bigint)::numeric END) STORED,
-  CONSTRAINT "__chain_page_read_tree_lakencnpkciin_row_pk_7ub4nebjwy" PRIMARY KEY ("digest"),
-  CONSTRAINT "__chain_page_read_tree_lakencnpkciin_row_key_digest_jplhxi7kvh" UNIQUE NULLS DISTINCT ("digest", "items")
-);
-
 CREATE TABLE "slice_den"."chain_page_read_weights_agiabippcbobb" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "digest" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_read_weights_agiabippcbobb_pk_lgg2rkx6aa" PRIMARY KEY ("root", "step", "ordinal")
-);
-
-CREATE TABLE "slice_den"."chain_page_read_weights_agiabippcbobb_row" (
-  "digest" "slice"."__sha256" NOT NULL,
-  "feed" "slice"."feed" NOT NULL,
-  "factor" "slice"."__domain_gfw43vigph" NOT NULL,
-  CONSTRAINT "__chain_page_read_weights_agiabippcbobb_row_pk_n7j4766hix" PRIMARY KEY ("digest")
 );
 
 CREATE TABLE "slice_den"."chain_paused" (
@@ -2311,6 +2272,46 @@ CREATE TABLE "slice_den"."writeback_writeback_input_ljafdhfgfeocc" (
   CONSTRAINT "__writeback_writeback_input_ljafdhfgfeocc_pk_oysiafmamn" PRIMARY KEY ("root", "scope")
 );
 
+CREATE TABLE "slice_den"."__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q" (
+  "digest" "slice"."__sha256" NOT NULL,
+  "passage" "slice"."__text_t4rwovzmqj" NOT NULL,
+  "topic" "slice"."__text_t4rwovzmqj" NOT NULL,
+  "distance" double precision NOT NULL,
+  CONSTRAINT "__assign_decide_read_nearest_mlemoegfgpbbi_row_pk_kw4c6ij55o" PRIMARY KEY ("digest")
+);
+
+CREATE TABLE "slice_den"."__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6" (
+  "digest" "slice"."__sha256" NOT NULL,
+  "learner" "slice"."__text_t4rwovzmqj" NOT NULL,
+  "passage" "slice"."__text_t4rwovzmqj" NOT NULL,
+  CONSTRAINT "__assign_decide_read_seen_oahojgbpphboo_row_pk_hmwq5jneqq" PRIMARY KEY ("digest")
+);
+
+CREATE TABLE "slice_den"."__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih" (
+  "digest" "slice"."__sha256" NOT NULL,
+  "feed" "slice"."feed" NOT NULL,
+  "seq" bigint NOT NULL,
+  "n" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__chain_page_read_earlier_dgehlbgebidjc_row_pk_elsmuyerwp" PRIMARY KEY ("digest")
+);
+
+CREATE TABLE "slice_den"."__chain_page_read_tree_lakencnpkciin_wke2qksxq5" (
+  "digest" "slice"."__sha256" NOT NULL,
+  "feed" "slice"."feed" NOT NULL,
+  "factor" "slice"."__domain_gfw43vigph" NOT NULL,
+  "items" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_items_3qltx5cx27" bigint GENERATED ALWAYS AS (CASE WHEN "items" > 0::bigint THEN "items"::numeric - (1::bigint)::numeric END) STORED,
+  CONSTRAINT "__chain_page_read_tree_lakencnpkciin_row_pk_7ub4nebjwy" PRIMARY KEY ("digest"),
+  CONSTRAINT "__chain_page_read_tree_lakencnpkciin_row_key_digest_jplhxi7kvh" UNIQUE NULLS DISTINCT ("digest", "items")
+);
+
+CREATE TABLE "slice_den"."__chain_page_read_weights_agiabippcbobb_ejfk6qhpar" (
+  "digest" "slice"."__sha256" NOT NULL,
+  "feed" "slice"."feed" NOT NULL,
+  "factor" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__chain_page_read_weights_agiabippcbobb_row_pk_n7j4766hix" PRIMARY KEY ("digest")
+);
+
 CREATE TABLE "slice"."__live_secret" ("secret") AS SELECT "pg_catalog"."sha256"("pg_catalog"."uuid_send"("pg_catalog"."gen_random_uuid"()) || "pg_catalog"."uuid_send"("pg_catalog"."gen_random_uuid"()));
 
 REVOKE ALL ON TABLE "slice"."__live_secret" FROM PUBLIC;
@@ -2462,15 +2463,7 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."assign_decide_read_nearest_mlemoegfgpbbi_row"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."assign_decide_read_seen_oahojgbpphboo"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."assign_decide_read_seen_oahojgbpphboo_row"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -2642,10 +2635,6 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_read_earlier_dgehlbgebidjc_row"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_read_tree_items_cokakfjlndgem"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2658,15 +2647,7 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_read_tree_lakencnpkciin_row"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_read_weights_agiabippcbobb"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_read_weights_agiabippcbobb_row"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3425,6 +3406,26 @@ CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."writeback_writeback_input_ljafdhfgfeocc"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."__chain_page_read_tree_lakencnpkciin_wke2qksxq5"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."__chain_page_read_weights_agiabippcbobb_ejfk6qhpar"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
 CREATE TABLE "slice_den"."__head_assign_claim_attempt_h744pvqs3v" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
@@ -3644,12 +3645,12 @@ ALTER TABLE "slice_den"."assign_decide_output_weighed_gpdibcghlfbhb"
   ADD CONSTRAINT "__assign_decide_output_weighed_gpdibcghlfbhb_fk_root_ecyjf5hsks" FOREIGN KEY ("__root_yjobx7uyrd", "step", "__pred_ordinal_e545zctcav") REFERENCES "slice_den"."assign_decide_output_weighed_gpdibcghlfbhb" ("root", "step", "ordinal") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_decide_read_nearest_mlemoegfgpbbi"
-  ADD CONSTRAINT "__assign_decide_read_nearest_mlemoegfgpbbi_fk_digest_6eir4ph3xl" FOREIGN KEY ("digest") REFERENCES "slice_den"."assign_decide_read_nearest_mlemoegfgpbbi_row" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_decide_read_nearest_mlemoegfgpbbi_fk_digest_6eir4ph3xl" FOREIGN KEY ("digest") REFERENCES "slice_den"."__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_read_nearest_mlemoegfgpbbi_fk_root_gvzoo3lxd5" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_result" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_read_nearest_mlemoegfgpbbi_fk_root_wpbngffwnm" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_decide_read_seen_oahojgbpphboo"
-  ADD CONSTRAINT "__assign_decide_read_seen_oahojgbpphboo_fk_digest_qqd5rjiap2" FOREIGN KEY ("digest") REFERENCES "slice_den"."assign_decide_read_seen_oahojgbpphboo_row" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_decide_read_seen_oahojgbpphboo_fk_digest_qqd5rjiap2" FOREIGN KEY ("digest") REFERENCES "slice_den"."__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_read_seen_oahojgbpphboo_fk_root_step_i3t2je4ud6" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_result" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_read_seen_oahojgbpphboo_fk_root_step_rvhg25udcl" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -3803,25 +3804,23 @@ ALTER TABLE "slice_den"."chain_page_output_next_pocjijjpkpono"
   ADD CONSTRAINT "__chain_page_output_next_pocjijjpkpono_fk_root_step_hfgxjmvswz" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_page_output_dniojohpmhcee" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."chain_page_read_earlier_dgehlbgebidjc"
-  ADD CONSTRAINT "__chain_page_read_earlier_dgehlbgebidjc_fk_digest_fliospbzhi" FOREIGN KEY ("digest") REFERENCES "slice_den"."chain_page_read_earlier_dgehlbgebidjc_row" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__chain_page_read_earlier_dgehlbgebidjc_fk_digest_fliospbzhi" FOREIGN KEY ("digest") REFERENCES "slice_den"."__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_earlier_dgehlbgebidjc_fk_root_step_bqcbnwxoj3" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_result" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_earlier_dgehlbgebidjc_fk_root_step_bkqwbd5ush" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."chain_page_read_tree_items_cokakfjlndgem"
-  ADD CONSTRAINT "__chain_page_read_tree_items_cokakfjlndgem_fk_digest_4modrznro7" FOREIGN KEY ("digest", "__copy_items_2mdhsp2eir") REFERENCES "slice_den"."chain_page_read_tree_lakencnpkciin_row" ("digest", "items") MATCH SIMPLE ON UPDATE CASCADE,
+  ADD CONSTRAINT "__chain_page_read_tree_items_cokakfjlndgem_fk_digest_4modrznro7" FOREIGN KEY ("digest", "__copy_items_2mdhsp2eir") REFERENCES "slice_den"."__chain_page_read_tree_lakencnpkciin_wke2qksxq5" ("digest", "items") MATCH SIMPLE ON UPDATE CASCADE,
   ADD CONSTRAINT "__chain_page_read_tree_items_cokakfjlndgem_fk_digest_pbqepdotso" FOREIGN KEY ("digest", "__pred_at_xktcobhsti") REFERENCES "slice_den"."chain_page_read_tree_items_cokakfjlndgem" ("digest", "at") MATCH SIMPLE;
 
 ALTER TABLE "slice_den"."chain_page_read_tree_items_first_ocgolceclfbii" ADD CONSTRAINT "__chain_page_read_tree_items_first_ocgolceclfbii_fk_mgphk6o3je" FOREIGN KEY ("digest", "at") REFERENCES "slice_den"."chain_page_read_tree_items_cokakfjlndgem" ("digest", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."chain_page_read_tree_lakencnpkciin"
-  ADD CONSTRAINT "__chain_page_read_tree_lakencnpkciin_fk_digest_ldmoxivlxi" FOREIGN KEY ("digest") REFERENCES "slice_den"."chain_page_read_tree_lakencnpkciin_row" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__chain_page_read_tree_lakencnpkciin_fk_digest_ldmoxivlxi" FOREIGN KEY ("digest") REFERENCES "slice_den"."__chain_page_read_tree_lakencnpkciin_wke2qksxq5" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_tree_lakencnpkciin_fk_root_step_frbz4lpc64" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_result" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_tree_lakencnpkciin_fk_root_step_o4fqqo6wla" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."chain_page_read_tree_lakencnpkciin_row" ADD CONSTRAINT "__chain_page_read_tree_lakencnpkciin_row_fk_digest_xoi5z4ltkv" FOREIGN KEY ("digest", "__pred_items_3qltx5cx27") REFERENCES "slice_den"."chain_page_read_tree_items_cokakfjlndgem" ("digest", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
-
 ALTER TABLE "slice_den"."chain_page_read_weights_agiabippcbobb"
-  ADD CONSTRAINT "__chain_page_read_weights_agiabippcbobb_fk_digest_ftgcofflar" FOREIGN KEY ("digest") REFERENCES "slice_den"."chain_page_read_weights_agiabippcbobb_row" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__chain_page_read_weights_agiabippcbobb_fk_digest_ftgcofflar" FOREIGN KEY ("digest") REFERENCES "slice_den"."__chain_page_read_weights_agiabippcbobb_ejfk6qhpar" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_weights_agiabippcbobb_fk_root_step_rv2po42axm" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_result" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_weights_agiabippcbobb_fk_root_step_qutwvqfwtk" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -4513,3 +4512,5 @@ ALTER TABLE "slice_den"."writeback_writeback_finish_output_mhjodpondhejh"
 ALTER TABLE "slice_den"."writeback_writeback_input_ljafdhfgfeocc"
   ADD CONSTRAINT "__writeback_writeback_input_ljafdhfgfeocc_fk_root_52sfglnunj" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."writeback_scope" ("root", "scope") MATCH SIMPLE,
   ADD CONSTRAINT "__writeback_writeback_input_ljafdhfgfeocc_fk_scope_c6ffzcrmj7" FOREIGN KEY ("scope", "__tag_kind_writeback_7zc6o24iqm") REFERENCES "slice_den"."writeback_root" ("root", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice_den"."__chain_page_read_tree_lakencnpkciin_wke2qksxq5" ADD CONSTRAINT "__chain_page_read_tree_lakencnpkciin_row_fk_digest_xoi5z4ltkv" FOREIGN KEY ("digest", "__pred_items_3qltx5cx27") REFERENCES "slice_den"."chain_page_read_tree_items_cokakfjlndgem" ("digest", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;

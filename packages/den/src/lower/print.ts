@@ -1031,7 +1031,8 @@ const admittingOf = (l: Lowered): ReadonlyArray<string> => {
  * A step's or a finish's commit: den's facts, a ChangeSet over the flow's graph, and, for a kind that commits through
  * the app's ChangeSet, that ChangeSet, which `kind`'s `writes` makes of the flow's app role `writer`, unioned so both
  * commit in one call: a refusal of either refuses both. The call's reading of the database's clock binds `denNow`, the
- * instant its spawned steps are due from, and each instant of the app's ChangeSet its clock names.
+ * instant its spawned steps are due from, under DenInstant's key, and each instant of the app's ChangeSet its clock
+ * names, under the key its declaration states for each consumer's contract it binds.
  */
 const commitOf = (
 	graph: string,
@@ -1049,8 +1050,15 @@ const commitOf = (
 	]
 	const united =
 		commit.kind === "through" ? `ChangeSet.union(${den}, ${kind}.writes.changes(${writer}))` : den
+	/** The keys of the contracts the clock binds: DenInstant's for den's clock, and the app's its declaration keys. */
+	const keys = [
+		...(Option.isSome(spawns) ? [`${denClock}: denInstantKey`] : []),
+		...(commit.kind === "through" && Arr.isReadonlyArrayNonEmpty(commit.keyed)
+			? [`...${kind}.writes.keys[0]`]
+			: [])
+	]
 	return Arr.isReadonlyArrayNonEmpty(clock)
-		? `clocked(${united}, { ${commas(Arr.map(clock, ([param, unit]) => `${param}: ${q(unit)}`))} }${Option.isSome(spawns) ? `, { ${denClock}: denInstantKey }` : ""})`
+		? `clocked(${united}, { ${commas(Arr.map(clock, ([param, unit]) => `${param}: ${q(unit)}`))} }${Arr.isReadonlyArrayNonEmpty(keys) ? `, { ${commas(keys)} }` : ""})`
 		: united
 }
 

@@ -7634,7 +7634,7 @@ LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_t
 AS $$
 BEGIN
   IF TG_OP = 'TRUNCATE'::"pg_catalog"."text" THEN RAISE EXCEPTION 'a TRUNCATE of an immutable relation removes its rows' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(Built) among the schema''s rules: a closed relation''s facts are never removed'::"pg_catalog"."text"; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN RAISE EXCEPTION 'a DELETE of an immutable relation removes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(Built) among the schema''s rules: a closed relation''s facts are never removed'::"pg_catalog"."text"; END IF;
-  IF "pg_catalog"."record_image_ne"(ROW(OLD."build"), ROW(NEW."build")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(Built) among the schema''s rules, or insert a fact that supersedes it'::"pg_catalog"."text"; END IF;
+  IF "pg_catalog"."record_image_ne"((OLD."build", OLD."at"), (NEW."build", NEW."at")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(Built) among the schema''s rules, or insert a fact that supersedes it'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;
@@ -8514,22 +8514,6 @@ CREATE TRIGGER "__immutable_truncate"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_weight_sby3z3ax7g"();
 
 CREATE TRIGGER "__immutable"
-  BEFORE UPDATE OR DELETE ON "slice_den"."assign_decide_read_nearest_mlemoegfgpbbi_row"
-  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_decide_read_nearest_mlemoegfgpbbi_w3ccj53jyj"();
-
-CREATE TRIGGER "__immutable_truncate"
-  BEFORE TRUNCATE ON "slice_den"."assign_decide_read_nearest_mlemoegfgpbbi_row"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_assign_decide_read_nearest_mlemoegfgpbbi_w3ccj53jyj"();
-
-CREATE TRIGGER "__immutable"
-  BEFORE UPDATE OR DELETE ON "slice_den"."assign_decide_read_seen_oahojgbpphboo_row"
-  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_decide_read_seen_oahojgbpphboo_enimsfuqsy"();
-
-CREATE TRIGGER "__immutable_truncate"
-  BEFORE TRUNCATE ON "slice_den"."assign_decide_read_seen_oahojgbpphboo_row"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_assign_decide_read_seen_oahojgbpphboo_enimsfuqsy"();
-
-CREATE TRIGGER "__immutable"
   BEFORE UPDATE OR DELETE ON "slice_den"."assign_paused"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_paused_5n3oauuljz"();
 
@@ -8578,14 +8562,6 @@ CREATE TRIGGER "__immutable_truncate"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_audit_tvhiun4dxz"();
 
 CREATE TRIGGER "__immutable"
-  BEFORE UPDATE OR DELETE ON "slice_den"."chain_page_read_earlier_dgehlbgebidjc_row"
-  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_earlier_dgehlbgebidjc_dvgtmnwss5"();
-
-CREATE TRIGGER "__immutable_truncate"
-  BEFORE TRUNCATE ON "slice_den"."chain_page_read_earlier_dgehlbgebidjc_row"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_chain_page_read_earlier_dgehlbgebidjc_dvgtmnwss5"();
-
-CREATE TRIGGER "__immutable"
   BEFORE UPDATE OR DELETE ON "slice_den"."chain_page_read_tree_items_cokakfjlndgem"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_items_cokakfjlndgem_vfyivli2ca"();
 
@@ -8600,22 +8576,6 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable_truncate"
   BEFORE TRUNCATE ON "slice_den"."chain_page_read_tree_items_first_ocgolceclfbii"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_items_first_nk3kwpaoy2"();
-
-CREATE TRIGGER "__immutable"
-  BEFORE UPDATE OR DELETE ON "slice_den"."chain_page_read_tree_lakencnpkciin_row"
-  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_lakencnpkciin_row_w6vayttbca"();
-
-CREATE TRIGGER "__immutable_truncate"
-  BEFORE TRUNCATE ON "slice_den"."chain_page_read_tree_lakencnpkciin_row"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_lakencnpkciin_row_w6vayttbca"();
-
-CREATE TRIGGER "__immutable"
-  BEFORE UPDATE OR DELETE ON "slice_den"."chain_page_read_weights_agiabippcbobb_row"
-  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_weights_agiabippcbobb_neiyqz46uv"();
-
-CREATE TRIGGER "__immutable_truncate"
-  BEFORE TRUNCATE ON "slice_den"."chain_page_read_weights_agiabippcbobb_row"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_chain_page_read_weights_agiabippcbobb_neiyqz46uv"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE OR DELETE ON "slice_den"."chain_paused"
@@ -8944,6 +8904,46 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable_truncate"
   BEFORE TRUNCATE ON "slice_den"."writeback_served"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_writeback_served_eyz5dxxige"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE OR DELETE ON "slice_den"."__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_decide_read_nearest_mlemoegfgpbbi_w3ccj53jyj"();
+
+CREATE TRIGGER "__immutable_truncate"
+  BEFORE TRUNCATE ON "slice_den"."__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_assign_decide_read_nearest_mlemoegfgpbbi_w3ccj53jyj"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE OR DELETE ON "slice_den"."__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_decide_read_seen_oahojgbpphboo_enimsfuqsy"();
+
+CREATE TRIGGER "__immutable_truncate"
+  BEFORE TRUNCATE ON "slice_den"."__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_assign_decide_read_seen_oahojgbpphboo_enimsfuqsy"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE OR DELETE ON "slice_den"."__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_earlier_dgehlbgebidjc_dvgtmnwss5"();
+
+CREATE TRIGGER "__immutable_truncate"
+  BEFORE TRUNCATE ON "slice_den"."__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_chain_page_read_earlier_dgehlbgebidjc_dvgtmnwss5"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE OR DELETE ON "slice_den"."__chain_page_read_tree_lakencnpkciin_wke2qksxq5"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_lakencnpkciin_row_w6vayttbca"();
+
+CREATE TRIGGER "__immutable_truncate"
+  BEFORE TRUNCATE ON "slice_den"."__chain_page_read_tree_lakencnpkciin_wke2qksxq5"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_lakencnpkciin_row_w6vayttbca"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE OR DELETE ON "slice_den"."__chain_page_read_weights_agiabippcbobb_ejfk6qhpar"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_weights_agiabippcbobb_neiyqz46uv"();
+
+CREATE TRIGGER "__immutable_truncate"
+  BEFORE TRUNCATE ON "slice_den"."__chain_page_read_weights_agiabippcbobb_ejfk6qhpar"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__immutable_chain_page_read_weights_agiabippcbobb_neiyqz46uv"();
 
 -- The full violation query of law __assign_decide_output_stage_serve_chfjeagmkjoef_in_2ijmnfsknb.
 DO $$

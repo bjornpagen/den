@@ -225,11 +225,14 @@ $$;
 
 ALTER TABLE "slice"."built"
   SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
-  ALTER COLUMN "build" SET STATISTICS 0;
+  ALTER COLUMN "build" SET STATISTICS 0,
+  ALTER COLUMN "at" SET STATISTICS 0;
 DO $$
 BEGIN
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice'::"pg_catalog"."text", 'built'::"pg_catalog"."text", 'build'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'built'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'build'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice'::"pg_catalog"."text", TABLE = 'built'::"pg_catalog"."text", COLUMN = 'build'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice'::"pg_catalog"."text", 'built'::"pg_catalog"."text", 'at'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'built'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'at'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice'::"pg_catalog"."text", TABLE = 'built'::"pg_catalog"."text", COLUMN = 'at'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -810,25 +813,6 @@ BEGIN
 END
 $$;
 
-ALTER TABLE "slice_den"."assign_decide_read_nearest_mlemoegfgpbbi_row"
-  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
-  ALTER COLUMN "digest" SET STATISTICS 0,
-  ALTER COLUMN "passage" SET STATISTICS 0,
-  ALTER COLUMN "topic" SET STATISTICS 0,
-  ALTER COLUMN "distance" SET STATISTICS 0;
-DO $$
-BEGIN
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", 'passage'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'passage'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", COLUMN = 'passage'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", 'topic'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'topic'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", COLUMN = 'topic'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", 'distance'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'distance'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_nearest_mlemoegfgpbbi_row'::"pg_catalog"."text", COLUMN = 'distance'::"pg_catalog"."text"; END IF;
-END
-$$;
-
 ALTER TABLE "slice_den"."assign_decide_read_seen_oahojgbpphboo"
   SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
   ALTER COLUMN "root" SET STATISTICS 0,
@@ -845,22 +829,6 @@ BEGIN
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'ordinal'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_seen_oahojgbpphboo'::"pg_catalog"."text", COLUMN = 'ordinal'::"pg_catalog"."text"; END IF;
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_seen_oahojgbpphboo'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
-END
-$$;
-
-ALTER TABLE "slice_den"."assign_decide_read_seen_oahojgbpphboo_row"
-  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
-  ALTER COLUMN "digest" SET STATISTICS 0,
-  ALTER COLUMN "learner" SET STATISTICS 0,
-  ALTER COLUMN "passage" SET STATISTICS 0;
-DO $$
-BEGIN
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", 'learner'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'learner'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", COLUMN = 'learner'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", 'passage'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'passage'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_decide_read_seen_oahojgbpphboo_row'::"pg_catalog"."text", COLUMN = 'passage'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -1629,25 +1597,6 @@ BEGIN
 END
 $$;
 
-ALTER TABLE "slice_den"."chain_page_read_earlier_dgehlbgebidjc_row"
-  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
-  ALTER COLUMN "digest" SET STATISTICS 0,
-  ALTER COLUMN "feed" SET STATISTICS 0,
-  ALTER COLUMN "seq" SET STATISTICS 0,
-  ALTER COLUMN "n" SET STATISTICS 0;
-DO $$
-BEGIN
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", COLUMN = 'feed'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", 'seq'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'seq'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", COLUMN = 'seq'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", 'n'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'n'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_earlier_dgehlbgebidjc_row'::"pg_catalog"."text", COLUMN = 'n'::"pg_catalog"."text"; END IF;
-END
-$$;
-
 ALTER TABLE "slice_den"."chain_page_read_tree_items_cokakfjlndgem"
   SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
   ALTER COLUMN "digest" SET STATISTICS 0,
@@ -1708,28 +1657,6 @@ BEGIN
 END
 $$;
 
-ALTER TABLE "slice_den"."chain_page_read_tree_lakencnpkciin_row"
-  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
-  ALTER COLUMN "digest" SET STATISTICS 0,
-  ALTER COLUMN "feed" SET STATISTICS 0,
-  ALTER COLUMN "factor" SET STATISTICS 0,
-  ALTER COLUMN "items" SET STATISTICS 0,
-  ALTER COLUMN "__pred_items_3qltx5cx27" SET STATISTICS 0;
-DO $$
-BEGIN
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", COLUMN = 'feed'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'factor'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'factor'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", COLUMN = 'factor'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'items'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'items'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", COLUMN = 'items'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", '__pred_items_3qltx5cx27'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", '__pred_items_3qltx5cx27'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_tree_lakencnpkciin_row'::"pg_catalog"."text", COLUMN = '__pred_items_3qltx5cx27'::"pg_catalog"."text"; END IF;
-END
-$$;
-
 ALTER TABLE "slice_den"."chain_page_read_weights_agiabippcbobb"
   SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
   ALTER COLUMN "root" SET STATISTICS 0,
@@ -1746,22 +1673,6 @@ BEGIN
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'ordinal'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_weights_agiabippcbobb'::"pg_catalog"."text", COLUMN = 'ordinal'::"pg_catalog"."text"; END IF;
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_weights_agiabippcbobb'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
-END
-$$;
-
-ALTER TABLE "slice_den"."chain_page_read_weights_agiabippcbobb_row"
-  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
-  ALTER COLUMN "digest" SET STATISTICS 0,
-  ALTER COLUMN "feed" SET STATISTICS 0,
-  ALTER COLUMN "factor" SET STATISTICS 0;
-DO $$
-BEGIN
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", COLUMN = 'feed'::"pg_catalog"."text"; END IF;
-  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", 'factor'::"pg_catalog"."text", false);
-  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'factor'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_page_read_weights_agiabippcbobb_row'::"pg_catalog"."text", COLUMN = 'factor'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -5411,5 +5322,97 @@ BEGIN
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'writeback_writeback_input_ljafdhfgfeocc'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'attempt'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_writeback_input_ljafdhfgfeocc'::"pg_catalog"."text", COLUMN = 'attempt'::"pg_catalog"."text"; END IF;
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'writeback_writeback_input_ljafdhfgfeocc'::"pg_catalog"."text", '__tag_kind_writeback_7zc6o24iqm'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'writeback_writeback_input_ljafdhfgfeocc'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", '__tag_kind_writeback_7zc6o24iqm'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_writeback_input_ljafdhfgfeocc'::"pg_catalog"."text", COLUMN = '__tag_kind_writeback_7zc6o24iqm'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "digest" SET STATISTICS 0,
+  ALTER COLUMN "passage" SET STATISTICS 0,
+  ALTER COLUMN "topic" SET STATISTICS 0,
+  ALTER COLUMN "distance" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", 'passage'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'passage'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", COLUMN = 'passage'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", 'topic'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'topic'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", COLUMN = 'topic'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", 'distance'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'distance'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__assign_decide_read_nearest_mlemoegfgpbbi_qeus34p44q'::"pg_catalog"."text", COLUMN = 'distance'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "digest" SET STATISTICS 0,
+  ALTER COLUMN "learner" SET STATISTICS 0,
+  ALTER COLUMN "passage" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", 'learner'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'learner'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", COLUMN = 'learner'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", 'passage'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'passage'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__assign_decide_read_seen_oahojgbpphboo_dslrbm3ew6'::"pg_catalog"."text", COLUMN = 'passage'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "digest" SET STATISTICS 0,
+  ALTER COLUMN "feed" SET STATISTICS 0,
+  ALTER COLUMN "seq" SET STATISTICS 0,
+  ALTER COLUMN "n" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", COLUMN = 'feed'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", 'seq'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'seq'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", COLUMN = 'seq'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", 'n'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'n'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_earlier_dgehlbgebidjc_pxinir35ih'::"pg_catalog"."text", COLUMN = 'n'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."__chain_page_read_tree_lakencnpkciin_wke2qksxq5"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "digest" SET STATISTICS 0,
+  ALTER COLUMN "feed" SET STATISTICS 0,
+  ALTER COLUMN "factor" SET STATISTICS 0,
+  ALTER COLUMN "items" SET STATISTICS 0,
+  ALTER COLUMN "__pred_items_3qltx5cx27" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", COLUMN = 'feed'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'factor'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'factor'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", COLUMN = 'factor'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'items'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'items'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", COLUMN = 'items'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", '__pred_items_3qltx5cx27'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", '__pred_items_3qltx5cx27'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_tree_lakencnpkciin_wke2qksxq5'::"pg_catalog"."text", COLUMN = '__pred_items_3qltx5cx27'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."__chain_page_read_weights_agiabippcbobb_ejfk6qhpar"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "digest" SET STATISTICS 0,
+  ALTER COLUMN "feed" SET STATISTICS 0,
+  ALTER COLUMN "factor" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'digest'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", COLUMN = 'digest'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'feed'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", COLUMN = 'feed'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", 'factor'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'factor'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = '__chain_page_read_weights_agiabippcbobb_ejfk6qhpar'::"pg_catalog"."text", COLUMN = 'factor'::"pg_catalog"."text"; END IF;
 END
 $$;

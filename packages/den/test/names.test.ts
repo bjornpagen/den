@@ -68,11 +68,12 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * readable concatenation of two identities' names can be one name) and run long, and each read's query nested to any of
  * the depths its box holds under attachments of long names: a flow whose name fits den's longest word beside it and
  * whose steps' names fit a roster's handle is lowered, never refused, and any other is refused at den's door, naming
- * the flow or the step; every name it lowers to, each records' root and each attachment path's name among them, is
- * admitted by grizzle's declared-name rule; every name is the flow's singleton or of the one derived form, its
- * conversion itself and its last segment a digest; no two declarations share a conversion; every attachment path of
- * every read is named; and a schema of every relation and roster the lowering names, and every relation of every
- * read's records, compiles through grizzle.
+ * the flow or the step; every name it lowers to, each attachment path's name among them, is admitted by grizzle's
+ * declared-name rule; every name is the flow's singleton or of the one derived form, its conversion itself and its last
+ * segment a digest; no two declarations share a conversion, each records' root (`${stem}Row`, grizzle's derived name)
+ * among them; every attachment path of every read is named, and grizzle's dynamic door builds each read's records with
+ * every relation beside the root named as den states; and a schema of every relation and roster the lowering names and
+ * every read's records, their relations and laws, compiles through grizzle.
  *
  * Kept case: metis's essay flow, whose item step reads the stimuli its item cites with each stimulus's document and the
  * document's scan nested under the citation (metis packages/essay-grading/src/documents.ts and reads.ts, delivery's
@@ -142,8 +143,11 @@ const citedWithScans = nodes().attach(
 	"array"
 )
 
-/** An attachment's name longer than any identifier: a path of one already passes PostgreSQL's bytes. */
-const deeper = "everyDocumentTheCitationNamesWithEachScannedNodeOfItAndTheEntitiesOfItsAttributes"
+/**
+ * A long attachment's name, its conversion within PostgreSQL's identifier, as the count column its parent's records hold
+ * under it must be: a path of two already passes PostgreSQL's bytes.
+ */
+const deeper = "everyDocumentTheCitationNamesWithItsScannedNodes"
 
 /** A query nested six levels deep under the one long attachment name, repeated at every level. */
 const deep1 = nodes().attach(deeper, () => nodes(), "array")
@@ -301,9 +305,6 @@ const longestWordBytes = Str.length("_requested_with")
 /** A derived name's digest: its last segment, thirteen letters from a to p. */
 const DIGEST = regex("^[a-p]{13}$")
 
-/** The suffix grizzle's records give the stem of a read's records, their root's. */
-const ROW = regex("Row$")
-
 /** Whether a name is of the derived form: its conversion itself, its last segment a digest. */
 const derivedForm = (name: string): boolean =>
 	conversionOf(name) === name && DIGEST.test(Arr.lastNonEmpty(Str.split(name, "_")))
@@ -351,7 +352,7 @@ const namesOf = (lowered: Lowered): ReadonlyArray<string> => [
 	...Arr.map(lowered.rosters, (r) => r.name),
 	...Arr.flatMap(Option.toArray(lowered.seats), (st) => [st.counts.name, st.live]),
 	...Arr.flatMap(lowered.steps, (s) =>
-		Arr.flatMap(s.reads, (read) => [`${read.stem}Row`, ...Arr.map(read.paths, (at) => at.name)])
+		Arr.flatMap(s.reads, (read) => Arr.map(read.paths, (at) => at.name))
 	)
 ]
 
@@ -363,32 +364,47 @@ const namesHold = (declaredFlow: AnyFlow, lowered: Lowered, what: string): void 
 		const parsed = parseDeclaredName(name)
 		assert.isTrue(parsed.ok, `${what}: grizzle admits ${name}`)
 		assert.isTrue(
-			Str.startsWith(lowered.prefix)(name) || derivedForm(Str.replace(ROW, "")(name)),
+			Str.startsWith(lowered.prefix)(name) || derivedForm(name),
 			`${what}: ${name} is the flow's singleton or of the derived form`
 		)
 		assert.isAtMost(Str.length(conversionOf(name)), nameBytes, `${what}: ${name} fits`)
 	})
-	const conversions = Arr.map(names, conversionOf)
+	const conversions = Arr.map(
+		[...names, ...Arr.flatMap(lowered.steps, (s) => Arr.map(s.reads, (read) => `${read.stem}Row`))],
+		conversionOf
+	)
 	assert.strictEqual(
 		Arr.dedupe(conversions).length,
 		conversions.length,
 		`${what}: no two declarations meet under one name`
 	)
 	assert.strictEqual(Arr.dedupe(checks).length, checks.length, `${what}: no two checks meet`)
-	Arr.forEach(stepsOf(declaredFlow.kinds), (kind) =>
-		Arr.forEach(
+	const records = Arr.flatMap(stepsOf(declaredFlow.kinds), (kind) =>
+		Arr.flatMap(
 			kind.reads.kind === "query" ? Rec.toEntries(kind.reads.named) : [],
 			([readName, readQuery]) =>
-				assert.deepStrictEqual(
-					Arr.flatMap(lowered.steps, (s) =>
-						s.name === kind.name
-							? Arr.flatMap(s.reads, (read) =>
-									read.name === readName ? Arr.map(read.paths, (at) => at.path) : []
+				Arr.flatMap(lowered.steps, (s) =>
+					s.name === kind.name
+						? Arr.flatMap(s.reads, (read) => {
+								if (read.name !== readName) {
+									return []
+								}
+								assert.deepStrictEqual(
+									Arr.map(read.paths, (at) => at.path),
+									recordPaths(readQuery),
+									`${what}: every attachment path of ${readName} is named`
 								)
-							: []
-					),
-					recordPaths(readQuery),
-					`${what}: every attachment path of ${readName} is named`
+								const made = Dynamic.records(read.stem, readQuery, { digest: sha256 }, ["digest"], {
+									names: Rec.fromEntries(Arr.map(read.paths, (at) => [at.path, at.name] as const))
+								})
+								assert.deepStrictEqual(
+									Arr.map(made.relations, (r) => r.name),
+									[`${read.stem}Row`, ...Arr.map(read.paths, (at) => at.name)],
+									`${what}: every relation of ${readName}'s records beside its root named as den states`
+								)
+								return [made]
+							})
+						: []
 				)
 		)
 	)
@@ -402,14 +418,13 @@ const namesHold = (declaredFlow: AnyFlow, lowered: Lowered, what: string): void 
 			r.key
 		)
 	)
-	const records = Arr.flatMap(lowered.steps, (s) =>
-		Arr.flatMap(s.reads, (read) =>
-			Arr.map([`${read.stem}Row`, ...Arr.map(read.paths, (at) => at.name)], (name) =>
-				Dynamic.relation(name, { digest: sha256 }, ["digest"])
-			)
+	lawsOf(
+		schema(
+			"Names",
+			[...rosters.values(), ...relations, ...Arr.flatMap(records, (made) => made.relations)],
+			Arr.flatMap(records, (made) => made.rules)
 		)
 	)
-	lawsOf(schema("Names", [...rosters.values(), ...relations, ...records], []))
 }
 
 /**

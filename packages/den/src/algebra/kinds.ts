@@ -3,6 +3,7 @@ import type {
 	AnyRelation,
 	ClockUnit,
 	Clocked,
+	clocked,
 	EvidenceOfQuery,
 	Fact,
 	HeadOf,
@@ -308,17 +309,27 @@ export interface ClockBinding {
 }
 
 /**
+ * What grizzle's clocked(program, binding, keys) takes after its binding for the ChangeSet C bound to the clock by B:
+ * the keys of the consumers' contracts B binds, by parameter, none where it binds no contract's parameter. Read off
+ * clocked's own signature, so a binding is keyed exactly as clocked keys it.
+ */
+export type ClockKeys<C extends AnyChangeSet, B extends ClockBinding> =
+	Parameters<typeof clocked<C, B>> extends readonly [unknown, unknown, ...infer K] ? K : never
+
+/**
  * What a step or a finish commits into the app's relations beside its result: a ChangeSet `changes` makes of the flow's
  * app role, which den's commit unions with its own facts, so both commit in one call, in one transaction, and a
  * refusal of either refuses both (the essay grader's evaluation, recorded through the app's own ChangeSet with the
- * draw's result). `clock` binds the ChangeSet's instants to the database's clock, each in its unit, as the app's own
- * workload would serve it `clocked`; a body supplies every other parameter and the facts of its array members, the
- * ChangeSet's served input. A plain insert is the ChangeSet of that one member.
+ * draw's result). `clock` binds the ChangeSet's instants to the database's clock, each in its unit, and `keys` holds the
+ * key of each consumer's contract it binds, as the app's own workload would serve it `clocked(program, binding,
+ * keys)`; a body supplies every other parameter and the facts of its array members, the ChangeSet's served input. A
+ * plain insert is the ChangeSet of that one member.
  */
-export interface Through<W, C, B> {
+export interface Through<W, C, B, K> {
 	readonly kind: "through"
 	readonly changes: (role: W) => C
 	readonly clock: B
+	readonly keys: K
 }
 
 /** A step that commits nothing into the app's relations beside its result. */
@@ -333,6 +344,7 @@ export type AnyCommit =
 			readonly kind: "through"
 			readonly changes: (role: never) => unknown
 			readonly clock: ClockBinding
+			readonly keys: readonly [] | readonly [keys: { readonly [param: string]: symbol }]
 	  }
 
 /**
@@ -347,11 +359,15 @@ type FreeOfDen<C> = [Extract<keyof ParamsOf<C>, DenCommitParam>] extends [never]
 			]: never
 		}
 
-/** A step's commit through `changes`, a ChangeSet over the flow's app role, its instants bound by `clock`. */
+/**
+ * A step's commit through `changes`, a ChangeSet over the flow's app role, its instants bound by `clock`, under `keys`,
+ * the keys of the consumers' contracts it binds, as clocked takes them (ClockKeys).
+ */
 export const through = <W, const C extends AnyChangeSet, const B extends ClockBinding>(
 	changes: (role: W) => C & FreeOfDen<C>,
-	clock: B
-): Through<W, C, B> => ({ kind: "through", changes, clock })
+	clock: B,
+	...keys: ClockKeys<C, B>
+): Through<W, C, B, ClockKeys<C, B>> => ({ kind: "through", changes, clock, keys })
 
 /** A step that commits nothing beside its result. */
 export const writesNothing: CommitsNothing = { kind: "nothing" }

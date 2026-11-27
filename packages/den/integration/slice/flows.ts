@@ -31,13 +31,14 @@ import {
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
 import { laterOf } from "@bjornpagen/den/algebra/later"
-import { ChangeSet, Vector } from "@bjornpagen/grizzle"
+import { ChangeSet, query, Vector } from "@bjornpagen/grizzle"
 import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
 import { SliceBase } from "#integration/slice/base.ts"
 import { DecideReads, HourlyOf, PageReads, WantedOf } from "#integration/slice/reads.ts"
 import {
 	Assigned,
 	Built,
+	builtAtKey,
 	Chimed,
 	Concluded,
 	Copied,
@@ -499,12 +500,25 @@ const Build = step(
 		retry: untilSettled,
 		waits: none,
 		due: atSpawn,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Built, []), {})
+		writes: through(
+			(role: typeof Loader) =>
+				ChangeSet.empty(role).insert(
+					Built,
+					query(role).rule((r) =>
+						r.find({
+							build: r.param("build", Built.fields.build),
+							at: r.param("builtAt", Built.fields.at)
+						})
+					)
+				),
+			{ builtAt: "millis" },
+			{ builtAt: builtAtKey }
+		)
 	},
 	(input) =>
 		Effect.succeed({
 			output: { build: input.build },
-			writes: { params: {}, facts: { insert: { Built: [{ build: input.build }] } } }
+			writes: { params: { build: input.build }, facts: {} }
 		})
 )
 

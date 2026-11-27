@@ -19,8 +19,9 @@ import { framedText } from "#runtime/identity.ts"
  *   nests them, so no fixed width holds it readably; its form is always `<stem>_<digest>`, never readable where it would
  *   fit, so a name never changes form for its length: the stem its identity's segments cut at a segment boundary to
  *   stemBudget bytes, and the digest digestLetters letters of the SHA-256 of its canonical encoding. Already in its
- *   conversion, so its conversion is itself, and within nameBytes by construction, with room for the longest
- *   suffix grizzle adds to a name den gives it (recordsRowSuffix).
+ *   conversion, so its conversion is itself, and within nameBytes by construction. The names grizzle's records derive
+ *   from a stem den gives them, their root's `${stem}Row`, are grizzle's derived names, its identifiers hashed, so
+ *   den's stem leaves them no room.
  *
  * Two distinct derived identities meet under one name only where their stems and their digests do, which the census
  * of a flow's names refuses (`censusOf`), as it refuses two declarations of any form that meet under one conversion.
@@ -30,10 +31,7 @@ import { framedText } from "#runtime/identity.ts"
  * its length (framedText). The stem is read off the same pieces and is presentation only.
  */
 
-/**
- * The suffix grizzle's records add to the stem den gives them, their root relation's (`${stem}Row`): the longest grizzle
- * adds to any name den derives, its conversion an underscore and its word.
- */
+/** The suffix grizzle's records add to the stem den gives them, naming their root relation (`${stem}Row`). */
 const recordsRowSuffix = "Row"
 
 /**
@@ -55,17 +53,16 @@ const digestLetters = 13
 const firstLetter = 0x61
 
 /**
- * The bytes a derived name's stem may take: nameBytes less the suffix grizzle's records add (recordsRowSuffix,
- * an underscore and its word), the underscore before the digest, and the digest. No limit of its own: PostgreSQL's
- * identifier read against the derived name's form.
+ * The bytes a derived name's stem may take: nameBytes less the underscore before the digest and the digest. No limit
+ * of its own: PostgreSQL's identifier read against the derived name's form.
  *
  * @limitKind derived
  * @owner den's naming door (packages/den/src/lower/names.ts)
  * @unit bytes
  * @scope a derived name's stem
- * @derivation nameBytes - (1 + "Row".length) - 1 - digestLetters = 63 - 4 - 1 - 13 = 45
+ * @derivation nameBytes - 1 - digestLetters = 63 - 1 - 13 = 49
  */
-const stemBudget = nameBytes - (1 + recordsRowSuffix.length) - 1 - digestLetters
+const stemBudget = nameBytes - 1 - digestLetters
 
 /**
  * What a derived name names, the first part of its identity: a kind's or a join's input, output or error relation; one

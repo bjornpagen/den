@@ -1,5 +1,15 @@
 import { Text } from "@bjornpagen/den/lower/keys"
-import { closed, closedId, natural, pg, relation, sha256, str, unit } from "@bjornpagen/grizzle"
+import {
+	closed,
+	closedId,
+	contract,
+	natural,
+	pg,
+	relation,
+	sha256,
+	str,
+	unit
+} from "@bjornpagen/grizzle"
 
 /**
  * The toy app's own relations, which den's steps write and read and its finishes move forward: the items a feed's pages
@@ -76,8 +86,14 @@ export const Heard = relation("Heard", { key: Name, answered: pg.boolean }, ["ke
 /** An hour a bell of the clock chimed, by the instant its schedule named and the bell, a member of its roster. */
 export const Chimed = relation("Chimed", { hour: pg.bigint, bell: Name }, ["hour", "bell"])
 
-/** A build the Gold step made, by its number. */
-export const Built = relation("Built", { build: natural }, ["build"])
+/** BuiltAt's key: the app's capability to mint the instant of a build, which a clocked parameter binds under it. */
+export const builtAtKey = Symbol("BuiltAt")
+
+/** The instant the Gold step recorded a build, the database's reading in milliseconds: a contract of the app's own. */
+const BuiltAt = contract<typeof builtAtKey>()("BuiltAt", pg.bigint)
+
+/** A build the Gold step made, by its number, at the instant its commit read the database's clock. */
+export const Built = relation("Built", { build: natural, at: BuiltAt }, ["build"])
 
 /**
  * The dimensions of a passage's embedding, the suite's own width: four, where a production embedding (Gemini Embedding
