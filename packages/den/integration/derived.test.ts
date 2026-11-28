@@ -417,7 +417,6 @@ const composer = role(App, "composer", wholeEntriesOf(App), {
 export default defineConfig({
 	schemas: [App],
 	logins: [login(App, "composing", [composer], { workload: [composerPrograms(composer)] })],
-	contracts: [],
 	migrations: "migrations",
 	rolePrefixBytes: 13,
 	connection: () => {

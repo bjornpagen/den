@@ -3,7 +3,7 @@ CREATE PUBLICATION "__live_wzkq6p2yii"
   WITH (publish_generated_columns = stored);
 
 SELECT "r1"."c1"::"slice"."__domain_gfw43vigph" AS "value"
-FROM (VALUES (2::bigint)) AS "r1"("c1");
+FROM (VALUES (2::bigint) OFFSET 0) AS "r1"("c1");
 
 CREATE ROLE :"slice_seats__app" LOGIN NOINHERIT;
 
@@ -1298,12 +1298,12 @@ SELECT "v305"."root", "v305"."scope", "v305"."attempt"
 FROM "slice_den"."__writeback_writeback_input_zalrrn5ggs" AS "v305";
 
 CREATE VIEW "slice_seats__fan_den"."fan_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
-SELECT "r19"."c64", "r19"."c65", ("slice"."__fan_resource_names_tugc7yp6xo"())["r19"."c65" + 1]::"pg_catalog"."text", "r19"."c66", "r19"."c67", "r19"."c68", "r19"."c69"
-FROM (SELECT "r1"."attempt"::"slice"."__domain_gfw43vigph", "r1"."resource"::"slice_den"."fan_resource", "r1"."root", "r1"."seat"::"slice"."__domain_gfw43vigph", "r1"."step", "r4"."c9"::"slice"."__domain_mxhao3k6ss" FROM "slice_den"."fan_hold" AS "r1", LATERAL (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."fan_claim" AS "r3" WHERE "r1"."attempt" = "r3"."attempt" AND "r1"."root" = "r3"."root" AND "r1"."step" = "r3"."step" OFFSET 0) AS "r4"("c6", "c7", "c8", "c9") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."fan_ended" AS "r7" WHERE "r7"."attempt" = "r1"."attempt" AND "r7"."root" = "r1"."root" AND "r7"."step" = "r1"."step" AND "r7"."attempt" = "r1"."attempt" AND "r7"."root" = "r1"."root" AND "r7"."step" = "r1"."step" OFFSET 0) AS "r10"("c28", "c29", "c30")) AND NOT EXISTS (SELECT 1 FROM (SELECT "r12"."attempt", "r12"."root", "r12"."step" FROM "slice_den"."fan_held" AS "r12" WHERE "r12"."attempt" = "r1"."attempt" AND "r12"."root" = "r1"."root" AND "r12"."step" = "r1"."step" AND "r12"."attempt" = "r1"."attempt" AND "r12"."root" = "r1"."root" AND "r12"."step" = "r1"."step" OFFSET 0) AS "r15"("c43", "c44", "c45"))) AS "r19"("c64", "c65", "c66", "c67", "c68", "c69");
+SELECT "v1n1"."c64", "v1n1"."c65", ("slice"."__fan_resource_names_tugc7yp6xo"())["v1n1"."c65" + 1]::"pg_catalog"."text", "v1n1"."c66", "v1n1"."c67", "v1n1"."c68", "v1n1"."c69"
+FROM (SELECT "v1n2"."attempt"::"slice"."__domain_gfw43vigph", "v1n2"."resource"::"slice_den"."fan_resource", "v1n2"."root", "v1n2"."seat"::"slice"."__domain_gfw43vigph", "v1n2"."step", "v1n3"."c9"::"slice"."__domain_mxhao3k6ss" FROM "slice_den"."fan_hold" AS "v1n2" CROSS JOIN LATERAL (SELECT "v1n4"."attempt", "v1n4"."root", "v1n4"."step", "v1n4"."until" FROM "slice_den"."fan_claim" AS "v1n4" WHERE "v1n2"."attempt" = "v1n4"."attempt" AND "v1n2"."root" = "v1n4"."root" AND "v1n2"."step" = "v1n4"."step" OFFSET 0) AS "v1n3"("c6", "c7", "c8", "c9") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "v1n6"."attempt", "v1n6"."root", "v1n6"."step" FROM "slice_den"."fan_ended" AS "v1n6" WHERE "v1n6"."attempt" = "v1n2"."attempt" AND "v1n6"."root" = "v1n2"."root" AND "v1n6"."step" = "v1n2"."step" OFFSET 0) AS "v1n5"("c28", "c29", "c30")) AND NOT EXISTS (SELECT 1 FROM (SELECT "v1n8"."attempt", "v1n8"."root", "v1n8"."step" FROM "slice_den"."fan_held" AS "v1n8" WHERE "v1n8"."attempt" = "v1n2"."attempt" AND "v1n8"."root" = "v1n2"."root" AND "v1n8"."step" = "v1n2"."step" OFFSET 0) AS "v1n7"("c43", "c44", "c45")) OFFSET 0::bigint) AS "v1n1"("c64", "c65", "c66", "c67", "c68", "c69");
 
 CREATE VIEW "slice_seats__review_den"."review_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
-SELECT "r19"."c64", "r19"."c65", ("slice"."__review_resource_names_ixi3gnpcnp"())["r19"."c65" + 1]::"pg_catalog"."text", "r19"."c66", "r19"."c67", "r19"."c68", "r19"."c69"
-FROM (SELECT "r1"."attempt"::"slice"."__domain_gfw43vigph", "r1"."resource"::"slice_den"."review_resource", "r1"."root", "r1"."seat"::"slice"."__domain_gfw43vigph", "r1"."step", "r4"."c9"::"slice"."__domain_mxhao3k6ss" FROM "slice_den"."review_hold" AS "r1", LATERAL (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."review_claim" AS "r3" WHERE "r1"."attempt" = "r3"."attempt" AND "r1"."root" = "r3"."root" AND "r1"."step" = "r3"."step" OFFSET 0) AS "r4"("c6", "c7", "c8", "c9") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."review_ended" AS "r7" WHERE "r7"."attempt" = "r1"."attempt" AND "r7"."root" = "r1"."root" AND "r7"."step" = "r1"."step" AND "r7"."attempt" = "r1"."attempt" AND "r7"."root" = "r1"."root" AND "r7"."step" = "r1"."step" OFFSET 0) AS "r10"("c28", "c29", "c30")) AND NOT EXISTS (SELECT 1 FROM (SELECT "r12"."attempt", "r12"."root", "r12"."step" FROM "slice_den"."review_held" AS "r12" WHERE "r12"."attempt" = "r1"."attempt" AND "r12"."root" = "r1"."root" AND "r12"."step" = "r1"."step" AND "r12"."attempt" = "r1"."attempt" AND "r12"."root" = "r1"."root" AND "r12"."step" = "r1"."step" OFFSET 0) AS "r15"("c43", "c44", "c45"))) AS "r19"("c64", "c65", "c66", "c67", "c68", "c69");
+SELECT "v1n1"."c64", "v1n1"."c65", ("slice"."__review_resource_names_ixi3gnpcnp"())["v1n1"."c65" + 1]::"pg_catalog"."text", "v1n1"."c66", "v1n1"."c67", "v1n1"."c68", "v1n1"."c69"
+FROM (SELECT "v1n2"."attempt"::"slice"."__domain_gfw43vigph", "v1n2"."resource"::"slice_den"."review_resource", "v1n2"."root", "v1n2"."seat"::"slice"."__domain_gfw43vigph", "v1n2"."step", "v1n3"."c9"::"slice"."__domain_mxhao3k6ss" FROM "slice_den"."review_hold" AS "v1n2" CROSS JOIN LATERAL (SELECT "v1n4"."attempt", "v1n4"."root", "v1n4"."step", "v1n4"."until" FROM "slice_den"."review_claim" AS "v1n4" WHERE "v1n2"."attempt" = "v1n4"."attempt" AND "v1n2"."root" = "v1n4"."root" AND "v1n2"."step" = "v1n4"."step" OFFSET 0) AS "v1n3"("c6", "c7", "c8", "c9") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "v1n6"."attempt", "v1n6"."root", "v1n6"."step" FROM "slice_den"."review_ended" AS "v1n6" WHERE "v1n6"."attempt" = "v1n2"."attempt" AND "v1n6"."root" = "v1n2"."root" AND "v1n6"."step" = "v1n2"."step" OFFSET 0) AS "v1n5"("c28", "c29", "c30")) AND NOT EXISTS (SELECT 1 FROM (SELECT "v1n8"."attempt", "v1n8"."root", "v1n8"."step" FROM "slice_den"."review_held" AS "v1n8" WHERE "v1n8"."attempt" = "v1n2"."attempt" AND "v1n8"."root" = "v1n2"."root" AND "v1n8"."step" = "v1n2"."step" OFFSET 0) AS "v1n7"("c43", "c44", "c45")) OFFSET 0::bigint) AS "v1n1"("c64", "c65", "c66", "c67", "c68", "c69");
 
 GRANT :"slice_seats__assign_coordinator" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
 
@@ -5530,6 +5530,8 @@ COMMENT ON INDEX "slice_den"."__assign_assignment_input_exclude_ix_scope_pred_fk
 
 COMMENT ON INDEX "slice_den"."__assign_assignment_input_near_ix_scope_pred_ordinal_bta37gplsn" IS 'btree index AssignAssignmentInputNear(scope, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
+COMMENT ON INDEX "slice_den"."__assign_claim_ix_root_step_until_bengwfhtac" IS 'btree index AssignClaim(root, step, until)';
+
 COMMENT ON INDEX "slice_den"."__assign_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_m6yuaw7627" IS 'btree index AssignClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
 COMMENT ON INDEX "slice_den"."__assign_decide_input_exclude_ix_step_pred_ordinal_e_jpvevw4qhx" IS 'btree index AssignDecideInputExclude(step, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
@@ -5556,6 +5558,8 @@ COMMENT ON INDEX "slice_den"."__assign_step_ix_root_scope_kind_drsz5mwtr4" IS 'b
 
 COMMENT ON INDEX "slice_den"."__chain_chain_run_input_ix_scope_iuq7js6bfa" IS 'btree index ChainChainRunInput(scope)';
 
+COMMENT ON INDEX "slice_den"."__chain_claim_ix_root_step_until_3ztxtou3r3" IS 'btree index ChainClaim(root, step, until)';
+
 COMMENT ON INDEX "slice_den"."__chain_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_sic5xhruts" IS 'btree index ChainClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
 COMMENT ON INDEX "slice_den"."__chain_ordered_input_ix_scope_lbnwnucdyj" IS 'btree index ChainOrderedInput(scope)';
@@ -5577,6 +5581,8 @@ COMMENT ON INDEX "slice_den"."__chain_skipped_ix_by_2c45vyfwzy" IS 'btree index 
 COMMENT ON INDEX "slice_den"."__chain_skipped_ix_scope_jvrcbbmf2m" IS 'btree index ChainSkipped(scope)';
 
 COMMENT ON INDEX "slice_den"."__chain_step_ix_root_scope_kind_7y3wfct5o4" IS 'btree index ChainStep(root, scope, kind)';
+
+COMMENT ON INDEX "slice_den"."__clock_claim_ix_root_step_until_vgh4hs4hyb" IS 'btree index ClockClaim(root, step, until)';
 
 COMMENT ON INDEX "slice_den"."__clock_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_76aawvjtpr" IS 'btree index ClockClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
@@ -5619,6 +5625,8 @@ COMMENT ON INDEX "slice_den"."__fan_sweep_input_ix_scope_zvab3un5km" IS 'btree i
 COMMENT ON INDEX "slice_den"."__fan_wanted_input_ix_scope_57fqk3rwec" IS 'btree index FanWantedInput(scope)';
 
 COMMENT ON INDEX "slice_den"."__fan_within_ix_root_parent_kind_3fui4hg5uo" IS 'btree index FanWithin(root, parent, kind)';
+
+COMMENT ON INDEX "slice_den"."__retry_claim_ix_root_step_until_g7grjg6are" IS 'btree index RetryClaim(root, step, until)';
 
 COMMENT ON INDEX "slice_den"."__retry_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_66l375ycrl" IS 'btree index RetryClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
@@ -5664,6 +5672,8 @@ COMMENT ON INDEX "slice_den"."__review_step_ix_root_scope_kind_y6rly7sw5c" IS 'b
 
 COMMENT ON INDEX "slice_den"."__review_within_ix_root_parent_kind_olszbr3xpq" IS 'btree index ReviewWithin(root, parent, kind)';
 
+COMMENT ON INDEX "slice_den"."__sync_claim_ix_root_step_until_dyjqsqcxg7" IS 'btree index SyncClaim(root, step, until)';
+
 COMMENT ON INDEX "slice_den"."__sync_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_2krihntk52" IS 'btree index SyncClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
 COMMENT ON INDEX "slice_den"."__sync_exclusive_ix_kind_key_pred_turn_qryngij_6_c_4_xscx3i4mti" IS 'btree index SyncExclusive(kind, key, __pred_turn_qryngij6c4)';
@@ -5681,6 +5691,8 @@ COMMENT ON INDEX "slice_den"."__sync_skipped_ix_scope_d5pw2mcp56" IS 'btree inde
 COMMENT ON INDEX "slice_den"."__sync_step_ix_root_scope_l4sfn7gzd3" IS 'btree index SyncStep(root, scope)';
 
 COMMENT ON INDEX "slice_den"."__sync_sync_run_input_ix_scope_xmn3bafu67" IS 'btree index SyncSyncRunInput(scope)';
+
+COMMENT ON INDEX "slice_den"."__writeback_claim_ix_root_step_until_zqzgmv43ml" IS 'btree index WritebackClaim(root, step, until)';
 
 COMMENT ON INDEX "slice_den"."__writeback_claim_ix_step_pred_attempt_oey_4_tm_5_6cvrydc2i4" IS 'btree index WritebackClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 

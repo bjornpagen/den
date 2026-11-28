@@ -1,6 +1,5 @@
 import { contract, Num, pg, query, relation, schema, v } from "@bjornpagen/grizzle"
-import { contractCheck } from "@bjornpagen/grizzle/compile"
-import { contractParser } from "@bjornpagen/grizzle/runtime"
+import { contractParser } from "@bjornpagen/grizzle/contract"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -41,8 +40,8 @@ import { type Placement, printFragment } from "#lower/print.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
- * A field of a consumer's contract (algebra/kinds.ts contractInput), from the contract's checked mint, grizzle's runtime
- * contractParser(file, contract, key) over the contract's checker file, and its base's schema, as metis's essay binding takes a sitting's stage, qti-pie's
+ * A field of a consumer's contract (algebra/kinds.ts contractInput), from the contract's checked mint, grizzle's
+ * contractParser(contract, key), and its base's schema, as metis's essay binding takes a sitting's stage, qti-pie's
  * SittingKey, where a plain Schema.BigInt could not type the read parameter of SittingKey its step's read binds.
  *
  * - Decoding reads a value of the base and holds it to the contract: a value inside it decodes as itself, minted under
@@ -67,15 +66,8 @@ const SittingKey = contract<typeof sittingKeyKey>()("SittingKey", pg.bigint, (k)
 	Num.within(k, 0n, 2n ** 63n - 1n)
 )
 
-/**
- * SittingKey's checked mint over its checker file, as qti-pie exports it beside its mint, here over the file's value
- * generate writes (contractCheck), with no generate run.
- */
-const sittingKeyParser = contractParser(
-	Result.getOrThrow(contractCheck(SittingKey)),
-	SittingKey,
-	sittingKeyKey
-)
+/** SittingKey's checked mint, its checker derived from the contract, as qti-pie exports it beside its mint. */
+const sittingKeyParser = contractParser(SittingKey, sittingKeyKey)
 
 /** A sitting's stage as a step's input holds it, metis's essay shape. */
 const Stage = contractInput(sittingKeyParser, Schema.BigInt)

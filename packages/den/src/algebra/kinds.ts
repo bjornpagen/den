@@ -16,7 +16,8 @@ import type {
 	SchemaSource,
 	Vector
 } from "@bjornpagen/grizzle"
-import type { ContractRefused, InputOf } from "@bjornpagen/grizzle/runtime"
+import type { ContractRefused } from "@bjornpagen/grizzle/contract"
+import type { InputOf } from "@bjornpagen/grizzle/runtime"
 import { regex } from "arkregex"
 import {
 	Array as Arr,
@@ -249,9 +250,9 @@ export type ContractBaseSchema = Schema.String | Schema.BigInt | Schema.Finite |
 export type ContractField = FieldBase & { readonly name: string }
 
 /**
- * A consumer's contract parser as den takes it, grizzle's runtime contractParser's answer, built by the key's holder over
- * the contract's checker file with no compiler loaded: the contract, a grizzle field, by its name, and its checked mint
- * of a value of its base, M the contract's host type.
+ * A consumer's contract parser as den takes it, grizzle's contractParser's answer (@bjornpagen/grizzle/contract), built by
+ * the key's holder, its checker derived from the contract itself: the contract, a grizzle field, by its name, and its
+ * checked mint of a value of its base, M the contract's host type.
  */
 export interface ContractParserOf<A, M extends A, C extends ContractField> {
 	readonly contract: C
@@ -280,8 +281,8 @@ export interface ContractInputOf {
 const contractInputs = new WeakMap<Schema.Top, ContractInputOf>()
 
 /**
- * A field of a consumer's contract, from its parser, grizzle's runtime contractParser(file, contract, key) over the
- * contract's checker file, which only the key's holder builds and exports beside its mint, and its base's schema: decoding reads a value of the base, then the contract's
+ * A field of a consumer's contract, from its parser, grizzle's contractParser(contract, key), which only the key's holder
+ * builds and exports beside its mint, and its base's schema: decoding reads a value of the base, then the contract's
  * check, minting the value under the key, or failing with the contract's refusal (its issue's `refusal`, grizzle's
  * ContractRefused); encoding gives the value as its base holds it. A step's or a scope's value may hold one as a column,
  * which lowers to a column of the contract itself (lower/schema.ts), so PostgreSQL holds every value den stores to the

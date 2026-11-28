@@ -6,6 +6,8 @@ CREATE INDEX "__assign_assignment_input_exclude_ix_scope_pred_fkj5fuiwuy" ON "sl
 
 CREATE INDEX "__assign_assignment_input_near_ix_scope_pred_ordinal_bta37gplsn" ON "slice_den"."__assign_assignment_input_near_6teditkssg" USING btree ("scope", "__pred_ordinal_e545zctcav", "__root_yjobx7uyrd");
 
+CREATE INDEX "__assign_claim_ix_root_step_until_bengwfhtac" ON "slice_den"."assign_claim" USING btree ("root", "step", "until");
+
 CREATE INDEX "__assign_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_m6yuaw7627" ON "slice_den"."assign_claim" USING btree ("step", "__pred_attempt_oey4tm5xyl", "__root_yewsvvtcyz");
 
 CREATE INDEX "__assign_decide_input_exclude_ix_step_pred_ordinal_e_jpvevw4qhx" ON "slice_den"."__assign_decide_input_exclude_hsjt7zirht" USING btree ("step", "__pred_ordinal_e545zctcav", "__root_yjobx7uyrd");
@@ -32,6 +34,8 @@ CREATE INDEX "__assign_step_ix_root_scope_kind_drsz5mwtr4" ON "slice_den"."assig
 
 CREATE INDEX "__chain_chain_run_input_ix_scope_iuq7js6bfa" ON "slice_den"."__chain_chain_run_input_bmdsmqbrk2" USING btree ("scope");
 
+CREATE INDEX "__chain_claim_ix_root_step_until_3ztxtou3r3" ON "slice_den"."chain_claim" USING btree ("root", "step", "until");
+
 CREATE INDEX "__chain_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_sic5xhruts" ON "slice_den"."chain_claim" USING btree ("step", "__pred_attempt_oey4tm5xyl", "__root_yewsvvtcyz");
 
 CREATE INDEX "__chain_ordered_input_ix_scope_lbnwnucdyj" ON "slice_den"."__chain_ordered_input_tlj4ihbubo" USING btree ("scope");
@@ -53,6 +57,8 @@ CREATE INDEX "__chain_skipped_ix_by_2c45vyfwzy" ON "slice_den"."chain_skipped" U
 CREATE INDEX "__chain_skipped_ix_scope_jvrcbbmf2m" ON "slice_den"."chain_skipped" USING btree ("scope");
 
 CREATE INDEX "__chain_step_ix_root_scope_kind_7y3wfct5o4" ON "slice_den"."chain_step" USING btree ("root", "scope", "kind");
+
+CREATE INDEX "__clock_claim_ix_root_step_until_vgh4hs4hyb" ON "slice_den"."clock_claim" USING btree ("root", "step", "until");
 
 CREATE INDEX "__clock_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_76aawvjtpr" ON "slice_den"."clock_claim" USING btree ("step", "__pred_attempt_oey4tm5xyl", "__root_yewsvvtcyz");
 
@@ -95,6 +101,8 @@ CREATE INDEX "__fan_sweep_input_ix_scope_zvab3un5km" ON "slice_den"."__fan_sweep
 CREATE INDEX "__fan_wanted_input_ix_scope_57fqk3rwec" ON "slice_den"."__fan_wanted_input_chczog66p4" USING btree ("scope");
 
 CREATE INDEX "__fan_within_ix_root_parent_kind_3fui4hg5uo" ON "slice_den"."fan_within" USING btree ("root", "parent", "kind");
+
+CREATE INDEX "__retry_claim_ix_root_step_until_g7grjg6are" ON "slice_den"."retry_claim" USING btree ("root", "step", "until");
 
 CREATE INDEX "__retry_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_66l375ycrl" ON "slice_den"."retry_claim" USING btree ("step", "__pred_attempt_oey4tm5xyl", "__root_yewsvvtcyz");
 
@@ -140,6 +148,8 @@ CREATE INDEX "__review_step_ix_root_scope_kind_y6rly7sw5c" ON "slice_den"."revie
 
 CREATE INDEX "__review_within_ix_root_parent_kind_olszbr3xpq" ON "slice_den"."review_within" USING btree ("root", "parent", "kind");
 
+CREATE INDEX "__sync_claim_ix_root_step_until_dyjqsqcxg7" ON "slice_den"."sync_claim" USING btree ("root", "step", "until");
+
 CREATE INDEX "__sync_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_2krihntk52" ON "slice_den"."sync_claim" USING btree ("step", "__pred_attempt_oey4tm5xyl", "__root_yewsvvtcyz");
 
 CREATE INDEX "__sync_exclusive_ix_kind_key_pred_turn_qryngij_6_c_4_xscx3i4mti" ON "slice_den"."sync_exclusive" USING btree ("kind", "key", "__pred_turn_qryngij6c4");
@@ -157,6 +167,8 @@ CREATE INDEX "__sync_skipped_ix_scope_d5pw2mcp56" ON "slice_den"."sync_skipped" 
 CREATE INDEX "__sync_step_ix_root_scope_l4sfn7gzd3" ON "slice_den"."sync_step" USING btree ("root", "scope");
 
 CREATE INDEX "__sync_sync_run_input_ix_scope_xmn3bafu67" ON "slice_den"."__sync_sync_run_input_qo4lf3kyiy" USING btree ("scope");
+
+CREATE INDEX "__writeback_claim_ix_root_step_until_zqzgmv43ml" ON "slice_den"."writeback_claim" USING btree ("root", "step", "until");
 
 CREATE INDEX "__writeback_claim_ix_step_pred_attempt_oey_4_tm_5_6cvrydc2i4" ON "slice_den"."writeback_claim" USING btree ("step", "__pred_attempt_oey4tm5xyl", "__root_yewsvvtcyz");
 
