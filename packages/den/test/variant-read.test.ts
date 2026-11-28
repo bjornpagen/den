@@ -1,18 +1,6 @@
-import {
-	closed,
-	natural,
-	pg,
-	query,
-	type RecordedQuery,
-	relation,
-	schema,
-	sha256,
-	str,
-	v,
-	variant
-} from "@bjornpagen/grizzle"
-import { lawsOf } from "@bjornpagen/grizzle/compile"
-import * as Dynamic from "@bjornpagen/grizzle/dynamic"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import * as gDynamic from "@bjornpagen/grizzle/dynamic"
 import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
@@ -73,17 +61,17 @@ const holderOf: { readonly [P in Place]: string } = {
 }
 
 /** A learner or an item path: a short word, so a key holds it. */
-const Word = str.bytes(64, str.regex("^[a-z]+$"))
+const Word = g.str.bytes(64, g.str.regex("^[a-z]+$"))
 
 /** qti-pie's base types, the tag of a value cell. */
-const BaseType = closed.unordered("BaseType", ["integer", "pair", "string"])
+const BaseType = g.closed.unordered("BaseType", ["integer", "pair", "string"])
 
 /** qti-pie's QtiValue, reduced: a typed sum whose pair arm's check orders its two identifiers, least first. */
-const QtiValue = variant(
+const QtiValue = g.variant(
 	"QtiValue",
 	BaseType,
 	{
-		integer: { value: pg.integer },
+		integer: { value: g.int4 },
 		pair: { greatest: Word, least: Word },
 		string: { value: Word }
 	},
@@ -91,59 +79,59 @@ const QtiValue = variant(
 )
 
 /** A sitting, with a value cell of its own. */
-const Sitting = relation("Sitting", { child: Word, stage: pg.bigint, value: QtiValue }, [
+const Sitting = g.relation("Sitting", { child: Word, stage: g.int8, value: QtiValue }, [
 	"child",
 	"stage"
 ])
 /** A sitting's carried attempt at an item, with a value cell. */
-const Carried = relation(
-	"Carried",
-	{ child: Word, stage: pg.bigint, path: Word, value: QtiValue },
-	["child", "stage", "path"]
-)
+const Carried = g.relation("Carried", { child: Word, stage: g.int8, path: Word, value: QtiValue }, [
+	"child",
+	"stage",
+	"path"
+])
 /** A carried attempt's multiple's values, each a cell at its place, as qti-pie's attempt rows hold them. */
-const Multiple = relation(
+const Multiple = g.relation(
 	"Multiple",
-	{ child: Word, stage: pg.bigint, path: Word, place: natural, value: QtiValue },
+	{ child: Word, stage: g.int8, path: Word, place: g.natural, value: QtiValue },
 	["child", "stage", "path", "place"]
 )
 /** A sitting's end, with a value cell. */
-const Ended = relation("Ended", { child: Word, stage: pg.bigint, value: QtiValue }, [
+const Ended = g.relation("Ended", { child: Word, stage: g.int8, value: QtiValue }, [
 	"child",
 	"stage"
 ])
 
 /** The app's level, metis's Delivery reduced: every relation holding a QtiValue cell declares it alike. */
-const Delivery = schema("Delivery", [BaseType, Sitting, Carried, Multiple, Ended], [])
+const Delivery = g.schema("Delivery", [BaseType, Sitting, Carried, Multiple, Ended], [])
 
 /** A sitting as the Complete step takes it. */
 const SittingInput = Schema.Struct({ child: Schema.String, stage: Schema.BigInt })
 type SittingInput = typeof SittingInput.Type
 
 /** The read of `sitting` the Complete step declares, by the input's child and stage, its value cell at `place`. */
-const readAt = (place: Place): RecordedQuery => {
-	const sitting = query(Delivery).rule((r) => {
-		const { child, stage } = v(Sitting, "sitting")
+const readAt = (place: Place): g.RecordedQuery => {
+	const sitting = g.query(Delivery).rule((r) => {
+		const { child, stage } = g.v(Sitting, "sitting")
 		return r
 			.match(Sitting, { child, stage })
-			.where(r.eq(child, r.param("child", Word)), r.eq(stage, r.param("stage", pg.bigint)))
+			.where(r.eq(child, r.param("child", Word)), r.eq(stage, r.param("stage", g.int8)))
 			.find({ child, stage })
 	})
 	switch (place) {
 		case "row":
-			return query(Delivery).rule((r) => {
-				const { child, stage, value } = v(Sitting, "sitting")
+			return g.query(Delivery).rule((r) => {
+				const { child, stage, value } = g.v(Sitting, "sitting")
 				return r
 					.match(Sitting, { child, stage, value })
-					.where(r.eq(child, r.param("child", Word)), r.eq(stage, r.param("stage", pg.bigint)))
+					.where(r.eq(child, r.param("child", Word)), r.eq(stage, r.param("stage", g.int8)))
 					.find({ child, stage, value })
 			})
 		case "array":
 			return sitting.attach(
 				"carried",
 				(at) =>
-					query(Delivery).rule((r) => {
-						const { path, value } = v(Carried, "carried")
+					g.query(Delivery).rule((r) => {
+						const { path, value } = g.v(Carried, "carried")
 						return r
 							.match(Carried, { child: at.child, stage: at.stage, path, value })
 							.find({ path, value })
@@ -154,8 +142,8 @@ const readAt = (place: Place): RecordedQuery => {
 			return sitting.attach(
 				"ended",
 				(at) =>
-					query(Delivery).rule((r) => {
-						const { value } = v(Ended, "ended")
+					g.query(Delivery).rule((r) => {
+						const { value } = g.v(Ended, "ended")
 						return r.match(Ended, { child: at.child, stage: at.stage, value }).find({ value })
 					}),
 				"option"
@@ -164,9 +152,10 @@ const readAt = (place: Place): RecordedQuery => {
 			return sitting.attach(
 				"carried",
 				(at) =>
-					query(Delivery)
+					g
+						.query(Delivery)
 						.rule((r) => {
-							const { child, stage, path } = v(Carried, "carried")
+							const { child, stage, path } = g.v(Carried, "carried")
 							return r
 								.match(Carried, { child, stage, path })
 								.where(r.eq(child, at.child), r.eq(stage, at.stage))
@@ -175,8 +164,8 @@ const readAt = (place: Place): RecordedQuery => {
 						.attach(
 							"multiple",
 							(carried) =>
-								query(Delivery).rule((r) => {
-									const { place: ordinal, value } = v(Multiple, "multiple")
+								g.query(Delivery).rule((r) => {
+									const { place: ordinal, value } = g.v(Multiple, "multiple")
 									return r
 										.match(Multiple, {
 											child: carried.child,
@@ -195,7 +184,7 @@ const readAt = (place: Place): RecordedQuery => {
 }
 
 /** The Complete step's reads: the sitting at `place`, its parameters the input's child and stage. */
-const completeReads = (sitting: RecordedQuery): ReadsOver<SittingInput> => ({
+const completeReads = (sitting: g.RecordedQuery): ReadsOver<SittingInput> => ({
 	kind: "query",
 	over: Delivery,
 	named: { sitting },
@@ -292,11 +281,11 @@ describe("a step's read of variant cells", () => {
 							const fragmentText = printFragment(lowered, placement(completeReading))
 							assert.isTrue(
 								Str.includes(
-									`records("${read.stem}", CompleteReads.named.sitting, { digest: sha256 }, ["digest"])`
+									`g.records("${read.stem}", CompleteReads.named.sitting, { digest: g.sha256 }, ["digest"])`
 								)(fragmentText),
 								"den's fragment builds the read's records from the reads export"
 							)
-							const made = Dynamic.records(read.stem, sitting, { digest: sha256 }, ["digest"], {
+							const made = gDynamic.records(read.stem, sitting, { digest: g.sha256 }, ["digest"], {
 								names: {}
 							})
 							const holder = `${read.stem}${holderOf[place]}`
@@ -307,7 +296,9 @@ describe("a step's read of variant cells", () => {
 									", "
 								)}`
 							)
-							lawsOf(schema.extend([Delivery], "EssayDen", [...made.relations], [...made.rules]))
+							gCompile.lawsOf(
+								g.schema.extend([Delivery], "EssayDen", [...made.relations], [...made.rules])
+							)
 						})
 				)
 			)

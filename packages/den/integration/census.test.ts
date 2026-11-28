@@ -3,7 +3,7 @@ import { drain } from "@bjornpagen/den/runtime/drive"
 import { delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName, InProcess } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { aimed, boolean, type Gen, int } from "@bjornpagen/testing/gen"
@@ -109,7 +109,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 								assert.equal(
 									Arr.some(
 										standing.rings,
-										(ring) => ring.wake._tag === "Step" && Sha256.equals(ring.wake.step, step)
+										(ring) => ring.wake._tag === "Step" && g.Sha256.equals(ring.wake.step, step)
 									),
 									false
 								)
@@ -122,7 +122,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 								(finishes) =>
 									Arr.some(
 										finishes,
-										(f) => Sha256.equals(f.scope, requested.scope) && f.outcome === "done"
+										(f) => g.Sha256.equals(f.scope, requested.scope) && f.outcome === "done"
 									)
 							)
 							const passes = yield* Effect.forEach(Array.from({ length: loss.pages + 3 }), () =>
@@ -135,7 +135,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 							assert.ok(Arr.some(passes, (done) => done))
 							const pages = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
 							assert.equal(
-								Arr.filter(pages, (p) => Sha256.equals(p.scope, requested.scope)).length,
+								Arr.filter(pages, (p) => g.Sha256.equals(p.scope, requested.scope)).length,
 								loss.pages
 							)
 							if (loss.deadHolder && Option.isSome(first)) {

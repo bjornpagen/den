@@ -1,4 +1,4 @@
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { Array as Arr, DateTime, HashMap, Option, Order } from "effect"
 import { HOURS_IN_DAY, type Resource, seatedOf, type Use, type Window } from "#algebra/kinds.ts"
 import { type Instant, instantOf } from "#runtime/identity.ts"
@@ -80,8 +80,8 @@ export interface Eligible {
  * its due instant, or `deployment`, its latest attempt fenced.
  */
 interface Candidate {
-	readonly step: Sha256
-	readonly root: Sha256
+	readonly step: g.Sha256
+	readonly root: g.Sha256
 	readonly attempt: bigint
 	readonly seated: ReadonlyArray<Resource>
 	readonly age: Instant
@@ -94,7 +94,7 @@ const BY_ORDER: Order.Order<Candidate> = Order.combine(
 		Order.mapInput(Order.BigInt, (c: Candidate) => c.age),
 		Order.mapInput(Order.BigInt, (c: Candidate) => c.due)
 	),
-	Order.mapInput(Order.String, (c: Candidate) => Sha256.toHex(c.step))
+	Order.mapInput(Order.String, (c: Candidate) => g.Sha256.toHex(c.step))
 )
 
 /** A claim of a step's attempt, as far as its standing reads it: the attempt and its lease's end. */
@@ -174,10 +174,11 @@ export const lapsedAttempt = (
 export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Instant): Eligible => {
 	/** Each scope's view, keyed by its key's hex (Sha256.toHex). */
 	const scopes = HashMap.fromIterable(
-		Arr.map(snapshot.scopes, (s) => [Sha256.toHex(s.scope), s] as const)
+		Arr.map(snapshot.scopes, (s) => [g.Sha256.toHex(s.scope), s] as const)
 	)
-	const view = (scope: Sha256): Option.Option<ScopeView> => HashMap.get(scopes, Sha256.toHex(scope))
-	const rootOf = (root: Sha256): Option.Option<RootView> =>
+	const view = (scope: g.Sha256): Option.Option<ScopeView> =>
+		HashMap.get(scopes, g.Sha256.toHex(scope))
+	const rootOf = (root: g.Sha256): Option.Option<RootView> =>
 		Option.filter(view(root), (s): s is RootView => s.place === "root")
 	const open = (root: RootView): boolean => isOpen(root.runner.window, now)
 	const paused = (target: string): boolean => Arr.contains(snapshot.paused, target)
@@ -192,13 +193,13 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 		)
 	})
 
-	const unended = (scope: Sha256, except: Sha256): boolean =>
+	const unended = (scope: g.Sha256, except: g.Sha256): boolean =>
 		Arr.some(
 			snapshot.steps,
-			(p) => Sha256.equals(p.scope, scope) && !Sha256.equals(p.step, except)
+			(p) => g.Sha256.equals(p.scope, scope) && !g.Sha256.equals(p.step, except)
 		) ||
 		Arr.some(snapshot.scopes, (s) =>
-			Option.exists(parentOf(s), (parent) => Sha256.equals(parent, scope))
+			Option.exists(parentOf(s), (parent) => g.Sha256.equals(parent, scope))
 		)
 
 	const candidates = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Candidate> => {
@@ -208,9 +209,9 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 			return []
 		}
 		const stands = standing(
-			Arr.filter(snapshot.claims, (c) => Sha256.equals(c.step, p.step)),
-			Arr.filter(snapshot.retries, (r) => Sha256.equals(r.step, p.step)),
-			Arr.filter(snapshot.fenced, (f) => Sha256.equals(f.step, p.step)),
+			Arr.filter(snapshot.claims, (c) => g.Sha256.equals(c.step, p.step)),
+			Arr.filter(snapshot.retries, (r) => g.Sha256.equals(r.step, p.step)),
+			Arr.filter(snapshot.fenced, (f) => g.Sha256.equals(f.step, p.step)),
 			now
 		)
 		if (stands.kind === "held") {
@@ -230,7 +231,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 		if (Option.isSome(runner.finishes) && unended(p.scope, p.step)) {
 			return []
 		}
-		if (Arr.some(snapshot.awaiting, (step) => Sha256.equals(step, p.step))) {
+		if (Arr.some(snapshot.awaiting, (step) => g.Sha256.equals(step, p.step))) {
 			return []
 		}
 		if (
@@ -271,7 +272,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 				: acc
 	)
 
-	const live = (scope: Sha256) => Option.isSome(view(scope))
+	const live = (scope: g.Sha256) => Option.isSome(view(scope))
 	const wakeOf = (c: Candidate): Wake => ({
 		_tag: "Step",
 		flow: ledger.flow,

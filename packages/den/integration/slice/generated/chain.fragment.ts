@@ -1,231 +1,247 @@
 import { DenEnvironment, DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Chain to; `den generate` writes it, and nothing edits it. */
-import {
-	closed,
-	closedId,
-	contained,
-	contract,
-	derivedName,
-	fragment,
-	key,
-	mintOf,
-	mutable,
-	natural,
-	on,
-	place,
-	pg,
-	pred,
-	records,
-	relation,
-	select,
-	sha256,
-	unit
-} from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { Array as Arr } from "effect"
 import { PageReads } from "#integration/slice/reads.ts"
 
 const seqKey = Symbol("Seq")
-const Seq = contract<typeof seqKey>()("Seq", pg.bigint)
+const Seq = g.domain<typeof seqKey>()("Seq", g.int8)
 /** The mint of Seq's host type, which the flow's binding writes a value of the brand Seq by. */
-export const seqMint = mintOf(seqKey)
+export const seqMint = g.mintOf(seqKey)
 
-export const ChainKind = closed.unordered("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
-export const ChainRootKind = closed.unordered("ChainRootKind", ["ChainRun", "Ordered"])
-export const ChainOutcome = closed.unordered("ChainOutcome", ["done", "failed"])
-export const ChainRetryWhy = closed.unordered("ChainRetryWhy", ["spent", "transient", "later"])
-export const ChainPausable = closed.unordered("ChainPausable", ["ChainRun", "Ordered"])
-export const ChainPageInputFeed = derivedName({ stem: "Chain", path: ["PageInputFeed"] }).unordered(
-	"ChainPageInputFeed",
-	["news", "sport"]
-)
-export const ChainChainRunInputFeed = derivedName({
-	stem: "Chain",
-	path: ["ChainRunInputFeed"]
-}).unordered("ChainChainRunInputFeed", ["news", "sport"])
-export const ChainOrderedInputFeed = derivedName({
-	stem: "Chain",
-	path: ["OrderedInputFeed"]
-}).unordered("ChainOrderedInputFeed", ["news", "sport"])
+export const ChainKind = g.closed.unordered("ChainKind", [
+	"Page",
+	"ChainRunFinish",
+	"OrderedFinish"
+])
+export const ChainRootKind = g.closed.unordered("ChainRootKind", ["ChainRun", "Ordered"])
+export const ChainOutcome = g.closed.unordered("ChainOutcome", ["done", "failed"])
+export const ChainRetryWhy = g.closed.unordered("ChainRetryWhy", ["spent", "transient", "later"])
+export const ChainPausable = g.closed.unordered("ChainPausable", ["ChainRun", "Ordered"])
+export const ChainPageInputFeed = g
+	.derivedName({ stem: "Chain", path: ["PageInputFeed"] })
+	.unordered("ChainPageInputFeed", ["news", "sport"])
+export const ChainChainRunInputFeed = g
+	.derivedName({ stem: "Chain", path: ["ChainRunInputFeed"] })
+	.unordered("ChainChainRunInputFeed", ["news", "sport"])
+export const ChainOrderedInputFeed = g
+	.derivedName({ stem: "Chain", path: ["OrderedInputFeed"] })
+	.unordered("ChainOrderedInputFeed", ["news", "sport"])
 
-export const ChainScope = relation("ChainScope", { root: sha256, scope: sha256 }, ["root", "scope"])
-export const ChainRoot = relation(
+export const ChainScope = g.relation("ChainScope", { root: g.sha256, scope: g.sha256 }, [
+	"root",
+	"scope"
+])
+export const ChainRoot = g.relation(
 	"ChainRoot",
-	{ root: sha256, kind: closedId(ChainRootKind), key: Text, at: DenInstant },
+	{ root: g.sha256, kind: g.closedId(ChainRootKind), key: Text, at: DenInstant },
 	["root"]
 )
-export const ChainRequestedWith = relation(
+export const ChainRequestedWith = g.relation(
 	"ChainRequestedWith",
-	{ root: sha256, fingerprint: sha256, input: sha256 },
+	{ root: g.sha256, fingerprint: g.sha256, input: g.sha256 },
 	["root"]
 )
-export const ChainAdmitted = relation("ChainAdmitted", { root: sha256, scope: sha256 }, [
+export const ChainAdmitted = g.relation("ChainAdmitted", { root: g.sha256, scope: g.sha256 }, [
 	"root",
 	"scope"
 ])
-export const ChainSkipped = relation("ChainSkipped", { root: sha256, scope: sha256, by: sha256 }, [
-	"root",
-	"scope"
-])
-export const ChainStep = relation(
+export const ChainSkipped = g.relation(
+	"ChainSkipped",
+	{ root: g.sha256, scope: g.sha256, by: g.sha256 },
+	["root", "scope"]
+)
+export const ChainStep = g.relation(
 	"ChainStep",
-	{ root: sha256, step: sha256, kind: closedId(ChainKind), scope: sha256, due: DenInstant },
+	{ root: g.sha256, step: g.sha256, kind: g.closedId(ChainKind), scope: g.sha256, due: DenInstant },
 	["root", "step"]
 )
-export const ChainStartStep = relation(
+export const ChainStartStep = g.relation(
 	"ChainStartStep",
-	{ root: sha256, scope: sha256, ordinal: natural, step: sha256 },
+	{ root: g.sha256, scope: g.sha256, ordinal: g.natural, step: g.sha256 },
 	["root", "scope", "ordinal"]
 )
-export const ChainFinish = relation("ChainFinish", { root: sha256, scope: sha256, step: sha256 }, [
-	"root",
-	"scope"
-])
-export const ChainClaim = relation(
+export const ChainFinish = g.relation(
+	"ChainFinish",
+	{ root: g.sha256, scope: g.sha256, step: g.sha256 },
+	["root", "scope"]
+)
+export const ChainClaim = g.relation(
 	"ChainClaim",
-	{ root: sha256, step: sha256, attempt: place, until: DenInstant },
+	{ root: g.sha256, step: g.sha256, attempt: g.place, until: DenInstant },
 	["root", "step", "attempt"]
 )
-export const ChainEnded = relation("ChainEnded", { root: sha256, step: sha256, attempt: natural }, [
-	"root",
-	"step",
-	"attempt"
-])
-export const ChainRetry = relation(
+export const ChainEnded = g.relation(
+	"ChainEnded",
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
+	["root", "step", "attempt"]
+)
+export const ChainRetry = g.relation(
 	"ChainRetry",
-	{ root: sha256, step: sha256, attempt: natural, at: DenInstant, why: closedId(ChainRetryWhy) },
+	{
+		root: g.sha256,
+		step: g.sha256,
+		attempt: g.natural,
+		at: DenInstant,
+		why: g.closedId(ChainRetryWhy)
+	},
 	["root", "step", "attempt"]
 )
-export const ChainFenced = relation(
+export const ChainFenced = g.relation(
 	"ChainFenced",
-	{ root: sha256, step: sha256, attempt: natural },
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
 	["root", "step", "attempt"]
 )
-export const ChainResult = relation(
+export const ChainResult = g.relation(
 	"ChainResult",
-	{ root: sha256, step: sha256, outcome: closedId(ChainOutcome) },
+	{ root: g.sha256, step: g.sha256, outcome: g.closedId(ChainOutcome) },
 	["root", "step"]
 )
-export const ChainDone = relation("ChainDone", { root: sha256, step: sha256 }, ["root", "step"])
-export const ChainFailed = relation("ChainFailed", { root: sha256, step: sha256 }, ["root", "step"])
-export const ChainHeld = relation("ChainHeld", { root: sha256, step: sha256, attempt: natural }, [
+export const ChainDone = g.relation("ChainDone", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const ChainRefusal = relation("ChainRefusal", { root: sha256, step: sha256, law: Text }, [
+export const ChainFailed = g.relation("ChainFailed", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const ChainExhausted = relation("ChainExhausted", { root: sha256, step: sha256 }, [
+export const ChainHeld = g.relation(
+	"ChainHeld",
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
+	["root", "step"]
+)
+export const ChainRefusal = g.relation(
+	"ChainRefusal",
+	{ root: g.sha256, step: g.sha256, law: Text },
+	["root", "step"]
+)
+export const ChainExhausted = g.relation("ChainExhausted", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const ChainPageInput = derivedName({ stem: "Chain", path: ["PageInput"] }).relation(
+export const ChainPageInput = g.derivedName({ stem: "Chain", path: ["PageInput"] }).relation(
 	"ChainPageInput",
-	{ root: sha256, step: sha256, feed: closedId(ChainPageInputFeed), seq: Seq, pages: pg.bigint },
+	{
+		root: g.sha256,
+		step: g.sha256,
+		feed: g.closedId(ChainPageInputFeed),
+		seq: Seq,
+		pages: g.int8
+	},
 	["root", "step"]
 )
-export const ChainPageInputAfter = derivedName({
-	stem: "Chain",
-	path: ["PageInputAfter"]
-}).relation("ChainPageInputAfter", { root: sha256, step: sha256, value: Text }, ["root", "step"])
-export const ChainChainRunInput = derivedName({ stem: "Chain", path: ["ChainRunInput"] }).relation(
-	"ChainChainRunInput",
-	{ root: sha256, scope: sha256, feed: closedId(ChainChainRunInputFeed), pages: pg.bigint },
-	["root", "scope"]
-)
-export const ChainOrderedInput = derivedName({ stem: "Chain", path: ["OrderedInput"] }).relation(
-	"ChainOrderedInput",
-	{ root: sha256, scope: sha256, feed: closedId(ChainOrderedInputFeed), pages: pg.bigint },
-	["root", "scope"]
-)
-export const ChainPageOutput = derivedName({ stem: "Chain", path: ["PageOutput"] }).relation(
-	"ChainPageOutput",
-	{ root: sha256, step: sha256, seq: Seq, items: pg.bigint, earlier: pg.bigint },
-	["root", "step"]
-)
-export const ChainPageOutputNext = derivedName({
-	stem: "Chain",
-	path: ["PageOutputNext"]
-}).relation("ChainPageOutputNext", { root: sha256, step: sha256, value: Text }, ["root", "step"])
-export const ChainChainRunFinishOutput = derivedName({
-	stem: "Chain",
-	path: ["ChainRunFinishOutput"]
-}).relation("ChainChainRunFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
-export const ChainOrderedFinishOutput = derivedName({
-	stem: "Chain",
-	path: ["OrderedFinishOutput"]
-}).relation("ChainOrderedFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
-export const ChainNext = derivedName({ stem: "Chain", path: ["Next"] }).relation(
-	"ChainNext",
-	{ root: sha256, from: sha256, ordinal: natural, to: sha256 },
-	["root", "from", "ordinal"]
-)
-export const ChainPageReadWeights = derivedName({
-	stem: "Chain",
-	path: ["PageReadWeights"]
-}).relation(
-	"ChainPageReadWeights",
-	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
-	["root", "step", "ordinal"]
-)
-export const ChainPageReadEarlier = derivedName({
-	stem: "Chain",
-	path: ["PageReadEarlier"]
-}).relation(
-	"ChainPageReadEarlier",
-	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
-	["root", "step", "ordinal"]
-)
-export const ChainPageReadTree = derivedName({ stem: "Chain", path: ["PageReadTree"] }).relation(
-	"ChainPageReadTree",
-	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
-	["root", "step", "ordinal"]
-)
-export const ChainPaused = relation(
+export const ChainPageInputAfter = g
+	.derivedName({ stem: "Chain", path: ["PageInputAfter"] })
+	.relation("ChainPageInputAfter", { root: g.sha256, step: g.sha256, value: Text }, [
+		"root",
+		"step"
+	])
+export const ChainChainRunInput = g
+	.derivedName({ stem: "Chain", path: ["ChainRunInput"] })
+	.relation(
+		"ChainChainRunInput",
+		{ root: g.sha256, scope: g.sha256, feed: g.closedId(ChainChainRunInputFeed), pages: g.int8 },
+		["root", "scope"]
+	)
+export const ChainOrderedInput = g
+	.derivedName({ stem: "Chain", path: ["OrderedInput"] })
+	.relation(
+		"ChainOrderedInput",
+		{ root: g.sha256, scope: g.sha256, feed: g.closedId(ChainOrderedInputFeed), pages: g.int8 },
+		["root", "scope"]
+	)
+export const ChainPageOutput = g
+	.derivedName({ stem: "Chain", path: ["PageOutput"] })
+	.relation(
+		"ChainPageOutput",
+		{ root: g.sha256, step: g.sha256, seq: Seq, items: g.int8, earlier: g.int8 },
+		["root", "step"]
+	)
+export const ChainPageOutputNext = g
+	.derivedName({ stem: "Chain", path: ["PageOutputNext"] })
+	.relation("ChainPageOutputNext", { root: g.sha256, step: g.sha256, value: Text }, [
+		"root",
+		"step"
+	])
+export const ChainChainRunFinishOutput = g
+	.derivedName({ stem: "Chain", path: ["ChainRunFinishOutput"] })
+	.relation("ChainChainRunFinishOutput", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const ChainOrderedFinishOutput = g
+	.derivedName({ stem: "Chain", path: ["OrderedFinishOutput"] })
+	.relation("ChainOrderedFinishOutput", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const ChainNext = g
+	.derivedName({ stem: "Chain", path: ["Next"] })
+	.relation("ChainNext", { root: g.sha256, from: g.sha256, ordinal: g.natural, to: g.sha256 }, [
+		"root",
+		"from",
+		"ordinal"
+	])
+export const ChainPageReadWeights = g
+	.derivedName({ stem: "Chain", path: ["PageReadWeights"] })
+	.relation(
+		"ChainPageReadWeights",
+		{ root: g.sha256, step: g.sha256, ordinal: g.natural, digest: g.sha256 },
+		["root", "step", "ordinal"]
+	)
+export const ChainPageReadEarlier = g
+	.derivedName({ stem: "Chain", path: ["PageReadEarlier"] })
+	.relation(
+		"ChainPageReadEarlier",
+		{ root: g.sha256, step: g.sha256, ordinal: g.natural, digest: g.sha256 },
+		["root", "step", "ordinal"]
+	)
+export const ChainPageReadTree = g
+	.derivedName({ stem: "Chain", path: ["PageReadTree"] })
+	.relation(
+		"ChainPageReadTree",
+		{ root: g.sha256, step: g.sha256, ordinal: g.natural, digest: g.sha256 },
+		["root", "step", "ordinal"]
+	)
+export const ChainPaused = g.relation(
 	"ChainPaused",
-	{ target: closedId(ChainPausable), turn: natural },
+	{ target: g.closedId(ChainPausable), turn: g.natural },
 	["target", "turn"]
 )
-export const ChainResumed = relation(
+export const ChainResumed = g.relation(
 	"ChainResumed",
-	{ target: closedId(ChainPausable), turn: natural },
+	{ target: g.closedId(ChainPausable), turn: g.natural },
 	["target", "turn"]
 )
-export const ChainServed = relation(
+export const ChainServed = g.relation(
 	"ChainServed",
 	{ environment: DenEnvironment, at: DenInstant, deployment: Text },
 	["environment", "at"]
 )
 
 /** The records of the rows step Page's read `weights` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */
-export const ChainPageReadWeightsRecords = records(
+export const ChainPageReadWeightsRecords = g.records(
 	"ChainPageReadWeights",
 	PageReads.named.weights,
-	{ digest: sha256 },
+	{ digest: g.sha256 },
 	["digest"]
 )
 export const ChainPageReadWeightsRow = ChainPageReadWeightsRecords.row
 
 /** The records of the rows step Page's read `earlier` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */
-export const ChainPageReadEarlierRecords = records(
+export const ChainPageReadEarlierRecords = g.records(
 	"ChainPageReadEarlier",
 	PageReads.named.earlier,
-	{ digest: sha256 },
+	{ digest: g.sha256 },
 	["digest"]
 )
 export const ChainPageReadEarlierRow = ChainPageReadEarlierRecords.row
 
 /** The records of the rows step Page's read `tree` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */
-export const ChainPageReadTreeRecords = records(
+export const ChainPageReadTreeRecords = g.records(
 	"ChainPageReadTree",
 	PageReads.named.tree,
-	{ digest: sha256 },
+	{ digest: g.sha256 },
 	["digest"]
 )
 export const ChainPageReadTreeRow = ChainPageReadTreeRecords.row
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
-export const chainGraph = fragment(
+export const chainGraph = g.fragment(
 	[
 		ChainKind,
 		ChainRootKind,
@@ -270,161 +286,170 @@ export const chainGraph = fragment(
 		...ChainPageReadTreeRecords.relations
 	],
 	[
-		unit("DenRoot", { root: sha256 }),
-		key(on(ChainScope, "scope")),
-		key(on(ChainStep, "step")),
-		contained(on(ChainAdmitted, "root", "scope"), on(ChainScope, "root", "scope")),
-		contained(on(ChainSkipped, "scope"), on(ChainRoot, "root")),
-		contained(on(ChainSkipped, "by"), on(ChainRoot, "root")),
-		contained(on(ChainRequestedWith, "root"), on(ChainRoot, "root")),
-		contained(on(ChainStep, "root", "scope"), on(ChainAdmitted, "root", "scope")),
-		contained(on(ChainStartStep, "root", "scope"), on(ChainAdmitted, "root", "scope")),
-		contained(on(ChainStartStep, "root", "step"), on(ChainStep, "root", "step")),
-		key(on(ChainStartStep, "root", "step")),
-		contained(on(ChainFinish, "root", "scope"), on(ChainAdmitted, "root", "scope")),
-		contained(on(ChainFinish, "root", "step"), on(ChainStep, "root", "step")),
-		key(on(ChainFinish, "root", "step")),
-		contained(on(ChainClaim, "root", "step"), on(ChainStep, "root", "step")),
-		contained(on(ChainEnded, "root", "step", "attempt"), on(ChainClaim, "root", "step", "attempt")),
-		contained(
-			on(
-				select(ChainClaim, (row) => row.ge(row.attempt, 1n)),
+		g.unit("DenRoot", { root: g.sha256 }),
+		g.key(g.on(ChainScope, "scope")),
+		g.key(g.on(ChainStep, "step")),
+		g.contained(g.on(ChainAdmitted, "root", "scope"), g.on(ChainScope, "root", "scope")),
+		g.contained(g.on(ChainSkipped, "scope"), g.on(ChainRoot, "root")),
+		g.contained(g.on(ChainSkipped, "by"), g.on(ChainRoot, "root")),
+		g.contained(g.on(ChainRequestedWith, "root"), g.on(ChainRoot, "root")),
+		g.contained(g.on(ChainStep, "root", "scope"), g.on(ChainAdmitted, "root", "scope")),
+		g.contained(g.on(ChainStartStep, "root", "scope"), g.on(ChainAdmitted, "root", "scope")),
+		g.contained(g.on(ChainStartStep, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.key(g.on(ChainStartStep, "root", "step")),
+		g.contained(g.on(ChainFinish, "root", "scope"), g.on(ChainAdmitted, "root", "scope")),
+		g.contained(g.on(ChainFinish, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.key(g.on(ChainFinish, "root", "step")),
+		g.contained(g.on(ChainClaim, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.contained(
+			g.on(ChainEnded, "root", "step", "attempt"),
+			g.on(ChainClaim, "root", "step", "attempt")
+		),
+		g.contained(
+			g.on(
+				g.select(ChainClaim, (row) => row.ge(row.attempt, 1n)),
 				"root",
 				"step",
-				pred("attempt")
+				g.pred("attempt")
 			),
-			on(ChainEnded, "root", "step", "attempt")
+			g.on(ChainEnded, "root", "step", "attempt")
 		),
-		contained(on(ChainRetry, "root", "step", "attempt"), on(ChainEnded, "root", "step", "attempt")),
-		contained(
-			on(ChainFenced, "root", "step", "attempt"),
-			on(ChainEnded, "root", "step", "attempt")
+		g.contained(
+			g.on(ChainRetry, "root", "step", "attempt"),
+			g.on(ChainEnded, "root", "step", "attempt")
 		),
-		contained(on(ChainResult, "root", "step"), on(ChainStep, "root", "step")),
-		contained(on(ChainHeld, "root", "step", "attempt"), on(ChainClaim, "root", "step", "attempt")),
-		contained(on(ChainHeld, "root", "step"), on(ChainResult, "root", "step")),
-		contained(
-			on(ChainDone, "root", "step"),
-			on(
-				select(ChainResult, (row) => row.eq(row.outcome, "done")),
+		g.contained(
+			g.on(ChainFenced, "root", "step", "attempt"),
+			g.on(ChainEnded, "root", "step", "attempt")
+		),
+		g.contained(g.on(ChainResult, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.contained(
+			g.on(ChainHeld, "root", "step", "attempt"),
+			g.on(ChainClaim, "root", "step", "attempt")
+		),
+		g.contained(g.on(ChainHeld, "root", "step"), g.on(ChainResult, "root", "step")),
+		g.contained(
+			g.on(ChainDone, "root", "step"),
+			g.on(
+				g.select(ChainResult, (row) => row.eq(row.outcome, "done")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(ChainFailed, "root", "step"),
-			on(
-				select(ChainResult, (row) => row.eq(row.outcome, "failed")),
+		g.contained(
+			g.on(ChainFailed, "root", "step"),
+			g.on(
+				g.select(ChainResult, (row) => row.eq(row.outcome, "failed")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(ChainRefusal, "root", "step"), on(ChainFailed, "root", "step")),
-		contained(on(ChainExhausted, "root", "step"), on(ChainFailed, "root", "step")),
-		contained(
-			on(
-				select(ChainRoot, (row) => row.eq(row.kind, "ChainRun")),
+		g.contained(g.on(ChainRefusal, "root", "step"), g.on(ChainFailed, "root", "step")),
+		g.contained(g.on(ChainExhausted, "root", "step"), g.on(ChainFailed, "root", "step")),
+		g.contained(
+			g.on(
+				g.select(ChainRoot, (row) => row.eq(row.kind, "ChainRun")),
 				"root"
 			),
-			on(ChainRequestedWith, "root")
+			g.on(ChainRequestedWith, "root")
 		),
-		contained(
-			on(
-				select(ChainRoot, (row) => row.eq(row.kind, "Ordered")),
+		g.contained(
+			g.on(
+				g.select(ChainRoot, (row) => row.eq(row.kind, "Ordered")),
 				"root"
 			),
-			on(ChainRequestedWith, "root")
+			g.on(ChainRequestedWith, "root")
 		),
-		contained(
-			on(ChainPageInput, "root", "step"),
-			on(
-				select(ChainStep, (row) => row.eq(row.kind, "Page")),
+		g.contained(
+			g.on(ChainPageInput, "root", "step"),
+			g.on(
+				g.select(ChainStep, (row) => row.eq(row.kind, "Page")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(ChainPageInputAfter, "root", "step"), on(ChainPageInput, "root", "step")),
-		contained(
-			on(ChainChainRunInput, "scope"),
-			on(
-				select(ChainRoot, (row) => row.eq(row.kind, "ChainRun")),
+		g.contained(g.on(ChainPageInputAfter, "root", "step"), g.on(ChainPageInput, "root", "step")),
+		g.contained(
+			g.on(ChainChainRunInput, "scope"),
+			g.on(
+				g.select(ChainRoot, (row) => row.eq(row.kind, "ChainRun")),
 				"root"
 			)
 		),
-		contained(
-			on(ChainOrderedInput, "scope"),
-			on(
-				select(ChainRoot, (row) => row.eq(row.kind, "Ordered")),
+		g.contained(
+			g.on(ChainOrderedInput, "scope"),
+			g.on(
+				g.select(ChainRoot, (row) => row.eq(row.kind, "Ordered")),
 				"root"
 			)
 		),
-		contained(on(ChainPageOutput, "root", "step"), on(ChainPageInput, "root", "step")),
-		contained(on(ChainPageOutput, "root", "step"), on(ChainDone, "root", "step")),
-		contained(on(ChainPageOutputNext, "root", "step"), on(ChainPageOutput, "root", "step")),
-		contained(on(ChainChainRunFinishOutput, "root", "step"), on(ChainDone, "root", "step")),
-		contained(on(ChainOrderedFinishOutput, "root", "step"), on(ChainDone, "root", "step")),
-		contained(on(ChainNext, "root", "from"), on(ChainPageOutput, "root", "step")),
-		contained(on(ChainNext, "root", "to"), on(ChainPageInput, "root", "step")),
-		key(on(ChainNext, "root", "to")),
-		contained(on(ChainPageReadWeights, "root", "step"), on(ChainResult, "root", "step")),
-		contained(on(ChainPageReadWeights, "digest"), on(ChainPageReadWeightsRow, "digest")),
-		contained(on(ChainPageReadEarlier, "root", "step"), on(ChainResult, "root", "step")),
-		contained(on(ChainPageReadEarlier, "digest"), on(ChainPageReadEarlierRow, "digest")),
-		contained(on(ChainPageReadTree, "root", "step"), on(ChainResult, "root", "step")),
-		contained(on(ChainPageReadTree, "digest"), on(ChainPageReadTreeRow, "digest")),
-		contained(on(ChainScope, "root"), on(ChainRoot, "root")),
-		mutable(ChainScope),
-		mutable(ChainAdmitted),
-		contained(on(ChainSkipped, "root", "scope"), on(ChainScope, "root", "scope")),
-		mutable(ChainSkipped),
-		contained(on(ChainStep, "root", "scope"), on(ChainScope, "root", "scope")),
-		mutable(ChainStep),
-		contained(on(ChainStartStep, "root", "scope"), on(ChainScope, "root", "scope")),
-		mutable(ChainStartStep),
-		contained(on(ChainFinish, "root", "scope"), on(ChainScope, "root", "scope")),
-		mutable(ChainFinish),
-		mutable(ChainClaim),
-		contained(on(ChainEnded, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainEnded),
-		contained(on(ChainRetry, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainRetry),
-		contained(on(ChainFenced, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainFenced),
-		mutable(ChainResult),
-		contained(on(ChainDone, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainDone),
-		contained(on(ChainFailed, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainFailed),
-		contained(on(ChainHeld, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainHeld),
-		contained(on(ChainRefusal, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainRefusal),
-		contained(on(ChainExhausted, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainExhausted),
-		contained(on(ChainPageInput, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainPageInput),
-		contained(on(ChainPageInputAfter, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainPageInputAfter),
-		contained(on(ChainChainRunInput, "root", "scope"), on(ChainScope, "root", "scope")),
-		mutable(ChainChainRunInput),
-		contained(on(ChainOrderedInput, "root", "scope"), on(ChainScope, "root", "scope")),
-		mutable(ChainOrderedInput),
-		contained(on(ChainPageOutput, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainPageOutput),
-		contained(on(ChainPageOutputNext, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainPageOutputNext),
-		contained(on(ChainChainRunFinishOutput, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainChainRunFinishOutput),
-		contained(on(ChainOrderedFinishOutput, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainOrderedFinishOutput),
-		contained(on(ChainNext, "root", "from"), on(ChainStep, "root", "step")),
-		mutable(ChainNext),
-		contained(on(ChainPageReadWeights, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainPageReadWeights),
-		contained(on(ChainPageReadEarlier, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainPageReadEarlier),
-		contained(on(ChainPageReadTree, "root", "step"), on(ChainStep, "root", "step")),
-		mutable(ChainPageReadTree),
+		g.contained(g.on(ChainPageOutput, "root", "step"), g.on(ChainPageInput, "root", "step")),
+		g.contained(g.on(ChainPageOutput, "root", "step"), g.on(ChainDone, "root", "step")),
+		g.contained(g.on(ChainPageOutputNext, "root", "step"), g.on(ChainPageOutput, "root", "step")),
+		g.contained(g.on(ChainChainRunFinishOutput, "root", "step"), g.on(ChainDone, "root", "step")),
+		g.contained(g.on(ChainOrderedFinishOutput, "root", "step"), g.on(ChainDone, "root", "step")),
+		g.contained(g.on(ChainNext, "root", "from"), g.on(ChainPageOutput, "root", "step")),
+		g.contained(g.on(ChainNext, "root", "to"), g.on(ChainPageInput, "root", "step")),
+		g.key(g.on(ChainNext, "root", "to")),
+		g.contained(g.on(ChainPageReadWeights, "root", "step"), g.on(ChainResult, "root", "step")),
+		g.contained(g.on(ChainPageReadWeights, "digest"), g.on(ChainPageReadWeightsRow, "digest")),
+		g.contained(g.on(ChainPageReadEarlier, "root", "step"), g.on(ChainResult, "root", "step")),
+		g.contained(g.on(ChainPageReadEarlier, "digest"), g.on(ChainPageReadEarlierRow, "digest")),
+		g.contained(g.on(ChainPageReadTree, "root", "step"), g.on(ChainResult, "root", "step")),
+		g.contained(g.on(ChainPageReadTree, "digest"), g.on(ChainPageReadTreeRow, "digest")),
+		g.contained(g.on(ChainScope, "root"), g.on(ChainRoot, "root")),
+		g.mutable(ChainScope),
+		g.mutable(ChainAdmitted),
+		g.contained(g.on(ChainSkipped, "root", "scope"), g.on(ChainScope, "root", "scope")),
+		g.mutable(ChainSkipped),
+		g.contained(g.on(ChainStep, "root", "scope"), g.on(ChainScope, "root", "scope")),
+		g.mutable(ChainStep),
+		g.contained(g.on(ChainStartStep, "root", "scope"), g.on(ChainScope, "root", "scope")),
+		g.mutable(ChainStartStep),
+		g.contained(g.on(ChainFinish, "root", "scope"), g.on(ChainScope, "root", "scope")),
+		g.mutable(ChainFinish),
+		g.mutable(ChainClaim),
+		g.contained(g.on(ChainEnded, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainEnded),
+		g.contained(g.on(ChainRetry, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainRetry),
+		g.contained(g.on(ChainFenced, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainFenced),
+		g.mutable(ChainResult),
+		g.contained(g.on(ChainDone, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainDone),
+		g.contained(g.on(ChainFailed, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainFailed),
+		g.contained(g.on(ChainHeld, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainHeld),
+		g.contained(g.on(ChainRefusal, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainRefusal),
+		g.contained(g.on(ChainExhausted, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainExhausted),
+		g.contained(g.on(ChainPageInput, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainPageInput),
+		g.contained(g.on(ChainPageInputAfter, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainPageInputAfter),
+		g.contained(g.on(ChainChainRunInput, "root", "scope"), g.on(ChainScope, "root", "scope")),
+		g.mutable(ChainChainRunInput),
+		g.contained(g.on(ChainOrderedInput, "root", "scope"), g.on(ChainScope, "root", "scope")),
+		g.mutable(ChainOrderedInput),
+		g.contained(g.on(ChainPageOutput, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainPageOutput),
+		g.contained(g.on(ChainPageOutputNext, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainPageOutputNext),
+		g.contained(g.on(ChainChainRunFinishOutput, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainChainRunFinishOutput),
+		g.contained(g.on(ChainOrderedFinishOutput, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainOrderedFinishOutput),
+		g.contained(g.on(ChainNext, "root", "from"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainNext),
+		g.contained(g.on(ChainPageReadWeights, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainPageReadWeights),
+		g.contained(g.on(ChainPageReadEarlier, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainPageReadEarlier),
+		g.contained(g.on(ChainPageReadTree, "root", "step"), g.on(ChainStep, "root", "step")),
+		g.mutable(ChainPageReadTree),
 		...ChainPageReadWeightsRecords.rules,
 		...ChainPageReadEarlierRecords.rules,
 		...ChainPageReadTreeRecords.rules
@@ -432,7 +457,7 @@ export const chainGraph = fragment(
 )
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
-export const chainCoordination = fragment(
+export const chainCoordination = g.fragment(
 	[
 		ChainKind,
 		ChainRootKind,
@@ -447,8 +472,8 @@ export const chainCoordination = fragment(
 		ChainServed
 	],
 	[
-		contained(on(ChainResumed, "target", "turn"), on(ChainPaused, "target", "turn")),
-		contained(on(ChainPaused, "target", pred("turn")), on(ChainResumed, "target", "turn"))
+		g.contained(g.on(ChainResumed, "target", "turn"), g.on(ChainPaused, "target", "turn")),
+		g.contained(g.on(ChainPaused, "target", g.pred("turn")), g.on(ChainResumed, "target", "turn"))
 	]
 )
 

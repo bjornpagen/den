@@ -4,7 +4,7 @@ import { drain } from "@bjornpagen/den/runtime/drive"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName, type Wake } from "@bjornpagen/den/transport"
-import type { Sha256 } from "@bjornpagen/grizzle"
+import type * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, type Gen, int } from "@bjornpagen/testing/gen"
@@ -104,7 +104,7 @@ export const aStepDueAtItsInputsInstantRunsAtItAndNotBefore = property.explore(s
 										: Arr.every(rung, (millis) => millis > 0 && millis <= offset * 1000),
 									"its admission rings it timed to its instant, at once for one already past"
 								)
-								const step: Sha256 = Option.getOrThrow(Arr.head(spawned)).step
+								const step: g.Sha256 = Option.getOrThrow(Arr.head(spawned)).step
 								return { offset, deadline, step, scope: requested.scope }
 							})
 						)

@@ -1,5 +1,5 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
@@ -81,11 +81,11 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 						const exhausted = yield* rows(
 							app.workload.retryExhausted.once({ params: {}, facts: {} })
 						)
-						const mine = Arr.filter(results, (r) => Sha256.equals(r.scope, requested.scope))
+						const mine = Arr.filter(results, (r) => g.Sha256.equals(r.scope, requested.scope))
 						const of = (kind: string) => Arr.filter(mine, (r) => r.kind === kind)
 						const claimsOf = (kind: string) =>
 							Arr.flatMap(of(kind), (r) =>
-								Arr.filter(claims, (cl) => Sha256.equals(cl.step, r.step))
+								Arr.filter(claims, (cl) => g.Sha256.equals(cl.step, r.step))
 							).length
 						assert.deepEqual(
 							Arr.map(of("Steadfast"), (r) => r.outcome),
@@ -105,7 +105,7 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 							)
 							assert.ok(
 								Arr.some(exhausted, (e) =>
-									Arr.some(of("Brittle"), (r) => Sha256.equals(r.step, e.step))
+									Arr.some(of("Brittle"), (r) => g.Sha256.equals(r.step, e.step))
 								)
 							)
 						}

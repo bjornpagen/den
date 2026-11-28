@@ -1,4 +1,4 @@
-import { conversionOf, nameFaultText, parseDeclaredName } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { Array as Arr, String as Str } from "effect"
 import { nameBytes, Refused } from "#algebra/kinds.ts"
 import { framedText } from "#runtime/identity.ts"
@@ -116,11 +116,11 @@ export const derivedOf = (
  */
 export const readableOf = (flow: string, singleton: string): string => {
 	const name = `${flow}${singleton}`
-	const parsed = parseDeclaredName(name)
+	const parsed = g.parseDeclaredName(name)
 	if (!parsed.ok) {
 		throw new Refused({
 			declaration: `flow ${flow}`,
-			why: `its name does not hold den's ${singleton}: ${name}, ${nameFaultText(parsed.error)}`
+			why: `its name does not hold den's ${singleton}: ${name}, ${g.nameFaultText(parsed.error)}`
 		})
 	}
 	return name
@@ -150,11 +150,11 @@ export const namedRecords = (stem: string, name: string): Named => ({
  */
 export const finiteCheckOf = (flow: string, relation: string, column: string): string => {
 	const name = `${column}Finite`
-	const parsed = parseDeclaredName(name)
+	const parsed = g.parseDeclaredName(name)
 	if (!parsed.ok) {
 		throw new Refused({
 			declaration: `flow ${flow}`,
-			why: `${relation}'s field ${column} does not hold den's row check ${name}, ${nameFaultText(parsed.error)}`
+			why: `${relation}'s field ${column} does not hold den's row check ${name}, ${g.nameFaultText(parsed.error)}`
 		})
 	}
 	return name
@@ -189,7 +189,7 @@ export const namedDerived = (derived: Derived): Named => ({
 export const censusOf = (flow: string, names: ReadonlyArray<Named>): void => {
 	const held = new Map<string, Named>()
 	Arr.forEach(names, (named) => {
-		const conversion = conversionOf(named.name)
+		const conversion = g.conversionOf(named.name)
 		const earlier = held.get(conversion)
 		if (earlier !== undefined && earlier.identity !== named.identity) {
 			throw new Refused({

@@ -1,341 +1,328 @@
 import { DenEnvironment, DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Assign to; `den generate` writes it, and nothing edits it. */
-import {
-	check,
-	closed,
-	closedId,
-	contained,
-	derivedName,
-	fragment,
-	key,
-	mutable,
-	natural,
-	Num,
-	on,
-	place,
-	pg,
-	pred,
-	records,
-	relation,
-	select,
-	sha256,
-	unit
-} from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { Array as Arr } from "effect"
 import { DecideReads } from "#integration/slice/reads.ts"
 
-export const AssignKind = closed.unordered("AssignKind", ["Embed", "Decide", "AssignmentFinish"])
-export const AssignRootKind = closed.unordered("AssignRootKind", ["Assignment"])
-export const AssignOutcome = closed.unordered("AssignOutcome", ["done", "failed"])
-export const AssignRetryWhy = closed.unordered("AssignRetryWhy", ["spent", "transient", "later"])
-export const AssignPausable = closed.unordered("AssignPausable", ["Assignment"])
-export const AssignEmbedInputMode = derivedName({
-	stem: "Assign",
-	path: ["EmbedInputMode"]
-}).unordered("AssignEmbedInputMode", ["Nearest", "Within"])
-export const AssignDecideInputMode = derivedName({
-	stem: "Assign",
-	path: ["DecideInputMode"]
-}).unordered("AssignDecideInputMode", ["Nearest", "Within"])
-export const AssignAssignmentInputMode = derivedName({
-	stem: "Assign",
-	path: ["AssignmentInputMode"]
-}).unordered("AssignAssignmentInputMode", ["Nearest", "Within"])
-export const AssignDecideOutputStage = derivedName({
-	stem: "Assign",
-	path: ["DecideOutputStage"]
-}).unordered("AssignDecideOutputStage", ["Serve", "Rest"])
+export const AssignKind = g.closed.unordered("AssignKind", ["Embed", "Decide", "AssignmentFinish"])
+export const AssignRootKind = g.closed.unordered("AssignRootKind", ["Assignment"])
+export const AssignOutcome = g.closed.unordered("AssignOutcome", ["done", "failed"])
+export const AssignRetryWhy = g.closed.unordered("AssignRetryWhy", ["spent", "transient", "later"])
+export const AssignPausable = g.closed.unordered("AssignPausable", ["Assignment"])
+export const AssignEmbedInputMode = g
+	.derivedName({ stem: "Assign", path: ["EmbedInputMode"] })
+	.unordered("AssignEmbedInputMode", ["Nearest", "Within"])
+export const AssignDecideInputMode = g
+	.derivedName({ stem: "Assign", path: ["DecideInputMode"] })
+	.unordered("AssignDecideInputMode", ["Nearest", "Within"])
+export const AssignAssignmentInputMode = g
+	.derivedName({ stem: "Assign", path: ["AssignmentInputMode"] })
+	.unordered("AssignAssignmentInputMode", ["Nearest", "Within"])
+export const AssignDecideOutputStage = g
+	.derivedName({ stem: "Assign", path: ["DecideOutputStage"] })
+	.unordered("AssignDecideOutputStage", ["Serve", "Rest"])
 
-export const AssignScope = relation("AssignScope", { root: sha256, scope: sha256 }, [
+export const AssignScope = g.relation("AssignScope", { root: g.sha256, scope: g.sha256 }, [
 	"root",
 	"scope"
 ])
-export const AssignRoot = relation(
+export const AssignRoot = g.relation(
 	"AssignRoot",
-	{ root: sha256, kind: closedId(AssignRootKind), key: Text, at: DenInstant },
+	{ root: g.sha256, kind: g.closedId(AssignRootKind), key: Text, at: DenInstant },
 	["root"]
 )
-export const AssignRequestedWith = relation(
+export const AssignRequestedWith = g.relation(
 	"AssignRequestedWith",
-	{ root: sha256, fingerprint: sha256, input: sha256 },
+	{ root: g.sha256, fingerprint: g.sha256, input: g.sha256 },
 	["root"]
 )
-export const AssignAdmitted = relation("AssignAdmitted", { root: sha256, scope: sha256 }, [
+export const AssignAdmitted = g.relation("AssignAdmitted", { root: g.sha256, scope: g.sha256 }, [
 	"root",
 	"scope"
 ])
-export const AssignSkipped = relation(
+export const AssignSkipped = g.relation(
 	"AssignSkipped",
-	{ root: sha256, scope: sha256, by: sha256 },
+	{ root: g.sha256, scope: g.sha256, by: g.sha256 },
 	["root", "scope"]
 )
-export const AssignStep = relation(
+export const AssignStep = g.relation(
 	"AssignStep",
-	{ root: sha256, step: sha256, kind: closedId(AssignKind), scope: sha256, due: DenInstant },
+	{
+		root: g.sha256,
+		step: g.sha256,
+		kind: g.closedId(AssignKind),
+		scope: g.sha256,
+		due: DenInstant
+	},
 	["root", "step"]
 )
-export const AssignStartStep = relation(
+export const AssignStartStep = g.relation(
 	"AssignStartStep",
-	{ root: sha256, scope: sha256, ordinal: natural, step: sha256 },
+	{ root: g.sha256, scope: g.sha256, ordinal: g.natural, step: g.sha256 },
 	["root", "scope", "ordinal"]
 )
-export const AssignFinish = relation(
+export const AssignFinish = g.relation(
 	"AssignFinish",
-	{ root: sha256, scope: sha256, step: sha256 },
+	{ root: g.sha256, scope: g.sha256, step: g.sha256 },
 	["root", "scope"]
 )
-export const AssignClaim = relation(
+export const AssignClaim = g.relation(
 	"AssignClaim",
-	{ root: sha256, step: sha256, attempt: place, until: DenInstant },
+	{ root: g.sha256, step: g.sha256, attempt: g.place, until: DenInstant },
 	["root", "step", "attempt"]
 )
-export const AssignEnded = relation(
+export const AssignEnded = g.relation(
 	"AssignEnded",
-	{ root: sha256, step: sha256, attempt: natural },
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
 	["root", "step", "attempt"]
 )
-export const AssignRetry = relation(
+export const AssignRetry = g.relation(
 	"AssignRetry",
-	{ root: sha256, step: sha256, attempt: natural, at: DenInstant, why: closedId(AssignRetryWhy) },
+	{
+		root: g.sha256,
+		step: g.sha256,
+		attempt: g.natural,
+		at: DenInstant,
+		why: g.closedId(AssignRetryWhy)
+	},
 	["root", "step", "attempt"]
 )
-export const AssignFenced = relation(
+export const AssignFenced = g.relation(
 	"AssignFenced",
-	{ root: sha256, step: sha256, attempt: natural },
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
 	["root", "step", "attempt"]
 )
-export const AssignResult = relation(
+export const AssignResult = g.relation(
 	"AssignResult",
-	{ root: sha256, step: sha256, outcome: closedId(AssignOutcome) },
+	{ root: g.sha256, step: g.sha256, outcome: g.closedId(AssignOutcome) },
 	["root", "step"]
 )
-export const AssignDone = relation("AssignDone", { root: sha256, step: sha256 }, ["root", "step"])
-export const AssignFailed = relation("AssignFailed", { root: sha256, step: sha256 }, [
+export const AssignDone = g.relation("AssignDone", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const AssignHeld = relation("AssignHeld", { root: sha256, step: sha256, attempt: natural }, [
+export const AssignFailed = g.relation("AssignFailed", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const AssignRefusal = relation("AssignRefusal", { root: sha256, step: sha256, law: Text }, [
+export const AssignHeld = g.relation(
+	"AssignHeld",
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
+	["root", "step"]
+)
+export const AssignRefusal = g.relation(
+	"AssignRefusal",
+	{ root: g.sha256, step: g.sha256, law: Text },
+	["root", "step"]
+)
+export const AssignExhausted = g.relation("AssignExhausted", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const AssignExhausted = relation("AssignExhausted", { root: sha256, step: sha256 }, [
-	"root",
-	"step"
-])
-export const AssignEmbedInput = derivedName({ stem: "Assign", path: ["EmbedInput"] }).relation(
+export const AssignEmbedInput = g.derivedName({ stem: "Assign", path: ["EmbedInput"] }).relation(
 	"AssignEmbedInput",
-	{ root: sha256, step: sha256, learner: Text, topic: Text, mode: closedId(AssignEmbedInputMode) },
+	{
+		root: g.sha256,
+		step: g.sha256,
+		learner: Text,
+		topic: Text,
+		mode: g.closedId(AssignEmbedInputMode)
+	},
 	["root", "step"]
 )
-export const AssignEmbedInputNear = derivedName({
-	stem: "Assign",
-	path: ["EmbedInputNear"]
-}).relation(
-	"AssignEmbedInputNear",
-	{ root: sha256, step: sha256, ordinal: natural, value: pg["double precision"] },
-	["root", "step", "ordinal"]
-)
-export const AssignEmbedInputExclude = derivedName({
-	stem: "Assign",
-	path: ["EmbedInputExclude"]
-}).relation(
-	"AssignEmbedInputExclude",
-	{ root: sha256, step: sha256, ordinal: natural, value: Text },
-	["root", "step", "ordinal"]
-)
-export const AssignEmbedInputModeNearest = derivedName({
-	stem: "Assign",
-	path: ["EmbedInputModeNearest"]
-}).relation("AssignEmbedInputModeNearest", { root: sha256, step: sha256 }, ["root", "step"])
-export const AssignEmbedInputModeWithin = derivedName({
-	stem: "Assign",
-	path: ["EmbedInputModeWithin"]
-}).relation(
-	"AssignEmbedInputModeWithin",
-	{ root: sha256, step: sha256, radius: pg["double precision"] },
-	["root", "step"]
-)
-export const AssignDecideInput = derivedName({ stem: "Assign", path: ["DecideInput"] }).relation(
+export const AssignEmbedInputNear = g
+	.derivedName({ stem: "Assign", path: ["EmbedInputNear"] })
+	.relation(
+		"AssignEmbedInputNear",
+		{ root: g.sha256, step: g.sha256, ordinal: g.natural, value: g.float8 },
+		["root", "step", "ordinal"]
+	)
+export const AssignEmbedInputExclude = g
+	.derivedName({ stem: "Assign", path: ["EmbedInputExclude"] })
+	.relation(
+		"AssignEmbedInputExclude",
+		{ root: g.sha256, step: g.sha256, ordinal: g.natural, value: Text },
+		["root", "step", "ordinal"]
+	)
+export const AssignEmbedInputModeNearest = g
+	.derivedName({ stem: "Assign", path: ["EmbedInputModeNearest"] })
+	.relation("AssignEmbedInputModeNearest", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const AssignEmbedInputModeWithin = g
+	.derivedName({ stem: "Assign", path: ["EmbedInputModeWithin"] })
+	.relation("AssignEmbedInputModeWithin", { root: g.sha256, step: g.sha256, radius: g.float8 }, [
+		"root",
+		"step"
+	])
+export const AssignDecideInput = g.derivedName({ stem: "Assign", path: ["DecideInput"] }).relation(
 	"AssignDecideInput",
 	{
-		root: sha256,
-		step: sha256,
+		root: g.sha256,
+		step: g.sha256,
 		learner: Text,
 		topic: Text,
-		vector: pg.vector(4),
-		mode: closedId(AssignDecideInputMode)
+		vector: g.vector(4),
+		mode: g.closedId(AssignDecideInputMode)
 	},
 	["root", "step"]
 )
-export const AssignDecideInputExclude = derivedName({
-	stem: "Assign",
-	path: ["DecideInputExclude"]
-}).relation(
-	"AssignDecideInputExclude",
-	{ root: sha256, step: sha256, ordinal: natural, value: Text },
-	["root", "step", "ordinal"]
-)
-export const AssignDecideInputModeNearest = derivedName({
-	stem: "Assign",
-	path: ["DecideInputModeNearest"]
-}).relation("AssignDecideInputModeNearest", { root: sha256, step: sha256 }, ["root", "step"])
-export const AssignDecideInputModeWithin = derivedName({
-	stem: "Assign",
-	path: ["DecideInputModeWithin"]
-}).relation(
-	"AssignDecideInputModeWithin",
-	{ root: sha256, step: sha256, radius: pg["double precision"] },
-	["root", "step"]
-)
-export const AssignAssignmentInput = derivedName({
-	stem: "Assign",
-	path: ["AssignmentInput"]
-}).relation(
-	"AssignAssignmentInput",
-	{
-		root: sha256,
-		scope: sha256,
-		learner: Text,
-		topic: Text,
-		mode: closedId(AssignAssignmentInputMode)
-	},
-	["root", "scope"]
-)
-export const AssignAssignmentInputNear = derivedName({
-	stem: "Assign",
-	path: ["AssignmentInputNear"]
-}).relation(
-	"AssignAssignmentInputNear",
-	{ root: sha256, scope: sha256, ordinal: natural, value: pg["double precision"] },
-	["root", "scope", "ordinal"]
-)
-export const AssignAssignmentInputExclude = derivedName({
-	stem: "Assign",
-	path: ["AssignmentInputExclude"]
-}).relation(
-	"AssignAssignmentInputExclude",
-	{ root: sha256, scope: sha256, ordinal: natural, value: Text },
-	["root", "scope", "ordinal"]
-)
-export const AssignAssignmentInputModeNearest = derivedName({
-	stem: "Assign",
-	path: ["AssignmentInputModeNearest"]
-}).relation("AssignAssignmentInputModeNearest", { root: sha256, scope: sha256 }, ["root", "scope"])
-export const AssignAssignmentInputModeWithin = derivedName({
-	stem: "Assign",
-	path: ["AssignmentInputModeWithin"]
-}).relation(
-	"AssignAssignmentInputModeWithin",
-	{ root: sha256, scope: sha256, radius: pg["double precision"] },
-	["root", "scope"]
-)
-export const AssignEmbedOutput = derivedName({ stem: "Assign", path: ["EmbedOutput"] }).relation(
-	"AssignEmbedOutput",
-	{ root: sha256, step: sha256, vector: pg.vector(4) },
-	["root", "step"]
-)
-export const AssignDecideOutput = derivedName({ stem: "Assign", path: ["DecideOutput"] }).relation(
-	"AssignDecideOutput",
-	{
-		root: sha256,
-		step: sha256,
-		confidence: pg["double precision"],
-		stage: closedId(AssignDecideOutputStage)
-	},
-	["root", "step"]
-)
-export const AssignDecideOutputWeighed = derivedName({
-	stem: "Assign",
-	path: ["DecideOutputWeighed"]
-}).relation(
-	"AssignDecideOutputWeighed",
-	{
-		root: sha256,
-		step: sha256,
-		ordinal: natural,
-		passage: Text,
-		distance: pg["double precision"],
-		passed: pg.boolean
-	},
-	["root", "step", "ordinal"]
-)
-export const AssignDecideOutputStageServe = derivedName({
-	stem: "Assign",
-	path: ["DecideOutputStageServe"]
-}).relation(
-	"AssignDecideOutputStageServe",
-	{ root: sha256, step: sha256, passage: Text, distance: pg["double precision"] },
-	["root", "step"]
-)
-export const AssignDecideOutputStageRest = derivedName({
-	stem: "Assign",
-	path: ["DecideOutputStageRest"]
-}).relation("AssignDecideOutputStageRest", { root: sha256, step: sha256 }, ["root", "step"])
-export const AssignAssignmentFinishOutput = derivedName({
-	stem: "Assign",
-	path: ["AssignmentFinishOutput"]
-}).relation("AssignAssignmentFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
-export const AssignAsked = derivedName({ stem: "Assign", path: ["Asked"] }).relation(
-	"AssignAsked",
-	{ root: sha256, from: sha256, ordinal: natural, to: sha256 },
-	["root", "from", "ordinal"]
-)
-export const AssignDecideReadNearest = derivedName({
-	stem: "Assign",
-	path: ["DecideReadNearest"]
-}).relation(
-	"AssignDecideReadNearest",
-	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
-	["root", "step", "ordinal"]
-)
-export const AssignDecideReadSeen = derivedName({
-	stem: "Assign",
-	path: ["DecideReadSeen"]
-}).relation(
-	"AssignDecideReadSeen",
-	{ root: sha256, step: sha256, ordinal: natural, digest: sha256 },
-	["root", "step", "ordinal"]
-)
-export const AssignPaused = relation(
+export const AssignDecideInputExclude = g
+	.derivedName({ stem: "Assign", path: ["DecideInputExclude"] })
+	.relation(
+		"AssignDecideInputExclude",
+		{ root: g.sha256, step: g.sha256, ordinal: g.natural, value: Text },
+		["root", "step", "ordinal"]
+	)
+export const AssignDecideInputModeNearest = g
+	.derivedName({ stem: "Assign", path: ["DecideInputModeNearest"] })
+	.relation("AssignDecideInputModeNearest", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const AssignDecideInputModeWithin = g
+	.derivedName({ stem: "Assign", path: ["DecideInputModeWithin"] })
+	.relation("AssignDecideInputModeWithin", { root: g.sha256, step: g.sha256, radius: g.float8 }, [
+		"root",
+		"step"
+	])
+export const AssignAssignmentInput = g
+	.derivedName({ stem: "Assign", path: ["AssignmentInput"] })
+	.relation(
+		"AssignAssignmentInput",
+		{
+			root: g.sha256,
+			scope: g.sha256,
+			learner: Text,
+			topic: Text,
+			mode: g.closedId(AssignAssignmentInputMode)
+		},
+		["root", "scope"]
+	)
+export const AssignAssignmentInputNear = g
+	.derivedName({ stem: "Assign", path: ["AssignmentInputNear"] })
+	.relation(
+		"AssignAssignmentInputNear",
+		{ root: g.sha256, scope: g.sha256, ordinal: g.natural, value: g.float8 },
+		["root", "scope", "ordinal"]
+	)
+export const AssignAssignmentInputExclude = g
+	.derivedName({ stem: "Assign", path: ["AssignmentInputExclude"] })
+	.relation(
+		"AssignAssignmentInputExclude",
+		{ root: g.sha256, scope: g.sha256, ordinal: g.natural, value: Text },
+		["root", "scope", "ordinal"]
+	)
+export const AssignAssignmentInputModeNearest = g
+	.derivedName({ stem: "Assign", path: ["AssignmentInputModeNearest"] })
+	.relation("AssignAssignmentInputModeNearest", { root: g.sha256, scope: g.sha256 }, [
+		"root",
+		"scope"
+	])
+export const AssignAssignmentInputModeWithin = g
+	.derivedName({ stem: "Assign", path: ["AssignmentInputModeWithin"] })
+	.relation(
+		"AssignAssignmentInputModeWithin",
+		{ root: g.sha256, scope: g.sha256, radius: g.float8 },
+		["root", "scope"]
+	)
+export const AssignEmbedOutput = g
+	.derivedName({ stem: "Assign", path: ["EmbedOutput"] })
+	.relation("AssignEmbedOutput", { root: g.sha256, step: g.sha256, vector: g.vector(4) }, [
+		"root",
+		"step"
+	])
+export const AssignDecideOutput = g
+	.derivedName({ stem: "Assign", path: ["DecideOutput"] })
+	.relation(
+		"AssignDecideOutput",
+		{
+			root: g.sha256,
+			step: g.sha256,
+			confidence: g.float8,
+			stage: g.closedId(AssignDecideOutputStage)
+		},
+		["root", "step"]
+	)
+export const AssignDecideOutputWeighed = g
+	.derivedName({ stem: "Assign", path: ["DecideOutputWeighed"] })
+	.relation(
+		"AssignDecideOutputWeighed",
+		{
+			root: g.sha256,
+			step: g.sha256,
+			ordinal: g.natural,
+			passage: Text,
+			distance: g.float8,
+			passed: g.bool
+		},
+		["root", "step", "ordinal"]
+	)
+export const AssignDecideOutputStageServe = g
+	.derivedName({ stem: "Assign", path: ["DecideOutputStageServe"] })
+	.relation(
+		"AssignDecideOutputStageServe",
+		{ root: g.sha256, step: g.sha256, passage: Text, distance: g.float8 },
+		["root", "step"]
+	)
+export const AssignDecideOutputStageRest = g
+	.derivedName({ stem: "Assign", path: ["DecideOutputStageRest"] })
+	.relation("AssignDecideOutputStageRest", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const AssignAssignmentFinishOutput = g
+	.derivedName({ stem: "Assign", path: ["AssignmentFinishOutput"] })
+	.relation("AssignAssignmentFinishOutput", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const AssignAsked = g
+	.derivedName({ stem: "Assign", path: ["Asked"] })
+	.relation("AssignAsked", { root: g.sha256, from: g.sha256, ordinal: g.natural, to: g.sha256 }, [
+		"root",
+		"from",
+		"ordinal"
+	])
+export const AssignDecideReadNearest = g
+	.derivedName({ stem: "Assign", path: ["DecideReadNearest"] })
+	.relation(
+		"AssignDecideReadNearest",
+		{ root: g.sha256, step: g.sha256, ordinal: g.natural, digest: g.sha256 },
+		["root", "step", "ordinal"]
+	)
+export const AssignDecideReadSeen = g
+	.derivedName({ stem: "Assign", path: ["DecideReadSeen"] })
+	.relation(
+		"AssignDecideReadSeen",
+		{ root: g.sha256, step: g.sha256, ordinal: g.natural, digest: g.sha256 },
+		["root", "step", "ordinal"]
+	)
+export const AssignPaused = g.relation(
 	"AssignPaused",
-	{ target: closedId(AssignPausable), turn: natural },
+	{ target: g.closedId(AssignPausable), turn: g.natural },
 	["target", "turn"]
 )
-export const AssignResumed = relation(
+export const AssignResumed = g.relation(
 	"AssignResumed",
-	{ target: closedId(AssignPausable), turn: natural },
+	{ target: g.closedId(AssignPausable), turn: g.natural },
 	["target", "turn"]
 )
-export const AssignServed = relation(
+export const AssignServed = g.relation(
 	"AssignServed",
 	{ environment: DenEnvironment, at: DenInstant, deployment: Text },
 	["environment", "at"]
 )
 
 /** The records of the rows step Decide's read `nearest` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */
-export const AssignDecideReadNearestRecords = records(
+export const AssignDecideReadNearestRecords = g.records(
 	"AssignDecideReadNearest",
 	DecideReads.named.nearest,
-	{ digest: sha256 },
+	{ digest: g.sha256 },
 	["digest"]
 )
 export const AssignDecideReadNearestRow = AssignDecideReadNearestRecords.row
 
 /** The records of the rows step Decide's read `seen` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, its name grizzle's, keyed by a row's digest alone, so every root that found a row shares it. */
-export const AssignDecideReadSeenRecords = records(
+export const AssignDecideReadSeenRecords = g.records(
 	"AssignDecideReadSeen",
 	DecideReads.named.seen,
-	{ digest: sha256 },
+	{ digest: g.sha256 },
 	["digest"]
 )
 export const AssignDecideReadSeenRow = AssignDecideReadSeenRecords.row
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
-export const assignGraph = fragment(
+export const assignGraph = g.fragment(
 	[
 		AssignKind,
 		AssignRootKind,
@@ -391,401 +378,437 @@ export const assignGraph = fragment(
 		...AssignDecideReadSeenRecords.relations
 	],
 	[
-		unit("DenRoot", { root: sha256 }),
-		key(on(AssignScope, "scope")),
-		key(on(AssignStep, "step")),
-		contained(on(AssignAdmitted, "root", "scope"), on(AssignScope, "root", "scope")),
-		contained(on(AssignSkipped, "scope"), on(AssignRoot, "root")),
-		contained(on(AssignSkipped, "by"), on(AssignRoot, "root")),
-		contained(on(AssignRequestedWith, "root"), on(AssignRoot, "root")),
-		contained(on(AssignStep, "root", "scope"), on(AssignAdmitted, "root", "scope")),
-		contained(on(AssignStartStep, "root", "scope"), on(AssignAdmitted, "root", "scope")),
-		contained(on(AssignStartStep, "root", "step"), on(AssignStep, "root", "step")),
-		key(on(AssignStartStep, "root", "step")),
-		contained(on(AssignFinish, "root", "scope"), on(AssignAdmitted, "root", "scope")),
-		contained(on(AssignFinish, "root", "step"), on(AssignStep, "root", "step")),
-		key(on(AssignFinish, "root", "step")),
-		contained(on(AssignClaim, "root", "step"), on(AssignStep, "root", "step")),
-		contained(
-			on(AssignEnded, "root", "step", "attempt"),
-			on(AssignClaim, "root", "step", "attempt")
+		g.unit("DenRoot", { root: g.sha256 }),
+		g.key(g.on(AssignScope, "scope")),
+		g.key(g.on(AssignStep, "step")),
+		g.contained(g.on(AssignAdmitted, "root", "scope"), g.on(AssignScope, "root", "scope")),
+		g.contained(g.on(AssignSkipped, "scope"), g.on(AssignRoot, "root")),
+		g.contained(g.on(AssignSkipped, "by"), g.on(AssignRoot, "root")),
+		g.contained(g.on(AssignRequestedWith, "root"), g.on(AssignRoot, "root")),
+		g.contained(g.on(AssignStep, "root", "scope"), g.on(AssignAdmitted, "root", "scope")),
+		g.contained(g.on(AssignStartStep, "root", "scope"), g.on(AssignAdmitted, "root", "scope")),
+		g.contained(g.on(AssignStartStep, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.key(g.on(AssignStartStep, "root", "step")),
+		g.contained(g.on(AssignFinish, "root", "scope"), g.on(AssignAdmitted, "root", "scope")),
+		g.contained(g.on(AssignFinish, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.key(g.on(AssignFinish, "root", "step")),
+		g.contained(g.on(AssignClaim, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.contained(
+			g.on(AssignEnded, "root", "step", "attempt"),
+			g.on(AssignClaim, "root", "step", "attempt")
 		),
-		contained(
-			on(
-				select(AssignClaim, (row) => row.ge(row.attempt, 1n)),
+		g.contained(
+			g.on(
+				g.select(AssignClaim, (row) => row.ge(row.attempt, 1n)),
 				"root",
 				"step",
-				pred("attempt")
+				g.pred("attempt")
 			),
-			on(AssignEnded, "root", "step", "attempt")
+			g.on(AssignEnded, "root", "step", "attempt")
 		),
-		contained(
-			on(AssignRetry, "root", "step", "attempt"),
-			on(AssignEnded, "root", "step", "attempt")
+		g.contained(
+			g.on(AssignRetry, "root", "step", "attempt"),
+			g.on(AssignEnded, "root", "step", "attempt")
 		),
-		contained(
-			on(AssignFenced, "root", "step", "attempt"),
-			on(AssignEnded, "root", "step", "attempt")
+		g.contained(
+			g.on(AssignFenced, "root", "step", "attempt"),
+			g.on(AssignEnded, "root", "step", "attempt")
 		),
-		contained(on(AssignResult, "root", "step"), on(AssignStep, "root", "step")),
-		contained(
-			on(AssignHeld, "root", "step", "attempt"),
-			on(AssignClaim, "root", "step", "attempt")
+		g.contained(g.on(AssignResult, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.contained(
+			g.on(AssignHeld, "root", "step", "attempt"),
+			g.on(AssignClaim, "root", "step", "attempt")
 		),
-		contained(on(AssignHeld, "root", "step"), on(AssignResult, "root", "step")),
-		contained(
-			on(AssignDone, "root", "step"),
-			on(
-				select(AssignResult, (row) => row.eq(row.outcome, "done")),
+		g.contained(g.on(AssignHeld, "root", "step"), g.on(AssignResult, "root", "step")),
+		g.contained(
+			g.on(AssignDone, "root", "step"),
+			g.on(
+				g.select(AssignResult, (row) => row.eq(row.outcome, "done")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(AssignFailed, "root", "step"),
-			on(
-				select(AssignResult, (row) => row.eq(row.outcome, "failed")),
+		g.contained(
+			g.on(AssignFailed, "root", "step"),
+			g.on(
+				g.select(AssignResult, (row) => row.eq(row.outcome, "failed")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(AssignRefusal, "root", "step"), on(AssignFailed, "root", "step")),
-		contained(on(AssignExhausted, "root", "step"), on(AssignFailed, "root", "step")),
-		contained(
-			on(
-				select(AssignRoot, (row) => row.eq(row.kind, "Assignment")),
+		g.contained(g.on(AssignRefusal, "root", "step"), g.on(AssignFailed, "root", "step")),
+		g.contained(g.on(AssignExhausted, "root", "step"), g.on(AssignFailed, "root", "step")),
+		g.contained(
+			g.on(
+				g.select(AssignRoot, (row) => row.eq(row.kind, "Assignment")),
 				"root"
 			),
-			on(AssignRequestedWith, "root")
+			g.on(AssignRequestedWith, "root")
 		),
-		contained(
-			on(AssignEmbedInput, "root", "step"),
-			on(
-				select(AssignStep, (row) => row.eq(row.kind, "Embed")),
+		g.contained(
+			g.on(AssignEmbedInput, "root", "step"),
+			g.on(
+				g.select(AssignStep, (row) => row.eq(row.kind, "Embed")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(AssignEmbedInputNear, "root", "step"), on(AssignEmbedInput, "root", "step")),
-		contained(
-			on(
-				select(AssignEmbedInputNear, (row) => row.ge(row.ordinal, 1n)),
+		g.contained(g.on(AssignEmbedInputNear, "root", "step"), g.on(AssignEmbedInput, "root", "step")),
+		g.contained(
+			g.on(
+				g.select(AssignEmbedInputNear, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
-				pred("ordinal")
+				g.pred("ordinal")
 			),
-			on(AssignEmbedInputNear, "root", "step", "ordinal")
+			g.on(AssignEmbedInputNear, "root", "step", "ordinal")
 		),
-		check("valueFinite", AssignEmbedInputNear, (row) => Num.isFinite(row.value)),
-		contained(on(AssignEmbedInputExclude, "root", "step"), on(AssignEmbedInput, "root", "step")),
-		contained(
-			on(
-				select(AssignEmbedInputExclude, (row) => row.ge(row.ordinal, 1n)),
+		g.check("valueFinite", AssignEmbedInputNear, (row) => g.Num.isFinite(row.value)),
+		g.contained(
+			g.on(AssignEmbedInputExclude, "root", "step"),
+			g.on(AssignEmbedInput, "root", "step")
+		),
+		g.contained(
+			g.on(
+				g.select(AssignEmbedInputExclude, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
-				pred("ordinal")
+				g.pred("ordinal")
 			),
-			on(AssignEmbedInputExclude, "root", "step", "ordinal")
+			g.on(AssignEmbedInputExclude, "root", "step", "ordinal")
 		),
-		contained(
-			on(AssignEmbedInputModeNearest, "root", "step"),
-			on(
-				select(AssignEmbedInput, (row) => row.eq(row.mode, "Nearest")),
+		g.contained(
+			g.on(AssignEmbedInputModeNearest, "root", "step"),
+			g.on(
+				g.select(AssignEmbedInput, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(
-				select(AssignEmbedInput, (row) => row.eq(row.mode, "Nearest")),
+		g.contained(
+			g.on(
+				g.select(AssignEmbedInput, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"step"
 			),
-			on(AssignEmbedInputModeNearest, "root", "step")
+			g.on(AssignEmbedInputModeNearest, "root", "step")
 		),
-		contained(
-			on(AssignEmbedInputModeWithin, "root", "step"),
-			on(
-				select(AssignEmbedInput, (row) => row.eq(row.mode, "Within")),
+		g.contained(
+			g.on(AssignEmbedInputModeWithin, "root", "step"),
+			g.on(
+				g.select(AssignEmbedInput, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(
-				select(AssignEmbedInput, (row) => row.eq(row.mode, "Within")),
+		g.contained(
+			g.on(
+				g.select(AssignEmbedInput, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"step"
 			),
-			on(AssignEmbedInputModeWithin, "root", "step")
+			g.on(AssignEmbedInputModeWithin, "root", "step")
 		),
-		check("radiusFinite", AssignEmbedInputModeWithin, (row) => Num.isFinite(row.radius)),
-		contained(
-			on(AssignDecideInput, "root", "step"),
-			on(
-				select(AssignStep, (row) => row.eq(row.kind, "Decide")),
+		g.check("radiusFinite", AssignEmbedInputModeWithin, (row) => g.Num.isFinite(row.radius)),
+		g.contained(
+			g.on(AssignDecideInput, "root", "step"),
+			g.on(
+				g.select(AssignStep, (row) => row.eq(row.kind, "Decide")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(AssignDecideInputExclude, "root", "step"), on(AssignDecideInput, "root", "step")),
-		contained(
-			on(
-				select(AssignDecideInputExclude, (row) => row.ge(row.ordinal, 1n)),
+		g.contained(
+			g.on(AssignDecideInputExclude, "root", "step"),
+			g.on(AssignDecideInput, "root", "step")
+		),
+		g.contained(
+			g.on(
+				g.select(AssignDecideInputExclude, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
-				pred("ordinal")
+				g.pred("ordinal")
 			),
-			on(AssignDecideInputExclude, "root", "step", "ordinal")
+			g.on(AssignDecideInputExclude, "root", "step", "ordinal")
 		),
-		contained(
-			on(AssignDecideInputModeNearest, "root", "step"),
-			on(
-				select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
+		g.contained(
+			g.on(AssignDecideInputModeNearest, "root", "step"),
+			g.on(
+				g.select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(
-				select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
+		g.contained(
+			g.on(
+				g.select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"step"
 			),
-			on(AssignDecideInputModeNearest, "root", "step")
+			g.on(AssignDecideInputModeNearest, "root", "step")
 		),
-		contained(
-			on(AssignDecideInputModeWithin, "root", "step"),
-			on(
-				select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
+		g.contained(
+			g.on(AssignDecideInputModeWithin, "root", "step"),
+			g.on(
+				g.select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(
-				select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
+		g.contained(
+			g.on(
+				g.select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"step"
 			),
-			on(AssignDecideInputModeWithin, "root", "step")
+			g.on(AssignDecideInputModeWithin, "root", "step")
 		),
-		check("radiusFinite", AssignDecideInputModeWithin, (row) => Num.isFinite(row.radius)),
-		contained(
-			on(AssignAssignmentInput, "scope"),
-			on(
-				select(AssignRoot, (row) => row.eq(row.kind, "Assignment")),
+		g.check("radiusFinite", AssignDecideInputModeWithin, (row) => g.Num.isFinite(row.radius)),
+		g.contained(
+			g.on(AssignAssignmentInput, "scope"),
+			g.on(
+				g.select(AssignRoot, (row) => row.eq(row.kind, "Assignment")),
 				"root"
 			)
 		),
-		contained(
-			on(AssignAssignmentInputNear, "root", "scope"),
-			on(AssignAssignmentInput, "root", "scope")
+		g.contained(
+			g.on(AssignAssignmentInputNear, "root", "scope"),
+			g.on(AssignAssignmentInput, "root", "scope")
 		),
-		contained(
-			on(
-				select(AssignAssignmentInputNear, (row) => row.ge(row.ordinal, 1n)),
+		g.contained(
+			g.on(
+				g.select(AssignAssignmentInputNear, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"scope",
-				pred("ordinal")
+				g.pred("ordinal")
 			),
-			on(AssignAssignmentInputNear, "root", "scope", "ordinal")
+			g.on(AssignAssignmentInputNear, "root", "scope", "ordinal")
 		),
-		check("valueFinite", AssignAssignmentInputNear, (row) => Num.isFinite(row.value)),
-		contained(
-			on(AssignAssignmentInputExclude, "root", "scope"),
-			on(AssignAssignmentInput, "root", "scope")
+		g.check("valueFinite", AssignAssignmentInputNear, (row) => g.Num.isFinite(row.value)),
+		g.contained(
+			g.on(AssignAssignmentInputExclude, "root", "scope"),
+			g.on(AssignAssignmentInput, "root", "scope")
 		),
-		contained(
-			on(
-				select(AssignAssignmentInputExclude, (row) => row.ge(row.ordinal, 1n)),
+		g.contained(
+			g.on(
+				g.select(AssignAssignmentInputExclude, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"scope",
-				pred("ordinal")
+				g.pred("ordinal")
 			),
-			on(AssignAssignmentInputExclude, "root", "scope", "ordinal")
+			g.on(AssignAssignmentInputExclude, "root", "scope", "ordinal")
 		),
-		contained(
-			on(AssignAssignmentInputModeNearest, "root", "scope"),
-			on(
-				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
+		g.contained(
+			g.on(AssignAssignmentInputModeNearest, "root", "scope"),
+			g.on(
+				g.select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"scope"
 			)
 		),
-		contained(
-			on(
-				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
+		g.contained(
+			g.on(
+				g.select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
 				"root",
 				"scope"
 			),
-			on(AssignAssignmentInputModeNearest, "root", "scope")
+			g.on(AssignAssignmentInputModeNearest, "root", "scope")
 		),
-		contained(
-			on(AssignAssignmentInputModeWithin, "root", "scope"),
-			on(
-				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
+		g.contained(
+			g.on(AssignAssignmentInputModeWithin, "root", "scope"),
+			g.on(
+				g.select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"scope"
 			)
 		),
-		contained(
-			on(
-				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
+		g.contained(
+			g.on(
+				g.select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
 				"root",
 				"scope"
 			),
-			on(AssignAssignmentInputModeWithin, "root", "scope")
+			g.on(AssignAssignmentInputModeWithin, "root", "scope")
 		),
-		check("radiusFinite", AssignAssignmentInputModeWithin, (row) => Num.isFinite(row.radius)),
-		contained(on(AssignEmbedOutput, "root", "step"), on(AssignEmbedInput, "root", "step")),
-		contained(on(AssignEmbedOutput, "root", "step"), on(AssignDone, "root", "step")),
-		contained(on(AssignDecideOutput, "root", "step"), on(AssignDecideInput, "root", "step")),
-		contained(on(AssignDecideOutput, "root", "step"), on(AssignDone, "root", "step")),
-		check("confidenceFinite", AssignDecideOutput, (row) => Num.isFinite(row.confidence)),
-		contained(
-			on(AssignDecideOutputWeighed, "root", "step"),
-			on(AssignDecideOutput, "root", "step")
+		g.check("radiusFinite", AssignAssignmentInputModeWithin, (row) => g.Num.isFinite(row.radius)),
+		g.contained(g.on(AssignEmbedOutput, "root", "step"), g.on(AssignEmbedInput, "root", "step")),
+		g.contained(g.on(AssignEmbedOutput, "root", "step"), g.on(AssignDone, "root", "step")),
+		g.contained(g.on(AssignDecideOutput, "root", "step"), g.on(AssignDecideInput, "root", "step")),
+		g.contained(g.on(AssignDecideOutput, "root", "step"), g.on(AssignDone, "root", "step")),
+		g.check("confidenceFinite", AssignDecideOutput, (row) => g.Num.isFinite(row.confidence)),
+		g.contained(
+			g.on(AssignDecideOutputWeighed, "root", "step"),
+			g.on(AssignDecideOutput, "root", "step")
 		),
-		contained(
-			on(
-				select(AssignDecideOutputWeighed, (row) => row.ge(row.ordinal, 1n)),
+		g.contained(
+			g.on(
+				g.select(AssignDecideOutputWeighed, (row) => row.ge(row.ordinal, 1n)),
 				"root",
 				"step",
-				pred("ordinal")
+				g.pred("ordinal")
 			),
-			on(AssignDecideOutputWeighed, "root", "step", "ordinal")
+			g.on(AssignDecideOutputWeighed, "root", "step", "ordinal")
 		),
-		check("distanceFinite", AssignDecideOutputWeighed, (row) => Num.isFinite(row.distance)),
-		contained(
-			on(AssignDecideOutputStageServe, "root", "step"),
-			on(
-				select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
+		g.check("distanceFinite", AssignDecideOutputWeighed, (row) => g.Num.isFinite(row.distance)),
+		g.contained(
+			g.on(AssignDecideOutputStageServe, "root", "step"),
+			g.on(
+				g.select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(
-				select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
+		g.contained(
+			g.on(
+				g.select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
 				"root",
 				"step"
 			),
-			on(AssignDecideOutputStageServe, "root", "step")
+			g.on(AssignDecideOutputStageServe, "root", "step")
 		),
-		check("distanceFinite", AssignDecideOutputStageServe, (row) => Num.isFinite(row.distance)),
-		contained(
-			on(AssignDecideOutputStageRest, "root", "step"),
-			on(
-				select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
+		g.check("distanceFinite", AssignDecideOutputStageServe, (row) => g.Num.isFinite(row.distance)),
+		g.contained(
+			g.on(AssignDecideOutputStageRest, "root", "step"),
+			g.on(
+				g.select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(
-				select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
+		g.contained(
+			g.on(
+				g.select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
 				"root",
 				"step"
 			),
-			on(AssignDecideOutputStageRest, "root", "step")
+			g.on(AssignDecideOutputStageRest, "root", "step")
 		),
-		contained(on(AssignAssignmentFinishOutput, "root", "step"), on(AssignDone, "root", "step")),
-		contained(on(AssignAsked, "root", "from"), on(AssignEmbedOutput, "root", "step")),
-		contained(on(AssignAsked, "root", "to"), on(AssignDecideInput, "root", "step")),
-		key(on(AssignAsked, "root", "to")),
-		contained(on(AssignDecideReadNearest, "root", "step"), on(AssignResult, "root", "step")),
-		contained(on(AssignDecideReadNearest, "digest"), on(AssignDecideReadNearestRow, "digest")),
-		contained(on(AssignDecideReadSeen, "root", "step"), on(AssignResult, "root", "step")),
-		contained(on(AssignDecideReadSeen, "digest"), on(AssignDecideReadSeenRow, "digest")),
-		contained(on(AssignScope, "root"), on(AssignRoot, "root")),
-		mutable(AssignScope),
-		mutable(AssignAdmitted),
-		contained(on(AssignSkipped, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignSkipped),
-		contained(on(AssignStep, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignStep),
-		contained(on(AssignStartStep, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignStartStep),
-		contained(on(AssignFinish, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignFinish),
-		mutable(AssignClaim),
-		contained(on(AssignEnded, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEnded),
-		contained(on(AssignRetry, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignRetry),
-		contained(on(AssignFenced, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignFenced),
-		mutable(AssignResult),
-		contained(on(AssignDone, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDone),
-		contained(on(AssignFailed, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignFailed),
-		contained(on(AssignHeld, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignHeld),
-		contained(on(AssignRefusal, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignRefusal),
-		contained(on(AssignExhausted, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignExhausted),
-		contained(on(AssignEmbedInput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInput),
-		contained(on(AssignEmbedInputNear, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInputNear),
-		contained(on(AssignEmbedInputExclude, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInputExclude),
-		contained(on(AssignEmbedInputModeNearest, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInputModeNearest),
-		contained(on(AssignEmbedInputModeWithin, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedInputModeWithin),
-		contained(on(AssignDecideInput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideInput),
-		contained(on(AssignDecideInputExclude, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideInputExclude),
-		contained(on(AssignDecideInputModeNearest, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideInputModeNearest),
-		contained(on(AssignDecideInputModeWithin, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideInputModeWithin),
-		contained(on(AssignAssignmentInput, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignAssignmentInput),
-		contained(on(AssignAssignmentInputNear, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignAssignmentInputNear),
-		contained(on(AssignAssignmentInputExclude, "root", "scope"), on(AssignScope, "root", "scope")),
-		mutable(AssignAssignmentInputExclude),
-		contained(
-			on(AssignAssignmentInputModeNearest, "root", "scope"),
-			on(AssignScope, "root", "scope")
+		g.contained(
+			g.on(AssignAssignmentFinishOutput, "root", "step"),
+			g.on(AssignDone, "root", "step")
 		),
-		mutable(AssignAssignmentInputModeNearest),
-		contained(
-			on(AssignAssignmentInputModeWithin, "root", "scope"),
-			on(AssignScope, "root", "scope")
+		g.contained(g.on(AssignAsked, "root", "from"), g.on(AssignEmbedOutput, "root", "step")),
+		g.contained(g.on(AssignAsked, "root", "to"), g.on(AssignDecideInput, "root", "step")),
+		g.key(g.on(AssignAsked, "root", "to")),
+		g.contained(g.on(AssignDecideReadNearest, "root", "step"), g.on(AssignResult, "root", "step")),
+		g.contained(
+			g.on(AssignDecideReadNearest, "digest"),
+			g.on(AssignDecideReadNearestRow, "digest")
 		),
-		mutable(AssignAssignmentInputModeWithin),
-		contained(on(AssignEmbedOutput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignEmbedOutput),
-		contained(on(AssignDecideOutput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideOutput),
-		contained(on(AssignDecideOutputWeighed, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideOutputWeighed),
-		contained(on(AssignDecideOutputStageServe, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideOutputStageServe),
-		contained(on(AssignDecideOutputStageRest, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideOutputStageRest),
-		contained(on(AssignAssignmentFinishOutput, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignAssignmentFinishOutput),
-		contained(on(AssignAsked, "root", "from"), on(AssignStep, "root", "step")),
-		mutable(AssignAsked),
-		contained(on(AssignDecideReadNearest, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideReadNearest),
-		contained(on(AssignDecideReadSeen, "root", "step"), on(AssignStep, "root", "step")),
-		mutable(AssignDecideReadSeen),
+		g.contained(g.on(AssignDecideReadSeen, "root", "step"), g.on(AssignResult, "root", "step")),
+		g.contained(g.on(AssignDecideReadSeen, "digest"), g.on(AssignDecideReadSeenRow, "digest")),
+		g.contained(g.on(AssignScope, "root"), g.on(AssignRoot, "root")),
+		g.mutable(AssignScope),
+		g.mutable(AssignAdmitted),
+		g.contained(g.on(AssignSkipped, "root", "scope"), g.on(AssignScope, "root", "scope")),
+		g.mutable(AssignSkipped),
+		g.contained(g.on(AssignStep, "root", "scope"), g.on(AssignScope, "root", "scope")),
+		g.mutable(AssignStep),
+		g.contained(g.on(AssignStartStep, "root", "scope"), g.on(AssignScope, "root", "scope")),
+		g.mutable(AssignStartStep),
+		g.contained(g.on(AssignFinish, "root", "scope"), g.on(AssignScope, "root", "scope")),
+		g.mutable(AssignFinish),
+		g.mutable(AssignClaim),
+		g.contained(g.on(AssignEnded, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignEnded),
+		g.contained(g.on(AssignRetry, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignRetry),
+		g.contained(g.on(AssignFenced, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignFenced),
+		g.mutable(AssignResult),
+		g.contained(g.on(AssignDone, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignDone),
+		g.contained(g.on(AssignFailed, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignFailed),
+		g.contained(g.on(AssignHeld, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignHeld),
+		g.contained(g.on(AssignRefusal, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignRefusal),
+		g.contained(g.on(AssignExhausted, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignExhausted),
+		g.contained(g.on(AssignEmbedInput, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignEmbedInput),
+		g.contained(g.on(AssignEmbedInputNear, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignEmbedInputNear),
+		g.contained(g.on(AssignEmbedInputExclude, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignEmbedInputExclude),
+		g.contained(
+			g.on(AssignEmbedInputModeNearest, "root", "step"),
+			g.on(AssignStep, "root", "step")
+		),
+		g.mutable(AssignEmbedInputModeNearest),
+		g.contained(g.on(AssignEmbedInputModeWithin, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignEmbedInputModeWithin),
+		g.contained(g.on(AssignDecideInput, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignDecideInput),
+		g.contained(g.on(AssignDecideInputExclude, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignDecideInputExclude),
+		g.contained(
+			g.on(AssignDecideInputModeNearest, "root", "step"),
+			g.on(AssignStep, "root", "step")
+		),
+		g.mutable(AssignDecideInputModeNearest),
+		g.contained(
+			g.on(AssignDecideInputModeWithin, "root", "step"),
+			g.on(AssignStep, "root", "step")
+		),
+		g.mutable(AssignDecideInputModeWithin),
+		g.contained(g.on(AssignAssignmentInput, "root", "scope"), g.on(AssignScope, "root", "scope")),
+		g.mutable(AssignAssignmentInput),
+		g.contained(
+			g.on(AssignAssignmentInputNear, "root", "scope"),
+			g.on(AssignScope, "root", "scope")
+		),
+		g.mutable(AssignAssignmentInputNear),
+		g.contained(
+			g.on(AssignAssignmentInputExclude, "root", "scope"),
+			g.on(AssignScope, "root", "scope")
+		),
+		g.mutable(AssignAssignmentInputExclude),
+		g.contained(
+			g.on(AssignAssignmentInputModeNearest, "root", "scope"),
+			g.on(AssignScope, "root", "scope")
+		),
+		g.mutable(AssignAssignmentInputModeNearest),
+		g.contained(
+			g.on(AssignAssignmentInputModeWithin, "root", "scope"),
+			g.on(AssignScope, "root", "scope")
+		),
+		g.mutable(AssignAssignmentInputModeWithin),
+		g.contained(g.on(AssignEmbedOutput, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignEmbedOutput),
+		g.contained(g.on(AssignDecideOutput, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignDecideOutput),
+		g.contained(g.on(AssignDecideOutputWeighed, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignDecideOutputWeighed),
+		g.contained(
+			g.on(AssignDecideOutputStageServe, "root", "step"),
+			g.on(AssignStep, "root", "step")
+		),
+		g.mutable(AssignDecideOutputStageServe),
+		g.contained(
+			g.on(AssignDecideOutputStageRest, "root", "step"),
+			g.on(AssignStep, "root", "step")
+		),
+		g.mutable(AssignDecideOutputStageRest),
+		g.contained(
+			g.on(AssignAssignmentFinishOutput, "root", "step"),
+			g.on(AssignStep, "root", "step")
+		),
+		g.mutable(AssignAssignmentFinishOutput),
+		g.contained(g.on(AssignAsked, "root", "from"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignAsked),
+		g.contained(g.on(AssignDecideReadNearest, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignDecideReadNearest),
+		g.contained(g.on(AssignDecideReadSeen, "root", "step"), g.on(AssignStep, "root", "step")),
+		g.mutable(AssignDecideReadSeen),
 		...AssignDecideReadNearestRecords.rules,
 		...AssignDecideReadSeenRecords.rules
 	]
 )
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
-export const assignCoordination = fragment(
+export const assignCoordination = g.fragment(
 	[
 		AssignKind,
 		AssignRootKind,
@@ -801,8 +824,8 @@ export const assignCoordination = fragment(
 		AssignServed
 	],
 	[
-		contained(on(AssignResumed, "target", "turn"), on(AssignPaused, "target", "turn")),
-		contained(on(AssignPaused, "target", pred("turn")), on(AssignResumed, "target", "turn"))
+		g.contained(g.on(AssignResumed, "target", "turn"), g.on(AssignPaused, "target", "turn")),
+		g.contained(g.on(AssignPaused, "target", g.pred("turn")), g.on(AssignResumed, "target", "turn"))
 	]
 )
 

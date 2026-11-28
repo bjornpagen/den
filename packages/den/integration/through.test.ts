@@ -1,5 +1,5 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
@@ -73,7 +73,7 @@ export const aRefusalOfAStepsChangeSetRefusesItsResultWithIt = property.explore(
 						const results = yield* rows(app.workload.retryResults.once({ params: {}, facts: {} }))
 						const finish = Arr.filter(
 							results,
-							(r) => Sha256.equals(r.scope, requested.scope) && r.kind === "LaddersFinish"
+							(r) => g.Sha256.equals(r.scope, requested.scope) && r.kind === "LaddersFinish"
 						)
 						const heard = yield* rows(app.workload.heard.once({ params: {}, facts: {} }))
 						const heardText = Arr.sort(

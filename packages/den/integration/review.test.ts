@@ -1,4 +1,4 @@
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, type Gen, int } from "@bjornpagen/testing/gen"
@@ -105,7 +105,7 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 							]
 						)
 						const withins = yield* rows(app.workload.reviewWithins.once({ params: {}, facts: {} }))
-						const groups = Arr.filter(withins, (w) => Sha256.equals(w.parent, root))
+						const groups = Arr.filter(withins, (w) => g.Sha256.equals(w.parent, root))
 						assert.deepEqual(
 							Arr.map(groups, (w) => w.kind),
 							Arr.map(run.sizes, () => "Questions" as const)
@@ -113,7 +113,7 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 						const steps = yield* rows(app.workload.reviewSteps.once({ params: {}, facts: {} }))
 						const inRoot = Arr.filter(
 							steps,
-							(s) => Sha256.equals(s.scope, root) && s.kind !== "ReviewRunFinish"
+							(s) => g.Sha256.equals(s.scope, root) && s.kind !== "ReviewRunFinish"
 						)
 						assert.deepEqual(
 							Arr.sort(
@@ -127,7 +127,7 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 						assert.deepEqual(
 							Arr.map(clusterSteps, (s) =>
 								Arr.map(
-									Arr.filter(holds, (h) => Sha256.equals(h.step, s.step)),
+									Arr.filter(holds, (h) => g.Sha256.equals(h.step, s.step)),
 									(h) => h.resource
 								)
 							),
@@ -143,7 +143,7 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 						assert.deepEqual(
 							Arr.map(scopes, (scope) =>
 								Arr.map(
-									Arr.filter(finishes, (f) => Sha256.equals(f.scope, scope)),
+									Arr.filter(finishes, (f) => g.Sha256.equals(f.scope, scope)),
 									(f) => f.outcome
 								)
 							),

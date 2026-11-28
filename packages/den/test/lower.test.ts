@@ -1,4 +1,4 @@
-import { pg, query, relation as declareRelation, schema, v } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -149,12 +149,12 @@ const fieldOf = (form: Form): FieldSchema => {
 }
 
 /** The level a sketch's reads are over: weights, each feed's. */
-const Weight = declareRelation("Weight", { feed: Text, factor: pg.bigint }, ["feed"])
-const Weights = schema("Weights", [Weight], [])
+const Weight = g.relation("Weight", { feed: Text, factor: g.int8 }, ["feed"])
+const Weights = g.schema("Weights", [Weight], [])
 
 /** A read of every weight: lowering reads its attachment paths (none) and never runs it. */
-const everyWeight = query(Weights).rule((r) => {
-	const { feed, factor } = v(Weight, "weight")
+const everyWeight = g.query(Weights).rule((r) => {
+	const { feed, factor } = g.v(Weight, "weight")
 	return r.match(Weight, { feed, factor }).find({ feed, factor })
 })
 

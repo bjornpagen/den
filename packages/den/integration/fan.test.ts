@@ -1,4 +1,4 @@
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
@@ -76,7 +76,7 @@ export const theFanOutFlowTalliesEverySquare = property.explore(runs, {
 						assert.ok(
 							Arr.some(
 								finishes,
-								(f) => Sha256.equals(f.scope, requested.scope) && f.outcome === "done"
+								(f) => g.Sha256.equals(f.scope, requested.scope) && f.outcome === "done"
 							)
 						)
 						const holds = yield* fan.ledger.holds

@@ -1,4 +1,4 @@
-import type { CallError } from "@bjornpagen/grizzle/runtime"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Effect } from "effect"
 
 /**
@@ -9,13 +9,13 @@ import { Effect } from "effect"
  */
 
 /** A transient refusal: the one CallError that changed nothing, which a call settled runs again past. */
-type Transient = Extract<CallError, { readonly kind: "transient" }>
+type Transient = Extract<gRuntime.CallError, { readonly _tag: "transient" }>
 
 /**
  * Every failure a call ends with but a transient refusal: what a call settled ends with, and so what every call of the
  * ledger port fails with.
  */
-export type Settled = Exclude<CallError, Transient>
+export type Settled = Exclude<gRuntime.CallError, Transient>
 
 /**
  * `call` run again at once while it fails `transient`, and ended by its value or by any other failure, which it fails
@@ -35,9 +35,9 @@ export type Settled = Exclude<CallError, Transient>
  * The failure keeps the call's own kinds but `transient`, so a call that fails with fewer kinds than every CallError
  * keeps them; over every kind it is Settled.
  */
-export const settled = <A, E extends CallError, R>(
+export const settled = <A, E extends gRuntime.CallError, R>(
 	call: Effect.Effect<A, E, R>
 ): Effect.Effect<A, Exclude<E, Extract<E, Transient>>, R> =>
 	Effect.retry(call, {
-		while: (error: E): error is Extract<E, Transient> => error.kind === "transient"
+		while: (error: E): error is Extract<E, Transient> => error._tag === "transient"
 	})

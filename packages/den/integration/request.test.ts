@@ -387,9 +387,9 @@ export const aRepeatedRequestIsTheSameFact = property.explore(repeats, {
 		{
 			file: "packages/den/integration/slice/generated/chain.programs.ts",
 			original:
-				'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = v(requested, "requested")\n\t\t\t\t\tconst { input: held } = v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, fingerprint, input: held })\n',
+				'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = g.v(requested, "requested")\n\t\t\t\t\tconst { input: held } = g.v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, fingerprint, input: held })\n',
 			replacement:
-				'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = v(requested, "requested")\n\t\t\t\t\tconst { input: held } = v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, fingerprint, input })\n',
+				'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = g.v(requested, "requested")\n\t\t\t\t\tconst { input: held } = g.v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, fingerprint, input })\n',
 			why: "A request of another input under a held key meets no record and inserts nothing, answered as already requested: the caller's input is lost without a word."
 		}
 	]
@@ -553,9 +553,9 @@ export const aKeyRequestedAgainAcrossDeploysIsTheSameAct = property.explore(depl
 		{
 			file: "packages/den/integration/slice/generated/chain.programs.ts",
 			original:
-				'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = v(requested, "requested")\n\t\t\t\t\tconst { input: held } = v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, fingerprint, input: held })\n',
+				'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = g.v(requested, "requested")\n\t\t\t\t\tconst { input: held } = g.v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, fingerprint, input: held })\n',
 			replacement:
-				'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = v(requested, "requested")\n\t\t\t\t\tconst { input: held } = v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, input: held })\n',
+				'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = g.v(requested, "requested")\n\t\t\t\t\tconst { input: held } = g.v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, input: held })\n',
 			why: "A request under another fingerprint is held to the first's digest: a webhook redelivered after a deploy that changed its input's shape is refused for ever."
 		}
 	]
@@ -691,7 +691,7 @@ export const aKeyNamesItsWholeInput = property.explore(probes, {
 									: "already requested"
 								: refusedOnKey(again.failure, ["AssignRequestedWith"])
 									? "refused"
-									: again.failure.kind,
+									: again.failure._tag,
 							answerOf(part),
 							`a request again changed ${part}`
 						)

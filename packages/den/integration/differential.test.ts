@@ -2,7 +2,7 @@ import { type Again, none as noRetry } from "@bjornpagen/den/algebra/kinds"
 import { inputDigest, inputFingerprint } from "@bjornpagen/den/runtime/identity"
 import { refusedOnKey } from "@bjornpagen/den/runtime/ledger"
 import { type Settled, settled } from "@bjornpagen/den/runtime/settled"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { aimed, array, element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
@@ -826,11 +826,11 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 							const pageAfters = yield* rows(w.chainPageAfters.once(none))
 							const pageNexts = yield* rows(w.chainPageNexts.once(none))
 							const optional = (
-								sidecar: ReadonlyArray<{ readonly step: Sha256; readonly value: string }>,
-								step: Sha256
+								sidecar: ReadonlyArray<{ readonly step: g.Sha256; readonly value: string }>,
+								step: g.Sha256
 							) =>
 								Arr.map(
-									Arr.filter(sidecar, (o) => Sha256.equals(o.step, step)),
+									Arr.filter(sidecar, (o) => g.Sha256.equals(o.step, step)),
 									(o) => o.value
 								)
 							const nexts = yield* rows(w.chainNexts.once(none))
@@ -856,7 +856,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 								...(yield* rows(w.fanResults.once(none)))
 							]
 							/** A key as the graph holds it: its digest's hex (Sha256.toHex). */
-							const hex = Sha256.toHex
+							const hex = g.Sha256.toHex
 							const graph: Graph = {
 								roots: Arr.map(roots, (r) => ({ ...r, scope: hex(r.scope) })),
 								admitted: Arr.map(admitted, (a): string => hex(a.scope)),
@@ -958,9 +958,9 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 			{
 				file: "packages/den/integration/slice/generated/chain.programs.ts",
 				original:
-					'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = v(requested, "requested")\n\t\t\t\t\tconst { input: held } = v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, fingerprint, input: held })\n',
+					'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = g.v(requested, "requested")\n\t\t\t\t\tconst { input: held } = g.v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, fingerprint, input: held })\n',
 				replacement:
-					'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = v(requested, "requested")\n\t\t\t\t\tconst { input: held } = v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, input: held })\n',
+					'r.relation("chainOrderedChainRequestedWith", {\n\t\t\t\t\t\troot: ChainRequestedWith.fields.root,\n\t\t\t\t\t\tfingerprint: ChainRequestedWith.fields.fingerprint,\n\t\t\t\t\t\tinput: ChainRequestedWith.fields.input\n\t\t\t\t\t})\n\t\t\t\t\tconst { root, fingerprint, input } = g.v(requested, "requested")\n\t\t\t\t\tconst { input: held } = g.v(ChainRequestedWith, "held")\n\t\t\t\t\treturn r\n\t\t\t\t\t\t.match(requested, { root, fingerprint, input })\n\t\t\t\t\t\t.match(ChainRequestedWith, { root, input: held })\n',
 				why: "den compares a request again across a deploy that changed its kind's heading with the first's digest, and refuses the app's redelivery the model commits."
 			},
 			{

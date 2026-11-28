@@ -5,7 +5,7 @@ import {
 	type Ending,
 	atSpawn,
 	awaitFact,
-	contractInput,
+	domainInput,
 	derived,
 	dueAt,
 	edge,
@@ -32,7 +32,7 @@ import {
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
 import { laterOf } from "@bjornpagen/den/algebra/later"
-import { ChangeSet, query, Vector } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
 import { SliceBase } from "#integration/slice/base.ts"
 import { buildNumberParser } from "#integration/slice/contracts.ts"
@@ -122,7 +122,7 @@ const Page = step(
 		retry: untilSettled,
 		waits: none,
 		due: atSpawn,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Item, []), {})
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Item, []), {})
 	},
 	(page, { weights, earlier }) => {
 		const factor = Arr.reduce(weights, 0n, (sum, w) => sum + w.factor)
@@ -176,7 +176,7 @@ const moveCursor = Object.freeze({
 	uses: [],
 	retry: untilSettled,
 	waits: none,
-	writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Cursor, []), {}),
+	writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Cursor, []), {}),
 	body: (
 		run: typeof ChainInput.Type,
 		endings: { readonly Page: ReadonlyArray<Ending<typeof PageInput.Type, typeof PageRead.Type>> }
@@ -289,7 +289,7 @@ const Batch = scope("Batch", {
 		uses: [],
 		retry: untilSettled,
 		waits: none,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Tally, []), {}),
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Tally, []), {}),
 		body: (b, endings) =>
 			Effect.succeed({
 				output: {},
@@ -324,7 +324,7 @@ const settle = Object.freeze({
 	uses: [],
 	retry: untilSettled,
 	waits: none,
-	writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Settled, []), {}),
+	writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Settled, []), {}),
 	body: (run: typeof FanInput.Type) =>
 		Effect.succeed({
 			output: {},
@@ -455,7 +455,7 @@ const Copy = step(
 		retry: untilSettled,
 		waits: none,
 		due: atSpawn,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Copied, []), {})
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Copied, []), {})
 	},
 	(input) =>
 		Effect.succeed({
@@ -490,7 +490,7 @@ const SyncRun = root("SyncRun", {
 })
 
 /** A Gold build's number, BuildNumber's, decoded through its checked mint: den's column of it is BuildNumber itself. */
-const BuildInput = Schema.Struct({ build: contractInput(buildNumberParser, Schema.BigInt) })
+const BuildInput = Schema.Struct({ build: domainInput(buildNumberParser, Schema.BigInt) })
 
 /** One Gold build. */
 const Build = step(
@@ -507,9 +507,9 @@ const Build = step(
 		due: atSpawn,
 		writes: through(
 			(role: typeof Loader) =>
-				ChangeSet.empty(role).insert(
+				g.ChangeSet.empty(role).insert(
 					Built,
-					query(role).rule((r) =>
+					g.query(role).rule((r) =>
 						r.find({
 							build: r.param("build", Built.fields.build),
 							at: r.param("builtAt", Built.fields.at)
@@ -634,7 +634,7 @@ const Ladders = root("Ladders", {
 		uses: [],
 		retry: untilSettled,
 		waits: none,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Heard, []), {}),
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Heard, []), {}),
 		body: (_, endings) =>
 			Effect.succeed({
 				output: {},
@@ -714,7 +714,7 @@ const Throttled = root("Throttled", {
 		uses: [],
 		retry: untilSettled,
 		waits: none,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Heard, []), {}),
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Heard, []), {}),
 		body: (input, endings) =>
 			Effect.succeed({
 				output: {},
@@ -773,7 +773,7 @@ const Unhurried = root("Unhurried", {
 		uses: [],
 		retry: untilSettled,
 		waits: none,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Heard, []), {}),
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Heard, []), {}),
 		body: (input, endings) =>
 			Effect.succeed({
 				output: {},
@@ -845,7 +845,7 @@ const Embed = step(
 	},
 	(probe) =>
 		Effect.succeed({
-			output: { vector: Vector.make(Float32Array.from(probe.near), embeddingDimensions) }
+			output: { vector: g.Vector.make(Float32Array.from(probe.near), embeddingDimensions) }
 		})
 )
 
@@ -909,7 +909,7 @@ const Decide = step(
 		retry: untilSettled,
 		waits: none,
 		due: atSpawn,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Assigned, []), {})
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Assigned, []), {})
 	},
 	(question, found) => {
 		const decision = decide(
@@ -965,7 +965,7 @@ const Assignment = root("Assignment", {
 		uses: [],
 		retry: untilSettled,
 		waits: none,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Concluded, []), {}),
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Concluded, []), {}),
 		body: (
 			probe: typeof Probe.Type,
 			endings: {
@@ -1144,7 +1144,7 @@ const Save = step(
 		retry: untilSettled,
 		waits: none,
 		due: atSpawn,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Reviewed, []), {})
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Reviewed, []), {})
 	},
 	(group) =>
 		Effect.succeed({
@@ -1187,7 +1187,7 @@ const ReviewRun = root("ReviewRun", {
 		uses: [],
 		retry: untilSettled,
 		waits: none,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Summary, []), {}),
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Summary, []), {}),
 		body: (review, endings) =>
 			Effect.succeed({
 				output: {},
@@ -1233,7 +1233,7 @@ const Deliver = step(
 		retry: untilSettled,
 		waits: none,
 		due: atSpawn,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Delivered, []), {})
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Delivered, []), {})
 	},
 	(graded) =>
 		Effect.succeed({
@@ -1286,7 +1286,7 @@ const Chime = step(
 		retry: untilSettled,
 		waits: none,
 		due: atSpawn,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Chimed, []), {})
+		writes: through((role: typeof Loader) => g.ChangeSet.empty(role).insert(Chimed, []), {})
 	},
 	(hour) =>
 		Effect.succeed({

@@ -1,7 +1,7 @@
 import { retire } from "@bjornpagen/den/runtime/retire"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, type Gen, int } from "@bjornpagen/testing/gen"
@@ -42,12 +42,12 @@ const runs: Gen<ReadonlyArray<Planned>> = array(
 )
 
 /** Scopes in one order, their digests' hex (Sha256.toHex). */
-const byScope = Order.mapInput(Order.String, Sha256.toHex)
+const byScope = Order.mapInput(Order.String, g.Sha256.toHex)
 
 /** A graph's rows as texts, each key its digest's hex, in one order, so two reads of them compare as sets. */
-const graphTexts = (graph: ReadonlyArray<{ readonly step: Sha256; readonly root: Sha256 }>) =>
+const graphTexts = (graph: ReadonlyArray<{ readonly step: g.Sha256; readonly root: g.Sha256 }>) =>
 	Arr.sort(
-		Arr.map(graph, (row) => `${Sha256.toHex(row.root)} ${Sha256.toHex(row.step)}`),
+		Arr.map(graph, (row) => `${g.Sha256.toHex(row.root)} ${g.Sha256.toHex(row.step)}`),
 		Order.String
 	)
 
@@ -86,7 +86,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 						yield* Effect.forEach(audited, (r) =>
 							Effect.forEach(
 								Arr.take(
-									Arr.filter(pages, (page) => Sha256.equals(page.scope, r.scope)),
+									Arr.filter(pages, (page) => g.Sha256.equals(page.scope, r.scope)),
 									1
 								),
 								(page) =>
@@ -123,7 +123,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 						assert.deepEqual(
 							Arr.sort(
 								Arr.flatMap(retirements, (r) =>
-									r.kind === "kept" && r.error.kind === "refused" ? [r.root] : []
+									r.kind === "kept" && r.error._tag === "refused" ? [r.root] : []
 								),
 								byScope
 							),
@@ -133,14 +133,14 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 
 						const left = yield* rows(app.workload.chainGraphRows.once({ params: {}, facts: {} }))
 						/** The roots left, by their digests' hex. */
-						const rootsLeft = new Set(Arr.map(left, (row) => Sha256.toHex(row.root)))
+						const rootsLeft = new Set(Arr.map(left, (row) => g.Sha256.toHex(row.root)))
 						Arr.forEach(retiredScopes, (scope) =>
-							assert.equal(rootsLeft.has(Sha256.toHex(scope)), false)
+							assert.equal(rootsLeft.has(g.Sha256.toHex(scope)), false)
 						)
 						Arr.forEach(keptScopes, (scope) =>
 							assert.equal(
-								Arr.filter(left, (row) => Sha256.equals(row.root, scope)).length,
-								Arr.filter(results, (row) => Sha256.equals(row.root, scope)).length
+								Arr.filter(left, (row) => g.Sha256.equals(row.root, scope)).length,
+								Arr.filter(results, (row) => g.Sha256.equals(row.root, scope)).length
 							)
 						)
 						const headers = yield* rows(app.workload.chainHeaders.once({ params: {}, facts: {} }))
@@ -169,11 +169,11 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 
 						yield* Effect.forEach(
 							Arr.filter(requested, (r) =>
-								Arr.some(retiredScopes, (scope) => Sha256.equals(scope, r.scope))
+								Arr.some(retiredScopes, (scope) => g.Sha256.equals(scope, r.scope))
 							),
 							(r) =>
 								Effect.gen(function* () {
-									const stale = Arr.filter(pages, (page) => Sha256.equals(page.scope, r.scope))
+									const stale = Arr.filter(pages, (page) => g.Sha256.equals(page.scope, r.scope))
 									const ends = yield* chain.ledger.now
 									yield* Effect.forEach(stale, (page) =>
 										Effect.map(
@@ -223,7 +223,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 		},
 		{
 			file: "packages/den/src/runtime/bind.ts",
-			original: 'Effect.map(write, (outcome) => outcome.kind === "accepted")',
+			original: 'Effect.map(write, (outcome) => outcome._tag === "accepted")',
 			replacement: "Effect.map(write, () => true)",
 			why: "A request of a key already requested, which adds nothing, answers that it started the root, a retired one's included."
 		}

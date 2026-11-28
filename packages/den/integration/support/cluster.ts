@@ -1,5 +1,5 @@
 import net from "node:net"
-import type { DbConnection } from "@bjornpagen/grizzle/runtime"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { NeedFailed } from "@bjornpagen/testing/property"
 import type { PgMember } from "@bjornpagen/testing/resources"
 import { Effect, type Redacted } from "effect"
@@ -32,7 +32,7 @@ export const connectionTo = (
 	member: TlsMember,
 	database: string,
 	password: Redacted.Redacted
-): DbConnection => ({
+): gRuntime.DbConnection => ({
 	driver: pgDriver,
 	transport: {
 		kind: "sslRequest",

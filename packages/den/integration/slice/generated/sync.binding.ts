@@ -38,9 +38,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Sync over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, Sha256 } from "@bjornpagen/grizzle"
-import { codecText } from "@bjornpagen/grizzle/compile"
-import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { sync } from "#integration/slice/flows.ts"
 import {
@@ -67,14 +67,14 @@ import type {
 
 /** The codec text of each declared field of SyncSyncRunInput, a request's input row, bound once (grizzle's codecText). */
 const syncSyncRunInputTexts = Object.freeze({
-	relation: codecText(SyncSyncRunInput.fields.relation),
-	run: codecText(SyncSyncRunInput.fields.run)
+	relation: gCompile.codecText(SyncSyncRunInput.fields.relation),
+	run: gCompile.codecText(SyncSyncRunInput.fields.run)
 })
 /** The codec text of each declared field of SyncGoldInput, a request's input row, bound once (grizzle's codecText). */
-const syncGoldInputTexts = Object.freeze({ build: codecText(SyncGoldInput.fields.build) })
+const syncGoldInputTexts = Object.freeze({ build: gCompile.codecText(SyncGoldInput.fields.build) })
 /** The fingerprint of root kind SyncRun's input heading, taken once. */
 const syncSyncRunHeading = inputFingerprint(
-	'57:16:SyncSyncRunInput16:8:relation4:Text16:3:run9:pg.bigint238:6:digest226:[...pipe([{ scope: scope, root: scope, relation: input.relation, run: input.run }], Arr.flatMap((row) => [Result.succeed("SyncSyncRunInput"), syncSyncRunInputTexts.relation(row.relation), syncSyncRunInputTexts.run(row.run)]))]'
+	'54:16:SyncSyncRunInput16:8:relation4:Text13:3:run6:g.int8238:6:digest226:[...pipe([{ scope: scope, root: scope, relation: input.relation, run: input.run }], Arr.flatMap((row) => [Result.succeed("SyncSyncRunInput"), syncSyncRunInputTexts.relation(row.relation), syncSyncRunInputTexts.run(row.run)]))]'
 )
 /** The fingerprint of root kind Gold's input heading, taken once. */
 const syncGoldHeading = inputFingerprint(
@@ -84,28 +84,32 @@ const syncGoldHeading = inputFingerprint(
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface SyncHandles {
 	readonly den: {
-		readonly [K in keyof typeof syncDenPrograms]: MemberHandle<(typeof syncDenPrograms)[K]>
+		readonly [K in keyof typeof syncDenPrograms]: gRuntime.MemberHandle<(typeof syncDenPrograms)[K]>
 	}
 	readonly coordinator: {
-		readonly [K in keyof typeof syncCoordinatorPrograms]: MemberHandle<
+		readonly [K in keyof typeof syncCoordinatorPrograms]: gRuntime.MemberHandle<
 			(typeof syncCoordinatorPrograms)[K]
 		>
 	}
 	readonly retirer: {
-		readonly [K in keyof typeof syncRetirerPrograms]: MemberHandle<(typeof syncRetirerPrograms)[K]>
+		readonly [K in keyof typeof syncRetirerPrograms]: gRuntime.MemberHandle<
+			(typeof syncRetirerPrograms)[K]
+		>
 	}
 	readonly commits: {
-		readonly [K in keyof typeof syncCommitPrograms]: MemberHandle<(typeof syncCommitPrograms)[K]>
+		readonly [K in keyof typeof syncCommitPrograms]: gRuntime.MemberHandle<
+			(typeof syncCommitPrograms)[K]
+		>
 	}
 }
 
 interface Rows {
-	readonly SyncScope: ReadonlyArray<Addition<typeof SyncScope>>
-	readonly SyncAdmitted: ReadonlyArray<Addition<typeof SyncAdmitted>>
-	readonly SyncFinish: ReadonlyArray<Addition<typeof SyncFinish>>
-	readonly SyncStartStep: ReadonlyArray<Addition<typeof SyncStartStep>>
-	readonly SyncCopyInput: ReadonlyArray<Addition<typeof SyncCopyInput>>
-	readonly SyncBuildInput: ReadonlyArray<Addition<typeof SyncBuildInput>>
+	readonly SyncScope: ReadonlyArray<g.Addition<typeof SyncScope>>
+	readonly SyncAdmitted: ReadonlyArray<g.Addition<typeof SyncAdmitted>>
+	readonly SyncFinish: ReadonlyArray<g.Addition<typeof SyncFinish>>
+	readonly SyncStartStep: ReadonlyArray<g.Addition<typeof SyncStartStep>>
+	readonly SyncCopyInput: ReadonlyArray<g.Addition<typeof SyncCopyInput>>
+	readonly SyncBuildInput: ReadonlyArray<g.Addition<typeof SyncBuildInput>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -146,8 +150,8 @@ export const syncLedger = (h: SyncHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
-		Arr.some(grown.rows.SyncStartStep, (s) => Sha256.equals(s.scope, scope))
+	const hasChildren = (grown: Grown, scope: g.Sha256): boolean =>
+		Arr.some(grown.rows.SyncStartStep, (s) => g.Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			SyncScope: [...a.rows.SyncScope, ...b.rows.SyncScope],
@@ -165,8 +169,8 @@ export const syncLedger = (h: SyncHandles) => {
 		}
 	})
 	const startSyncRun = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -189,8 +193,8 @@ export const syncLedger = (h: SyncHandles) => {
 			joined
 		)
 	const startGold = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof sync.kinds)[3]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -210,7 +214,7 @@ export const syncLedger = (h: SyncHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readSyncCopyInput = (root: Sha256, step: Sha256) =>
+	const readSyncCopyInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.syncReadSyncCopyInput.once({ params: { root, step }, facts: {} })),
@@ -218,7 +222,7 @@ export const syncLedger = (h: SyncHandles) => {
 			)
 			return Option.map(row, (found) => ({ relation: found.relation, run: found.run }))
 		})
-	const readSyncBuildInput = (root: Sha256, step: Sha256) =>
+	const readSyncBuildInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.syncReadSyncBuildInput.once({ params: { root, step }, facts: {} })),
@@ -226,7 +230,7 @@ export const syncLedger = (h: SyncHandles) => {
 			)
 			return Option.map(row, (found) => ({ build: found.build }))
 		})
-	const readSyncSyncRunInput = (root: Sha256, scope: Sha256) =>
+	const readSyncSyncRunInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.syncReadSyncSyncRunInput.once({ params: { root, scope }, facts: {} })),
@@ -234,7 +238,7 @@ export const syncLedger = (h: SyncHandles) => {
 			)
 			return Option.map(row, (found) => ({ relation: found.relation, run: found.run }))
 		})
-	const readSyncGoldInput = (root: Sha256, scope: Sha256) =>
+	const readSyncGoldInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.syncReadSyncGoldInput.once({ params: { root, scope }, facts: {} })),
@@ -569,7 +573,7 @@ export const syncLedger = (h: SyncHandles) => {
 		SyncRun: {
 			window: sync.kinds[1].window,
 			precondition: sync.kinds[1].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readSyncSyncRunInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -581,11 +585,11 @@ export const syncLedger = (h: SyncHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "SyncRunFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof SyncAdmitted>> = [
 						...grown.rows.SyncAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof SyncFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof SyncFinish>> = [
 						...grown.rows.SyncFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -616,7 +620,7 @@ export const syncLedger = (h: SyncHandles) => {
 		Gold: {
 			window: sync.kinds[3].window,
 			precondition: sync.kinds[3].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readSyncGoldInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -628,11 +632,11 @@ export const syncLedger = (h: SyncHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "GoldFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof SyncAdmitted>> = [
 						...grown.rows.SyncAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof SyncFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof SyncFinish>> = [
 						...grown.rows.SyncFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -730,7 +734,7 @@ export const syncLedger = (h: SyncHandles) => {
 			),
 		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				if (!Sha256.equals(root, scope)) {
+				if (!g.Sha256.equals(root, scope)) {
 					return Option.none()
 				}
 				const standing = yield* Effect.map(
@@ -859,9 +863,9 @@ export const syncLedger = (h: SyncHandles) => {
 		retire: (root) => settled(h.retirer.syncRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.syncSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof sync>> => {
-				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
+				const view = (scope: g.Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
-						Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
+						Arr.findFirst(read.roots, (o) => g.Sha256.equals(o.scope, scope)),
 						{
 							onSome: (o): ReadonlyArray<ScopeView> => [
 								{
@@ -872,7 +876,7 @@ export const syncLedger = (h: SyncHandles) => {
 									at: o.at,
 									admission,
 									exclusive: Option.map(
-										Arr.findFirst(read.keys, (k) => Sha256.equals(k.scope, scope)),
+										Arr.findFirst(read.keys, (k) => g.Sha256.equals(k.scope, scope)),
 										(k) => k.id
 									),
 									runner: roots[o.kind]

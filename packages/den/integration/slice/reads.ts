@@ -1,6 +1,6 @@
 import { reads } from "@bjornpagen/den/algebra/kinds"
 import { Text } from "@bjornpagen/den/lower/keys"
-import { Distance, pg, query, v, type Vector } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { SliceBase } from "#integration/slice/base.ts"
 import {
 	embeddingDimensions,
@@ -23,16 +23,16 @@ import {
  * bell that chimes it. A read of no relation, its input derived from the key's values alone; written over the slice's
  * base, the narrowest level grizzle states, which den's clock role so holds whole, read-only (TODO.md).
  */
-export const HourlyOf = query(SliceBase).rule((r) =>
-	r.find({ hour: r.param("at", pg.bigint), bell: r.param("member", Text) })
-)
+export const HourlyOf = g
+	.query(SliceBase)
+	.rule((r) => r.find({ hour: r.param("at", g.int8), bell: r.param("member", Text) }))
 
 /**
  * A batch's run the app wants, derived from its key, the batch: the largest size it wants the batch at, and none where
  * it wants the batch at no size.
  */
-export const WantedOf = query(SliceBase).rule((r) => {
-	const { batch, size } = v(Want, "want")
+export const WantedOf = g.query(SliceBase).rule((r) => {
+	const { batch, size } = g.v(Want, "want")
 	return r
 		.match(Want, { batch, size })
 		.where(r.eq(batch, r.param("batch", Text)))
@@ -53,23 +53,24 @@ export const assignedAmong = 3
 export const PageReads = reads(
 	SliceBase,
 	{
-		weights: query(SliceBase).rule((r) => {
-			const { feed, factor } = v(Weight, "weight")
+		weights: g.query(SliceBase).rule((r) => {
+			const { feed, factor } = g.v(Weight, "weight")
 			return r
 				.match(Weight, { feed, factor })
 				.where(r.eq(feed, r.param("feed", Weight.fields.feed)))
 				.find({ feed, factor })
 		}),
-		earlier: query(SliceBase).rule((r) => {
-			const { feed, seq, n } = v(Item, "item")
+		earlier: g.query(SliceBase).rule((r) => {
+			const { feed, seq, n } = g.v(Item, "item")
 			return r
 				.match(Item, { feed, seq, n })
 				.where(r.eq(feed, r.param("feed", Item.fields.feed)))
 				.find({ feed, seq, n })
 		}),
-		tree: query(SliceBase)
+		tree: g
+			.query(SliceBase)
 			.rule((r) => {
-				const { feed, factor } = v(Weight, "weight")
+				const { feed, factor } = g.v(Weight, "weight")
 				return r
 					.match(Weight, { feed, factor })
 					.where(r.eq(feed, r.param("feed", Weight.fields.feed)))
@@ -78,9 +79,10 @@ export const PageReads = reads(
 			.attach(
 				"items",
 				(weight) =>
-					query(SliceBase)
+					g
+						.query(SliceBase)
 						.rule((r) => {
-							const { feed, seq, n } = v(Item, "item")
+							const { feed, seq, n } = g.v(Item, "item")
 							return r
 								.match(Item, { feed, seq, n })
 								.where(r.eq(feed, weight.feed))
@@ -89,9 +91,11 @@ export const PageReads = reads(
 						.attach(
 							"first",
 							(item) =>
-								query(SliceBase).rule((r) =>
-									r.match(Item, { feed: item.feed, seq: item.seq, n: 0n }).find({ n: 0n })
-								),
+								g
+									.query(SliceBase)
+									.rule((r) =>
+										r.match(Item, { feed: item.feed, seq: item.seq, n: 0n }).find({ n: 0n })
+									),
 							"option"
 						)
 						.orderBy(["seq", "asc"], ["n", "asc"]),
@@ -109,21 +113,22 @@ export const PageReads = reads(
 export const DecideReads = reads(
 	SliceBase,
 	{
-		nearest: query(SliceBase)
+		nearest: g
+			.query(SliceBase)
 			.rule((r) => {
-				const { passage, topic, embedding } = v(Passage, "passage")
+				const { passage, topic, embedding } = g.v(Passage, "passage")
 				return r
 					.match(Passage, { passage, topic, embedding })
 					.where(r.eq(topic, r.param("topic", Passage.fields.topic)))
 					.find({
 						passage,
 						topic,
-						distance: Distance.cosine(embedding, r.param("query", Passage.fields.embedding))
+						distance: g.Distance.cosine(embedding, r.param("query", Passage.fields.embedding))
 					})
 			})
 			.approximateNearest({ by: "distance", take: assignedAmong }),
-		seen: query(SliceBase).rule((r) => {
-			const { learner, passage } = v(Seen, "seen")
+		seen: g.query(SliceBase).rule((r) => {
+			const { learner, passage } = g.v(Seen, "seen")
 			return r
 				.match(Seen, { learner, passage })
 				.where(r.eq(learner, r.param("learner", Seen.fields.learner)))
@@ -131,7 +136,7 @@ export const DecideReads = reads(
 		})
 	},
 	(question: {
-		readonly vector: Vector<typeof embeddingDimensions>
+		readonly vector: g.Vector<typeof embeddingDimensions>
 		readonly topic: string
 		readonly learner: string
 	}) => ({

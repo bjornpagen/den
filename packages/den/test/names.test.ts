@@ -1,20 +1,6 @@
-import {
-	type AnyRoster,
-	closedId,
-	conversionOf,
-	type FieldBase,
-	natural,
-	parseDeclaredName,
-	pg,
-	query,
-	recordPaths,
-	relation,
-	schema,
-	sha256,
-	v
-} from "@bjornpagen/grizzle"
-import { installedIdentifiersOf, lawsOf } from "@bjornpagen/grizzle/compile"
-import * as Dynamic from "@bjornpagen/grizzle/dynamic"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import * as gDynamic from "@bjornpagen/grizzle/dynamic"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import {
@@ -97,13 +83,13 @@ import { caseHangMillis } from "#test/support/suites.ts"
  */
 
 /** The level the reads are over: the nodes of documents, one relation every query of the box reads. */
-const Node = relation("Node", { doc: Text, at: natural }, ["doc", "at"])
-const Docs = schema("Docs", [Node], [])
+const Node = g.relation("Node", { doc: Text, at: g.natural }, ["doc", "at"])
+const Docs = g.schema("Docs", [Node], [])
 
 /** A query of every node: each level of a box's query, whose head names none of its attachments. */
 const nodes = () =>
-	query(Docs).rule((r) => {
-		const { doc, at } = v(Node, "node")
+	g.query(Docs).rule((r) => {
+		const { doc, at } = g.v(Node, "node")
 		return r.match(Node, { doc, at }).find({ doc, at })
 	})
 
@@ -317,20 +303,20 @@ const MET = regex("meet under the name (\\S+): (\\S+) and (\\S+)$")
 const DIGESTED = regex("_[a-p]{13}(?![A-Za-z0-9_])")
 
 /** A field as grizzle declares it, for the schema that compiles the lowering's names. */
-const fieldExpr = (type: FieldType, rosters: ReadonlyMap<string, AnyRoster>): FieldBase => {
+const fieldExpr = (type: FieldType, rosters: ReadonlyMap<string, g.AnyRoster>): g.FieldBase => {
 	switch (type.kind) {
 		case "key":
 			return type.contract === "DenInstant" ? DenInstant : DenEnvironment
 		case "digest":
-			return sha256
+			return g.sha256
 		case "natural":
 		case "place":
 		case "drawn":
-			return natural
+			return g.natural
 		case "closed":
 			return Option.match(Option.fromNullishOr(rosters.get(type.roster)), {
 				onNone: () => Text,
-				onSome: (roster) => closedId(roster)
+				onSome: (roster) => g.closedId(roster)
 			})
 		case "contract":
 			return type.contract
@@ -343,22 +329,22 @@ const fieldExpr = (type: FieldType, rosters: ReadonlyMap<string, AnyRoster>): Fi
 				case "text":
 					return Text
 				case "bigint":
-					return pg.bigint
+					return g.int8
 				case "double":
-					return pg["double precision"]
+					return g.float8
 				case "boolean":
-					return pg.boolean
+					return g.bool
 			}
 	}
 }
 
 /** A roster as grizzle's dynamic door declares it, by its naming. */
-const rosterOf = (r: Lowered["rosters"][number]): AnyRoster => {
+const rosterOf = (r: Lowered["rosters"][number]): g.AnyRoster => {
 	switch (r.naming.kind) {
 		case "declared":
-			return Dynamic.closed.unordered(r.name, r.handles)
+			return gDynamic.closed.unordered(r.name, r.handles)
 		case "derived":
-			return Dynamic.derivedName(r.naming).unordered(r.name, r.handles)
+			return gDynamic.derivedName(r.naming).unordered(r.name, r.handles)
 	}
 }
 
@@ -402,7 +388,7 @@ const namesHold = (d: Drawn, declaredFlow: AnyFlow, lowered: Lowered, what: stri
 	)
 	const checks = Arr.flatMap(lowered.laws, (law) => (law.kind === "check" ? [law] : []))
 	Arr.forEach(checks, (check) =>
-		assert.isTrue(parseDeclaredName(check.name).ok, `${what}: grizzle admits ${check.name}`)
+		assert.isTrue(g.parseDeclaredName(check.name).ok, `${what}: grizzle admits ${check.name}`)
 	)
 	const rosters = new Map(Arr.map(lowered.rosters, (r) => [r.name, rosterOf(r)] as const))
 	const relations = Arr.map(lowered.relations, (r) => {
@@ -411,9 +397,9 @@ const namesHold = (d: Drawn, declaredFlow: AnyFlow, lowered: Lowered, what: stri
 		)
 		switch (r.naming.kind) {
 			case "declared":
-				return Dynamic.relation(r.name, fields, r.key)
+				return gDynamic.relation(r.name, fields, r.key)
 			case "derived":
-				return Dynamic.derivedName(r.naming).relation(r.name, fields, r.key)
+				return gDynamic.derivedName(r.naming).relation(r.name, fields, r.key)
 		}
 	})
 	const records = Arr.flatMap(stepsOf(declaredFlow.kinds), (kind) =>
@@ -425,7 +411,7 @@ const namesHold = (d: Drawn, declaredFlow: AnyFlow, lowered: Lowered, what: stri
 						? Arr.flatMap(s.reads, (read) =>
 								read.name === readName
 									? [
-											Dynamic.records(read.stem, readQuery, { digest: sha256 }, ["digest"], {
+											gDynamic.records(read.stem, readQuery, { digest: g.sha256 }, ["digest"], {
 												names: {}
 											})
 										]
@@ -441,20 +427,20 @@ const namesHold = (d: Drawn, declaredFlow: AnyFlow, lowered: Lowered, what: stri
 			...Arr.map(lowered.rosters, (r) => r.name),
 			...Arr.flatMap(records, (made) => Arr.map(made.relations, (r) => r.name))
 		],
-		conversionOf
+		g.conversionOf
 	)
 	assert.strictEqual(
 		Arr.dedupe(conversions).length,
 		conversions.length,
 		`${what}: no two declarations meet under one name`
 	)
-	const level = schema(
+	const level = g.schema(
 		"Names",
 		[...rosters.values(), ...relations, ...Arr.flatMap(records, (made) => made.relations)],
 		Arr.flatMap(records, (made) => made.rules)
 	)
-	lawsOf(level)
-	Arr.forEach(installedIdentifiersOf(level), ({ identifier, display }) =>
+	gCompile.lawsOf(level)
+	Arr.forEach(gCompile.installedIdentifiersOf(level), ({ identifier, display }) =>
 		assert.isAtMost(
 			new TextEncoder().encode(identifier).length,
 			nameBytes,
@@ -532,7 +518,7 @@ const readableRecordsName = (
 const lowersWithin = (d: Drawn, note: (feature: Feature) => void): Effect.Effect<void> =>
 	Effect.gen(function* () {
 		const fits =
-			Str.length(conversionOf(d.flow)) + longestWordBytes <= nameBytes &&
+			Str.length(g.conversionOf(d.flow)) + longestWordBytes <= nameBytes &&
 			Arr.every(d.steps, (name) => Str.length(name) <= nameBytes)
 		const lowering = yield* Effect.result(
 			Effect.try({
@@ -550,7 +536,7 @@ const lowersWithin = (d: Drawn, note: (feature: Feature) => void): Effect.Effect
 			if (Option.isSome(met)) {
 				const [, conversion, first, second] = met.value
 				assert.isTrue(
-					conversionOf(first) === conversion && conversionOf(second) === conversion,
+					g.conversionOf(first) === conversion && g.conversionOf(second) === conversion,
 					`two identities refused only where their names meet: ${Formatter.format(refused)}`
 				)
 				note("two identities meeting under one name, refused")
@@ -573,14 +559,15 @@ const lowersWithin = (d: Drawn, note: (feature: Feature) => void): Effect.Effect
 		if (Arr.some(d.reads, (read) => read.query >= 2)) {
 			note("a read nested two levels or more")
 		}
-		if (Str.length(conversionOf(`${d.flow}${d.steps[0]}Output`)) > nameBytes) {
+		if (Str.length(g.conversionOf(`${d.flow}${d.steps[0]}Output`)) > nameBytes) {
 			note("a step whose readable names pass PostgreSQL's bytes")
 		}
 		if (
 			Arr.some(d.reads, (read) =>
 				Arr.some(
-					recordPaths(Arr.getUnsafe(box, read.query)),
-					(path) => !parseDeclaredName(readableRecordsName(d.flow, d.steps[0], read.name, path)).ok
+					g.recordPaths(Arr.getUnsafe(box, read.query)),
+					(path) =>
+						!g.parseDeclaredName(readableRecordsName(d.flow, d.steps[0], read.name, path)).ok
 				)
 			)
 		) {

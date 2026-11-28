@@ -1,6 +1,6 @@
-import type { HeadOf, RecordedQuery, Sha256 } from "@bjornpagen/grizzle"
-import { rowText } from "@bjornpagen/grizzle/compile"
-import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import type * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Order, Predicate, Result, Stream } from "effect"
 import type { Due, Exclusive } from "#algebra/kinds.ts"
 import { mintInstant } from "#lower/keys.ts"
@@ -80,10 +80,10 @@ export const committedFacts = <const D extends { readonly insert: object }, F ex
  * is one grizzle made records of, so its text compiles, and each row is one the query delivered: a failure of either is
  * a broken contract, and dies.
  */
-export const recordText = <Q extends RecordedQuery>(
+export const recordText = <Q extends g.RecordedQuery>(
 	query: Q
-): ((row: HeadOf<Q>) => Effect.Effect<string>) => {
-	const texts = rowText(query)
+): ((row: g.HeadOf<Q>) => Effect.Effect<string>) => {
+	const texts = gCompile.rowText(query)
 	return (row) =>
 		Result.match(texts, {
 			onFailure: (refused) => Effect.die(refused),
@@ -109,9 +109,9 @@ export const dueOf = <I>(due: Due<I>, input: I): SpawnDue => {
 
 /** A spawned step's row, as the call that spawns it names it: its key, its kind and its owning scope. */
 export interface SpawnAt<K> {
-	readonly step: Sha256
+	readonly step: g.Sha256
 	readonly kind: K
-	readonly scope: Sha256
+	readonly scope: g.Sha256
 }
 
 /**
@@ -156,8 +156,8 @@ export const exclusiveRows = <I>(
 	kind: string,
 	exclusive: Exclusive<I>,
 	input: I,
-	scope: Sha256
-): ReadonlyArray<{ readonly scope: Sha256; readonly key: string; readonly id: Sha256 }> =>
+	scope: g.Sha256
+): ReadonlyArray<{ readonly scope: g.Sha256; readonly key: string; readonly id: g.Sha256 }> =>
 	Arr.map(Option.toArray(exclusiveKey(exclusive, input)), (key) => ({
 		scope,
 		key,
@@ -183,11 +183,11 @@ export const derivedKey = (
  * A watch's events as the relay's signals: a change for every row event and `ready`, the CallError for `error`, and
  * nothing for `reset` and `end`.
  */
-export const signals = <E extends { readonly kind: string; readonly error?: CallError }>(
+export const signals = <E extends { readonly _tag: string; readonly error?: gRuntime.CallError }>(
 	events: Stream.Stream<E>
-): Stream.Stream<Option.Option<CallError>> =>
+): Stream.Stream<Option.Option<gRuntime.CallError>> =>
 	events.pipe(
-		Stream.filter((event) => event.kind !== "reset" && event.kind !== "end"),
+		Stream.filter((event) => event._tag !== "reset" && event._tag !== "end"),
 		Stream.map((event) => Option.fromNullishOr(event.error))
 	)
 
@@ -200,8 +200,8 @@ export const signals = <E extends { readonly kind: string; readonly error?: Call
  * input under its kind's same input heading is refused on its record's key (RequestedWith).
  */
 export const fresh = (
-	write: Effect.Effect<WriteOutcome<unknown>, Settled>
-): Effect.Effect<boolean, Settled> => Effect.map(write, (outcome) => outcome.kind === "accepted")
+	write: Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>
+): Effect.Effect<boolean, Settled> => Effect.map(write, (outcome) => outcome._tag === "accepted")
 
 /** Whether a read found any row. */
 export const any = <A>(

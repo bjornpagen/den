@@ -1,5 +1,5 @@
 import { stripTypeScriptTypes } from "node:module"
-import { pg, query, relation, schema } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { aimed, exhaust, explore } from "@bjornpagen/testing/explore"
 import { required, requiredInSpace } from "@bjornpagen/testing/features"
 import { array, boolean, element, type Gen } from "@bjornpagen/testing/gen"
@@ -128,7 +128,7 @@ const Word = Schema.Literals([
 type Word = typeof Word.Type
 
 /** The app relation whose fact the step awaits, keyed by a text. */
-const Fact = relation("Fact", { k: Text }, ["k"])
+const Fact = g.relation("Fact", { k: Text }, ["k"])
 
 const finishing = {
 	reads: [],
@@ -267,12 +267,12 @@ const Started = Schema.Literals(["schedule", "operator"])
 type Started = typeof Started.Type
 
 /** The level a schedule's hour is read over: one of no relation, which den's role holds whole. */
-const Bells = schema("Bells", [], [])
+const Bells = g.schema("Bells", [], [])
 
 /** The hour a schedule's key derives: the instant and the member it names, a read of no relation. */
-const hourOf = query(Bells).rule((r) =>
-	r.find({ hour: r.param("at", pg.bigint), bell: r.param("member", Text) })
-)
+const hourOf = g
+	.query(Bells)
+	.rule((r) => r.find({ hour: r.param("at", g.int8), bell: r.param("member", Text) }))
 
 /** An hour of the clock, and the bell that chimes it. */
 const Hour = Schema.Struct({ hour: Schema.BigInt, bell: Schema.String })
@@ -685,9 +685,9 @@ layer(NodeServices.layer)((it) =>
 						)
 						const binding = bindingOf(earlier)
 						assert.strictEqual(
-							Str.includes("import { codecText }")(binding),
+							Str.includes('import * as gCompile from "@bjornpagen/grizzle/compile"')(binding),
 							Str.includes("Texts = Object.freeze(")(binding),
-							"a binding imports codecText exactly where it binds a relation's codec texts, an input of no field binding none"
+							"a binding imports the compile entry, for its codecText, exactly where it binds a relation's codec texts, an input of no field binding none"
 						)
 					})
 			)

@@ -1,6 +1,6 @@
 import { denClock } from "@bjornpagen/den/algebra/kinds"
 import { denInstantKey } from "@bjornpagen/den/lower/keys"
-import { ChangeSet, clocked, login, role, wholeEntriesOf, workload } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import { chainRequests, chainRequestWrites } from "#integration/slice/generated/chain.programs.ts"
 import { fanRequests, fanRequestWrites } from "#integration/slice/generated/fan.programs.ts"
@@ -23,7 +23,7 @@ export const composerInserts = [
  * `composerInserts`, so a derived app root's request composes into its writes, as metis's student role inserts what its
  * proctored submit requests.
  */
-export const Composer = role(App, "composer", wholeEntriesOf(App), { insert: composerInserts })
+export const Composer = g.role(App, "composer", g.wholeEntriesOf(App), { insert: composerInserts })
 
 /**
  * The composing role's programs: the app's want of a batch with the fan's Wanted request sequenced after it, so the
@@ -32,20 +32,20 @@ export const Composer = role(App, "composer", wholeEntriesOf(App), { insert: com
  * over it.
  */
 export const composerPrograms = (composer: typeof Composer) =>
-	workload(composer, {
-		wantRun: clocked(
-			ChangeSet.sequence(ChangeSet.empty(composer).insert(Want, []), fanRequests.Wanted),
+	g.workload(composer, {
+		wantRun: g.clocked(
+			g.ChangeSet.sequence(g.ChangeSet.empty(composer).insert(Want, []), fanRequests.Wanted),
 			{ [denClock]: "millis" },
 			{ [denClock]: denInstantKey }
 		),
-		order: clocked(
-			ChangeSet.union(ChangeSet.empty(composer).insert(Order, []), chainRequests.Ordered),
+		order: g.clocked(
+			g.ChangeSet.union(g.ChangeSet.empty(composer).insert(Order, []), chainRequests.Ordered),
 			{ [denClock]: "millis" },
 			{ [denClock]: denInstantKey }
 		)
 	})
 
 /** The app's composing login: the composing role alone, running its programs. */
-export const Composing = login(App, "composing", [Composer], {
+export const Composing = g.login(App, "composing", [Composer], {
 	workload: [composerPrograms(Composer)]
 })

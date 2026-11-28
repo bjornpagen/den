@@ -1,4 +1,4 @@
-import { role, wholeEntriesOf } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import { assignWriter } from "#integration/slice/generated/assign.fragment.ts"
 import { chainWriter } from "#integration/slice/generated/chain.fragment.ts"
@@ -18,7 +18,7 @@ import { writebackWriter } from "#integration/slice/generated/writeback.fragment
  * and the clock's chimes. Every flow names it as the role its steps write under, so den adds its commits to it: it
  * inserts into what each flow's `Writer` lists.
  */
-export const Loader = role(App, "loader", wholeEntriesOf(App), {
+export const Loader = g.role(App, "loader", g.wholeEntriesOf(App), {
 	insert: [
 		"Item",
 		"Weight",

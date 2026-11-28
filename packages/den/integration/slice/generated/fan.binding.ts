@@ -42,9 +42,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Fan over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, Sha256 } from "@bjornpagen/grizzle"
-import { codecText } from "@bjornpagen/grizzle/compile"
-import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { fan } from "#integration/slice/flows.ts"
 import {
@@ -76,14 +76,14 @@ import type {
 
 /** The codec text of each declared field of FanFanRunInput, a request's input row, bound once (grizzle's codecText). */
 const fanFanRunInputTexts = Object.freeze({
-	batch: codecText(FanFanRunInput.fields.batch),
-	size: codecText(FanFanRunInput.fields.size)
+	batch: gCompile.codecText(FanFanRunInput.fields.batch),
+	size: gCompile.codecText(FanFanRunInput.fields.size)
 })
 /** The codec text of each declared field of FanSweepInput, a request's input row, bound once (grizzle's codecText). */
-const fanSweepInputTexts = Object.freeze({ sweep: codecText(FanSweepInput.fields.sweep) })
+const fanSweepInputTexts = Object.freeze({ sweep: gCompile.codecText(FanSweepInput.fields.sweep) })
 /** The fingerprint of root kind FanRun's input heading, taken once. */
 const fanFanRunHeading = inputFingerprint(
-	'53:14:FanFanRunInput13:5:batch4:Text17:4:size9:pg.bigint224:6:digest212:[...pipe([{ scope: scope, root: scope, batch: input.batch, size: input.size }], Arr.flatMap((row) => [Result.succeed("FanFanRunInput"), fanFanRunInputTexts.batch(row.batch), fanFanRunInputTexts.size(row.size)]))]'
+	'50:14:FanFanRunInput13:5:batch4:Text14:4:size6:g.int8224:6:digest212:[...pipe([{ scope: scope, root: scope, batch: input.batch, size: input.size }], Arr.flatMap((row) => [Result.succeed("FanFanRunInput"), fanFanRunInputTexts.batch(row.batch), fanFanRunInputTexts.size(row.size)]))]'
 )
 /** The fingerprint of root kind Sweep's input heading, taken once. */
 const fanSweepHeading = inputFingerprint(
@@ -93,32 +93,36 @@ const fanSweepHeading = inputFingerprint(
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface FanHandles {
 	readonly den: {
-		readonly [K in keyof typeof fanDenPrograms]: MemberHandle<(typeof fanDenPrograms)[K]>
+		readonly [K in keyof typeof fanDenPrograms]: gRuntime.MemberHandle<(typeof fanDenPrograms)[K]>
 	}
 	readonly coordinator: {
-		readonly [K in keyof typeof fanCoordinatorPrograms]: MemberHandle<
+		readonly [K in keyof typeof fanCoordinatorPrograms]: gRuntime.MemberHandle<
 			(typeof fanCoordinatorPrograms)[K]
 		>
 	}
 	readonly retirer: {
-		readonly [K in keyof typeof fanRetirerPrograms]: MemberHandle<(typeof fanRetirerPrograms)[K]>
+		readonly [K in keyof typeof fanRetirerPrograms]: gRuntime.MemberHandle<
+			(typeof fanRetirerPrograms)[K]
+		>
 	}
 	readonly commits: {
-		readonly [K in keyof typeof fanCommitPrograms]: MemberHandle<(typeof fanCommitPrograms)[K]>
+		readonly [K in keyof typeof fanCommitPrograms]: gRuntime.MemberHandle<
+			(typeof fanCommitPrograms)[K]
+		>
 	}
 }
 
 interface Rows {
-	readonly FanScope: ReadonlyArray<Addition<typeof FanScope>>
-	readonly FanWithin: ReadonlyArray<Addition<typeof FanWithin>>
-	readonly FanAdmitted: ReadonlyArray<Addition<typeof FanAdmitted>>
-	readonly FanFinish: ReadonlyArray<Addition<typeof FanFinish>>
-	readonly FanStartStep: ReadonlyArray<Addition<typeof FanStartStep>>
-	readonly FanStartScope: ReadonlyArray<Addition<typeof FanStartScope>>
-	readonly FanSquareInput: ReadonlyArray<Addition<typeof FanSquareInput>>
-	readonly FanDustInput: ReadonlyArray<Addition<typeof FanDustInput>>
-	readonly FanMopInput: ReadonlyArray<Addition<typeof FanMopInput>>
-	readonly FanBatchInput: ReadonlyArray<Addition<typeof FanBatchInput>>
+	readonly FanScope: ReadonlyArray<g.Addition<typeof FanScope>>
+	readonly FanWithin: ReadonlyArray<g.Addition<typeof FanWithin>>
+	readonly FanAdmitted: ReadonlyArray<g.Addition<typeof FanAdmitted>>
+	readonly FanFinish: ReadonlyArray<g.Addition<typeof FanFinish>>
+	readonly FanStartStep: ReadonlyArray<g.Addition<typeof FanStartStep>>
+	readonly FanStartScope: ReadonlyArray<g.Addition<typeof FanStartScope>>
+	readonly FanSquareInput: ReadonlyArray<g.Addition<typeof FanSquareInput>>
+	readonly FanDustInput: ReadonlyArray<g.Addition<typeof FanDustInput>>
+	readonly FanMopInput: ReadonlyArray<g.Addition<typeof FanMopInput>>
+	readonly FanBatchInput: ReadonlyArray<g.Addition<typeof FanBatchInput>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -193,9 +197,9 @@ export const fanLedger = (h: FanHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
-		Arr.some(grown.rows.FanStartStep, (s) => Sha256.equals(s.scope, scope)) ||
-		Arr.some(grown.rows.FanStartScope, (s) => Sha256.equals(s.scope, scope))
+	const hasChildren = (grown: Grown, scope: g.Sha256): boolean =>
+		Arr.some(grown.rows.FanStartStep, (s) => g.Sha256.equals(s.scope, scope)) ||
+		Arr.some(grown.rows.FanStartScope, (s) => g.Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			FanScope: [...a.rows.FanScope, ...b.rows.FanScope],
@@ -217,8 +221,8 @@ export const fanLedger = (h: FanHandles) => {
 		}
 	})
 	const startBatch = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -239,8 +243,8 @@ export const fanLedger = (h: FanHandles) => {
 			joined
 		)
 	const startFanRun = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof fan.kinds)[2]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -272,8 +276,8 @@ export const fanLedger = (h: FanHandles) => {
 			joined
 		)
 	const startSweep = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof fan.kinds)[5]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -309,8 +313,8 @@ export const fanLedger = (h: FanHandles) => {
 			joined
 		)
 	const startWanted = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof fan.kinds)[6]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -341,7 +345,7 @@ export const fanLedger = (h: FanHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readFanSquareInput = (root: Sha256, step: Sha256) =>
+	const readFanSquareInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanSquareInput.once({ params: { root, step }, facts: {} })),
@@ -349,7 +353,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, n: found.n }))
 		})
-	const readFanDustInput = (root: Sha256, step: Sha256) =>
+	const readFanDustInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanDustInput.once({ params: { root, step }, facts: {} })),
@@ -357,7 +361,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readFanMopInput = (root: Sha256, step: Sha256) =>
+	const readFanMopInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanMopInput.once({ params: { root, step }, facts: {} })),
@@ -365,7 +369,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readFanBatchInput = (root: Sha256, scope: Sha256) =>
+	const readFanBatchInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanBatchInput.once({ params: { root, scope }, facts: {} })),
@@ -373,7 +377,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
-	const readFanFanRunInput = (root: Sha256, scope: Sha256) =>
+	const readFanFanRunInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanFanRunInput.once({ params: { root, scope }, facts: {} })),
@@ -381,7 +385,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
-	const readFanSweepInput = (root: Sha256, scope: Sha256) =>
+	const readFanSweepInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanSweepInput.once({ params: { root, scope }, facts: {} })),
@@ -389,7 +393,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readFanWantedInput = (root: Sha256, scope: Sha256) =>
+	const readFanWantedInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanWantedInput.once({ params: { root, scope }, facts: {} })),
@@ -673,7 +677,7 @@ export const fanLedger = (h: FanHandles) => {
 						const inputSquare = (child: (typeof inputSquareRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputSquareRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputSquareRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) => ({ batch: row.batch, n: row.n })
 								)
 							)
@@ -766,7 +770,7 @@ export const fanLedger = (h: FanHandles) => {
 						const inputBatch = (child: (typeof inputBatchRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputBatchRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputBatchRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) => ({ batch: row.batch, size: row.size })
 								)
 							)
@@ -910,7 +914,7 @@ export const fanLedger = (h: FanHandles) => {
 						const inputBatch = (child: (typeof inputBatchRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputBatchRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputBatchRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) => ({ batch: row.batch, size: row.size })
 								)
 							)
@@ -963,7 +967,7 @@ export const fanLedger = (h: FanHandles) => {
 		FanRun: {
 			window: fan.kinds[2].window,
 			precondition: fan.kinds[2].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readFanFanRunInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -975,11 +979,11 @@ export const fanLedger = (h: FanHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "FanRunFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof FanAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof FanAdmitted>> = [
 						...grown.rows.FanAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof FanFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof FanFinish>> = [
 						...grown.rows.FanFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -1014,7 +1018,7 @@ export const fanLedger = (h: FanHandles) => {
 		Sweep: {
 			window: fan.kinds[5].window,
 			precondition: fan.kinds[5].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readFanSweepInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -1026,11 +1030,11 @@ export const fanLedger = (h: FanHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "SweepFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof FanAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof FanAdmitted>> = [
 						...grown.rows.FanAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof FanFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof FanFinish>> = [
 						...grown.rows.FanFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -1065,7 +1069,7 @@ export const fanLedger = (h: FanHandles) => {
 		Wanted: {
 			window: fan.kinds[6].window,
 			precondition: fan.kinds[6].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readFanWantedInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -1077,11 +1081,11 @@ export const fanLedger = (h: FanHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "WantedFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof FanAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof FanAdmitted>> = [
 						...grown.rows.FanAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof FanFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof FanFinish>> = [
 						...grown.rows.FanFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -1183,7 +1187,7 @@ export const fanLedger = (h: FanHandles) => {
 			),
 		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				if (!Sha256.equals(root, scope)) {
+				if (!g.Sha256.equals(root, scope)) {
 					const within = yield* Effect.map(
 						settled(h.den.fanWithinOf.once({ params: { root, scope }, facts: {} })),
 						one
@@ -1328,9 +1332,9 @@ export const fanLedger = (h: FanHandles) => {
 		retire: (root) => settled(h.retirer.fanRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.fanSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof fan>> => {
-				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
+				const view = (scope: g.Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
-						Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
+						Arr.findFirst(read.roots, (o) => g.Sha256.equals(o.scope, scope)),
 						{
 							onSome: (o): ReadonlyArray<ScopeView> => [
 								{
@@ -1341,7 +1345,7 @@ export const fanLedger = (h: FanHandles) => {
 									at: o.at,
 									admission,
 									exclusive: Option.map(
-										Arr.findFirst(read.keys, (k) => Sha256.equals(k.scope, scope)),
+										Arr.findFirst(read.keys, (k) => g.Sha256.equals(k.scope, scope)),
 										(k) => k.id
 									),
 									runner: roots[o.kind]
@@ -1349,7 +1353,9 @@ export const fanLedger = (h: FanHandles) => {
 							],
 							onNone: () =>
 								Arr.map(
-									Option.toArray(Arr.findFirst(read.withins, (w) => Sha256.equals(w.scope, scope))),
+									Option.toArray(
+										Arr.findFirst(read.withins, (w) => g.Sha256.equals(w.scope, scope))
+									),
 									(w): ScopeView => ({ place: "child", scope, kind: w.kind, parent: w.parent })
 								)
 						}

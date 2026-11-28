@@ -1,4 +1,4 @@
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, characterOf, type Gen, string } from "@bjornpagen/testing/gen"
@@ -88,8 +88,8 @@ describe("derived identity", () => {
 						const first = rootScope("Flow", "Run", a)
 						const again = rootScope("Flow", "Run", a)
 						const second = rootScope("Flow", "Run", b)
-						assert.isTrue(Sha256.equals(first, again))
-						assert.strictEqual(Sha256.equals(first, second), a === b)
+						assert.isTrue(g.Sha256.equals(first, again))
+						assert.strictEqual(g.Sha256.equals(first, second), a === b)
 						const started = startedStep(first, 0)
 						const next = edgeStep(started, "Next", 0)
 						const finish = finishStep(first)
@@ -115,13 +115,13 @@ describe("derived identity", () => {
 						const seat = exclusiveId("Flow", "Run", a)
 						const sameSeat = exclusiveId("Flow", "Run", a)
 						const otherSeat = exclusiveId("Flow", "Run", b)
-						assert.isTrue(Sha256.equals(seat, sameSeat))
-						assert.strictEqual(Sha256.equals(seat, otherSeat), a === b)
+						assert.isTrue(g.Sha256.equals(seat, sameSeat))
+						assert.strictEqual(g.Sha256.equals(seat, otherSeat), a === b)
 						const heading = inputFingerprint(a)
-						assert.isTrue(Sha256.equals(heading, inputFingerprint(a)))
-						assert.strictEqual(Sha256.equals(heading, inputFingerprint(b)), a === b)
+						assert.isTrue(g.Sha256.equals(heading, inputFingerprint(a)))
+						assert.strictEqual(g.Sha256.equals(heading, inputFingerprint(b)), a === b)
 						assert.isTrue(
-							Sha256.equals(heading, fingerprintUnder(inputScheme, a)),
+							g.Sha256.equals(heading, fingerprintUnder(inputScheme, a)),
 							"a fingerprint is under the running den's input digest scheme"
 						)
 						/**
@@ -187,7 +187,7 @@ describe("derived identity", () => {
 							)
 						)
 						assert.isFalse(
-							Sha256.equals(
+							g.Sha256.equals(
 								fingerprintUnder(inputScheme, a),
 								fingerprintUnder(schemeOf(Arr.getUnsafe(others, 0)[1]), a)
 							),
@@ -199,10 +199,10 @@ describe("derived identity", () => {
 							"den's input digest scheme is the one it states: a den that changes it changes every fingerprint, which it must mean"
 						)
 						const digest = inputDigest("Flow", "Run", [a])
-						assert.isTrue(Sha256.equals(digest, inputDigest("Flow", "Run", [a])))
-						assert.strictEqual(Sha256.equals(digest, inputDigest("Flow", "Run", [b])), a === b)
+						assert.isTrue(g.Sha256.equals(digest, inputDigest("Flow", "Run", [a])))
+						assert.strictEqual(g.Sha256.equals(digest, inputDigest("Flow", "Run", [b])), a === b)
 						assert.isFalse(
-							Sha256.equals(
+							g.Sha256.equals(
 								inputDigest("Flow", "Run", [`${a}\u0000${b}`]),
 								inputDigest("Flow", "Run", [a, b])
 							),
@@ -212,11 +212,11 @@ describe("derived identity", () => {
 						assert.isTrue(
 							Arr.every([...derived, child, opened], (id) => id.length === DIGEST_BYTES)
 						)
-						assert.strictEqual(Arr.dedupeWith(derived, Sha256.equals).length, derived.length)
+						assert.strictEqual(Arr.dedupeWith(derived, g.Sha256.equals).length, derived.length)
 						const sibling = startedScope(first, 1)
 						const further = edgeScope(next, "Next", 0)
-						assert.isFalse(Sha256.equals(child, sibling))
-						assert.isFalse(Sha256.equals(opened, further))
+						assert.isFalse(g.Sha256.equals(child, sibling))
+						assert.isFalse(g.Sha256.equals(opened, further))
 					})
 			)
 		)

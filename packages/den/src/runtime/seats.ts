@@ -1,4 +1,4 @@
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { Array as Arr, Effect, Option } from "effect"
 import type { Resource } from "#algebra/kinds.ts"
 import type { Instant } from "#runtime/identity.ts"
@@ -78,7 +78,7 @@ export const seatsFor = (
 
 /** Whether a claim was refused because another live hold holds one of its seats: the live holds' key. */
 export const seatTaken = (flow: string, error: Settled): boolean =>
-	error.kind === "refused" &&
+	error._tag === "refused" &&
 	Arr.some(refusedLaws(error.refused), ({ law }) => {
 		const own = law.kind === "above" ? law.law : law
 		return own.kind === "key" && own.side.relation === `${flow}Live`
@@ -90,7 +90,7 @@ const liveExclusive = <R>(
 	seat: ExclusiveAt
 ): Effect.Effect<Option.Option<ExclusiveRow>, Settled> =>
 	Effect.map(ledger.coordination.exclusives, (rows) =>
-		Arr.findFirst(rows, (row) => row.kind === seat.kind && Sha256.equals(row.key, seat.key))
+		Arr.findFirst(rows, (row) => row.kind === seat.kind && g.Sha256.equals(row.key, seat.key))
 	)
 
 /**
@@ -100,17 +100,17 @@ const liveExclusive = <R>(
  */
 export const holdExclusive = <R>(
 	ledger: Ledger<R>,
-	seat: ExclusiveAt & { readonly scope: Sha256 }
+	seat: ExclusiveAt & { readonly scope: g.Sha256 }
 ): Effect.Effect<boolean, Settled> =>
 	Effect.gen(function* () {
 		const live = yield* liveExclusive(ledger, seat)
 		if (Option.isSome(live)) {
-			return Sha256.equals(live.value.scope, seat.scope)
+			return g.Sha256.equals(live.value.scope, seat.scope)
 		}
 		const turns = yield* ledger.coordination.exclusiveTurns
 		const turn = nextTurn(
 			Option.map(
-				Arr.findFirst(turns, (t) => t.kind === seat.kind && Sha256.equals(t.key, seat.key)),
+				Arr.findFirst(turns, (t) => t.kind === seat.kind && g.Sha256.equals(t.key, seat.key)),
 				(t) => t.turn
 			)
 		)
@@ -142,10 +142,10 @@ export const releaseExclusive = <R>(
 /** The live exclusivity seat a scope holds, if it holds one. */
 export const exclusiveOf = <R>(
 	ledger: Ledger<R>,
-	scope: Sha256
+	scope: g.Sha256
 ): Effect.Effect<ReadonlyArray<ExclusiveRow>, Settled> =>
 	Effect.map(ledger.coordination.exclusives, (rows) =>
-		Arr.filter(rows, (row) => Sha256.equals(row.scope, scope))
+		Arr.filter(rows, (row) => g.Sha256.equals(row.scope, scope))
 	)
 
 /**

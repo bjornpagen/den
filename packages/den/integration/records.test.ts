@@ -1,4 +1,4 @@
-import { Sha256, Vector } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, element, type Gen, int, oneOf, subset } from "@bjornpagen/testing/gen"
@@ -120,7 +120,7 @@ const runs: Gen<Run> = (source) => {
 }
 
 const vectorOf = (values: ReadonlyArray<number>) =>
-	Vector.make(Float32Array.from(values), embeddingDimensions)
+	g.Vector.make(Float32Array.from(values), embeddingDimensions)
 
 /** The exact cosine distance of two vectors of whole components. */
 const cosine = (a: ReadonlyArray<number>, b: ReadonlyArray<number>): number => {
@@ -273,10 +273,10 @@ export const aReadsRowsAreStoredOnceAndEachRootReadsBackWhatItFound = property.e
 							)
 							const nearest = yield* rows(app.workload.nearestReads.once({ params: {}, facts: {} }))
 							const seen = yield* rows(app.workload.seenReads.once({ params: {}, facts: {} }))
-							return (scope: Sha256) => {
+							return (scope: g.Sha256) => {
 								const decided = Arr.filter(
 									results,
-									(r) => Sha256.equals(r.scope, scope) && r.kind === "Decide"
+									(r) => g.Sha256.equals(r.scope, scope) && r.kind === "Decide"
 								)
 								assert.deepEqual(
 									Arr.map(decided, (r) => r.outcome),
@@ -285,11 +285,11 @@ export const aReadsRowsAreStoredOnceAndEachRootReadsBackWhatItFound = property.e
 								const step = Arr.getUnsafe(decided, 0).step
 								return {
 									nearest: Arr.sort(
-										Arr.filter(nearest, (r) => Sha256.equals(r.step, step)),
+										Arr.filter(nearest, (r) => g.Sha256.equals(r.step, step)),
 										byOrdinal
 									),
 									seen: Arr.sort(
-										Arr.filter(seen, (r) => Sha256.equals(r.step, step)),
+										Arr.filter(seen, (r) => g.Sha256.equals(r.step, step)),
 										byOrdinal
 									)
 								}
@@ -391,7 +391,7 @@ export const aReadsRowsAreStoredOnceAndEachRootReadsBackWhatItFound = property.e
 						}) => `${r.passage} ${r.topic} ${r.distance}`
 						const digests = Arr.dedupeWith(
 							Arr.map(references, (r) => r.digest),
-							Sha256.equals
+							g.Sha256.equals
 						)
 						assert.equal(stored.length, digests.length, "every row any root found is stored once")
 						assert.equal(
@@ -400,7 +400,7 @@ export const aReadsRowsAreStoredOnceAndEachRootReadsBackWhatItFound = property.e
 							"one content is stored under one digest"
 						)
 						Arr.forEach(references, (r) => {
-							const named = Arr.filter(stored, (row) => Sha256.equals(row.digest, r.digest))
+							const named = Arr.filter(stored, (row) => g.Sha256.equals(row.digest, r.digest))
 							assert.deepEqual(
 								Arr.map(named, contentOf),
 								[contentOf(r)],
@@ -408,9 +408,9 @@ export const aReadsRowsAreStoredOnceAndEachRootReadsBackWhatItFound = property.e
 							)
 						})
 						const scopes = Arr.map(roots, ({ scope }) => scope)
-						const sharedBy = (digest: Sha256) =>
+						const sharedBy = (digest: g.Sha256) =>
 							Arr.filter(scopes, (scope) =>
-								Arr.some(late(scope).nearest, (r) => Sha256.equals(r.digest, digest))
+								Arr.some(late(scope).nearest, (r) => g.Sha256.equals(r.digest, digest))
 							).length
 						if (Arr.some(digests, (digest) => sharedBy(digest) > 1)) {
 							c.note("a row two roots found, stored once")
@@ -423,7 +423,7 @@ export const aReadsRowsAreStoredOnceAndEachRootReadsBackWhatItFound = property.e
 									Arr.flatMap(roots, ({ scope }) => late(scope).seen),
 									(r) => r.digest
 								),
-								Sha256.equals
+								g.Sha256.equals
 							).length,
 							"every seen row any root read is stored once"
 						)

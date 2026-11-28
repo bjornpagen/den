@@ -1,23 +1,6 @@
-import type {
-	AnyChangeSet,
-	AnyRelation,
-	ClockUnit,
-	Clocked,
-	clocked,
-	EvidenceOfQuery,
-	Fact,
-	FieldBase,
-	HeadOf,
-	ParamArg,
-	ParamsOf,
-	ReadsChildren,
-	ReadsQuery,
-	RecordedQuery,
-	SchemaSource,
-	Vector
-} from "@bjornpagen/grizzle"
-import type { ContractRefused } from "@bjornpagen/grizzle/contract"
-import type { InputOf } from "@bjornpagen/grizzle/runtime"
+import type * as g from "@bjornpagen/grizzle"
+import type * as gDomain from "@bjornpagen/grizzle/domain"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { regex } from "arkregex"
 import {
 	Array as Arr,
@@ -219,7 +202,7 @@ export const utcHours = (opens: number, closes: number): Window => {
 }
 
 /** A vector's schema: grizzle's Vector of its dimensions, a Float32Array. */
-export type VectorSchema<N extends number = number> = Schema.declare<Vector<N>>
+export type VectorSchema<N extends number = number> = Schema.declare<g.Vector<N>>
 
 /** The dimensions of each vector schema `vectorOf` made, read by lowering: a schema value holds no number of its own. */
 const vectorDimensions = new WeakMap<Schema.Top, number>()
@@ -232,7 +215,7 @@ const vectorDimensions = new WeakMap<Schema.Top, number>()
 export const vectorOf = <const N extends number>(dimensions: N): VectorSchema<N> => {
 	positive("vector", "dimensions", dimensions)
 	const schema = Schema.declare(
-		(value: unknown): value is Vector<N> =>
+		(value: unknown): value is g.Vector<N> =>
 			value instanceof Float32Array && value.length === dimensions
 	)
 	vectorDimensions.set(schema, dimensions)
@@ -244,59 +227,55 @@ export const dimensionsOf = (schema: Schema.Top): Option.Option<number> =>
 	Option.fromNullishOr(vectorDimensions.get(schema))
 
 /** The schemas a contract input decodes from: a column's text, bigint, finite number or boolean. */
-export type ContractBaseSchema = Schema.String | Schema.BigInt | Schema.Finite | Schema.Boolean
+export type DomainBaseSchema = Schema.String | Schema.BigInt | Schema.Finite | Schema.Boolean
 
 /** A consumer's contract: grizzle's field, by its name. */
-export type ContractField = FieldBase & { readonly name: string }
+export type DomainField = g.FieldBase & { readonly name: string }
 
 /**
- * A consumer's contract parser as den takes it, grizzle's contractParser's answer (@bjornpagen/grizzle/contract), built by
+ * A consumer's contract parser as den takes it, grizzle's domainParser's answer (@bjornpagen/grizzle/contract), built by
  * the key's holder, its checker derived from the contract itself: the contract, a grizzle field, by its name, and its
  * checked mint of a value of its base, M the contract's host type.
  */
-export interface ContractParserOf<A, M extends A, C extends ContractField> {
-	readonly contract: C
-	readonly parse: (value: A) => Result.Result<M, ContractRefused<string>>
+export interface DomainParserOf<A, M extends A, C extends DomainField> {
+	readonly domain: C
+	readonly parse: (value: A) => Result.Result<M, gDomain.DomainParseRefused<string>>
 }
 
 /**
- * A field of a consumer's contract C (contractInput): its base's schema B decoding to the contract's host type M through
+ * A field of a consumer's contract C (domainInput): its base's schema B decoding to the contract's host type M through
  * the contract's checked mint, the contract beside it, by which den types the field's column.
  */
-export type ContractInputSchema<C, M, B extends ContractBaseSchema> = Schema.decodeTo<
+export type DomainInputSchema<C, M, B extends DomainBaseSchema> = Schema.decodeTo<
 	Schema.declare<M>,
 	B
-> & { readonly contract: C }
+> & { readonly domain: C }
 
 /**
  * What lowering reads of a contract input: its contract, a grizzle field, by its name, which the printed fragment imports
  * under that name (lower/print.ts Placement `contracts`), and its base's schema.
  */
-export interface ContractInputOf {
-	readonly contract: ContractField
-	readonly base: ContractBaseSchema
+export interface DomainInputOf {
+	readonly domain: DomainField
+	readonly base: DomainBaseSchema
 }
 
-/** The contract and base of each contract input `contractInput` made, read by lowering. */
-const contractInputs = new WeakMap<Schema.Top, ContractInputOf>()
+/** The contract and base of each contract input `domainInput` made, read by lowering. */
+const domainInputs = new WeakMap<Schema.Top, DomainInputOf>()
 
 /**
- * A field of a consumer's contract, from its parser, grizzle's contractParser(contract, key), which only the key's holder
+ * A field of a consumer's contract, from its parser, grizzle's domainParser(domain, key), which only the key's holder
  * builds and exports beside its mint, and its base's schema: decoding reads a value of the base, then the contract's
  * check, minting the value under the key, or failing with the contract's refusal (its issue's `refusal`, grizzle's
- * ContractRefused); encoding gives the value as its base holds it. A step's or a scope's value may hold one as a column,
+ * DomainParseRefused); encoding gives the value as its base holds it. A step's or a scope's value may hold one as a column,
  * which lowers to a column of the contract itself (lower/schema.ts), so PostgreSQL holds every value den stores to the
  * contract's domain and grizzle's column of it delivers the contract's host type back: den neither checks it again nor
  * makes one, and the parse is the boundary's.
  */
-export const contractInput = <
-	B extends ContractBaseSchema,
-	M extends B["Type"],
-	C extends ContractField
->(
-	parser: ContractParserOf<B["Type"], M, C>,
+export const domainInput = <B extends DomainBaseSchema, M extends B["Type"], C extends DomainField>(
+	parser: DomainParserOf<B["Type"], M, C>,
 	base: B
-): ContractInputSchema<C, M, B> => {
+): DomainInputSchema<C, M, B> => {
 	const holds = Schema.is(base)
 	const minted = Schema.declare(
 		(value: unknown): value is M => holds(value) && Result.isSuccess(parser.parse(value))
@@ -310,7 +289,7 @@ export const contractInput = <
 						Effect.fail(
 							new SchemaIssue.InvalidValue(
 								{
-									message: `${refusal.contract} refuses ${String(value)}: ${refusal._tag}`,
+									message: `${refusal.domain} refuses ${String(value)}: ${refusal._tag}`,
 									refusal
 								},
 								value
@@ -320,19 +299,19 @@ export const contractInput = <
 			),
 			encode: SchemaGetter.passthroughSubtype<B["Type"], M>()
 		})(base),
-		{ contract: parser.contract }
+		{ domain: parser.domain }
 	)
-	contractInputs.set(schema, { contract: parser.contract, base })
+	domainInputs.set(schema, { domain: parser.domain, base })
 	return schema
 }
 
-/** The contract and base of a schema `contractInput` made, none for any other schema. */
-export const contractInputOf = (schema: Schema.Top): Option.Option<ContractInputOf> =>
-	Option.fromNullishOr(contractInputs.get(schema))
+/** The contract and base of a schema `domainInput` made, none for any other schema. */
+export const domainInputOf = (schema: Schema.Top): Option.Option<DomainInputOf> =>
+	Option.fromNullishOr(domainInputs.get(schema))
 
 /**
  * A column's schema: text, a bigint, a finite number, a boolean, a literal union of texts, a brand of one, a vector, or a
- * consumer's contract over one of the first four (contractInput).
+ * consumer's contract over one of the first four (domainInput).
  * A number is `Schema.Finite`, which lowers to double precision under a row check that holds it finite.
  */
 export type ColumnSchema =
@@ -344,7 +323,7 @@ export type ColumnSchema =
 	| Schema.Literals<ReadonlyArray<string>>
 	| Schema.brand<Schema.String | Schema.BigInt | Schema.Finite | Schema.Boolean, string>
 	| VectorSchema
-	| ContractInputSchema<ContractField, ContractBaseSchema["Type"], ContractBaseSchema>
+	| DomainInputSchema<DomainField, DomainBaseSchema["Type"], DomainBaseSchema>
 
 /** The fields of a struct an array holds or a tagged union's variant carries: columns. */
 export type ColumnFields = { readonly [field: string]: ColumnSchema }
@@ -399,7 +378,7 @@ export type DenCommitParam = "steps" | "root" | typeof denClock
 
 /** A ChangeSet's parameters bound to the database's clock, each by the unit of its reading. */
 export interface ClockBinding {
-	readonly [param: string]: ClockUnit
+	readonly [param: string]: g.ClockUnit
 }
 
 /**
@@ -407,8 +386,8 @@ export interface ClockBinding {
  * the keys of the consumers' contracts B binds, by parameter, none where it binds no contract's parameter. Read off
  * clocked's own signature, so a binding is keyed exactly as clocked keys it.
  */
-export type ClockKeys<C extends AnyChangeSet, B extends ClockBinding> =
-	Parameters<typeof clocked<C, B>> extends readonly [unknown, unknown, ...infer K] ? K : never
+export type ClockKeys<C extends g.AnyChangeSet, B extends ClockBinding> =
+	Parameters<typeof g.clocked<C, B>> extends readonly [unknown, unknown, ...infer K] ? K : never
 
 /**
  * What a step or a finish commits into the app's relations beside its result: a ChangeSet `changes` makes of the flow's
@@ -445,7 +424,7 @@ export type AnyCommit =
  * A ChangeSet that names none of den's commit parameters (DenCommitParam): any other refuses `through`, by the member
  * this type adds, which no ChangeSet holds.
  */
-type FreeOfDen<C> = [Extract<keyof ParamsOf<C>, DenCommitParam>] extends [never]
+type FreeOfDen<C> = [Extract<keyof g.ParamsOf<C>, DenCommitParam>] extends [never]
 	? unknown
 	: {
 			readonly [
@@ -457,7 +436,7 @@ type FreeOfDen<C> = [Extract<keyof ParamsOf<C>, DenCommitParam>] extends [never]
  * A step's commit through `changes`, a ChangeSet over the flow's app role, its instants bound by `clock`, under `keys`,
  * the keys of the consumers' contracts it binds, as clocked takes them (ClockKeys).
  */
-export const through = <W, const C extends AnyChangeSet, const B extends ClockBinding>(
+export const through = <W, const C extends g.AnyChangeSet, const B extends ClockBinding>(
 	changes: (role: W) => C & FreeOfDen<C>,
 	clock: B,
 	...keys: ClockKeys<C, B>
@@ -489,12 +468,12 @@ const READ = regex("^[a-z][A-Za-z0-9]*$")
  * are a value of a module that depends on that level alone, `<Step>Reads`, never on the flow, whose type names its app
  * role (den generate's Placement `reads`).
  */
-export interface Reads<L, N extends ReadsChildren, I> {
+export interface Reads<L, N extends g.ReadsChildren, I> {
 	readonly kind: "query"
 	readonly over: L
 	/** The named queries over `over`. */
 	readonly named: N
-	readonly params: (input: I) => ParamArg<ParamsOf<ReadsQuery<L, N>>>
+	readonly params: (input: I) => g.ParamArg<g.ParamsOf<g.ReadsQuery<L, N>>>
 }
 
 /** A step's reads over its input `I`, whatever level and queries they name. */
@@ -503,7 +482,7 @@ export type ReadsOver<I> =
 	| {
 			readonly kind: "query"
 			readonly over: unknown
-			readonly named: { readonly [name: string]: RecordedQuery }
+			readonly named: { readonly [name: string]: g.RecordedQuery }
 			readonly params: (input: I) => unknown
 	  }
 
@@ -516,7 +495,7 @@ export type AnyReads =
 	| {
 			readonly kind: "query"
 			readonly over: unknown
-			readonly named: { readonly [name: string]: RecordedQuery }
+			readonly named: { readonly [name: string]: g.RecordedQuery }
 			readonly params: (input: never) => unknown
 	  }
 
@@ -527,19 +506,19 @@ export const noReads: { readonly kind: "none" } = { kind: "none" }
  * A step's reads: the named queries `queries` over the level `over`, their parameters from the step's input, each
  * `<name>.<parameter>`. Their records are den's relations, named by den alone (lower/names.ts): a flow names none.
  */
-export const reads = <L, const N extends ReadsChildren, I>(
+export const reads = <L, const N extends g.ReadsChildren, I>(
 	over: L,
 	queries: N,
-	params: (input: I) => NoInfer<ParamArg<ParamsOf<ReadsQuery<L, N>>>>
+	params: (input: I) => NoInfer<g.ParamArg<g.ParamsOf<g.ReadsQuery<L, N>>>>
 ): Reads<L, N, I> => ({ kind: "query", over, named: queries, params })
 
 /** What a body sees of its declared reads: each named query's rows, exactly as the query delivers them. */
 export type Found<D> = D extends {
 	readonly kind: "query"
 	readonly over: infer L
-	readonly named: infer N extends ReadsChildren
+	readonly named: infer N extends g.ReadsChildren
 }
-	? HeadOf<ReadsQuery<L, N>>
+	? g.HeadOf<g.ReadsQuery<L, N>>
 	: { readonly [name: string]: never }
 
 /** Refuses a read's name den cannot lower into its record's relation name. */
@@ -560,19 +539,19 @@ export const readNamed = (declaration: string, name: string): void => {
  * declares a read of it too.
  */
 export interface AwaitedFact {
-	readonly relation: AnyRelation
+	readonly relation: g.AnyRelation
 	readonly key: { readonly [field: string]: string }
 }
 
 /** The fields of `R`'s whole key. */
-export type KeyFieldOf<R extends AnyRelation> = R["primaryKey"][number] & keyof Fact<R> & string
+export type KeyFieldOf<R extends g.AnyRelation> = R["primaryKey"][number] & keyof g.Fact<R> & string
 
 /**
  * The fact a step awaits: the row of `relation` whose every key field holds what the input field `key` names for it
  * holds. Lowering refuses an input field that is no column of the step's input, and types each such column as the key
  * field it holds, so the printed programs join the step's input to the relation.
  */
-export const awaitFact = <R extends AnyRelation>(
+export const awaitFact = <R extends g.AnyRelation>(
 	relation: R,
 	key: { readonly [K in KeyFieldOf<R>]: string }
 ): AwaitedFact => ({ relation, key })
@@ -634,7 +613,7 @@ export type Done<O, T> = T extends {
 	readonly changes: (role: never) => infer C
 	readonly clock: infer B
 }
-	? { readonly output: O; readonly writes: InputOf<Clocked<C, B>> }
+	? { readonly output: O; readonly writes: gRuntime.InputOf<g.Clocked<C, B>> }
 	: { readonly output: O }
 
 /**
@@ -1018,7 +997,7 @@ export type SeatOf<I, F> = Uninferred<
 export type Uninferred<X> = string extends keyof X ? unknown : X
 
 /** The level a grizzle query is written over (grizzle's `SchemaSource`). */
-type LevelOf<Q> = Q extends SchemaSource<infer S, unknown> ? S : never
+type LevelOf<Q> = Q extends g.SchemaSource<infer S, unknown> ? S : never
 
 /** Whether `T` is a union of more than one type. */
 type IsUnion<T, U = T> = T extends unknown ? ([U] extends [T] ? false : true) : never
@@ -1065,12 +1044,12 @@ type DerivesInput<KS extends Stored, O, Q, I> = [LevelOf<Q>] extends [O]
 
 /** A derived read's parameters, row and card held to its key and its input (`DerivesInput`). */
 type ReadsInput<KS extends Stored, Q, I> = [
-	Exclude<keyof ParamsOf<Q>, keyof KS["Type"]> | Exclude<keyof KS["Type"], keyof ParamsOf<Q>>
+	Exclude<keyof g.ParamsOf<Q>, keyof KS["Type"]> | Exclude<keyof KS["Type"], keyof g.ParamsOf<Q>>
 ] extends [never]
-	? [KS["Type"]] extends [ParamArg<ParamsOf<Q>>]
-		? [HeadOf<Q>] extends [I]
-			? [I] extends [HeadOf<Q>]
-				? [EvidenceOfQuery<Q>["card"]] extends ["atMostOne" | "one"]
+	? [KS["Type"]] extends [g.ParamArg<g.ParamsOf<Q>>]
+		? [g.HeadOf<Q>] extends [I]
+			? [I] extends [g.HeadOf<Q>]
+				? [g.EvidenceOfQuery<Q>["card"]] extends ["atMostOne" | "one"]
 					? unknown
 					: { readonly "a derived root's read finds at most one row for its key": never }
 				: { readonly "a derived root's read delivers its input and nothing else": never }

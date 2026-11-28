@@ -1471,7 +1471,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_assign_assignment_input_k2sfkqif6i"(), "slice"."__stand_assign_assignment_input_mode_nearest_lxb77ivg4j"(), "slice"."__stand_assign_assignment_input_mode_within_37wojsnl3c"(), "slice"."__stand_assign_decide_input_vrvu36pkwz"(), "slice"."__stand_assign_decide_input_mode_nearest_7kdvsnzqg6"(), "slice"."__stand_assign_decide_input_mode_within_ldx2lhq5ey"(), "slice"."__stand_assign_done_zpmhn6mrnc"(), "slice"."__stand_assign_embed_input_zvwywuktne"(), "slice"."__stand_assign_embed_input_mode_nearest_qag7rwsicw"(), "slice"."__stand_assign_embed_input_mode_within_mw2mn45ii2"(), "slice"."__stand_assign_failed_pmuglprcww"(), "slice"."__stand_assign_result_3dwqbs6psk"(), "slice"."__stand_assign_root_ecnnffi3e3"(), "slice"."__stand_assign_step_qwjijdgx6j"() TO :"slice_seats__assign_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__assign_retirer";
@@ -1565,7 +1565,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_assign_assignment_input_k2sfkqif6i"(), "slice"."__stand_assign_assignment_input_mode_nearest_lxb77ivg4j"(), "slice"."__stand_assign_assignment_input_mode_within_37wojsnl3c"(), "slice"."__stand_assign_decide_input_vrvu36pkwz"(), "slice"."__stand_assign_decide_input_mode_nearest_7kdvsnzqg6"(), "slice"."__stand_assign_decide_input_mode_within_ldx2lhq5ey"(), "slice"."__stand_assign_decide_output_ir3hc6poyj"(), "slice"."__stand_assign_decide_output_stage_rest_lduodwwdlk"(), "slice"."__stand_assign_decide_output_stage_serve_z6kennoghm"(), "slice"."__stand_assign_done_zpmhn6mrnc"(), "slice"."__stand_assign_embed_input_zvwywuktne"(), "slice"."__stand_assign_embed_input_mode_nearest_qag7rwsicw"(), "slice"."__stand_assign_embed_input_mode_within_mw2mn45ii2"(), "slice"."__stand_assign_failed_pmuglprcww"(), "slice"."__stand_assign_result_3dwqbs6psk"(), "slice"."__stand_assign_step_qwjijdgx6j"() TO :"slice_seats__assign_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__assign_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_assign_claim_attempt_h744pvqs3v" TO :"slice_seats__assign_retirer";
 
@@ -1674,7 +1674,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__feed_live_pfwkvulieq"() TO :"slice_seats__chain_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_chain_done_fhcl4vvjiw"(), "slice"."__stand_chain_failed_nocd74knki"(), "slice"."__stand_chain_page_input_akkjfmkwih"(), "slice"."__stand_chain_result_2qc7m4brl3"(), "slice"."__stand_chain_root_mmsdkigltc"(), "slice"."__stand_chain_step_3hsz3lyxy2"() TO :"slice_seats__chain_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__chain_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__chain_retirer";
@@ -1743,7 +1743,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__feed_live_pfwkvulieq"() TO :"slice_seats__chain_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_chain_done_fhcl4vvjiw"(), "slice"."__stand_chain_failed_nocd74knki"(), "slice"."__stand_chain_page_input_akkjfmkwih"(), "slice"."__stand_chain_result_2qc7m4brl3"(), "slice"."__stand_chain_step_3hsz3lyxy2"() TO :"slice_seats__chain_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__chain_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_chain_claim_attempt_n5yg3h2b6a" TO :"slice_seats__chain_retirer";
 
@@ -1828,7 +1828,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"(), "slice"."__feed_live_pfwkvulieq"() TO :"slice_seats__clock_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_clock_chime_input_w4tkdsqfah"(), "slice"."__stand_clock_close_input_nbsmlpykk5"(), "slice"."__stand_clock_done_dja4biaxge"(), "slice"."__stand_clock_failed_zsyt2n5qx3"(), "slice"."__stand_clock_hourly_key_im7mo3bxkf"(), "slice"."__stand_clock_result_dk5lfugcd5"(), "slice"."__stand_clock_root_bfxjnnlbbr"(), "slice"."__stand_clock_step_cbbapr6dla"() TO :"slice_seats__clock_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__clock_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__clock_retirer";
@@ -1889,7 +1889,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_clock_chime_input_w4tkdsqfah"(), "slice"."__stand_clock_close_input_nbsmlpykk5"(), "slice"."__stand_clock_done_dja4biaxge"(), "slice"."__stand_clock_failed_zsyt2n5qx3"(), "slice"."__stand_clock_result_dk5lfugcd5"(), "slice"."__stand_clock_step_cbbapr6dla"() TO :"slice_seats__clock_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__clock_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk" TO :"slice_seats__clock_retirer";
 
@@ -1928,8 +1928,6 @@ GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."
 GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__composer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6jgkvuzg33"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_fpk6cvxfiv"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_jqlbcidhe6"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_wcuqzqhqwl"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_m2rf37xwjt"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_zwogjm2ro3"(), "slice"."__feed_live_pfwkvulieq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__composer";
-
-GRANT EXECUTE ON FUNCTION "slice"."__stand_chain_root_mmsdkigltc"(), "slice"."__stand_fan_root_evnc53opne"(), "slice"."__stand_fan_wanted_key_n6zslzhip6"() TO :"slice_seats__composer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice" TO :"slice_seats__composing";
@@ -2054,7 +2052,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6jgkvuzg33"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_fpk6cvxfiv"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_jqlbcidhe6"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_wcuqzqhqwl"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_m2rf37xwjt"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_zwogjm2ro3"() TO :"slice_seats__fan_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_fan_batch_input_fkd6u4c3i3"(), "slice"."__stand_fan_claim_chk6cawes6"(), "slice"."__stand_fan_done_e4qldz2xtt"(), "slice"."__stand_fan_dust_input_rigexdymgk"(), "slice"."__stand_fan_ended_l35bnatdrx"(), "slice"."__stand_fan_failed_ok5ebljdmh"(), "slice"."__stand_fan_held_jx6ijuwgvx"(), "slice"."__stand_fan_hold_lndmiy4fqw"(), "slice"."__stand_fan_mop_input_i5g5pk2lsj"(), "slice"."__stand_fan_result_4bsplumotk"(), "slice"."__stand_fan_root_evnc53opne"(), "slice"."__stand_fan_square_input_ag5nlkdpuv"(), "slice"."__stand_fan_step_cwlbx3l7hf"(), "slice"."__stand_fan_wanted_key_n6zslzhip6"(), "slice"."__stand_fan_within_oo5pwmjabl"() TO :"slice_seats__fan_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__fan_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__fan_retirer";
@@ -2135,7 +2133,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6jgkvuzg33"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_jqlbcidhe6"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_wcuqzqhqwl"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_m2rf37xwjt"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_zwogjm2ro3"() TO :"slice_seats__fan_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_fan_batch_input_fkd6u4c3i3"(), "slice"."__stand_fan_claim_chk6cawes6"(), "slice"."__stand_fan_done_e4qldz2xtt"(), "slice"."__stand_fan_dust_input_rigexdymgk"(), "slice"."__stand_fan_ended_l35bnatdrx"(), "slice"."__stand_fan_failed_ok5ebljdmh"(), "slice"."__stand_fan_held_jx6ijuwgvx"(), "slice"."__stand_fan_hold_lndmiy4fqw"(), "slice"."__stand_fan_mop_input_i5g5pk2lsj"(), "slice"."__stand_fan_result_4bsplumotk"(), "slice"."__stand_fan_square_input_ag5nlkdpuv"(), "slice"."__stand_fan_step_cwlbx3l7hf"(), "slice"."__stand_fan_within_oo5pwmjabl"() TO :"slice_seats__fan_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__fan_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_fan_claim_attempt_u34lm72lgr" TO :"slice_seats__fan_retirer";
 
@@ -2429,8 +2427,6 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6jgkvuzg33"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_fpk6cvxfiv"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_jqlbcidhe6"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_wcuqzqhqwl"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_m2rf37xwjt"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_zwogjm2ro3"(), "slice"."__feed_live_pfwkvulieq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__loader";
 
-GRANT EXECUTE ON FUNCTION "slice"."__stand_assign_decide_input_vrvu36pkwz"(), "slice"."__stand_assign_decide_input_mode_nearest_7kdvsnzqg6"(), "slice"."__stand_assign_decide_input_mode_within_ldx2lhq5ey"(), "slice"."__stand_assign_decide_output_ir3hc6poyj"(), "slice"."__stand_assign_decide_output_stage_rest_lduodwwdlk"(), "slice"."__stand_assign_decide_output_stage_serve_z6kennoghm"(), "slice"."__stand_assign_done_zpmhn6mrnc"(), "slice"."__stand_assign_embed_input_zvwywuktne"(), "slice"."__stand_assign_embed_input_mode_nearest_qag7rwsicw"(), "slice"."__stand_assign_embed_input_mode_within_mw2mn45ii2"(), "slice"."__stand_assign_result_3dwqbs6psk"(), "slice"."__stand_assign_step_qwjijdgx6j"(), "slice"."__stand_chain_done_fhcl4vvjiw"(), "slice"."__stand_chain_page_input_akkjfmkwih"(), "slice"."__stand_chain_result_2qc7m4brl3"(), "slice"."__stand_chain_root_mmsdkigltc"(), "slice"."__stand_chain_step_3hsz3lyxy2"(), "slice"."__stand_clock_done_dja4biaxge"(), "slice"."__stand_clock_result_dk5lfugcd5"(), "slice"."__stand_fan_done_e4qldz2xtt"(), "slice"."__stand_fan_held_jx6ijuwgvx"(), "slice"."__stand_fan_result_4bsplumotk"(), "slice"."__stand_fan_root_evnc53opne"(), "slice"."__stand_fan_wanted_key_n6zslzhip6"(), "slice"."__stand_retry_done_ll42rjotis"(), "slice"."__stand_retry_result_mpvrsnerne"(), "slice"."__stand_review_analyze_input_pspszgkzox"(), "slice"."__stand_review_done_ujerlpx2vl"(), "slice"."__stand_review_gather_input_jx633zhg4g"(), "slice"."__stand_review_held_kz6nzl3mw3"(), "slice"."__stand_review_questions_input_c55nnxszay"(), "slice"."__stand_review_result_7berxkzbzb"(), "slice"."__stand_review_save_input_nwulronicu"(), "slice"."__stand_review_step_aidfiao2mn"(), "slice"."__stand_review_within_bqv44gzoli"(), "slice"."__stand_sync_done_4ihvwniwqp"(), "slice"."__stand_sync_result_fkuahqxxbc"(), "slice"."__stand_writeback_done_ra7zoinlni"(), "slice"."__stand_writeback_result_owlolckns5"() TO :"slice_seats__loader";
-
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__retry_coordinator";
 
@@ -2515,7 +2511,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_retry_brittle_input_3pbycrawjg"(), "slice"."__stand_retry_done_ll42rjotis"(), "slice"."__stand_retry_failed_wyonvn6i5o"(), "slice"."__stand_retry_patient_input_jxb7jnsja6"(), "slice"."__stand_retry_polite_input_uiwzzm343r"(), "slice"."__stand_retry_result_mpvrsnerne"(), "slice"."__stand_retry_root_rvzhlkfxal"(), "slice"."__stand_retry_steadfast_input_chyldmp7fv"(), "slice"."__stand_retry_step_7csxwmutn2"() TO :"slice_seats__retry_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__retry_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__retry_retirer";
@@ -2588,7 +2584,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_retry_brittle_input_3pbycrawjg"(), "slice"."__stand_retry_done_ll42rjotis"(), "slice"."__stand_retry_failed_wyonvn6i5o"(), "slice"."__stand_retry_patient_input_jxb7jnsja6"(), "slice"."__stand_retry_polite_input_uiwzzm343r"(), "slice"."__stand_retry_result_mpvrsnerne"(), "slice"."__stand_retry_steadfast_input_chyldmp7fv"(), "slice"."__stand_retry_step_7csxwmutn2"() TO :"slice_seats__retry_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__retry_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_retry_claim_attempt_exbl6vgycp" TO :"slice_seats__retry_retirer";
 
@@ -2680,7 +2676,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_review_analyze_input_pspszgkzox"(), "slice"."__stand_review_claim_hkt7qw7mpi"(), "slice"."__stand_review_done_ujerlpx2vl"(), "slice"."__stand_review_ended_h3z5bew2vq"(), "slice"."__stand_review_failed_a5vyjorx3e"(), "slice"."__stand_review_gather_input_jx633zhg4g"(), "slice"."__stand_review_held_kz6nzl3mw3"(), "slice"."__stand_review_hold_nhd6ml2ptp"(), "slice"."__stand_review_questions_input_c55nnxszay"(), "slice"."__stand_review_result_7berxkzbzb"(), "slice"."__stand_review_root_ejfkrp7dtz"(), "slice"."__stand_review_save_input_nwulronicu"(), "slice"."__stand_review_step_aidfiao2mn"(), "slice"."__stand_review_within_bqv44gzoli"() TO :"slice_seats__review_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__review_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__review_retirer";
@@ -2759,7 +2755,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_review_analyze_input_pspszgkzox"(), "slice"."__stand_review_claim_hkt7qw7mpi"(), "slice"."__stand_review_done_ujerlpx2vl"(), "slice"."__stand_review_ended_h3z5bew2vq"(), "slice"."__stand_review_failed_a5vyjorx3e"(), "slice"."__stand_review_gather_input_jx633zhg4g"(), "slice"."__stand_review_held_kz6nzl3mw3"(), "slice"."__stand_review_hold_nhd6ml2ptp"(), "slice"."__stand_review_questions_input_c55nnxszay"(), "slice"."__stand_review_result_7berxkzbzb"(), "slice"."__stand_review_save_input_nwulronicu"(), "slice"."__stand_review_step_aidfiao2mn"(), "slice"."__stand_review_within_bqv44gzoli"() TO :"slice_seats__review_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__review_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_review_claim_attempt_lsmvyy7ajm" TO :"slice_seats__review_retirer";
 
@@ -2845,7 +2841,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_sync_build_input_le3amndvci"(), "slice"."__stand_sync_copy_input_wr7g5cohy6"(), "slice"."__stand_sync_done_4ihvwniwqp"(), "slice"."__stand_sync_failed_uzrsh7vxay"(), "slice"."__stand_sync_result_fkuahqxxbc"(), "slice"."__stand_sync_root_otymwhik42"(), "slice"."__stand_sync_step_mljbwcbsm5"() TO :"slice_seats__sync_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__sync_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__sync_retirer";
@@ -2908,7 +2904,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_sync_build_input_le3amndvci"(), "slice"."__stand_sync_copy_input_wr7g5cohy6"(), "slice"."__stand_sync_done_4ihvwniwqp"(), "slice"."__stand_sync_failed_uzrsh7vxay"(), "slice"."__stand_sync_result_fkuahqxxbc"(), "slice"."__stand_sync_step_mljbwcbsm5"() TO :"slice_seats__sync_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__sync_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_sync_claim_attempt_dtv5nw4b3m" TO :"slice_seats__sync_retirer";
 
@@ -2987,7 +2983,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_writeback_deliver_input_qibs4x7ys4"(), "slice"."__stand_writeback_done_ra7zoinlni"(), "slice"."__stand_writeback_failed_tv4kbeol35"(), "slice"."__stand_writeback_result_owlolckns5"(), "slice"."__stand_writeback_root_m53pgt6gxz"(), "slice"."__stand_writeback_step_dhhgvpedc7"() TO :"slice_seats__writeback_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__writeback_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__writeback_retirer";
@@ -3040,7 +3036,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_writeback_deliver_input_qibs4x7ys4"(), "slice"."__stand_writeback_done_ra7zoinlni"(), "slice"."__stand_writeback_failed_tv4kbeol35"(), "slice"."__stand_writeback_result_owlolckns5"(), "slice"."__stand_writeback_step_dhhgvpedc7"() TO :"slice_seats__writeback_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__writeback_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_writeback_claim_attempt_pk673p2jar" TO :"slice_seats__writeback_retirer";
 
@@ -3389,6 +3385,194 @@ COMMENT ON DOMAIN "slice_den"."__chain_chain_run_input_feed_tu7p4zezp4" IS 'rost
 COMMENT ON DOMAIN "slice_den"."__chain_ordered_input_feed_mnwz7hkicc" IS 'roster ChainOrderedInputFeed';
 
 COMMENT ON DOMAIN "slice_den"."__chain_page_input_feed_3lfpnabckm" IS 'roster ChainPageInputFeed';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_assignment_input_ygnhvqewxu" IS 'delta of news of AssignAssignmentInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_assignment_input_j6bpslocbl" IS 'delta of olds of AssignAssignmentInput';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_assignment_input_mode_nearest_222ouzrr6m" IS 'delta of news of AssignAssignmentInputModeNearest';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_assignment_input_mode_nearest_mpkwruylrr" IS 'delta of olds of AssignAssignmentInputModeNearest';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_assignment_input_mode_within_dp7gguljme" IS 'delta of news of AssignAssignmentInputModeWithin';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_assignment_input_mode_within_vjraiix3dm" IS 'delta of olds of AssignAssignmentInputModeWithin';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_decide_input_jfl5ysmwsy" IS 'delta of news of AssignDecideInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_decide_input_bwguu4gncv" IS 'delta of olds of AssignDecideInput';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_decide_input_mode_nearest_hbq5ebmzm7" IS 'delta of news of AssignDecideInputModeNearest';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_decide_input_mode_nearest_opbi3ubof4" IS 'delta of olds of AssignDecideInputModeNearest';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_decide_input_mode_within_5serdc7z7y" IS 'delta of news of AssignDecideInputModeWithin';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_decide_input_mode_within_swtn3ffz4v" IS 'delta of olds of AssignDecideInputModeWithin';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_decide_output_3ac6vlflix" IS 'delta of news of AssignDecideOutput';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_decide_output_hry5fplupx" IS 'delta of olds of AssignDecideOutput';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_decide_output_stage_rest_64yda3fhlj" IS 'delta of news of AssignDecideOutputStageRest';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_decide_output_stage_rest_wdhpmli5l2" IS 'delta of olds of AssignDecideOutputStageRest';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_decide_output_stage_serve_srpacrfigs" IS 'delta of news of AssignDecideOutputStageServe';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_decide_output_stage_serve_bak2tw2piy" IS 'delta of olds of AssignDecideOutputStageServe';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_done_4jyjm5vsyi" IS 'delta of news of AssignDone';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_embed_input_zmdovgoj33" IS 'delta of news of AssignEmbedInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_embed_input_f5ve3ejiir" IS 'delta of olds of AssignEmbedInput';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_embed_input_mode_nearest_cdfjwsvhka" IS 'delta of news of AssignEmbedInputModeNearest';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_embed_input_mode_nearest_ajulpavw4t" IS 'delta of olds of AssignEmbedInputModeNearest';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_embed_input_mode_within_t6ykk53tkb" IS 'delta of news of AssignEmbedInputModeWithin';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_embed_input_mode_within_mj4usjhefl" IS 'delta of olds of AssignEmbedInputModeWithin';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_failed_syt7inbxn7" IS 'delta of news of AssignFailed';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_result_xxr4tvfqbc" IS 'delta of olds of AssignResult';
+
+COMMENT ON TYPE "slice"."__delta_news_assign_root_n3e573yuho" IS 'delta of news of AssignRoot';
+
+COMMENT ON TYPE "slice"."__delta_olds_assign_step_dw2t2wqhtv" IS 'delta of olds of AssignStep';
+
+COMMENT ON TYPE "slice"."__delta_news_chain_done_h2rwbjw5s6" IS 'delta of news of ChainDone';
+
+COMMENT ON TYPE "slice"."__delta_news_chain_failed_qd3opuak3m" IS 'delta of news of ChainFailed';
+
+COMMENT ON TYPE "slice"."__delta_news_chain_page_input_asn3qao3vx" IS 'delta of news of ChainPageInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_chain_result_hsvvk6io2f" IS 'delta of olds of ChainResult';
+
+COMMENT ON TYPE "slice"."__delta_news_chain_root_qgd7zuqnft" IS 'delta of news of ChainRoot';
+
+COMMENT ON TYPE "slice"."__delta_olds_chain_step_dv23izheod" IS 'delta of olds of ChainStep';
+
+COMMENT ON TYPE "slice"."__delta_news_clock_chime_input_cj2pmaeqnw" IS 'delta of news of ClockChimeInput';
+
+COMMENT ON TYPE "slice"."__delta_news_clock_close_input_dxs6jckwgz" IS 'delta of news of ClockCloseInput';
+
+COMMENT ON TYPE "slice"."__delta_news_clock_done_dteey6qagz" IS 'delta of news of ClockDone';
+
+COMMENT ON TYPE "slice"."__delta_news_clock_failed_nmp5du74hb" IS 'delta of news of ClockFailed';
+
+COMMENT ON TYPE "slice"."__delta_news_clock_hourly_key_5ltiorkpp5" IS 'delta of news of ClockHourlyKey';
+
+COMMENT ON TYPE "slice"."__delta_olds_clock_result_rmzu3jtfxn" IS 'delta of olds of ClockResult';
+
+COMMENT ON TYPE "slice"."__delta_news_clock_root_ph4g3ulltv" IS 'delta of news of ClockRoot';
+
+COMMENT ON TYPE "slice"."__delta_olds_clock_step_tvgthtoae7" IS 'delta of olds of ClockStep';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_batch_input_xjl4ee6vcj" IS 'delta of news of FanBatchInput';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_claim_t5q4supubm" IS 'delta of news of FanClaim';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_done_7ceojovz3x" IS 'delta of news of FanDone';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_dust_input_b5utugp46z" IS 'delta of news of FanDustInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_fan_ended_43ljvcgfjg" IS 'delta of olds of FanEnded';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_failed_jx6nkel2hf" IS 'delta of news of FanFailed';
+
+COMMENT ON TYPE "slice"."__delta_olds_fan_held_o7bjksce5l" IS 'delta of olds of FanHeld';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_hold_dkrbgb234w" IS 'delta of news of FanHold';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_mop_input_p56rkq2zzm" IS 'delta of news of FanMopInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_fan_result_az3luw73vx" IS 'delta of olds of FanResult';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_root_huyxhfzerb" IS 'delta of news of FanRoot';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_square_input_hcz3x475s5" IS 'delta of news of FanSquareInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_fan_step_hfsu7elc3c" IS 'delta of olds of FanStep';
+
+COMMENT ON TYPE "slice"."__delta_news_fan_wanted_key_ej5sixx6sb" IS 'delta of news of FanWantedKey';
+
+COMMENT ON TYPE "slice"."__delta_olds_fan_within_3bi3ex3oid" IS 'delta of olds of FanWithin';
+
+COMMENT ON TYPE "slice"."__delta_news_retry_brittle_input_bu3us45qwc" IS 'delta of news of RetryBrittleInput';
+
+COMMENT ON TYPE "slice"."__delta_news_retry_done_6p5rgadurk" IS 'delta of news of RetryDone';
+
+COMMENT ON TYPE "slice"."__delta_news_retry_failed_fg24jstmmn" IS 'delta of news of RetryFailed';
+
+COMMENT ON TYPE "slice"."__delta_news_retry_patient_input_qjh5q7yr6r" IS 'delta of news of RetryPatientInput';
+
+COMMENT ON TYPE "slice"."__delta_news_retry_polite_input_la2wessehu" IS 'delta of news of RetryPoliteInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_retry_result_mrab6zb5av" IS 'delta of olds of RetryResult';
+
+COMMENT ON TYPE "slice"."__delta_news_retry_root_imqbne2vnh" IS 'delta of news of RetryRoot';
+
+COMMENT ON TYPE "slice"."__delta_news_retry_steadfast_input_q5r4gph4gf" IS 'delta of news of RetrySteadfastInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_retry_step_debu2zit5q" IS 'delta of olds of RetryStep';
+
+COMMENT ON TYPE "slice"."__delta_news_review_analyze_input_iosstcyu4k" IS 'delta of news of ReviewAnalyzeInput';
+
+COMMENT ON TYPE "slice"."__delta_news_review_claim_um2kgybpli" IS 'delta of news of ReviewClaim';
+
+COMMENT ON TYPE "slice"."__delta_news_review_done_blesqrzd4q" IS 'delta of news of ReviewDone';
+
+COMMENT ON TYPE "slice"."__delta_olds_review_ended_xkcklzn5p4" IS 'delta of olds of ReviewEnded';
+
+COMMENT ON TYPE "slice"."__delta_news_review_failed_rxnwx25da4" IS 'delta of news of ReviewFailed';
+
+COMMENT ON TYPE "slice"."__delta_news_review_gather_input_v7hjuahx5v" IS 'delta of news of ReviewGatherInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_review_held_hyjlqphj5e" IS 'delta of olds of ReviewHeld';
+
+COMMENT ON TYPE "slice"."__delta_news_review_hold_ui5fpfekfn" IS 'delta of news of ReviewHold';
+
+COMMENT ON TYPE "slice"."__delta_news_review_questions_input_k2edcuthcf" IS 'delta of news of ReviewQuestionsInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_review_result_2ph262c37o" IS 'delta of olds of ReviewResult';
+
+COMMENT ON TYPE "slice"."__delta_news_review_root_iwdy5aju6i" IS 'delta of news of ReviewRoot';
+
+COMMENT ON TYPE "slice"."__delta_news_review_save_input_e3m6d7oh7g" IS 'delta of news of ReviewSaveInput';
+
+COMMENT ON TYPE "slice"."__delta_olds_review_step_lh3csopksr" IS 'delta of olds of ReviewStep';
+
+COMMENT ON TYPE "slice"."__delta_olds_review_within_btoalxjcwi" IS 'delta of olds of ReviewWithin';
+
+COMMENT ON TYPE "slice"."__delta_news_sync_build_input_dchfnojkw3" IS 'delta of news of SyncBuildInput';
+
+COMMENT ON TYPE "slice"."__delta_news_sync_copy_input_gb73i54bd2" IS 'delta of news of SyncCopyInput';
+
+COMMENT ON TYPE "slice"."__delta_news_sync_done_bzfotc3ioa" IS 'delta of news of SyncDone';
+
+COMMENT ON TYPE "slice"."__delta_news_sync_failed_ktwjp7vbbg" IS 'delta of news of SyncFailed';
+
+COMMENT ON TYPE "slice"."__delta_olds_sync_result_u3qghclc2w" IS 'delta of olds of SyncResult';
+
+COMMENT ON TYPE "slice"."__delta_news_sync_root_vthg7tzqs2" IS 'delta of news of SyncRoot';
+
+COMMENT ON TYPE "slice"."__delta_olds_sync_step_twjvhg26h5" IS 'delta of olds of SyncStep';
+
+COMMENT ON TYPE "slice"."__delta_news_writeback_deliver_input_mu32g7dkd2" IS 'delta of news of WritebackDeliverInput';
+
+COMMENT ON TYPE "slice"."__delta_news_writeback_done_4uaxjmf775" IS 'delta of news of WritebackDone';
+
+COMMENT ON TYPE "slice"."__delta_news_writeback_failed_jw6wzdvqfr" IS 'delta of news of WritebackFailed';
+
+COMMENT ON TYPE "slice"."__delta_olds_writeback_result_xuzqnbgixz" IS 'delta of olds of WritebackResult';
+
+COMMENT ON TYPE "slice"."__delta_news_writeback_root_eyums3lvxg" IS 'delta of news of WritebackRoot';
+
+COMMENT ON TYPE "slice"."__delta_olds_writeback_step_wqsmfpf45b" IS 'delta of olds of WritebackStep';
 
 COMMENT ON CONSTRAINT "__assigned_pk_72xowecbf7" ON "slice"."assigned" IS 'primary key of Assigned';
 
@@ -5706,521 +5890,265 @@ COMMENT ON INDEX "slice_den"."__writeback_step_ix_root_scope_oebhktgfcr" IS 'btr
 
 COMMENT ON INDEX "slice_den"."__writeback_writeback_input_ix_scope_72jqfcjowv" IS 'btree index WritebackWritebackInput(scope)';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_263rpuc3f6"() IS 'the reader of the delta of news of AssignAssignmentInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_uvpfdkm5ii"("slice"."__delta_news_fan_claim_t5q4supubm"[]) IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write adds to FanClaim';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_uocfmddbnp"() IS 'the reader of the delta of news of AssignAssignmentInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_6yw2i47fmt"("slice"."__delta_olds_fan_ended_43ljvcgfjg"[]) IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write removes from FanEnded';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_hfu6gezg6o"() IS 'the reader of the delta of olds of AssignAssignmentInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_y23dfxk2yg"("slice"."__delta_olds_fan_held_o7bjksce5l"[]) IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write removes from FanHeld';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_dwrqfhi4d5"() IS 'the reader of the delta of olds of AssignAssignmentInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_a5oylrmuke"("slice"."__delta_news_fan_hold_dkrbgb234w"[]) IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write adds to FanHold';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_mode_nearest_hgl2yzk76d"() IS 'the reader of the delta of news of AssignAssignmentInputModeNearest';
+COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_b4q4d6xrvg"("slice"."__delta_news_review_claim_um2kgybpli"[]) IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write adds to ReviewClaim';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_mode_nearest_uhjv7nadfr"() IS 'the reader of the delta of olds of AssignAssignmentInputModeNearest';
+COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_pr7gy4qmch"("slice"."__delta_olds_review_ended_xkcklzn5p4"[]) IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write removes from ReviewEnded';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_mode_within_6cqomgayzd"() IS 'the reader of the delta of news of AssignAssignmentInputModeWithin';
+COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_ijirj56spw"("slice"."__delta_olds_review_held_hyjlqphj5e"[]) IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write removes from ReviewHeld';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_mode_within_gglqx2a6vn"() IS 'the reader of the delta of olds of AssignAssignmentInputModeWithin';
+COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_3qz257q5ai"("slice"."__delta_news_review_hold_ui5fpfekfn"[]) IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write adds to ReviewHold';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_ltzefixsv3"() IS 'the reader of the delta of news of AssignDecideInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_in_assign_hwxwvleywl"("slice"."__delta_news_assign_assignment_input_ygnhvqewxu"[], "slice"."__delta_olds_assign_assignment_input_mode_nearest_mpkwruylrr"[]) IS 'the rule judge''s block of rule AssignAssignmentInput(root, scope) where Logic.eq(mode, "Nearest") in AssignAssignmentInputModeNearest(root, scope) over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_fegdl2owty"() IS 'the reader of the delta of news of AssignDecideInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_in_assign_ac3cxbqjci"("slice"."__delta_news_assign_assignment_input_ygnhvqewxu"[], "slice"."__delta_olds_assign_assignment_input_mode_within_vjraiix3dm"[]) IS 'the rule judge''s block of rule AssignAssignmentInput(root, scope) where Logic.eq(mode, "Within") in AssignAssignmentInputModeWithin(root, scope) over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_dsvcetrujk"() IS 'the reader of the delta of news of AssignDecideInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_in_giadxilddd"("slice"."__delta_olds_assign_assignment_input_j6bpslocbl"[], "slice"."__delta_news_assign_assignment_input_mode_nearest_222ouzrr6m"[]) IS 'the rule judge''s block of rule AssignAssignmentInputModeNearest(root, scope) in AssignAssignmentInput(root, scope) where Logic.eq(mode, "Nearest") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_kj32pvwpd3"() IS 'the reader of the delta of olds of AssignDecideInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_within_in_wt7mgskzad"("slice"."__delta_olds_assign_assignment_input_j6bpslocbl"[], "slice"."__delta_news_assign_assignment_input_mode_within_dp7gguljme"[]) IS 'the rule judge''s block of rule AssignAssignmentInputModeWithin(root, scope) in AssignAssignmentInput(root, scope) where Logic.eq(mode, "Within") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_tbs4xizwgj"() IS 'the reader of the delta of olds of AssignDecideInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_in_assign_step_mfhndt47gr"("slice"."__delta_news_assign_decide_input_jfl5ysmwsy"[], "slice"."__delta_olds_assign_step_dw2t2wqhtv"[]) IS 'the rule judge''s block of rule AssignDecideInput(root, step) in AssignStep(root, step) where Logic.eq(kind, "Decide") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_mode_nearest_foqwxdohru"() IS 'the reader of the delta of news of AssignDecideInputModeNearest';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_in_assign_decide_sd63r6itgb"("slice"."__delta_news_assign_decide_input_jfl5ysmwsy"[], "slice"."__delta_olds_assign_decide_input_mode_nearest_opbi3ubof4"[]) IS 'the rule judge''s block of rule AssignDecideInput(root, step) where Logic.eq(mode, "Nearest") in AssignDecideInputModeNearest(root, step) over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_mode_nearest_nfkkxicta6"() IS 'the reader of the delta of olds of AssignDecideInputModeNearest';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_in_assign_decide_egkjd76jtv"("slice"."__delta_news_assign_decide_input_jfl5ysmwsy"[], "slice"."__delta_olds_assign_decide_input_mode_within_swtn3ffz4v"[]) IS 'the rule judge''s block of rule AssignDecideInput(root, step) where Logic.eq(mode, "Within") in AssignDecideInputModeWithin(root, step) over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_mode_within_eo7vuerlsy"() IS 'the reader of the delta of news of AssignDecideInputModeWithin';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_in_assign_orrp3mxzr5"("slice"."__delta_olds_assign_decide_input_bwguu4gncv"[], "slice"."__delta_news_assign_decide_input_mode_nearest_hbq5ebmzm7"[]) IS 'the rule judge''s block of rule AssignDecideInputModeNearest(root, step) in AssignDecideInput(root, step) where Logic.eq(mode, "Nearest") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_mode_within_573sjkpbut"() IS 'the reader of the delta of olds of AssignDecideInputModeWithin';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_within_in_assign_no7zrfktj4"("slice"."__delta_olds_assign_decide_input_bwguu4gncv"[], "slice"."__delta_news_assign_decide_input_mode_within_5serdc7z7y"[]) IS 'the rule judge''s block of rule AssignDecideInputModeWithin(root, step) in AssignDecideInput(root, step) where Logic.eq(mode, "Within") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_eq5bhqgbox"() IS 'the reader of the delta of news of AssignDecideOutput';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_in_assign_decide_mpb3wtjgyi"("slice"."__delta_news_assign_decide_output_3ac6vlflix"[], "slice"."__delta_olds_assign_decide_output_stage_rest_wdhpmli5l2"[]) IS 'the rule judge''s block of rule AssignDecideOutput(root, step) where Logic.eq(stage, "Rest") in AssignDecideOutputStageRest(root, step) over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_qy4m3dssjj"() IS 'the reader of the delta of news of AssignDecideOutput';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_in_assign_decide_yaemsmrf3t"("slice"."__delta_news_assign_decide_output_3ac6vlflix"[], "slice"."__delta_olds_assign_decide_output_stage_serve_bak2tw2piy"[]) IS 'the rule judge''s block of rule AssignDecideOutput(root, step) where Logic.eq(stage, "Serve") in AssignDecideOutputStageServe(root, step) over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_wanb2japmv"() IS 'the reader of the delta of olds of AssignDecideOutput';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_in_assign_jlk3ly3ptf"("slice"."__delta_olds_assign_decide_output_hry5fplupx"[], "slice"."__delta_news_assign_decide_output_stage_rest_64yda3fhlj"[]) IS 'the rule judge''s block of rule AssignDecideOutputStageRest(root, step) in AssignDecideOutput(root, step) where Logic.eq(stage, "Rest") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_xbannchgja"() IS 'the reader of the delta of olds of AssignDecideOutput';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_serve_in_assign_mmicyxgqc7"("slice"."__delta_olds_assign_decide_output_hry5fplupx"[], "slice"."__delta_news_assign_decide_output_stage_serve_srpacrfigs"[]) IS 'the rule judge''s block of rule AssignDecideOutputStageServe(root, step) in AssignDecideOutput(root, step) where Logic.eq(stage, "Serve") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_stage_rest_33cjxaamy5"() IS 'the reader of the delta of news of AssignDecideOutputStageRest';
+COMMENT ON FUNCTION "slice"."__judge_assign_done_in_assign_result_ti3h6zid6v"("slice"."__delta_news_assign_done_4jyjm5vsyi"[], "slice"."__delta_olds_assign_result_xxr4tvfqbc"[]) IS 'the rule judge''s block of rule AssignDone(root, step) in AssignResult(root, step) where Logic.eq(outcome, "done") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_stage_rest_jnmo5oybiu"() IS 'the reader of the delta of olds of AssignDecideOutputStageRest';
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_in_assign_step_w6hxu34ou4"("slice"."__delta_news_assign_embed_input_zmdovgoj33"[], "slice"."__delta_olds_assign_step_dw2t2wqhtv"[]) IS 'the rule judge''s block of rule AssignEmbedInput(root, step) in AssignStep(root, step) where Logic.eq(kind, "Embed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_stage_serve_4jiu4o47tm"() IS 'the reader of the delta of news of AssignDecideOutputStageServe';
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_in_assign_embed_ewc3arvjag"("slice"."__delta_news_assign_embed_input_zmdovgoj33"[], "slice"."__delta_olds_assign_embed_input_mode_nearest_ajulpavw4t"[]) IS 'the rule judge''s block of rule AssignEmbedInput(root, step) where Logic.eq(mode, "Nearest") in AssignEmbedInputModeNearest(root, step) over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_stage_serve_pvoln5nnpe"() IS 'the reader of the delta of olds of AssignDecideOutputStageServe';
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_in_assign_embed_qsv3uryzc2"("slice"."__delta_news_assign_embed_input_zmdovgoj33"[], "slice"."__delta_olds_assign_embed_input_mode_within_mj4usjhefl"[]) IS 'the rule judge''s block of rule AssignEmbedInput(root, step) where Logic.eq(mode, "Within") in AssignEmbedInputModeWithin(root, step) over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_done_y4burpgr4f"() IS 'the reader of the delta of news of AssignDone';
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_in_assign_ffmnxuw6kn"("slice"."__delta_olds_assign_embed_input_f5ve3ejiir"[], "slice"."__delta_news_assign_embed_input_mode_nearest_cdfjwsvhka"[]) IS 'the rule judge''s block of rule AssignEmbedInputModeNearest(root, step) in AssignEmbedInput(root, step) where Logic.eq(mode, "Nearest") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_bnvz7xtjrr"() IS 'the reader of the delta of news of AssignEmbedInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_within_in_assign_2ivyrygblm"("slice"."__delta_olds_assign_embed_input_f5ve3ejiir"[], "slice"."__delta_news_assign_embed_input_mode_within_t6ykk53tkb"[]) IS 'the rule judge''s block of rule AssignEmbedInputModeWithin(root, step) in AssignEmbedInput(root, step) where Logic.eq(mode, "Within") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_w6n4dldq3t"() IS 'the reader of the delta of news of AssignEmbedInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_failed_in_assign_result_e6fbsvorpn"("slice"."__delta_news_assign_failed_syt7inbxn7"[], "slice"."__delta_olds_assign_result_xxr4tvfqbc"[]) IS 'the rule judge''s block of rule AssignFailed(root, step) in AssignResult(root, step) where Logic.eq(outcome, "failed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_4slcjklhrq"() IS 'the reader of the delta of news of AssignEmbedInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_root_kind_in_assign_requested_with_drd2fkqzsb"("slice"."__delta_news_assign_root_n3e573yuho"[]) IS 'the rule judge''s block of rule AssignRoot(root) where Logic.eq(kind, "Assignment") in AssignRequestedWith(root) over the rows a write adds to AssignRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_k4esjymv6b"() IS 'the reader of the delta of olds of AssignEmbedInput';
+COMMENT ON FUNCTION "slice"."__judge_chain_done_in_chain_result_e7oxvtz6ez"("slice"."__delta_news_chain_done_h2rwbjw5s6"[], "slice"."__delta_olds_chain_result_hsvvk6io2f"[]) IS 'the rule judge''s block of rule ChainDone(root, step) in ChainResult(root, step) where Logic.eq(outcome, "done") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_k2tdak6qiv"() IS 'the reader of the delta of olds of AssignEmbedInput';
+COMMENT ON FUNCTION "slice"."__judge_chain_failed_in_chain_result_3viqtrm4fy"("slice"."__delta_news_chain_failed_qd3opuak3m"[], "slice"."__delta_olds_chain_result_hsvvk6io2f"[]) IS 'the rule judge''s block of rule ChainFailed(root, step) in ChainResult(root, step) where Logic.eq(outcome, "failed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_mode_nearest_fyo4szb5mg"() IS 'the reader of the delta of news of AssignEmbedInputModeNearest';
+COMMENT ON FUNCTION "slice"."__judge_chain_page_input_in_chain_step_hhg4754hnz"("slice"."__delta_news_chain_page_input_asn3qao3vx"[], "slice"."__delta_olds_chain_step_dv23izheod"[]) IS 'the rule judge''s block of rule ChainPageInput(root, step) in ChainStep(root, step) where Logic.eq(kind, "Page") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_mode_nearest_imh43ycd3g"() IS 'the reader of the delta of olds of AssignEmbedInputModeNearest';
+COMMENT ON FUNCTION "slice"."__judge_chain_root_kind_in_chain_requested_with_7iuflo3txo"("slice"."__delta_news_chain_root_qgd7zuqnft"[]) IS 'the rule judge''s block of rule ChainRoot(root) where Logic.eq(kind, "ChainRun") in ChainRequestedWith(root) over the rows a write adds to ChainRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_mode_within_weynkhrk6a"() IS 'the reader of the delta of news of AssignEmbedInputModeWithin';
+COMMENT ON FUNCTION "slice"."__judge_chain_root_kind_in_chain_requested_with_nr2523k5pp"("slice"."__delta_news_chain_root_qgd7zuqnft"[]) IS 'the rule judge''s block of rule ChainRoot(root) where Logic.eq(kind, "Ordered") in ChainRequestedWith(root) over the rows a write adds to ChainRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_mode_within_hh62rnelz5"() IS 'the reader of the delta of olds of AssignEmbedInputModeWithin';
+COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_in_clock_step_b6efcmwq7t"("slice"."__delta_news_clock_chime_input_cj2pmaeqnw"[], "slice"."__delta_olds_clock_step_tvgthtoae7"[]) IS 'the rule judge''s block of rule ClockChimeInput(root, step) in ClockStep(root, step) where Logic.eq(kind, "Chime") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_failed_3ifwklheph"() IS 'the reader of the delta of news of AssignFailed';
+COMMENT ON FUNCTION "slice"."__judge_clock_close_input_in_clock_step_e533tbi7kq"("slice"."__delta_news_clock_close_input_dxs6jckwgz"[], "slice"."__delta_olds_clock_step_tvgthtoae7"[]) IS 'the rule judge''s block of rule ClockCloseInput(root, step) in ClockStep(root, step) where Logic.eq(kind, "Close") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_result_o6zk4nq2uc"() IS 'the reader of the delta of olds of AssignResult';
+COMMENT ON FUNCTION "slice"."__judge_clock_done_in_clock_result_ihgx7paxws"("slice"."__delta_news_clock_done_dteey6qagz"[], "slice"."__delta_olds_clock_result_rmzu3jtfxn"[]) IS 'the rule judge''s block of rule ClockDone(root, step) in ClockResult(root, step) where Logic.eq(outcome, "done") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_result_bteqeemhw5"() IS 'the reader of the delta of olds of AssignResult';
+COMMENT ON FUNCTION "slice"."__judge_clock_failed_in_clock_result_uud72lqvcb"("slice"."__delta_news_clock_failed_nmp5du74hb"[], "slice"."__delta_olds_clock_result_rmzu3jtfxn"[]) IS 'the rule judge''s block of rule ClockFailed(root, step) in ClockResult(root, step) where Logic.eq(outcome, "failed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_assign_root_z3pifk6sfr"() IS 'the reader of the delta of news of AssignRoot';
+COMMENT ON FUNCTION "slice"."__judge_clock_hourly_key_in_clock_root_hlbhakiaql"("slice"."__delta_news_clock_hourly_key_5ltiorkpp5"[]) IS 'the rule judge''s block of rule ClockHourlyKey(root) in ClockRoot(root) where Logic.eq(kind, "Hourly") over the rows a write adds to ClockHourlyKey';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_step_2o7dsj4psv"() IS 'the reader of the delta of olds of AssignStep';
+COMMENT ON FUNCTION "slice"."__judge_clock_root_kind_in_clock_hourly_key_jgqxf4hpqu"("slice"."__delta_news_clock_root_ph4g3ulltv"[]) IS 'the rule judge''s block of rule ClockRoot(root) where Logic.eq(kind, "Hourly") in ClockHourlyKey(root) over the rows a write adds to ClockRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_assign_step_5tpdkqyp6c"() IS 'the reader of the delta of olds of AssignStep';
+COMMENT ON FUNCTION "slice"."__judge_clock_root_kind_in_clock_requested_with_cgczwzvgxo"("slice"."__delta_news_clock_root_ph4g3ulltv"[]) IS 'the rule judge''s block of rule ClockRoot(root) where Logic.eq(kind, "Sitting") in ClockRequestedWith(root) over the rows a write adds to ClockRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_news_chain_done_6q6b4sarfc"() IS 'the reader of the delta of news of ChainDone';
+COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_in_fan_within_rbanxtchd4"("slice"."__delta_news_fan_batch_input_xjl4ee6vcj"[], "slice"."__delta_olds_fan_within_3bi3ex3oid"[]) IS 'the rule judge''s block of rule FanBatchInput(root, scope) in FanWithin(root, scope) where Logic.eq(kind, "Batch") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_chain_failed_ppnk66z7ty"() IS 'the reader of the delta of news of ChainFailed';
+COMMENT ON FUNCTION "slice"."__judge_fan_done_in_fan_result_tu5v65hzns"("slice"."__delta_news_fan_done_7ceojovz3x"[], "slice"."__delta_olds_fan_result_az3luw73vx"[]) IS 'the rule judge''s block of rule FanDone(root, step) in FanResult(root, step) where Logic.eq(outcome, "done") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_chain_page_input_utmvrpo2yc"() IS 'the reader of the delta of news of ChainPageInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_in_fan_step_uwiqvrpxxb"("slice"."__delta_news_fan_dust_input_b5utugp46z"[], "slice"."__delta_olds_fan_step_hfsu7elc3c"[]) IS 'the rule judge''s block of rule FanDustInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Dust") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_chain_result_2ip2a2o3mo"() IS 'the reader of the delta of olds of ChainResult';
+COMMENT ON FUNCTION "slice"."__judge_fan_failed_in_fan_result_vu5dbtmlz5"("slice"."__delta_news_fan_failed_jx6nkel2hf"[], "slice"."__delta_olds_fan_result_az3luw73vx"[]) IS 'the rule judge''s block of rule FanFailed(root, step) in FanResult(root, step) where Logic.eq(outcome, "failed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_chain_result_kxslyjrxrw"() IS 'the reader of the delta of olds of ChainResult';
+COMMENT ON FUNCTION "slice"."__judge_fan_mop_input_in_fan_step_6skzerqpcf"("slice"."__delta_news_fan_mop_input_p56rkq2zzm"[], "slice"."__delta_olds_fan_step_hfsu7elc3c"[]) IS 'the rule judge''s block of rule FanMopInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Mop") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_chain_root_pqx66geszw"() IS 'the reader of the delta of news of ChainRoot';
+COMMENT ON FUNCTION "slice"."__judge_fan_root_kind_in_fan_requested_with_jlhgz2qecq"("slice"."__delta_news_fan_root_huyxhfzerb"[]) IS 'the rule judge''s block of rule FanRoot(root) where Logic.eq(kind, "FanRun") in FanRequestedWith(root) over the rows a write adds to FanRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_news_chain_root_qk467afork"() IS 'the reader of the delta of news of ChainRoot';
+COMMENT ON FUNCTION "slice"."__judge_fan_root_kind_in_fan_requested_with_gs4x4cv427"("slice"."__delta_news_fan_root_huyxhfzerb"[]) IS 'the rule judge''s block of rule FanRoot(root) where Logic.eq(kind, "Sweep") in FanRequestedWith(root) over the rows a write adds to FanRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_chain_step_4j62aj7fdt"() IS 'the reader of the delta of olds of ChainStep';
+COMMENT ON FUNCTION "slice"."__judge_fan_root_kind_in_fan_wanted_key_qcdwqsvzgp"("slice"."__delta_news_fan_root_huyxhfzerb"[]) IS 'the rule judge''s block of rule FanRoot(root) where Logic.eq(kind, "Wanted") in FanWantedKey(root) over the rows a write adds to FanRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_news_clock_chime_input_nardfuxypt"() IS 'the reader of the delta of news of ClockChimeInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_square_input_in_fan_step_g6qa7w4plr"("slice"."__delta_news_fan_square_input_hcz3x475s5"[], "slice"."__delta_olds_fan_step_hfsu7elc3c"[]) IS 'the rule judge''s block of rule FanSquareInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Square") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_clock_close_input_bpibpitspb"() IS 'the reader of the delta of news of ClockCloseInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_wanted_key_in_fan_root_l4zwoa7lxl"("slice"."__delta_news_fan_wanted_key_ej5sixx6sb"[]) IS 'the rule judge''s block of rule FanWantedKey(root) in FanRoot(root) where Logic.eq(kind, "Wanted") over the rows a write adds to FanWantedKey';
 
-COMMENT ON FUNCTION "slice"."__reader_news_clock_done_bfsl4zlq4r"() IS 'the reader of the delta of news of ClockDone';
+COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_in_retry_step_3xbntavl6v"("slice"."__delta_news_retry_brittle_input_bu3us45qwc"[], "slice"."__delta_olds_retry_step_debu2zit5q"[]) IS 'the rule judge''s block of rule RetryBrittleInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Brittle") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_clock_failed_eeyxyf4ht4"() IS 'the reader of the delta of news of ClockFailed';
+COMMENT ON FUNCTION "slice"."__judge_retry_done_in_retry_result_kl7cdiookx"("slice"."__delta_news_retry_done_6p5rgadurk"[], "slice"."__delta_olds_retry_result_mrab6zb5av"[]) IS 'the rule judge''s block of rule RetryDone(root, step) in RetryResult(root, step) where Logic.eq(outcome, "done") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_clock_hourly_key_mwr2o5agzl"() IS 'the reader of the delta of news of ClockHourlyKey';
+COMMENT ON FUNCTION "slice"."__judge_retry_failed_in_retry_result_ay4naky55v"("slice"."__delta_news_retry_failed_fg24jstmmn"[], "slice"."__delta_olds_retry_result_mrab6zb5av"[]) IS 'the rule judge''s block of rule RetryFailed(root, step) in RetryResult(root, step) where Logic.eq(outcome, "failed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_clock_result_mfuoxxlrmq"() IS 'the reader of the delta of olds of ClockResult';
+COMMENT ON FUNCTION "slice"."__judge_retry_patient_input_in_retry_step_aazwk5wabc"("slice"."__delta_news_retry_patient_input_qjh5q7yr6r"[], "slice"."__delta_olds_retry_step_debu2zit5q"[]) IS 'the rule judge''s block of rule RetryPatientInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Patient") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_clock_result_f6ym3k23iw"() IS 'the reader of the delta of olds of ClockResult';
+COMMENT ON FUNCTION "slice"."__judge_retry_polite_input_in_retry_step_5v5hvgooyb"("slice"."__delta_news_retry_polite_input_la2wessehu"[], "slice"."__delta_olds_retry_step_debu2zit5q"[]) IS 'the rule judge''s block of rule RetryPoliteInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Polite") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_clock_root_zmsmnuu25h"() IS 'the reader of the delta of news of ClockRoot';
+COMMENT ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_hs3ieymfsl"("slice"."__delta_news_retry_root_imqbne2vnh"[]) IS 'the rule judge''s block of rule RetryRoot(root) where Logic.eq(kind, "Ladders") in RetryRequestedWith(root) over the rows a write adds to RetryRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_news_clock_root_uuhbc5qlvq"() IS 'the reader of the delta of news of ClockRoot';
+COMMENT ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_5ga6jhzsac"("slice"."__delta_news_retry_root_imqbne2vnh"[]) IS 'the rule judge''s block of rule RetryRoot(root) where Logic.eq(kind, "Throttled") in RetryRequestedWith(root) over the rows a write adds to RetryRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_clock_step_ixpdftpona"() IS 'the reader of the delta of olds of ClockStep';
+COMMENT ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_cbii6vbbfz"("slice"."__delta_news_retry_root_imqbne2vnh"[]) IS 'the rule judge''s block of rule RetryRoot(root) where Logic.eq(kind, "Unhurried") in RetryRequestedWith(root) over the rows a write adds to RetryRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_clock_step_qlc5ewdcgi"() IS 'the reader of the delta of olds of ClockStep';
+COMMENT ON FUNCTION "slice"."__judge_retry_steadfast_input_in_retry_step_bvumozhd5z"("slice"."__delta_news_retry_steadfast_input_q5r4gph4gf"[], "slice"."__delta_olds_retry_step_debu2zit5q"[]) IS 'the rule judge''s block of rule RetrySteadfastInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Steadfast") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_batch_input_cz4l7buj2w"() IS 'the reader of the delta of news of FanBatchInput';
+COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_in_review_step_zum7rdp74m"("slice"."__delta_news_review_analyze_input_iosstcyu4k"[], "slice"."__delta_olds_review_step_lh3csopksr"[]) IS 'the rule judge''s block of rule ReviewAnalyzeInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Analyze") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_claim_knqfarxmq4"() IS 'the reader of the delta of news of FanClaim';
+COMMENT ON FUNCTION "slice"."__judge_review_done_in_review_result_vdmmrlo3pw"("slice"."__delta_news_review_done_blesqrzd4q"[], "slice"."__delta_olds_review_result_2ph262c37o"[]) IS 'the rule judge''s block of rule ReviewDone(root, step) in ReviewResult(root, step) where Logic.eq(outcome, "done") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_claim_5alrwyw54k"() IS 'the reader of the delta of news of FanClaim';
+COMMENT ON FUNCTION "slice"."__judge_review_failed_in_review_result_gipzs47dgf"("slice"."__delta_news_review_failed_rxnwx25da4"[], "slice"."__delta_olds_review_result_2ph262c37o"[]) IS 'the rule judge''s block of rule ReviewFailed(root, step) in ReviewResult(root, step) where Logic.eq(outcome, "failed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_done_w4vpsn7web"() IS 'the reader of the delta of news of FanDone';
+COMMENT ON FUNCTION "slice"."__judge_review_gather_input_in_review_step_2576fo4yeh"("slice"."__delta_news_review_gather_input_v7hjuahx5v"[], "slice"."__delta_olds_review_step_lh3csopksr"[]) IS 'the rule judge''s block of rule ReviewGatherInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Gather") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_dust_input_jcmbeznnug"() IS 'the reader of the delta of news of FanDustInput';
+COMMENT ON FUNCTION "slice"."__judge_review_questions_input_in_review_within_r5ob4rff3f"("slice"."__delta_news_review_questions_input_k2edcuthcf"[], "slice"."__delta_olds_review_within_btoalxjcwi"[]) IS 'the rule judge''s block of rule ReviewQuestionsInput(root, scope) in ReviewWithin(root, scope) where Logic.eq(kind, "Questions") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_fan_ended_ji66tn3kxi"() IS 'the reader of the delta of olds of FanEnded';
+COMMENT ON FUNCTION "slice"."__judge_review_root_kind_in_review_requested_with_a4wol5squf"("slice"."__delta_news_review_root_iwdy5aju6i"[]) IS 'the rule judge''s block of rule ReviewRoot(root) where Logic.eq(kind, "ReviewRun") in ReviewRequestedWith(root) over the rows a write adds to ReviewRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_failed_amemxtznzb"() IS 'the reader of the delta of news of FanFailed';
+COMMENT ON FUNCTION "slice"."__judge_review_save_input_in_review_step_pgf6prdxl3"("slice"."__delta_news_review_save_input_e3m6d7oh7g"[], "slice"."__delta_olds_review_step_lh3csopksr"[]) IS 'the rule judge''s block of rule ReviewSaveInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Save") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_fan_held_au6y26wv2r"() IS 'the reader of the delta of olds of FanHeld';
+COMMENT ON FUNCTION "slice"."__judge_sync_build_input_in_sync_step_tfpid5lh24"("slice"."__delta_news_sync_build_input_dchfnojkw3"[], "slice"."__delta_olds_sync_step_twjvhg26h5"[]) IS 'the rule judge''s block of rule SyncBuildInput(root, step) in SyncStep(root, step) where Logic.eq(kind, "Build") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_hold_22lokdzhdu"() IS 'the reader of the delta of news of FanHold';
+COMMENT ON FUNCTION "slice"."__judge_sync_copy_input_in_sync_step_zgc64yxjwx"("slice"."__delta_news_sync_copy_input_gb73i54bd2"[], "slice"."__delta_olds_sync_step_twjvhg26h5"[]) IS 'the rule judge''s block of rule SyncCopyInput(root, step) in SyncStep(root, step) where Logic.eq(kind, "Copy") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_mop_input_s6wkqjap2u"() IS 'the reader of the delta of news of FanMopInput';
+COMMENT ON FUNCTION "slice"."__judge_sync_done_in_sync_result_l3ctddstlf"("slice"."__delta_news_sync_done_bzfotc3ioa"[], "slice"."__delta_olds_sync_result_u3qghclc2w"[]) IS 'the rule judge''s block of rule SyncDone(root, step) in SyncResult(root, step) where Logic.eq(outcome, "done") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_fan_result_svzra5ioyu"() IS 'the reader of the delta of olds of FanResult';
+COMMENT ON FUNCTION "slice"."__judge_sync_failed_in_sync_result_uyzorrir6j"("slice"."__delta_news_sync_failed_ktwjp7vbbg"[], "slice"."__delta_olds_sync_result_u3qghclc2w"[]) IS 'the rule judge''s block of rule SyncFailed(root, step) in SyncResult(root, step) where Logic.eq(outcome, "failed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_fan_result_tup5kbpnro"() IS 'the reader of the delta of olds of FanResult';
+COMMENT ON FUNCTION "slice"."__judge_sync_root_kind_in_sync_requested_with_syezb4swek"("slice"."__delta_news_sync_root_vthg7tzqs2"[]) IS 'the rule judge''s block of rule SyncRoot(root) where Logic.eq(kind, "Gold") in SyncRequestedWith(root) over the rows a write adds to SyncRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_root_dq63umhtk7"() IS 'the reader of the delta of news of FanRoot';
+COMMENT ON FUNCTION "slice"."__judge_sync_root_kind_in_sync_requested_with_nbm6bweg2v"("slice"."__delta_news_sync_root_vthg7tzqs2"[]) IS 'the rule judge''s block of rule SyncRoot(root) where Logic.eq(kind, "SyncRun") in SyncRequestedWith(root) over the rows a write adds to SyncRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_root_fw65rwwpie"() IS 'the reader of the delta of news of FanRoot';
+COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_in_writeback_step_ux7qqdpf6e"("slice"."__delta_news_writeback_deliver_input_mu32g7dkd2"[], "slice"."__delta_olds_writeback_step_wqsmfpf45b"[]) IS 'the rule judge''s block of rule WritebackDeliverInput(root, step) in WritebackStep(root, step) where Logic.eq(kind, "Deliver") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_root_e7p4pksetz"() IS 'the reader of the delta of news of FanRoot';
+COMMENT ON FUNCTION "slice"."__judge_writeback_done_in_writeback_result_a77wuoecdi"("slice"."__delta_news_writeback_done_4uaxjmf775"[], "slice"."__delta_olds_writeback_result_xuzqnbgixz"[]) IS 'the rule judge''s block of rule WritebackDone(root, step) in WritebackResult(root, step) where Logic.eq(outcome, "done") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_square_input_eawcwt7mvf"() IS 'the reader of the delta of news of FanSquareInput';
+COMMENT ON FUNCTION "slice"."__judge_writeback_failed_in_writeback_result_dydgmhbcje"("slice"."__delta_news_writeback_failed_jw6wzdvqfr"[], "slice"."__delta_olds_writeback_result_xuzqnbgixz"[]) IS 'the rule judge''s block of rule WritebackFailed(root, step) in WritebackResult(root, step) where Logic.eq(outcome, "failed") over its units';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_fan_step_aibharr75g"() IS 'the reader of the delta of olds of FanStep';
+COMMENT ON FUNCTION "slice"."__judge_writeback_root_kind_in_writeback_requested_yqvyt25sgg"("slice"."__delta_news_writeback_root_eyums3lvxg"[]) IS 'the rule judge''s block of rule WritebackRoot(root) where Logic.eq(kind, "Writeback") in WritebackRequestedWith(root) over the rows a write adds to WritebackRoot';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_fan_step_m2p5wuecxp"() IS 'the reader of the delta of olds of FanStep';
+COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_2k4z4z7hti"("slice"."__delta_news_fan_claim_t5q4supubm"[]) IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write adds to FanClaim';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_fan_step_wudn4xqbfd"() IS 'the reader of the delta of olds of FanStep';
+COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_y5f4wds2ug"("slice"."__delta_olds_fan_ended_43ljvcgfjg"[]) IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write removes from FanEnded';
 
-COMMENT ON FUNCTION "slice"."__reader_news_fan_wanted_key_k3meh5pstf"() IS 'the reader of the delta of news of FanWantedKey';
+COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_7wkjjgk6ri"("slice"."__delta_olds_fan_held_o7bjksce5l"[]) IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write removes from FanHeld';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_fan_within_kyfw5fcyw7"() IS 'the reader of the delta of olds of FanWithin';
+COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_z5csq4uto3"("slice"."__delta_news_fan_hold_dkrbgb234w"[]) IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write adds to FanHold';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_brittle_input_5fdc7dc4o5"() IS 'the reader of the delta of news of RetryBrittleInput';
+COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_u46sm5ssc2"("slice"."__delta_news_review_claim_um2kgybpli"[]) IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write adds to ReviewClaim';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_done_br6sqtvlch"() IS 'the reader of the delta of news of RetryDone';
+COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_a2i3bdmzu6"("slice"."__delta_olds_review_ended_xkcklzn5p4"[]) IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write removes from ReviewEnded';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_failed_ktpv4wy7hm"() IS 'the reader of the delta of news of RetryFailed';
+COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_dmizyold6c"("slice"."__delta_olds_review_held_hyjlqphj5e"[]) IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write removes from ReviewHeld';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_patient_input_j3bb3cpfdx"() IS 'the reader of the delta of news of RetryPatientInput';
+COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_puym2rczsg"("slice"."__delta_news_review_hold_ui5fpfekfn"[]) IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write adds to ReviewHold';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_polite_input_zvpciwhv7u"() IS 'the reader of the delta of news of RetryPoliteInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_l6dyll7jmc"("slice"."__delta_news_assign_assignment_input_ygnhvqewxu"[], "slice"."__delta_olds_assign_assignment_input_mode_nearest_mpkwruylrr"[], "slice"."__delta_olds_assign_assignment_input_mode_within_vjraiix3dm"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_retry_result_as3detxkgc"() IS 'the reader of the delta of olds of RetryResult';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_wipyhtri6k"("slice"."__delta_olds_assign_assignment_input_j6bpslocbl"[], "slice"."__delta_news_assign_assignment_input_mode_nearest_222ouzrr6m"[], "slice"."__delta_news_assign_assignment_input_mode_within_dp7gguljme"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_retry_result_mt54byec3u"() IS 'the reader of the delta of olds of RetryResult';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_f5yha6q2iw"("slice"."__delta_news_assign_decide_input_jfl5ysmwsy"[], "slice"."__delta_olds_assign_decide_input_mode_nearest_opbi3ubof4"[], "slice"."__delta_olds_assign_decide_input_mode_within_swtn3ffz4v"[], "slice"."__delta_news_assign_embed_input_zmdovgoj33"[], "slice"."__delta_olds_assign_embed_input_mode_nearest_ajulpavw4t"[], "slice"."__delta_olds_assign_embed_input_mode_within_mj4usjhefl"[], "slice"."__delta_olds_assign_step_dw2t2wqhtv"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_root_bywi7z5hxa"() IS 'the reader of the delta of news of RetryRoot';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_cnwadowtlp"("slice"."__delta_olds_assign_decide_input_bwguu4gncv"[], "slice"."__delta_news_assign_decide_input_mode_nearest_hbq5ebmzm7"[], "slice"."__delta_news_assign_decide_input_mode_within_5serdc7z7y"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_root_6fwc35yyrm"() IS 'the reader of the delta of news of RetryRoot';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_r453hkirf4"("slice"."__delta_news_assign_decide_output_3ac6vlflix"[], "slice"."__delta_olds_assign_decide_output_stage_rest_wdhpmli5l2"[], "slice"."__delta_olds_assign_decide_output_stage_serve_bak2tw2piy"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_root_mtt6ib7jg2"() IS 'the reader of the delta of news of RetryRoot';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_a4paqfrexm"("slice"."__delta_olds_assign_decide_output_hry5fplupx"[], "slice"."__delta_news_assign_decide_output_stage_rest_64yda3fhlj"[], "slice"."__delta_news_assign_decide_output_stage_serve_srpacrfigs"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_retry_steadfast_input_dwzxdi2aq6"() IS 'the reader of the delta of news of RetrySteadfastInput';
+COMMENT ON FUNCTION "slice"."__judge_assign_done_bixyhuvtjv"("slice"."__delta_news_assign_done_4jyjm5vsyi"[], "slice"."__delta_news_assign_failed_syt7inbxn7"[], "slice"."__delta_olds_assign_result_xxr4tvfqbc"[]) IS 'the rule judge of the deltas of AssignDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_retry_step_keb2tzl532"() IS 'the reader of the delta of olds of RetryStep';
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_4q5d5vr7eo"("slice"."__delta_olds_assign_embed_input_f5ve3ejiir"[], "slice"."__delta_news_assign_embed_input_mode_nearest_cdfjwsvhka"[], "slice"."__delta_news_assign_embed_input_mode_within_t6ykk53tkb"[]) IS 'the rule judge of the deltas of AssignEmbedInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_retry_step_hdotm4iepz"() IS 'the reader of the delta of olds of RetryStep';
+COMMENT ON FUNCTION "slice"."__judge_assign_root_rz4vg62wkx"("slice"."__delta_news_assign_root_n3e573yuho"[]) IS 'the rule judge of the deltas of AssignRoot and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_retry_step_hgzwvvlyjl"() IS 'the reader of the delta of olds of RetryStep';
+COMMENT ON FUNCTION "slice"."__judge_chain_done_qg7npatbfy"("slice"."__delta_news_chain_done_h2rwbjw5s6"[], "slice"."__delta_news_chain_failed_qd3opuak3m"[], "slice"."__delta_olds_chain_result_hsvvk6io2f"[]) IS 'the rule judge of the deltas of ChainDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_retry_step_brpazmjjvr"() IS 'the reader of the delta of olds of RetryStep';
+COMMENT ON FUNCTION "slice"."__judge_chain_page_input_hywt4zw5iq"("slice"."__delta_news_chain_page_input_asn3qao3vx"[], "slice"."__delta_olds_chain_step_dv23izheod"[]) IS 'the rule judge of the deltas of ChainPageInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_analyze_input_itnszedrvq"() IS 'the reader of the delta of news of ReviewAnalyzeInput';
+COMMENT ON FUNCTION "slice"."__judge_chain_root_eo6ggmem42"("slice"."__delta_news_chain_root_qgd7zuqnft"[]) IS 'the rule judge of the deltas of ChainRoot and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_claim_hcpxcqvs4h"() IS 'the reader of the delta of news of ReviewClaim';
+COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_kuxbi5qg32"("slice"."__delta_news_clock_chime_input_cj2pmaeqnw"[], "slice"."__delta_news_clock_close_input_dxs6jckwgz"[], "slice"."__delta_olds_clock_step_tvgthtoae7"[]) IS 'the rule judge of the deltas of ClockChimeInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_claim_73y43aw46b"() IS 'the reader of the delta of news of ReviewClaim';
+COMMENT ON FUNCTION "slice"."__judge_clock_done_ov7z34wzuf"("slice"."__delta_news_clock_done_dteey6qagz"[], "slice"."__delta_news_clock_failed_nmp5du74hb"[], "slice"."__delta_olds_clock_result_rmzu3jtfxn"[]) IS 'the rule judge of the deltas of ClockDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_done_mrxi7z2aos"() IS 'the reader of the delta of news of ReviewDone';
+COMMENT ON FUNCTION "slice"."__judge_clock_hourly_key_esolz3eg7j"("slice"."__delta_news_clock_hourly_key_5ltiorkpp5"[]) IS 'the rule judge of the deltas of ClockHourlyKey and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_review_ended_6sx6bojyw5"() IS 'the reader of the delta of olds of ReviewEnded';
+COMMENT ON FUNCTION "slice"."__judge_clock_root_tmxe27v5sf"("slice"."__delta_news_clock_root_ph4g3ulltv"[]) IS 'the rule judge of the deltas of ClockRoot and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_failed_fclqhoislj"() IS 'the reader of the delta of news of ReviewFailed';
+COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_onullx3lxd"("slice"."__delta_news_fan_batch_input_xjl4ee6vcj"[], "slice"."__delta_olds_fan_within_3bi3ex3oid"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_gather_input_5buvvb2sm5"() IS 'the reader of the delta of news of ReviewGatherInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_claim_gnmffngh4d"("slice"."__delta_news_fan_claim_t5q4supubm"[]) IS 'the rule judge of the deltas of FanClaim and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_review_held_yiwvlfbq4x"() IS 'the reader of the delta of olds of ReviewHeld';
+COMMENT ON FUNCTION "slice"."__judge_fan_done_jupntepxzh"("slice"."__delta_news_fan_done_7ceojovz3x"[], "slice"."__delta_news_fan_failed_jx6nkel2hf"[], "slice"."__delta_olds_fan_result_az3luw73vx"[]) IS 'the rule judge of the deltas of FanDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_hold_q3xznbmvpd"() IS 'the reader of the delta of news of ReviewHold';
+COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_w4wrnlus2y"("slice"."__delta_news_fan_dust_input_b5utugp46z"[], "slice"."__delta_news_fan_mop_input_p56rkq2zzm"[], "slice"."__delta_news_fan_square_input_hcz3x475s5"[], "slice"."__delta_olds_fan_step_hfsu7elc3c"[]) IS 'the rule judge of the deltas of FanDustInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_questions_input_tacdjugv3l"() IS 'the reader of the delta of news of ReviewQuestionsInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_ended_jycwpgl2nt"("slice"."__delta_olds_fan_ended_43ljvcgfjg"[]) IS 'the rule judge of the deltas of FanEnded and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_review_result_pcfm24ttnc"() IS 'the reader of the delta of olds of ReviewResult';
+COMMENT ON FUNCTION "slice"."__judge_fan_held_emswoqftwo"("slice"."__delta_olds_fan_held_o7bjksce5l"[]) IS 'the rule judge of the deltas of FanHeld and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_review_result_a2bearicwk"() IS 'the reader of the delta of olds of ReviewResult';
+COMMENT ON FUNCTION "slice"."__judge_fan_hold_5mptg7tnnq"("slice"."__delta_news_fan_hold_dkrbgb234w"[]) IS 'the rule judge of the deltas of FanHold and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_root_vin4dpcipu"() IS 'the reader of the delta of news of ReviewRoot';
+COMMENT ON FUNCTION "slice"."__judge_fan_root_cpkhsqhan7"("slice"."__delta_news_fan_root_huyxhfzerb"[]) IS 'the rule judge of the deltas of FanRoot and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_review_save_input_lp3mkmh3sq"() IS 'the reader of the delta of news of ReviewSaveInput';
+COMMENT ON FUNCTION "slice"."__judge_fan_wanted_key_7izqoykds7"("slice"."__delta_news_fan_wanted_key_ej5sixx6sb"[]) IS 'the rule judge of the deltas of FanWantedKey and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_review_step_73y7bfrocd"() IS 'the reader of the delta of olds of ReviewStep';
+COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_tnk2gve44s"("slice"."__delta_news_retry_brittle_input_bu3us45qwc"[], "slice"."__delta_news_retry_patient_input_qjh5q7yr6r"[], "slice"."__delta_news_retry_polite_input_la2wessehu"[], "slice"."__delta_news_retry_steadfast_input_q5r4gph4gf"[], "slice"."__delta_olds_retry_step_debu2zit5q"[]) IS 'the rule judge of the deltas of RetryBrittleInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_review_step_mgayu6lths"() IS 'the reader of the delta of olds of ReviewStep';
+COMMENT ON FUNCTION "slice"."__judge_retry_done_6waqln72r5"("slice"."__delta_news_retry_done_6p5rgadurk"[], "slice"."__delta_news_retry_failed_fg24jstmmn"[], "slice"."__delta_olds_retry_result_mrab6zb5av"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_review_step_tm6jgyfac2"() IS 'the reader of the delta of olds of ReviewStep';
+COMMENT ON FUNCTION "slice"."__judge_retry_root_5gwxlt3elm"("slice"."__delta_news_retry_root_imqbne2vnh"[]) IS 'the rule judge of the deltas of RetryRoot and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_review_within_iji5ac3j7w"() IS 'the reader of the delta of olds of ReviewWithin';
+COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_jpbdsjds3r"("slice"."__delta_news_review_analyze_input_iosstcyu4k"[], "slice"."__delta_news_review_gather_input_v7hjuahx5v"[], "slice"."__delta_news_review_save_input_e3m6d7oh7g"[], "slice"."__delta_olds_review_step_lh3csopksr"[]) IS 'the rule judge of the deltas of ReviewAnalyzeInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_sync_build_input_cnrhwyqhpm"() IS 'the reader of the delta of news of SyncBuildInput';
+COMMENT ON FUNCTION "slice"."__judge_review_claim_gnp3n3qlmy"("slice"."__delta_news_review_claim_um2kgybpli"[]) IS 'the rule judge of the deltas of ReviewClaim and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_sync_copy_input_xt46gtytwf"() IS 'the reader of the delta of news of SyncCopyInput';
+COMMENT ON FUNCTION "slice"."__judge_review_done_fyvq576okh"("slice"."__delta_news_review_done_blesqrzd4q"[], "slice"."__delta_news_review_failed_rxnwx25da4"[], "slice"."__delta_olds_review_result_2ph262c37o"[]) IS 'the rule judge of the deltas of ReviewDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_sync_done_v7nikpyxe5"() IS 'the reader of the delta of news of SyncDone';
+COMMENT ON FUNCTION "slice"."__judge_review_ended_37qbh5q6h5"("slice"."__delta_olds_review_ended_xkcklzn5p4"[]) IS 'the rule judge of the deltas of ReviewEnded and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_sync_failed_urxukv2tqt"() IS 'the reader of the delta of news of SyncFailed';
+COMMENT ON FUNCTION "slice"."__judge_review_held_3dbncphqwm"("slice"."__delta_olds_review_held_hyjlqphj5e"[]) IS 'the rule judge of the deltas of ReviewHeld and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_sync_result_nvwysv4fb5"() IS 'the reader of the delta of olds of SyncResult';
+COMMENT ON FUNCTION "slice"."__judge_review_hold_gqc6c5gh3l"("slice"."__delta_news_review_hold_ui5fpfekfn"[]) IS 'the rule judge of the deltas of ReviewHold and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_sync_result_3a2xi56if7"() IS 'the reader of the delta of olds of SyncResult';
+COMMENT ON FUNCTION "slice"."__judge_review_questions_input_rgsgv2vkfr"("slice"."__delta_news_review_questions_input_k2edcuthcf"[], "slice"."__delta_olds_review_within_btoalxjcwi"[]) IS 'the rule judge of the deltas of ReviewQuestionsInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_sync_root_hbesvkxtsw"() IS 'the reader of the delta of news of SyncRoot';
+COMMENT ON FUNCTION "slice"."__judge_review_root_k6o7dsh5uw"("slice"."__delta_news_review_root_iwdy5aju6i"[]) IS 'the rule judge of the deltas of ReviewRoot and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_sync_root_liresgzpuw"() IS 'the reader of the delta of news of SyncRoot';
+COMMENT ON FUNCTION "slice"."__judge_sync_build_input_zbmd73fyxj"("slice"."__delta_news_sync_build_input_dchfnojkw3"[], "slice"."__delta_news_sync_copy_input_gb73i54bd2"[], "slice"."__delta_olds_sync_step_twjvhg26h5"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_sync_step_zs7xxtt4vk"() IS 'the reader of the delta of olds of SyncStep';
+COMMENT ON FUNCTION "slice"."__judge_sync_done_cli726wfb5"("slice"."__delta_news_sync_done_bzfotc3ioa"[], "slice"."__delta_news_sync_failed_ktwjp7vbbg"[], "slice"."__delta_olds_sync_result_u3qghclc2w"[]) IS 'the rule judge of the deltas of SyncDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_sync_step_nwo7sqkibk"() IS 'the reader of the delta of olds of SyncStep';
+COMMENT ON FUNCTION "slice"."__judge_sync_root_gjr6nkkd2g"("slice"."__delta_news_sync_root_vthg7tzqs2"[]) IS 'the rule judge of the deltas of SyncRoot and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_writeback_deliver_input_auskeustkj"() IS 'the reader of the delta of news of WritebackDeliverInput';
+COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_7ygucmklde"("slice"."__delta_news_writeback_deliver_input_mu32g7dkd2"[], "slice"."__delta_olds_writeback_step_wqsmfpf45b"[]) IS 'the rule judge of the deltas of WritebackDeliverInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_writeback_done_7psuzxuvog"() IS 'the reader of the delta of news of WritebackDone';
+COMMENT ON FUNCTION "slice"."__judge_writeback_done_g4febfj5yf"("slice"."__delta_news_writeback_done_4uaxjmf775"[], "slice"."__delta_news_writeback_failed_jw6wzdvqfr"[], "slice"."__delta_olds_writeback_result_xuzqnbgixz"[]) IS 'the rule judge of the deltas of WritebackDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_news_writeback_failed_nsmo5bmfom"() IS 'the reader of the delta of news of WritebackFailed';
+COMMENT ON FUNCTION "slice"."__judge_writeback_root_qjdt44ct6a"("slice"."__delta_news_writeback_root_eyums3lvxg"[]) IS 'the rule judge of the deltas of WritebackRoot and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_writeback_result_rgmvkln2wq"() IS 'the reader of the delta of olds of WritebackResult';
+COMMENT ON TABLE "slice"."__judge_arm_p3zzoycg3t" IS 'the rule judge''s arm of schema Slice';
 
-COMMENT ON FUNCTION "slice"."__reader_olds_writeback_result_2fsxeieb7t"() IS 'the reader of the delta of olds of WritebackResult';
+COMMENT ON CONSTRAINT "__judge_arm_pk_duj3jruljo" ON "slice"."__judge_arm_p3zzoycg3t" IS 'key of the rule judge''s arm of schema Slice';
 
-COMMENT ON FUNCTION "slice"."__reader_news_writeback_root_b3tbia24ni"() IS 'the reader of the delta of news of WritebackRoot';
-
-COMMENT ON FUNCTION "slice"."__reader_olds_writeback_step_ulgtxsn5nk"() IS 'the reader of the delta of olds of WritebackStep';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_34tzcxl26w"() IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write adds to FanClaim';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_iz46wxrc4n"() IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write removes from FanEnded';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_xv3pzwjw6y"() IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write removes from FanHeld';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_fnm53ono2n"() IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write adds to FanHold';
-
-COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_wnl6qdupjr"() IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write adds to ReviewClaim';
-
-COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_xjodxgzn5d"() IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write removes from ReviewEnded';
-
-COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_gitg7o7vto"() IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write removes from ReviewHeld';
-
-COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_hog4qzzuc6"() IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write adds to ReviewHold';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_in_assign_vmdw2qq2sr"() IS 'the rule judge''s block of rule AssignAssignmentInput(root, scope) where Logic.eq(mode, "Nearest") in AssignAssignmentInputModeNearest(root, scope) over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_in_assign_v5fqhrfufb"() IS 'the rule judge''s block of rule AssignAssignmentInput(root, scope) where Logic.eq(mode, "Within") in AssignAssignmentInputModeWithin(root, scope) over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_in_wjni6t7vt7"() IS 'the rule judge''s block of rule AssignAssignmentInputModeNearest(root, scope) in AssignAssignmentInput(root, scope) where Logic.eq(mode, "Nearest") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_within_in_3lxxlekl62"() IS 'the rule judge''s block of rule AssignAssignmentInputModeWithin(root, scope) in AssignAssignmentInput(root, scope) where Logic.eq(mode, "Within") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_in_assign_step_fpdto3tkdl"() IS 'the rule judge''s block of rule AssignDecideInput(root, step) in AssignStep(root, step) where Logic.eq(kind, "Decide") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_in_assign_decide_sznlnpzhan"() IS 'the rule judge''s block of rule AssignDecideInput(root, step) where Logic.eq(mode, "Nearest") in AssignDecideInputModeNearest(root, step) over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_in_assign_decide_kkziysyrxm"() IS 'the rule judge''s block of rule AssignDecideInput(root, step) where Logic.eq(mode, "Within") in AssignDecideInputModeWithin(root, step) over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_in_assign_zwhgkvqdob"() IS 'the rule judge''s block of rule AssignDecideInputModeNearest(root, step) in AssignDecideInput(root, step) where Logic.eq(mode, "Nearest") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_within_in_assign_6cwpn7jlpl"() IS 'the rule judge''s block of rule AssignDecideInputModeWithin(root, step) in AssignDecideInput(root, step) where Logic.eq(mode, "Within") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_in_assign_decide_tex7oc524r"() IS 'the rule judge''s block of rule AssignDecideOutput(root, step) where Logic.eq(stage, "Rest") in AssignDecideOutputStageRest(root, step) over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_in_assign_decide_i64e54b2wr"() IS 'the rule judge''s block of rule AssignDecideOutput(root, step) where Logic.eq(stage, "Serve") in AssignDecideOutputStageServe(root, step) over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_in_assign_74uxccr2b7"() IS 'the rule judge''s block of rule AssignDecideOutputStageRest(root, step) in AssignDecideOutput(root, step) where Logic.eq(stage, "Rest") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_serve_in_assign_kvsems7ik6"() IS 'the rule judge''s block of rule AssignDecideOutputStageServe(root, step) in AssignDecideOutput(root, step) where Logic.eq(stage, "Serve") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_done_in_assign_result_4mu6t5mltj"() IS 'the rule judge''s block of rule AssignDone(root, step) in AssignResult(root, step) where Logic.eq(outcome, "done") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_in_assign_step_urhl7lo7jo"() IS 'the rule judge''s block of rule AssignEmbedInput(root, step) in AssignStep(root, step) where Logic.eq(kind, "Embed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_in_assign_embed_c7d7lksec4"() IS 'the rule judge''s block of rule AssignEmbedInput(root, step) where Logic.eq(mode, "Nearest") in AssignEmbedInputModeNearest(root, step) over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_in_assign_embed_w734q3n6sw"() IS 'the rule judge''s block of rule AssignEmbedInput(root, step) where Logic.eq(mode, "Within") in AssignEmbedInputModeWithin(root, step) over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_in_assign_s4h6hbnhfw"() IS 'the rule judge''s block of rule AssignEmbedInputModeNearest(root, step) in AssignEmbedInput(root, step) where Logic.eq(mode, "Nearest") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_within_in_assign_qc5qdyar66"() IS 'the rule judge''s block of rule AssignEmbedInputModeWithin(root, step) in AssignEmbedInput(root, step) where Logic.eq(mode, "Within") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_failed_in_assign_result_rrfurnngc2"() IS 'the rule judge''s block of rule AssignFailed(root, step) in AssignResult(root, step) where Logic.eq(outcome, "failed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_root_kind_in_assign_requested_with_ig6jexlxad"() IS 'the rule judge''s block of rule AssignRoot(root) where Logic.eq(kind, "Assignment") in AssignRequestedWith(root) over the rows a write adds to AssignRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_chain_done_in_chain_result_675t5ij4i2"() IS 'the rule judge''s block of rule ChainDone(root, step) in ChainResult(root, step) where Logic.eq(outcome, "done") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_chain_failed_in_chain_result_dicz7rfd3b"() IS 'the rule judge''s block of rule ChainFailed(root, step) in ChainResult(root, step) where Logic.eq(outcome, "failed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_chain_page_input_in_chain_step_oothsyr55y"() IS 'the rule judge''s block of rule ChainPageInput(root, step) in ChainStep(root, step) where Logic.eq(kind, "Page") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_chain_root_kind_in_chain_requested_with_fu5aypedgi"() IS 'the rule judge''s block of rule ChainRoot(root) where Logic.eq(kind, "ChainRun") in ChainRequestedWith(root) over the rows a write adds to ChainRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_chain_root_kind_in_chain_requested_with_j2ulvdfjrv"() IS 'the rule judge''s block of rule ChainRoot(root) where Logic.eq(kind, "Ordered") in ChainRequestedWith(root) over the rows a write adds to ChainRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_in_clock_step_cfgh2w5ma3"() IS 'the rule judge''s block of rule ClockChimeInput(root, step) in ClockStep(root, step) where Logic.eq(kind, "Chime") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_close_input_in_clock_step_yonchgzy4f"() IS 'the rule judge''s block of rule ClockCloseInput(root, step) in ClockStep(root, step) where Logic.eq(kind, "Close") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_done_in_clock_result_xjrqrd2b2m"() IS 'the rule judge''s block of rule ClockDone(root, step) in ClockResult(root, step) where Logic.eq(outcome, "done") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_failed_in_clock_result_rclmfokwzo"() IS 'the rule judge''s block of rule ClockFailed(root, step) in ClockResult(root, step) where Logic.eq(outcome, "failed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_hourly_key_in_clock_root_ggeeip2psa"() IS 'the rule judge''s block of rule ClockHourlyKey(root) in ClockRoot(root) where Logic.eq(kind, "Hourly") over the rows a write adds to ClockHourlyKey';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_root_kind_in_clock_hourly_key_wsxzqqcb4b"() IS 'the rule judge''s block of rule ClockRoot(root) where Logic.eq(kind, "Hourly") in ClockHourlyKey(root) over the rows a write adds to ClockRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_root_kind_in_clock_requested_with_6jo3ttvghk"() IS 'the rule judge''s block of rule ClockRoot(root) where Logic.eq(kind, "Sitting") in ClockRequestedWith(root) over the rows a write adds to ClockRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_in_fan_within_4gfuvufclc"() IS 'the rule judge''s block of rule FanBatchInput(root, scope) in FanWithin(root, scope) where Logic.eq(kind, "Batch") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_done_in_fan_result_igvbhkk2tv"() IS 'the rule judge''s block of rule FanDone(root, step) in FanResult(root, step) where Logic.eq(outcome, "done") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_in_fan_step_civipqaias"() IS 'the rule judge''s block of rule FanDustInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Dust") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_failed_in_fan_result_r57me4fbko"() IS 'the rule judge''s block of rule FanFailed(root, step) in FanResult(root, step) where Logic.eq(outcome, "failed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_mop_input_in_fan_step_y343huwkfv"() IS 'the rule judge''s block of rule FanMopInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Mop") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_root_kind_in_fan_requested_with_6nh5nfwfrn"() IS 'the rule judge''s block of rule FanRoot(root) where Logic.eq(kind, "FanRun") in FanRequestedWith(root) over the rows a write adds to FanRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_root_kind_in_fan_requested_with_4sxcj54q7c"() IS 'the rule judge''s block of rule FanRoot(root) where Logic.eq(kind, "Sweep") in FanRequestedWith(root) over the rows a write adds to FanRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_root_kind_in_fan_wanted_key_mkxzrub6c3"() IS 'the rule judge''s block of rule FanRoot(root) where Logic.eq(kind, "Wanted") in FanWantedKey(root) over the rows a write adds to FanRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_square_input_in_fan_step_nxz74orxwd"() IS 'the rule judge''s block of rule FanSquareInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Square") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_wanted_key_in_fan_root_mggig22nxv"() IS 'the rule judge''s block of rule FanWantedKey(root) in FanRoot(root) where Logic.eq(kind, "Wanted") over the rows a write adds to FanWantedKey';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_in_retry_step_virkohj2lo"() IS 'the rule judge''s block of rule RetryBrittleInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Brittle") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_done_in_retry_result_q344fhh2mm"() IS 'the rule judge''s block of rule RetryDone(root, step) in RetryResult(root, step) where Logic.eq(outcome, "done") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_failed_in_retry_result_xaecmonhtp"() IS 'the rule judge''s block of rule RetryFailed(root, step) in RetryResult(root, step) where Logic.eq(outcome, "failed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_patient_input_in_retry_step_yypoc3hj5r"() IS 'the rule judge''s block of rule RetryPatientInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Patient") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_polite_input_in_retry_step_4vl6qwfgzn"() IS 'the rule judge''s block of rule RetryPoliteInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Polite") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_hd36ur5p5y"() IS 'the rule judge''s block of rule RetryRoot(root) where Logic.eq(kind, "Ladders") in RetryRequestedWith(root) over the rows a write adds to RetryRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_kfhiwxwz2p"() IS 'the rule judge''s block of rule RetryRoot(root) where Logic.eq(kind, "Throttled") in RetryRequestedWith(root) over the rows a write adds to RetryRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_tda34kljpn"() IS 'the rule judge''s block of rule RetryRoot(root) where Logic.eq(kind, "Unhurried") in RetryRequestedWith(root) over the rows a write adds to RetryRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_steadfast_input_in_retry_step_xkylzkj4zd"() IS 'the rule judge''s block of rule RetrySteadfastInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Steadfast") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_in_review_step_rbx456ded3"() IS 'the rule judge''s block of rule ReviewAnalyzeInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Analyze") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_review_done_in_review_result_ibz3jfbnei"() IS 'the rule judge''s block of rule ReviewDone(root, step) in ReviewResult(root, step) where Logic.eq(outcome, "done") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_review_failed_in_review_result_whygze7zq6"() IS 'the rule judge''s block of rule ReviewFailed(root, step) in ReviewResult(root, step) where Logic.eq(outcome, "failed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_review_gather_input_in_review_step_6dhp33xejx"() IS 'the rule judge''s block of rule ReviewGatherInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Gather") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_review_questions_input_in_review_within_oq2i4d4qlh"() IS 'the rule judge''s block of rule ReviewQuestionsInput(root, scope) in ReviewWithin(root, scope) where Logic.eq(kind, "Questions") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_review_root_kind_in_review_requested_with_hhj4i66uge"() IS 'the rule judge''s block of rule ReviewRoot(root) where Logic.eq(kind, "ReviewRun") in ReviewRequestedWith(root) over the rows a write adds to ReviewRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_review_save_input_in_review_step_qbidwsfxvi"() IS 'the rule judge''s block of rule ReviewSaveInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Save") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_build_input_in_sync_step_zbeiy2eub4"() IS 'the rule judge''s block of rule SyncBuildInput(root, step) in SyncStep(root, step) where Logic.eq(kind, "Build") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_copy_input_in_sync_step_274i44k3xg"() IS 'the rule judge''s block of rule SyncCopyInput(root, step) in SyncStep(root, step) where Logic.eq(kind, "Copy") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_done_in_sync_result_yjfymgp3lh"() IS 'the rule judge''s block of rule SyncDone(root, step) in SyncResult(root, step) where Logic.eq(outcome, "done") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_failed_in_sync_result_zp7mocg4uv"() IS 'the rule judge''s block of rule SyncFailed(root, step) in SyncResult(root, step) where Logic.eq(outcome, "failed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_root_kind_in_sync_requested_with_hexkxczyoq"() IS 'the rule judge''s block of rule SyncRoot(root) where Logic.eq(kind, "Gold") in SyncRequestedWith(root) over the rows a write adds to SyncRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_root_kind_in_sync_requested_with_rxyj5ibblk"() IS 'the rule judge''s block of rule SyncRoot(root) where Logic.eq(kind, "SyncRun") in SyncRequestedWith(root) over the rows a write adds to SyncRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_in_writeback_step_4x5vzcjzbi"() IS 'the rule judge''s block of rule WritebackDeliverInput(root, step) in WritebackStep(root, step) where Logic.eq(kind, "Deliver") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_writeback_done_in_writeback_result_d3jnna5bbp"() IS 'the rule judge''s block of rule WritebackDone(root, step) in WritebackResult(root, step) where Logic.eq(outcome, "done") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_writeback_failed_in_writeback_result_ingi2erzkx"() IS 'the rule judge''s block of rule WritebackFailed(root, step) in WritebackResult(root, step) where Logic.eq(outcome, "failed") over its units';
-
-COMMENT ON FUNCTION "slice"."__judge_writeback_root_kind_in_writeback_requested_u62dvi57jv"() IS 'the rule judge''s block of rule WritebackRoot(root) where Logic.eq(kind, "Writeback") in WritebackRequestedWith(root) over the rows a write adds to WritebackRoot';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_tml3jzipqt"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write adds to FanClaim';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_rsvzhfp6ug"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write removes from FanEnded';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_5pedmcfadq"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write removes from FanHeld';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_nru5iz6quv"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write adds to FanHold';
-
-COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_546bvon4yy"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write adds to ReviewClaim';
-
-COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_ogqous6mhr"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write removes from ReviewEnded';
-
-COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_btbkuztx56"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write removes from ReviewHeld';
-
-COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_ahhaxk5zwx"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write adds to ReviewHold';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_y4hmyg364y"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_jiz464vxuo"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInputModeNearest and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_ryk4kznrmg"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_hc5ilv4sea"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInputModeNearest and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_uprvea4no6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_irdavmdqjh"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutputStageRest and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_done_hjsux6cb6r"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDone and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_3xhwbfkrlv"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignEmbedInputModeNearest and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_assign_root_6r3ohziuof"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignRoot and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_chain_done_7blz2jjczl"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainDone and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_chain_page_input_22qgggq3id"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainPageInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_chain_root_3ul5qninm3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainRoot and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_6u4nkh4lnc"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockChimeInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_done_nw5m6y7otq"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockDone and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_hourly_key_s4our46lu2"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockHourlyKey and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_clock_root_nat24ww5us"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockRoot and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_zonhzu34ui"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_claim_s3j4rvtcvs"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanClaim and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_done_2nmscmmvlu"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDone and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_6snexwuzoz"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDustInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_ended_6lkn5mmmar"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanEnded and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_held_dhl6funig6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanHeld and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_hold_xpwnh3rc3e"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanHold and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_root_3xv3pboblw"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanRoot and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_fan_wanted_key_dpe4rp62yy"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanWantedKey and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_ltwi3gczlm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryBrittleInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_done_us2mduacrm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_retry_root_cmlflfqapn"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryRoot and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_cfqtz7uc7g"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewAnalyzeInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_review_claim_az6lkkq33b"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewClaim and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_review_done_xzuqwzrsjm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewDone and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_review_ended_z2tfnoj2wi"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewEnded and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_review_held_wah4syhkpo"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewHeld and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_review_hold_mggi2ob7td"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewHold and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_review_questions_input_bu3kdyq5g3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewQuestionsInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_review_root_eoqbpnyblg"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewRoot and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_build_input_eaxvc2njxf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_done_psjgmjlxp6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncDone and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_sync_root_b5i4biztjp"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncRoot and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_fun3xqfq7u"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackDeliverInput and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_writeback_done_c7valompmz"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackDone and the relations its rules join it to';
-
-COMMENT ON FUNCTION "slice"."__judge_writeback_root_fosk74oqmk"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackRoot and the relations its rules join it to';
+COMMENT ON TABLE "slice"."__judge_deltas_2fjja2ttgq" IS 'the rule judge''s delta log of schema Slice';
 
 COMMENT ON FUNCTION "slice"."__capture_assign_assignment_input_v4dsbpafdp"() IS 'rule capture of AssignAssignmentInput';
 
@@ -6385,294 +6313,6 @@ COMMENT ON FUNCTION "slice"."__capture_writeback_result_cd63iav5l7"() IS 'rule c
 COMMENT ON FUNCTION "slice"."__capture_writeback_root_4gkeh6e4ge"() IS 'rule capture of WritebackRoot';
 
 COMMENT ON FUNCTION "slice"."__capture_writeback_step_dklkh3hpav"() IS 'rule capture of WritebackStep';
-
-COMMENT ON FUNCTION "slice"."__share_assign_assignment_input_uqmyzgkwgb"() IS 'the maker of the rule judge''s session tables of AssignAssignmentInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_assignment_input_mode_nearest_6wtqbhnkkp"() IS 'the maker of the rule judge''s session tables of AssignAssignmentInputModeNearest that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_assignment_input_mode_within_mxznexxzm5"() IS 'the maker of the rule judge''s session tables of AssignAssignmentInputModeWithin that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_decide_input_qtnebszoug"() IS 'the maker of the rule judge''s session tables of AssignDecideInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_decide_input_laqs7vsvlv"() IS 'the maker of the rule judge''s session tables of AssignDecideInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_decide_input_mode_nearest_nc7h7bdkju"() IS 'the maker of the rule judge''s session tables of AssignDecideInputModeNearest that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_decide_input_mode_within_palbvxwq2u"() IS 'the maker of the rule judge''s session tables of AssignDecideInputModeWithin that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_decide_output_cz27l5krwa"() IS 'the maker of the rule judge''s session tables of AssignDecideOutput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_decide_output_stage_rest_ayqjuld2wx"() IS 'the maker of the rule judge''s session tables of AssignDecideOutputStageRest that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_decide_output_stage_serve_uta34iyvcs"() IS 'the maker of the rule judge''s session tables of AssignDecideOutputStageServe that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_done_opf2q45wg5"() IS 'the maker of the rule judge''s session tables of AssignDone that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_embed_input_6szydya464"() IS 'the maker of the rule judge''s session tables of AssignEmbedInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_embed_input_6degh6yvvf"() IS 'the maker of the rule judge''s session tables of AssignEmbedInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_embed_input_mode_nearest_b5leojbsvi"() IS 'the maker of the rule judge''s session tables of AssignEmbedInputModeNearest that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_embed_input_mode_within_bfk3voqh4u"() IS 'the maker of the rule judge''s session tables of AssignEmbedInputModeWithin that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_failed_zksy5o72uj"() IS 'the maker of the rule judge''s session tables of AssignFailed that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_result_dlc7l6ahpu"() IS 'the maker of the rule judge''s session tables of AssignResult that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_assign_step_3wnm6ki3a5"() IS 'the maker of the rule judge''s session tables of AssignStep that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_chain_done_hj27dl24ju"() IS 'the maker of the rule judge''s session tables of ChainDone that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_chain_failed_vjsw2un2ms"() IS 'the maker of the rule judge''s session tables of ChainFailed that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_chain_page_input_kpinyd237r"() IS 'the maker of the rule judge''s session tables of ChainPageInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_chain_result_nyxdjkxa4w"() IS 'the maker of the rule judge''s session tables of ChainResult that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_clock_chime_input_uldayst747"() IS 'the maker of the rule judge''s session tables of ClockChimeInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_clock_close_input_6cdd36qfbz"() IS 'the maker of the rule judge''s session tables of ClockCloseInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_clock_done_u4k7djr6l4"() IS 'the maker of the rule judge''s session tables of ClockDone that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_clock_failed_6jxmxtyj5l"() IS 'the maker of the rule judge''s session tables of ClockFailed that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_clock_result_qytnhhrx2r"() IS 'the maker of the rule judge''s session tables of ClockResult that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_clock_step_jjukmoajth"() IS 'the maker of the rule judge''s session tables of ClockStep that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_fan_batch_input_5jatn7k76b"() IS 'the maker of the rule judge''s session tables of FanBatchInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_fan_done_opm5dnpbp6"() IS 'the maker of the rule judge''s session tables of FanDone that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_fan_dust_input_urck2m6c5n"() IS 'the maker of the rule judge''s session tables of FanDustInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_fan_failed_ygpnvfmn6i"() IS 'the maker of the rule judge''s session tables of FanFailed that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_fan_mop_input_f2wh7povaf"() IS 'the maker of the rule judge''s session tables of FanMopInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_fan_result_gojcz7yaqk"() IS 'the maker of the rule judge''s session tables of FanResult that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_fan_square_input_k25qtaknqx"() IS 'the maker of the rule judge''s session tables of FanSquareInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_fan_step_rthqpjnkqd"() IS 'the maker of the rule judge''s session tables of FanStep that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_retry_brittle_input_56rooi6ljq"() IS 'the maker of the rule judge''s session tables of RetryBrittleInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_retry_done_to2rxr7itz"() IS 'the maker of the rule judge''s session tables of RetryDone that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_retry_failed_2lozssvns2"() IS 'the maker of the rule judge''s session tables of RetryFailed that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_retry_patient_input_omxxqevdfg"() IS 'the maker of the rule judge''s session tables of RetryPatientInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_retry_polite_input_27zuffuedi"() IS 'the maker of the rule judge''s session tables of RetryPoliteInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_retry_result_zozrcncflm"() IS 'the maker of the rule judge''s session tables of RetryResult that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_retry_steadfast_input_67bm4bgclo"() IS 'the maker of the rule judge''s session tables of RetrySteadfastInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_retry_step_pez6l7w3s3"() IS 'the maker of the rule judge''s session tables of RetryStep that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_review_analyze_input_fmoykrxqhk"() IS 'the maker of the rule judge''s session tables of ReviewAnalyzeInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_review_done_wtxnh7zikk"() IS 'the maker of the rule judge''s session tables of ReviewDone that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_review_failed_2nswtypwsh"() IS 'the maker of the rule judge''s session tables of ReviewFailed that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_review_gather_input_ya4mqfc6cr"() IS 'the maker of the rule judge''s session tables of ReviewGatherInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_review_questions_input_fw5g7degaw"() IS 'the maker of the rule judge''s session tables of ReviewQuestionsInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_review_result_imujle365t"() IS 'the maker of the rule judge''s session tables of ReviewResult that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_review_save_input_pe32kmso4e"() IS 'the maker of the rule judge''s session tables of ReviewSaveInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_review_step_5akoxu2fp6"() IS 'the maker of the rule judge''s session tables of ReviewStep that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_sync_build_input_xyzsozm5v3"() IS 'the maker of the rule judge''s session tables of SyncBuildInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_sync_copy_input_msoxsjov6l"() IS 'the maker of the rule judge''s session tables of SyncCopyInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_sync_done_n6bnlty32g"() IS 'the maker of the rule judge''s session tables of SyncDone that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_sync_failed_vkmqocsn6g"() IS 'the maker of the rule judge''s session tables of SyncFailed that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_sync_result_2czj3bvl67"() IS 'the maker of the rule judge''s session tables of SyncResult that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_sync_step_4etupj46yk"() IS 'the maker of the rule judge''s session tables of SyncStep that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_writeback_deliver_input_g7zhter2ht"() IS 'the maker of the rule judge''s session tables of WritebackDeliverInput that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_writeback_done_nuekkczdgn"() IS 'the maker of the rule judge''s session tables of WritebackDone that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_writeback_failed_erf55e2qlp"() IS 'the maker of the rule judge''s session tables of WritebackFailed that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__share_writeback_result_6el7un7kah"() IS 'the maker of the rule judge''s session tables of WritebackResult that more than one stand-up needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_assignment_input_k2sfkqif6i"() IS 'the stand-up of the rule judge''s session tables a write of AssignAssignmentInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_assignment_input_mode_nearest_lxb77ivg4j"() IS 'the stand-up of the rule judge''s session tables a write of AssignAssignmentInputModeNearest needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_assignment_input_mode_within_37wojsnl3c"() IS 'the stand-up of the rule judge''s session tables a write of AssignAssignmentInputModeWithin needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_decide_input_vrvu36pkwz"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_decide_input_mode_nearest_7kdvsnzqg6"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideInputModeNearest needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_decide_input_mode_within_ldx2lhq5ey"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideInputModeWithin needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_decide_output_ir3hc6poyj"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideOutput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_decide_output_stage_rest_lduodwwdlk"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideOutputStageRest needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_decide_output_stage_serve_z6kennoghm"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideOutputStageServe needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_done_zpmhn6mrnc"() IS 'the stand-up of the rule judge''s session tables a write of AssignDone needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_embed_input_zvwywuktne"() IS 'the stand-up of the rule judge''s session tables a write of AssignEmbedInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_embed_input_mode_nearest_qag7rwsicw"() IS 'the stand-up of the rule judge''s session tables a write of AssignEmbedInputModeNearest needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_embed_input_mode_within_mw2mn45ii2"() IS 'the stand-up of the rule judge''s session tables a write of AssignEmbedInputModeWithin needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_failed_pmuglprcww"() IS 'the stand-up of the rule judge''s session tables a write of AssignFailed needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_result_3dwqbs6psk"() IS 'the stand-up of the rule judge''s session tables a write of AssignResult needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_root_ecnnffi3e3"() IS 'the stand-up of the rule judge''s session tables a write of AssignRoot needs';
-
-COMMENT ON FUNCTION "slice"."__stand_assign_step_qwjijdgx6j"() IS 'the stand-up of the rule judge''s session tables a write of AssignStep needs';
-
-COMMENT ON FUNCTION "slice"."__stand_chain_done_fhcl4vvjiw"() IS 'the stand-up of the rule judge''s session tables a write of ChainDone needs';
-
-COMMENT ON FUNCTION "slice"."__stand_chain_failed_nocd74knki"() IS 'the stand-up of the rule judge''s session tables a write of ChainFailed needs';
-
-COMMENT ON FUNCTION "slice"."__stand_chain_page_input_akkjfmkwih"() IS 'the stand-up of the rule judge''s session tables a write of ChainPageInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_chain_result_2qc7m4brl3"() IS 'the stand-up of the rule judge''s session tables a write of ChainResult needs';
-
-COMMENT ON FUNCTION "slice"."__stand_chain_root_mmsdkigltc"() IS 'the stand-up of the rule judge''s session tables a write of ChainRoot needs';
-
-COMMENT ON FUNCTION "slice"."__stand_chain_step_3hsz3lyxy2"() IS 'the stand-up of the rule judge''s session tables a write of ChainStep needs';
-
-COMMENT ON FUNCTION "slice"."__stand_clock_chime_input_w4tkdsqfah"() IS 'the stand-up of the rule judge''s session tables a write of ClockChimeInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_clock_close_input_nbsmlpykk5"() IS 'the stand-up of the rule judge''s session tables a write of ClockCloseInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_clock_done_dja4biaxge"() IS 'the stand-up of the rule judge''s session tables a write of ClockDone needs';
-
-COMMENT ON FUNCTION "slice"."__stand_clock_failed_zsyt2n5qx3"() IS 'the stand-up of the rule judge''s session tables a write of ClockFailed needs';
-
-COMMENT ON FUNCTION "slice"."__stand_clock_hourly_key_im7mo3bxkf"() IS 'the stand-up of the rule judge''s session tables a write of ClockHourlyKey needs';
-
-COMMENT ON FUNCTION "slice"."__stand_clock_result_dk5lfugcd5"() IS 'the stand-up of the rule judge''s session tables a write of ClockResult needs';
-
-COMMENT ON FUNCTION "slice"."__stand_clock_root_bfxjnnlbbr"() IS 'the stand-up of the rule judge''s session tables a write of ClockRoot needs';
-
-COMMENT ON FUNCTION "slice"."__stand_clock_step_cbbapr6dla"() IS 'the stand-up of the rule judge''s session tables a write of ClockStep needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_batch_input_fkd6u4c3i3"() IS 'the stand-up of the rule judge''s session tables a write of FanBatchInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_claim_chk6cawes6"() IS 'the stand-up of the rule judge''s session tables a write of FanClaim needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_done_e4qldz2xtt"() IS 'the stand-up of the rule judge''s session tables a write of FanDone needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_dust_input_rigexdymgk"() IS 'the stand-up of the rule judge''s session tables a write of FanDustInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_ended_l35bnatdrx"() IS 'the stand-up of the rule judge''s session tables a write of FanEnded needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_failed_ok5ebljdmh"() IS 'the stand-up of the rule judge''s session tables a write of FanFailed needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_held_jx6ijuwgvx"() IS 'the stand-up of the rule judge''s session tables a write of FanHeld needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_hold_lndmiy4fqw"() IS 'the stand-up of the rule judge''s session tables a write of FanHold needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_mop_input_i5g5pk2lsj"() IS 'the stand-up of the rule judge''s session tables a write of FanMopInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_result_4bsplumotk"() IS 'the stand-up of the rule judge''s session tables a write of FanResult needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_root_evnc53opne"() IS 'the stand-up of the rule judge''s session tables a write of FanRoot needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_square_input_ag5nlkdpuv"() IS 'the stand-up of the rule judge''s session tables a write of FanSquareInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_step_cwlbx3l7hf"() IS 'the stand-up of the rule judge''s session tables a write of FanStep needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_wanted_key_n6zslzhip6"() IS 'the stand-up of the rule judge''s session tables a write of FanWantedKey needs';
-
-COMMENT ON FUNCTION "slice"."__stand_fan_within_oo5pwmjabl"() IS 'the stand-up of the rule judge''s session tables a write of FanWithin needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_brittle_input_3pbycrawjg"() IS 'the stand-up of the rule judge''s session tables a write of RetryBrittleInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_done_ll42rjotis"() IS 'the stand-up of the rule judge''s session tables a write of RetryDone needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_failed_wyonvn6i5o"() IS 'the stand-up of the rule judge''s session tables a write of RetryFailed needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_patient_input_jxb7jnsja6"() IS 'the stand-up of the rule judge''s session tables a write of RetryPatientInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_polite_input_uiwzzm343r"() IS 'the stand-up of the rule judge''s session tables a write of RetryPoliteInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_result_mpvrsnerne"() IS 'the stand-up of the rule judge''s session tables a write of RetryResult needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_root_rvzhlkfxal"() IS 'the stand-up of the rule judge''s session tables a write of RetryRoot needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_steadfast_input_chyldmp7fv"() IS 'the stand-up of the rule judge''s session tables a write of RetrySteadfastInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_retry_step_7csxwmutn2"() IS 'the stand-up of the rule judge''s session tables a write of RetryStep needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_analyze_input_pspszgkzox"() IS 'the stand-up of the rule judge''s session tables a write of ReviewAnalyzeInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_claim_hkt7qw7mpi"() IS 'the stand-up of the rule judge''s session tables a write of ReviewClaim needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_done_ujerlpx2vl"() IS 'the stand-up of the rule judge''s session tables a write of ReviewDone needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_ended_h3z5bew2vq"() IS 'the stand-up of the rule judge''s session tables a write of ReviewEnded needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_failed_a5vyjorx3e"() IS 'the stand-up of the rule judge''s session tables a write of ReviewFailed needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_gather_input_jx633zhg4g"() IS 'the stand-up of the rule judge''s session tables a write of ReviewGatherInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_held_kz6nzl3mw3"() IS 'the stand-up of the rule judge''s session tables a write of ReviewHeld needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_hold_nhd6ml2ptp"() IS 'the stand-up of the rule judge''s session tables a write of ReviewHold needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_questions_input_c55nnxszay"() IS 'the stand-up of the rule judge''s session tables a write of ReviewQuestionsInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_result_7berxkzbzb"() IS 'the stand-up of the rule judge''s session tables a write of ReviewResult needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_root_ejfkrp7dtz"() IS 'the stand-up of the rule judge''s session tables a write of ReviewRoot needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_save_input_nwulronicu"() IS 'the stand-up of the rule judge''s session tables a write of ReviewSaveInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_step_aidfiao2mn"() IS 'the stand-up of the rule judge''s session tables a write of ReviewStep needs';
-
-COMMENT ON FUNCTION "slice"."__stand_review_within_bqv44gzoli"() IS 'the stand-up of the rule judge''s session tables a write of ReviewWithin needs';
-
-COMMENT ON FUNCTION "slice"."__stand_sync_build_input_le3amndvci"() IS 'the stand-up of the rule judge''s session tables a write of SyncBuildInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_sync_copy_input_wr7g5cohy6"() IS 'the stand-up of the rule judge''s session tables a write of SyncCopyInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_sync_done_4ihvwniwqp"() IS 'the stand-up of the rule judge''s session tables a write of SyncDone needs';
-
-COMMENT ON FUNCTION "slice"."__stand_sync_failed_uzrsh7vxay"() IS 'the stand-up of the rule judge''s session tables a write of SyncFailed needs';
-
-COMMENT ON FUNCTION "slice"."__stand_sync_result_fkuahqxxbc"() IS 'the stand-up of the rule judge''s session tables a write of SyncResult needs';
-
-COMMENT ON FUNCTION "slice"."__stand_sync_root_otymwhik42"() IS 'the stand-up of the rule judge''s session tables a write of SyncRoot needs';
-
-COMMENT ON FUNCTION "slice"."__stand_sync_step_mljbwcbsm5"() IS 'the stand-up of the rule judge''s session tables a write of SyncStep needs';
-
-COMMENT ON FUNCTION "slice"."__stand_writeback_deliver_input_qibs4x7ys4"() IS 'the stand-up of the rule judge''s session tables a write of WritebackDeliverInput needs';
-
-COMMENT ON FUNCTION "slice"."__stand_writeback_done_ra7zoinlni"() IS 'the stand-up of the rule judge''s session tables a write of WritebackDone needs';
-
-COMMENT ON FUNCTION "slice"."__stand_writeback_failed_tv4kbeol35"() IS 'the stand-up of the rule judge''s session tables a write of WritebackFailed needs';
-
-COMMENT ON FUNCTION "slice"."__stand_writeback_result_owlolckns5"() IS 'the stand-up of the rule judge''s session tables a write of WritebackResult needs';
-
-COMMENT ON FUNCTION "slice"."__stand_writeback_root_m53pgt6gxz"() IS 'the stand-up of the rule judge''s session tables a write of WritebackRoot needs';
-
-COMMENT ON FUNCTION "slice"."__stand_writeback_step_dhhgvpedc7"() IS 'the stand-up of the rule judge''s session tables a write of WritebackStep needs';
 
 COMMENT ON FUNCTION "slice"."__immutable_assign_decide_read_nearest_row_lab3k5wovp"() IS 'immutability guard of AssignDecideReadNearestRow';
 

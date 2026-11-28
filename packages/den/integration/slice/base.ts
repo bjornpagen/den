@@ -1,4 +1,4 @@
-import { mutable, schema } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import {
 	Assigned,
 	Built,
@@ -30,7 +30,7 @@ import {
  * holds every relation of it, so its workload serves the reads over it. Every relation is closed but a passage and a
  * seen passage, which the editor rewrites and takes back, each open inside its unit.
  */
-export const SliceBase = schema(
+export const SliceBase = g.schema(
 	"Slice",
 	[
 		Feed,
@@ -53,5 +53,5 @@ export const SliceBase = schema(
 		Heard,
 		Chimed
 	],
-	[PassageUnit, mutable(Passage), LearnerUnit, mutable(Seen)]
+	[PassageUnit, g.mutable(Passage), LearnerUnit, g.mutable(Seen)]
 )

@@ -1,5 +1,5 @@
-import { type ClockUnit, sha256 } from "@bjornpagen/grizzle"
-import { records } from "@bjornpagen/grizzle/dynamic"
+import * as g from "@bjornpagen/grizzle"
+import * as gDynamic from "@bjornpagen/grizzle/dynamic"
 import { Array as Arr, Option, Record } from "effect"
 import {
 	type AnyFlow,
@@ -12,7 +12,7 @@ import {
 import {
 	type AnyCommit,
 	type AnyStepKind,
-	type ContractField,
+	type DomainField,
 	type Due,
 	type Again,
 	Refused,
@@ -95,7 +95,7 @@ export type FieldType =
 	| { readonly kind: "base"; readonly base: Base }
 	| { readonly kind: "app"; readonly relation: string; readonly field: string }
 	| { readonly kind: "vector"; readonly dimensions: number }
-	| { readonly kind: "contract"; readonly contract: ContractField }
+	| { readonly kind: "contract"; readonly contract: DomainField }
 
 /**
  * How grizzle holds a lowered name (lower/names.ts): declared, its identifier its conversion, or derived, its every
@@ -240,7 +240,7 @@ export type CommitIR =
 	| { readonly kind: "nothing" }
 	| {
 			readonly kind: "through"
-			readonly clock: ReadonlyArray<readonly [string, ClockUnit]>
+			readonly clock: ReadonlyArray<readonly [string, g.ClockUnit]>
 			/** The parameters of its clock whose consumers' contracts its declaration keys (algebra/kinds.ts ClockKeys). */
 			readonly keyed: ReadonlyArray<string>
 	  }
@@ -1252,7 +1252,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			const read = derive("read", [declared(p), declared(s.name), word("Read"), declared(readName)])
 			const stem = read.name
 			Arr.forEach(
-				records(stem, query, { digest: sha256 }, ["digest"], { names: {} }).relations,
+				gDynamic.records(stem, query, { digest: g.sha256 }, ["digest"], { names: {} }).relations,
 				(made) => minted.push(namedRecords(stem, made.name))
 			)
 			const record = derivedRelation(read, {

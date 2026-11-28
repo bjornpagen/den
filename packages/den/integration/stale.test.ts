@@ -2,8 +2,8 @@ import { delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import type { Ran, Turn } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
-import type { CallError } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -113,7 +113,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 						const stale: Turn = { ...first, deadline: fresh.deadline }
 						const [early, late] =
 							race.order === "stale commits first" ? [stale, fresh] : [fresh, stale]
-						const finish = (turn: Turn): Effect.Effect<Ran, CallError> =>
+						const finish = (turn: Turn): Effect.Effect<Ran, gRuntime.CallError> =>
 							Effect.flatMap(chain.ledger.now, (instant) =>
 								runner.run(turn, instant, chain.ledger.now)
 							)
@@ -124,7 +124,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 						const held = yield* chain.ledger.heldOf({ root: requested.scope, step })
 						assert.deepEqual(held, Option.some(early.attempt))
 						const pages = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
-						assert.equal(Arr.filter(pages, (p) => Sha256.equals(p.step, step)).length, 1)
+						assert.equal(Arr.filter(pages, (p) => g.Sha256.equals(p.step, step)).length, 1)
 						const forgedAt = yield* chain.ledger.now
 						const other = yield* chain.request.ChainRun(`${key}-forged`, {
 							feed: "sport",

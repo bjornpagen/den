@@ -1,6 +1,6 @@
 import { type Ending, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -94,7 +94,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						yield* ringAndDrain(ledgers, [requested])
 						const scope = requested.scope
 						const read = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
-						const pages = Arr.filter(read, (page) => Sha256.equals(page.scope, scope))
+						const pages = Arr.filter(read, (page) => g.Sha256.equals(page.scope, scope))
 						assert.deepEqual(
 							Arr.sort(
 								Arr.map(pages, (page): bigint => page.seq),
@@ -105,7 +105,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						const reads = yield* rows(app.workload.pageReads.once({ params: {}, facts: {} }))
 						const items = yield* rows(app.workload.items.once({ params: {}, facts: {} }))
 						Arr.forEach(pages, (page) => {
-							const recorded = Arr.filter(reads, (r) => Sha256.equals(r.step, page.step))
+							const recorded = Arr.filter(reads, (r) => g.Sha256.equals(r.step, page.step))
 							c.note(Arr.isReadonlyArrayEmpty(recorded) ? "no weight" : "a weight read")
 							assert.ok(Arr.every(recorded, (r) => r.feed === run.feed))
 							const factor = Arr.reduce(recorded, 0n, (sum, r) => sum + r.factor)
@@ -141,7 +141,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						const trees = yield* rows(app.workload.treeReads.once({ params: {}, facts: {} }))
 						yield* Effect.forEach(pages, (page) =>
 							Effect.gen(function* () {
-								const tree = Arr.filter(trees, (t) => Sha256.equals(t.step, page.step))
+								const tree = Arr.filter(trees, (t) => g.Sha256.equals(t.step, page.step))
 								assert.deepEqual(
 									Arr.map(tree, (t) => [t.feed, t.factor]),
 									run.factor > 0 ? [[run.feed, BigInt(run.factor)]] : [],
@@ -179,7 +179,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 							})
 						)
 						const finished = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
-						const finishes = Arr.filter(finished, (finish) => Sha256.equals(finish.scope, scope))
+						const finishes = Arr.filter(finished, (finish) => g.Sha256.equals(finish.scope, scope))
 						assert.deepEqual(
 							Arr.map(finishes, (finish) => finish.outcome),
 							["done"]
@@ -217,7 +217,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						assert.ok(Arr.every(rerung, (ending) => ending.kind === "lost"))
 						const after = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
 						assert.equal(
-							Arr.filter(after, (page) => Sha256.equals(page.scope, scope)).length,
+							Arr.filter(after, (page) => g.Sha256.equals(page.scope, scope)).length,
 							run.pages
 						)
 					}),

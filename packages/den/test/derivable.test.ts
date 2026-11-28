@@ -1,4 +1,4 @@
-import { type AnyChangeSet, ChangeSet, pg, query, relation, schema, v } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
@@ -68,20 +68,20 @@ const Fault = Schema.Literals([
 type Fault = typeof Fault.Type
 
 /** The app's wants of a batch, which the read derives a run's size from. */
-const Want = relation("Want", { batch: Text, size: pg.bigint }, ["batch", "size"])
+const Want = g.relation("Want", { batch: Text, size: g.int8 }, ["batch", "size"])
 
 /** The level the read is over. */
-const Wants = schema("Wants", [Want], [])
+const Wants = g.schema("Wants", [Want], [])
 
 /** A key whose field the read's text parameter cannot take. */
 const NumberedKey = Schema.Struct({ batch: Schema.BigInt })
 
 /** A level the read is not over. */
-const Elsewhere = schema("Elsewhere", [Want], [])
+const Elsewhere = g.schema("Elsewhere", [Want], [])
 
 /** A batch's largest wanted size. */
-const wantedOf = query(Wants).rule((r) => {
-	const { batch, size } = v(Want, "want")
+const wantedOf = g.query(Wants).rule((r) => {
+	const { batch, size } = g.v(Want, "want")
 	return r
 		.match(Want, { batch, size })
 		.where(r.eq(batch, r.param("batch", Text)))
@@ -264,15 +264,15 @@ type VerdictOf<T> = [RefusalsOf<T>] extends [never] ? "accepted" : RefusalsOf<T>
  * names and `through` refuses, or `now`, an app's own.
  */
 const sizedBy = <const N extends string>(param: N) =>
-	ChangeSet.empty(Wants).insert(
+	g.ChangeSet.empty(Wants).insert(
 		Want,
-		query(Wants).rule((r) =>
-			r.find({ batch: r.param("batch", Text), size: r.param(param, pg.bigint) })
-		)
+		g
+			.query(Wants)
+			.rule((r) => r.find({ batch: r.param("batch", Text), size: r.param(param, g.int8) }))
 	)
 
 /** What `through`'s parameter makes of a step's ChangeSet `C`: `C`, beside the refusal where it names den's. */
-type ThroughTakes<C> = C extends AnyChangeSet
+type ThroughTakes<C> = C extends g.AnyChangeSet
 	? ReturnType<Parameters<typeof through<unknown, C, ClockBinding>>[0]>
 	: never
 
@@ -284,8 +284,8 @@ type SeatVerdict<S, D> = D extends { readonly exclusive: infer E }
 	: never
 
 /** A batch's wanted sizes, every one: a read that can find two rows for a key. */
-const everyWant = query(Wants).rule((r) => {
-	const { batch, size } = v(Want, "want")
+const everyWant = g.query(Wants).rule((r) => {
+	const { batch, size } = g.v(Want, "want")
 	return r
 		.match(Want, { batch, size })
 		.where(r.eq(batch, r.param("batch", Text)))
@@ -293,9 +293,9 @@ const everyWant = query(Wants).rule((r) => {
 })
 
 /** A schedule's batch run, read of no relation: its member's batch at its instant's size. */
-const hourOf = query(Wants).rule((r) =>
-	r.find({ batch: r.param("member", Text), size: r.param("at", pg.bigint) })
-)
+const hourOf = g
+	.query(Wants)
+	.rule((r) => r.find({ batch: r.param("member", Text), size: r.param("at", g.int8) }))
 
 /** The trigger of a schedule of one member. */
 const hourly = schedule(Cron.parseUnsafe("0 * * * *"), ["east"])

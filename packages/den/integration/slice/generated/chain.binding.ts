@@ -40,9 +40,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Chain over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, recordsFacts, Sha256 } from "@bjornpagen/grizzle"
-import { codecText } from "@bjornpagen/grizzle/compile"
-import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Brand, Effect, Option, pipe, Result, Stream } from "effect"
 import { chain } from "#integration/slice/flows.ts"
 import {
@@ -81,51 +81,55 @@ const ChainPageReadEarlierText = recordText(chain.kinds[0].reads.named.earlier)
 const ChainPageReadTreeText = recordText(chain.kinds[0].reads.named.tree)
 /** The codec text of each declared field of ChainChainRunInput, a request's input row, bound once (grizzle's codecText). */
 const chainChainRunInputTexts = Object.freeze({
-	feed: codecText(ChainChainRunInput.fields.feed),
-	pages: codecText(ChainChainRunInput.fields.pages)
+	feed: gCompile.codecText(ChainChainRunInput.fields.feed),
+	pages: gCompile.codecText(ChainChainRunInput.fields.pages)
 })
 /** The codec text of each declared field of ChainOrderedInput, a request's input row, bound once (grizzle's codecText). */
 const chainOrderedInputTexts = Object.freeze({
-	feed: codecText(ChainOrderedInput.fields.feed),
-	pages: codecText(ChainOrderedInput.fields.pages)
+	feed: gCompile.codecText(ChainOrderedInput.fields.feed),
+	pages: gCompile.codecText(ChainOrderedInput.fields.pages)
 })
 /** The fingerprint of root kind ChainRun's input heading, taken once. */
 const chainChainRunHeading = inputFingerprint(
-	'102:18:ChainChainRunInput57:4:feed48:8:closedId22:ChainChainRunInputFeed4:news5:sport18:5:pages9:pg.bigint236:6:digest224:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("ChainChainRunInput"), chainChainRunInputTexts.feed(row.feed), chainChainRunInputTexts.pages(row.pages)]))]'
+	'99:18:ChainChainRunInput57:4:feed48:8:closedId22:ChainChainRunInputFeed4:news5:sport15:5:pages6:g.int8236:6:digest224:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("ChainChainRunInput"), chainChainRunInputTexts.feed(row.feed), chainChainRunInputTexts.pages(row.pages)]))]'
 )
 /** The fingerprint of root kind Ordered's input heading, taken once. */
 const chainOrderedHeading = inputFingerprint(
-	'100:17:ChainOrderedInput56:4:feed47:8:closedId21:ChainOrderedInputFeed4:news5:sport18:5:pages9:pg.bigint233:6:digest221:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("ChainOrderedInput"), chainOrderedInputTexts.feed(row.feed), chainOrderedInputTexts.pages(row.pages)]))]'
+	'97:17:ChainOrderedInput56:4:feed47:8:closedId21:ChainOrderedInputFeed4:news5:sport15:5:pages6:g.int8233:6:digest221:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("ChainOrderedInput"), chainOrderedInputTexts.feed(row.feed), chainOrderedInputTexts.pages(row.pages)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface ChainHandles {
 	readonly den: {
-		readonly [K in keyof typeof chainDenPrograms]: MemberHandle<(typeof chainDenPrograms)[K]>
+		readonly [K in keyof typeof chainDenPrograms]: gRuntime.MemberHandle<
+			(typeof chainDenPrograms)[K]
+		>
 	}
 	readonly coordinator: {
-		readonly [K in keyof typeof chainCoordinatorPrograms]: MemberHandle<
+		readonly [K in keyof typeof chainCoordinatorPrograms]: gRuntime.MemberHandle<
 			(typeof chainCoordinatorPrograms)[K]
 		>
 	}
 	readonly retirer: {
-		readonly [K in keyof typeof chainRetirerPrograms]: MemberHandle<
+		readonly [K in keyof typeof chainRetirerPrograms]: gRuntime.MemberHandle<
 			(typeof chainRetirerPrograms)[K]
 		>
 	}
 	readonly commits: {
-		readonly [K in keyof typeof chainCommitPrograms]: MemberHandle<(typeof chainCommitPrograms)[K]>
+		readonly [K in keyof typeof chainCommitPrograms]: gRuntime.MemberHandle<
+			(typeof chainCommitPrograms)[K]
+		>
 	}
 }
 
 interface Rows {
-	readonly ChainScope: ReadonlyArray<Addition<typeof ChainScope>>
-	readonly ChainAdmitted: ReadonlyArray<Addition<typeof ChainAdmitted>>
-	readonly ChainFinish: ReadonlyArray<Addition<typeof ChainFinish>>
-	readonly ChainStartStep: ReadonlyArray<Addition<typeof ChainStartStep>>
-	readonly ChainPageInput: ReadonlyArray<Addition<typeof ChainPageInput>>
-	readonly ChainPageInputAfter: ReadonlyArray<Addition<typeof ChainPageInputAfter>>
-	readonly ChainNext: ReadonlyArray<Addition<typeof ChainNext>>
+	readonly ChainScope: ReadonlyArray<g.Addition<typeof ChainScope>>
+	readonly ChainAdmitted: ReadonlyArray<g.Addition<typeof ChainAdmitted>>
+	readonly ChainFinish: ReadonlyArray<g.Addition<typeof ChainFinish>>
+	readonly ChainStartStep: ReadonlyArray<g.Addition<typeof ChainStartStep>>
+	readonly ChainPageInput: ReadonlyArray<g.Addition<typeof ChainPageInput>>
+	readonly ChainPageInputAfter: ReadonlyArray<g.Addition<typeof ChainPageInputAfter>>
+	readonly ChainNext: ReadonlyArray<g.Addition<typeof ChainNext>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -195,8 +199,8 @@ export const chainLedger = (h: ChainHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
-		Arr.some(grown.rows.ChainStartStep, (s) => Sha256.equals(s.scope, scope))
+	const hasChildren = (grown: Grown, scope: g.Sha256): boolean =>
+		Arr.some(grown.rows.ChainStartStep, (s) => g.Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			ChainScope: [...a.rows.ChainScope, ...b.rows.ChainScope],
@@ -215,8 +219,8 @@ export const chainLedger = (h: ChainHandles) => {
 		}
 	})
 	const startChainRun = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof chain.kinds)[1]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -248,8 +252,8 @@ export const chainLedger = (h: ChainHandles) => {
 			joined
 		)
 	const startOrdered = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof chain.kinds)[2]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -280,7 +284,7 @@ export const chainLedger = (h: ChainHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readChainPageInput = (root: Sha256, step: Sha256) =>
+	const readChainPageInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.chainReadChainPageInput.once({ params: { root, step }, facts: {} })),
@@ -297,7 +301,7 @@ export const chainLedger = (h: ChainHandles) => {
 				after: Option.map(side0, (o) => o.value)
 			}))
 		})
-	const readChainChainRunInput = (root: Sha256, scope: Sha256) =>
+	const readChainChainRunInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.chainReadChainChainRunInput.once({ params: { root, scope }, facts: {} })),
@@ -305,7 +309,7 @@ export const chainLedger = (h: ChainHandles) => {
 			)
 			return Option.map(row, (found) => ({ feed: found.feed, pages: found.pages }))
 		})
-	const readChainOrderedInput = (root: Sha256, scope: Sha256) =>
+	const readChainOrderedInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.chainReadChainOrderedInput.once({ params: { root, scope }, facts: {} })),
@@ -454,7 +458,7 @@ export const chainLedger = (h: ChainHandles) => {
 							}))
 						)
 						const uniqueWeights = Arr.dedupeWith(recordedWeights, (a, b) =>
-							Sha256.equals(a.digest, b.digest)
+							g.Sha256.equals(a.digest, b.digest)
 						)
 						const recordedEarlier = yield* Effect.forEach(done.rows.earlier, (row) =>
 							Effect.map(ChainPageReadEarlierText(row), (text) => ({
@@ -463,7 +467,7 @@ export const chainLedger = (h: ChainHandles) => {
 							}))
 						)
 						const uniqueEarlier = Arr.dedupeWith(recordedEarlier, (a, b) =>
-							Sha256.equals(a.digest, b.digest)
+							g.Sha256.equals(a.digest, b.digest)
 						)
 						const recordedTree = yield* Effect.forEach(done.rows.tree, (row) =>
 							Effect.map(ChainPageReadTreeText(row), (text) => ({
@@ -472,7 +476,7 @@ export const chainLedger = (h: ChainHandles) => {
 							}))
 						)
 						const uniqueTree = Arr.dedupeWith(recordedTree, (a, b) =>
-							Sha256.equals(a.digest, b.digest)
+							g.Sha256.equals(a.digest, b.digest)
 						)
 						const outcome = yield* settled(
 							h.commits.chainCommitPage.once({
@@ -504,7 +508,7 @@ export const chainLedger = (h: ChainHandles) => {
 													value: value
 												}))
 											),
-											...recordsFacts(
+											...g.recordsFacts(
 												chainGraph,
 												ChainPageReadWeightsRecords
 											)(
@@ -519,7 +523,7 @@ export const chainLedger = (h: ChainHandles) => {
 												ordinal: BigInt(ordinal),
 												digest: found.digest
 											})),
-											...recordsFacts(
+											...g.recordsFacts(
 												chainGraph,
 												ChainPageReadEarlierRecords
 											)(
@@ -534,7 +538,7 @@ export const chainLedger = (h: ChainHandles) => {
 												ordinal: BigInt(ordinal),
 												digest: found.digest
 											})),
-											...recordsFacts(
+											...g.recordsFacts(
 												chainGraph,
 												ChainPageReadTreeRecords
 											)(
@@ -615,13 +619,13 @@ export const chainLedger = (h: ChainHandles) => {
 						const inputPage = (child: (typeof inputPageRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputPageRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputPageRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) => ({
 										feed: row.feed,
 										seq: Brand.nominal<bigint & Brand.Brand<"Seq">>()(row.seq),
 										pages: row.pages,
 										after: Option.map(
-											Arr.findFirst(inputPageSide0, (o) => Sha256.equals(o.step, row.step)),
+											Arr.findFirst(inputPageSide0, (o) => g.Sha256.equals(o.step, row.step)),
 											(o) => o.value
 										)
 									})
@@ -637,7 +641,7 @@ export const chainLedger = (h: ChainHandles) => {
 											items: row.items,
 											earlier: row.earlier,
 											next: Option.map(
-												Arr.findFirst(outputPageSide0, (o) => Sha256.equals(o.step, row.step)),
+												Arr.findFirst(outputPageSide0, (o) => g.Sha256.equals(o.step, row.step)),
 												(o) => o.value
 											)
 										})
@@ -738,13 +742,13 @@ export const chainLedger = (h: ChainHandles) => {
 						const inputPage = (child: (typeof inputPageRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputPageRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputPageRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) => ({
 										feed: row.feed,
 										seq: Brand.nominal<bigint & Brand.Brand<"Seq">>()(row.seq),
 										pages: row.pages,
 										after: Option.map(
-											Arr.findFirst(inputPageSide0, (o) => Sha256.equals(o.step, row.step)),
+											Arr.findFirst(inputPageSide0, (o) => g.Sha256.equals(o.step, row.step)),
 											(o) => o.value
 										)
 									})
@@ -760,7 +764,7 @@ export const chainLedger = (h: ChainHandles) => {
 											items: row.items,
 											earlier: row.earlier,
 											next: Option.map(
-												Arr.findFirst(outputPageSide0, (o) => Sha256.equals(o.step, row.step)),
+												Arr.findFirst(outputPageSide0, (o) => g.Sha256.equals(o.step, row.step)),
 												(o) => o.value
 											)
 										})
@@ -812,7 +816,7 @@ export const chainLedger = (h: ChainHandles) => {
 		ChainRun: {
 			window: chain.kinds[1].window,
 			precondition: chain.kinds[1].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readChainChainRunInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -824,11 +828,11 @@ export const chainLedger = (h: ChainHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "ChainRunFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof ChainAdmitted>> = [
 						...grown.rows.ChainAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof ChainFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof ChainFinish>> = [
 						...grown.rows.ChainFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -859,7 +863,7 @@ export const chainLedger = (h: ChainHandles) => {
 		Ordered: {
 			window: chain.kinds[2].window,
 			precondition: chain.kinds[2].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readChainOrderedInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -871,11 +875,11 @@ export const chainLedger = (h: ChainHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "OrderedFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof ChainAdmitted>> = [
 						...grown.rows.ChainAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof ChainFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof ChainFinish>> = [
 						...grown.rows.ChainFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -973,7 +977,7 @@ export const chainLedger = (h: ChainHandles) => {
 			),
 		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				if (!Sha256.equals(root, scope)) {
+				if (!g.Sha256.equals(root, scope)) {
 					return Option.none()
 				}
 				const standing = yield* Effect.map(
@@ -1096,9 +1100,9 @@ export const chainLedger = (h: ChainHandles) => {
 		retire: (root) => settled(h.retirer.chainRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.chainSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof chain>> => {
-				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
+				const view = (scope: g.Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
-						Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
+						Arr.findFirst(read.roots, (o) => g.Sha256.equals(o.scope, scope)),
 						{
 							onSome: (o): ReadonlyArray<ScopeView> => [
 								{

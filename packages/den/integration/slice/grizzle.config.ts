@@ -1,5 +1,5 @@
 import net from "node:net"
-import { CredentialError, defineConfig } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { Config, Effect } from "effect"
 import pgDriver from "pg"
 import { App } from "#integration/slice/app.ts"
@@ -14,7 +14,7 @@ import { AppLogin, Worker } from "#integration/slice/logins.ts"
  * templatePrefixOf), so the longest prefix is 13 bytes (rolePrefixBytes). Its logins are den's worker, the app's, and
  * the app's composing login (composing.ts), whose role composes derived requests into writes of its own.
  */
-export default defineConfig({
+export default g.defineConfig({
 	schemas: [App],
 	logins: [Worker, AppLogin, Composing],
 	migrations: "migrations",
@@ -33,7 +33,7 @@ export default defineConfig({
 		role: Effect.runSync(Config.String("DEN_PG_ROLE")),
 		rolePrefix: Effect.runSync(Config.String("DEN_ROLE_PREFIX")),
 		password: Config.Redacted("DEN_PG_PASSWORD").pipe(
-			Effect.mapError((cause) => new CredentialError({ cause }))
+			Effect.mapError((cause) => new g.CredentialError({ cause }))
 		)
 	})
 })

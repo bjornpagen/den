@@ -1,4 +1,4 @@
-import type { Sha256 } from "@bjornpagen/grizzle"
+import type * as g from "@bjornpagen/grizzle"
 import { Array as Arr, Clock, Duration, Effect } from "effect"
 import { censusRing } from "#runtime/census.ts"
 import { type FlowName, type Ring, Transport } from "#transport.ts"
@@ -15,7 +15,7 @@ import { type FlowName, type Ring, Transport } from "#transport.ts"
 /** A root a write requested: its flow and its scope, whose admission the write rings once it has committed. */
 export interface Requested {
 	readonly flow: FlowName
-	readonly scope: Sha256
+	readonly scope: g.Sha256
 }
 
 /**

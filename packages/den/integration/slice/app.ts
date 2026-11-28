@@ -1,4 +1,4 @@
-import { contained, on, schema } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { SliceBase } from "#integration/slice/base.ts"
 import { assignCoordination, assignGraph } from "#integration/slice/generated/assign.fragment.ts"
 import {
@@ -26,7 +26,7 @@ import {
 import { Audit } from "#integration/slice/relations.ts"
 
 /** The toy app's own level, each of den's eight flows listed as its graph and its coordination fragments. */
-const Listed = schema.extend(
+const Listed = g.schema.extend(
 	[SliceBase],
 	"SliceDen",
 	[
@@ -48,14 +48,14 @@ const Listed = schema.extend(
 		clockGraph,
 		clockCoordination
 	],
-	[contained(on(Audit, "step", "root"), on(ChainResult, "step", "root"))]
+	[g.contained(g.on(Audit, "step", "root"), g.on(ChainResult, "step", "root"))]
 )
 
 /**
  * The toy app's schema: its own level, and over it the fan-out's and the review's seat levels, their live holds checked below
  * their seat counts, which no fragment can state: one installation, one migrations chain.
  */
-export const App = schema.extend(
+export const App = g.schema.extend(
 	[Listed],
 	"SliceSeats",
 	[...fanSeatLevel.relations, ...reviewSeatLevel.relations],

@@ -1,5 +1,5 @@
-import type { BrokenLaws, Law, RefusedLaw, Sha256 } from "@bjornpagen/grizzle"
-import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import type * as g from "@bjornpagen/grizzle"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Data, type Effect, Option, type Stream } from "effect"
 import type { Again, Precondition, Use, Window } from "#algebra/kinds.ts"
 import type { Delay, Instant } from "#runtime/identity.ts"
@@ -21,8 +21,8 @@ import type { DeploymentId, EnvironmentName, FlowName } from "#transport.ts"
  * serves (`above`), then the Db's own where it judged them (`laws`).
  */
 export const refusedLaws = (
-	refused: BrokenLaws
-): readonly [RefusedLaw<Law>, ...Array<RefusedLaw<Law>>] => {
+	refused: g.BrokenLaws
+): readonly [g.RefusedLaw<g.Law>, ...Array<g.RefusedLaw<g.Law>>] => {
 	switch (refused.kind) {
 		case "every":
 		case "first":
@@ -35,7 +35,7 @@ export const refusedLaws = (
 
 /** Whether a call was refused on the primary key of one of `relations`: another fact already holds that key. */
 export const refusedOnKey = (error: Settled, relations: ReadonlyArray<string>): boolean =>
-	error.kind === "refused" &&
+	error._tag === "refused" &&
 	Arr.some(
 		refusedLaws(error.refused),
 		({ law }) => law.kind === "primaryKey" && Arr.contains(relations, law.relation)
@@ -47,7 +47,7 @@ export type Outcome = "done" | "failed"
 /** Where a step is: its kind's runner, its owning scope, and the instant its first attempt is due. */
 export interface Located<R> {
 	readonly runner: StepRunner<R>
-	readonly scope: Sha256
+	readonly scope: g.Sha256
 	readonly due: Instant
 }
 
@@ -55,13 +55,13 @@ export interface Located<R> {
  * A row as written: every row of a root's graph carries its root's scope, the key of grizzle's unit DenRoot it sits
  * under, which every write of it holds and a retirement clears.
  */
-export type Rooted<A> = A & { readonly root: Sha256 }
+export type Rooted<A> = A & { readonly root: g.Sha256 }
 
 /** A step by its key in its root's graph: its root, the unit's key, then the step, so its rows are one probe away. */
-export type StepKey = Rooted<{ readonly step: Sha256 }>
+export type StepKey = Rooted<{ readonly step: g.Sha256 }>
 
 /** A scope by its key in its root's graph: its root, then the scope; a root's own scope is its root. */
-export type ScopeKey = Rooted<{ readonly scope: Sha256 }>
+export type ScopeKey = Rooted<{ readonly scope: g.Sha256 }>
 
 /** A step's attempt, in its root's graph: what a refusal or an exhaustion records its ending against. */
 export type StepAt = StepKey & { readonly attempt: bigint }
@@ -76,7 +76,7 @@ export type SpawnDue =
 
 /** A step a commit or an admission spawned, with when it is first due. */
 export interface SpawnedStep {
-	readonly step: Sha256
+	readonly step: g.Sha256
 	readonly kind: string
 	readonly due: SpawnDue
 }
@@ -87,12 +87,12 @@ export interface SpawnedStep {
  */
 export interface Spawned {
 	readonly steps: ReadonlyArray<SpawnedStep>
-	readonly finishes: ReadonlyArray<Sha256>
+	readonly finishes: ReadonlyArray<g.Sha256>
 }
 
 /** What a commit or an admission wrote: grizzle's outcome, and the children it spawned. */
 export interface Committed {
-	readonly outcome: WriteOutcome<unknown>
+	readonly outcome: gRuntime.WriteOutcome<unknown>
 	readonly spawned: Spawned
 }
 
@@ -101,15 +101,15 @@ export interface Committed {
  * database stamps, and until when its lease holds. The claim is its turn's identity: no holder beside it.
  */
 export interface ClaimRow {
-	readonly step: Sha256
+	readonly step: g.Sha256
 	readonly attempt: bigint
 	readonly until: Instant
 }
 
 /** An attempt of a step of a root's graph. */
 export interface AttemptOf {
-	readonly step: Sha256
-	readonly root: Sha256
+	readonly step: g.Sha256
+	readonly root: g.Sha256
 	readonly attempt: bigint
 }
 
@@ -120,7 +120,7 @@ export interface AttemptOf {
  * their leases.
  */
 export interface ClaimOf {
-	readonly step: Sha256
+	readonly step: g.Sha256
 	readonly budget: Delay
 	readonly seats: ReadonlyArray<SeatAt>
 	readonly lapsed: ReadonlyArray<AttemptOf>
@@ -135,7 +135,7 @@ export type RetryWhy = "spent" | "transient" | "later"
 
 /** An attempt that ended without a result: the step, the attempt, when the next is due, and why it ended so. */
 export interface RetryRow {
-	readonly step: Sha256
+	readonly step: g.Sha256
 	readonly attempt: bigint
 	readonly at: Instant
 	readonly why: RetryWhy
@@ -143,7 +143,7 @@ export interface RetryRow {
 
 /** A retry as a turn records it: when the next attempt is due, its delay after the database's reading in the write. */
 export interface RetryOf {
-	readonly step: Sha256
+	readonly step: g.Sha256
 	readonly attempt: bigint
 	readonly delay: Delay
 	readonly why: RetryWhy
@@ -154,16 +154,16 @@ export interface RetryOf {
  * deployment, with no due instant of its own; the census rings its step again once the commits' login is let in.
  */
 export interface FencedRow {
-	readonly step: Sha256
+	readonly step: g.Sha256
 	readonly attempt: bigint
 }
 
 /** A turn of a step, once claimed: the step, its attempt, scope and root, and the deadline its body runs to. */
 export interface Turn {
-	readonly step: Sha256
-	readonly root: Sha256
+	readonly step: g.Sha256
+	readonly root: g.Sha256
 	readonly attempt: bigint
-	readonly scope: Sha256
+	readonly scope: g.Sha256
 	readonly deadline: Instant
 }
 
@@ -211,7 +211,7 @@ export interface RootRunner {
 	 * Writes the root's admission: its start's children at every depth and every finish, each step due its delay after
 	 * the admission's own reading of the database's clock.
 	 */
-	readonly admit: (scope: Sha256) => Effect.Effect<Option.Option<Committed>, Settled>
+	readonly admit: (scope: g.Sha256) => Effect.Effect<Option.Option<Committed>, Settled>
 }
 
 /** How a root stands toward its admission: requested and not yet admitted, admitted, or recorded skipped. */
@@ -225,26 +225,26 @@ export type Admission = "requested" | "admitted" | "skipped"
 export type ScopeView =
 	| {
 			readonly place: "root"
-			readonly scope: Sha256
+			readonly scope: g.Sha256
 			readonly kind: string
 			readonly key: string
 			readonly at: Instant
 			readonly admission: Admission
-			readonly exclusive: Option.Option<Sha256>
+			readonly exclusive: Option.Option<g.Sha256>
 			readonly runner: RootRunner
 	  }
 	| {
 			readonly place: "child"
-			readonly scope: Sha256
+			readonly scope: g.Sha256
 			readonly kind: string
-			readonly parent: Sha256
+			readonly parent: g.Sha256
 	  }
 
 /** A root scope as the scheduler sees it. */
 export type RootView = Extract<ScopeView, { readonly place: "root" }>
 
 /** A scope's parent: a child's, and none for a root. */
-export const parentOf = (view: ScopeView): Option.Option<Sha256> =>
+export const parentOf = (view: ScopeView): Option.Option<g.Sha256> =>
 	view.place === "child" ? Option.some(view.parent) : Option.none()
 
 /** A seat: a resource, and one of its seats, `0 … seats − 1`. */
@@ -261,7 +261,7 @@ export interface HoldRow extends SeatAt, AttemptOf {
 /** An exclusivity seat: a root kind and the exclusivity key its scopes share. */
 export interface ExclusiveAt {
 	readonly kind: string
-	readonly key: Sha256
+	readonly key: g.Sha256
 }
 
 /** An exclusivity seat's turn, as a seat's. */
@@ -271,7 +271,7 @@ export interface ExclusiveTurn extends ExclusiveAt {
 
 /** An exclusivity seat's live turn, not released, and the scope holding it. */
 export interface ExclusiveRow extends ExclusiveTurn {
-	readonly scope: Sha256
+	readonly scope: g.Sha256
 }
 
 /** A pause's turn: a resource, a pause handle or a root kind, paused at a turn until that turn is resumed. */
@@ -301,14 +301,14 @@ export class UnknownPauseTarget extends Data.TaggedError("UnknownPauseTarget")<{
  */
 export interface Snapshot<R> {
 	readonly steps: ReadonlyArray<{
-		readonly step: Sha256
-		readonly root: Sha256
+		readonly step: g.Sha256
+		readonly root: g.Sha256
 		readonly runner: StepRunner<R>
-		readonly scope: Sha256
+		readonly scope: g.Sha256
 		readonly due: Instant
 	}>
 	readonly claims: ReadonlyArray<{
-		readonly step: Sha256
+		readonly step: g.Sha256
 		readonly attempt: bigint
 		readonly until: Instant
 	}>
@@ -320,7 +320,7 @@ export interface Snapshot<R> {
 	readonly paused: ReadonlyArray<string>
 	readonly busy: ReadonlyArray<string>
 	/** The pending steps that wait on a fact they await, some awaited row missing. */
-	readonly awaiting: ReadonlyArray<Sha256>
+	readonly awaiting: ReadonlyArray<g.Sha256>
 }
 
 /**
@@ -414,30 +414,38 @@ export interface Ledger<R> {
 	readonly claim: (claim: Rooted<ClaimOf>) => Effect.Effect<bigint, Settled>
 	/** The live holds of the flow's seats, each with its claim and its claim's lease. */
 	readonly holds: Effect.Effect<ReadonlyArray<HoldRow>, Settled>
-	readonly retry: (retry: Rooted<RetryOf>) => Effect.Effect<WriteOutcome<unknown>, Settled>
-	readonly fence: (fenced: Rooted<FencedRow>) => Effect.Effect<WriteOutcome<unknown>, Settled>
-	readonly refuse: (at: StepAt, law: string) => Effect.Effect<WriteOutcome<unknown>, Settled>
-	readonly exhaust: (at: StepAt) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	readonly retry: (retry: Rooted<RetryOf>) => Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>
+	readonly fence: (
+		fenced: Rooted<FencedRow>
+	) => Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>
+	readonly refuse: (
+		at: StepAt,
+		law: string
+	) => Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>
+	readonly exhaust: (at: StepAt) => Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>
 	/** Records a root not admitted because another live root of its kind, `by`, holds its exclusivity seat. */
-	readonly skip: (scope: Sha256, by: Sha256) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	readonly skip: (
+		scope: g.Sha256,
+		by: g.Sha256
+	) => Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>
 	/**
 	 * The roots whose graphs have ended (a finish with its result, or recorded skipped) and are not yet retired, a
 	 * retirement's candidates.
 	 */
-	readonly finishedRoots: Effect.Effect<ReadonlyArray<Sha256>, Settled>
+	readonly finishedRoots: Effect.Effect<ReadonlyArray<g.Sha256>, Settled>
 	/**
 	 * Retires a root's graph, under den's retiring role: every row its graph holds is deleted at its root, its record
 	 * stays, and its key never starts a graph again. An app row that references one of its rows refuses it, naming the
 	 * relation.
 	 */
-	readonly retire: (root: Sha256) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	readonly retire: (root: g.Sha256) => Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>
 	readonly snapshot: Effect.Effect<Snapshot<R>, Settled>
 	/**
 	 * The relay's watch: one signal per change of the served reads eligibility depends on (pending steps, live scopes,
 	 * holds, exclusivity seats, pauses and the flows a precondition names), each through grizzle's live source, and the
 	 * CallError that ended one of them.
 	 */
-	readonly changes: Stream.Stream<Option.Option<CallError>>
+	readonly changes: Stream.Stream<Option.Option<gRuntime.CallError>>
 	readonly coordination: Coordination
 	/** The roots a schedule starts: each one's cron, and its request at a scheduled instant. */
 	readonly scheduled: ReadonlyArray<{

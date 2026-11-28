@@ -6,8 +6,8 @@ import { refusedLaws } from "@bjornpagen/den/runtime/ledger"
 import { settled } from "@bjornpagen/den/runtime/settled"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import { ChangeSet, clocked, pg, relation, Sha256, schema, workload } from "@bjornpagen/grizzle"
-import { compileServed, type ServedRefusal } from "@bjornpagen/grizzle/compile"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import {
@@ -176,21 +176,21 @@ export const aDerivedRootsInputIsItsReadAtItsRequest = property.explore(events, 
 						/**
 						 * A batch's run's input, key and root as the fan's graph holds them, by its request's scope.
 						 */
-						const held = (scope: Sha256) =>
+						const held = (scope: g.Sha256) =>
 							Effect.gen(function* () {
 								const inputs = yield* rows(app.workload.fanWantedInputs.once(none))
 								const keys = yield* rows(app.workload.fanWantedKeys.once(none))
 								const roots = yield* rows(app.workload.fanRoots.once(none))
 								return {
 									input: Arr.map(
-										Arr.filter(inputs, (i) => Sha256.equals(i.scope, scope)),
+										Arr.filter(inputs, (i) => g.Sha256.equals(i.scope, scope)),
 										(i) => [i.batch, Number(i.size)] as const
 									),
 									key: Arr.map(
-										Arr.filter(keys, (k) => Sha256.equals(k.root, scope)),
+										Arr.filter(keys, (k) => g.Sha256.equals(k.root, scope)),
 										(k) => k.batch
 									),
-									root: Arr.some(roots, (r) => Sha256.equals(r.scope, scope))
+									root: Arr.some(roots, (r) => g.Sha256.equals(r.scope, scope))
 								}
 							})
 						const standings = yield* Effect.reduce(
@@ -358,9 +358,9 @@ export const aDerivedRootsInputIsItsReadAtItsRequest = property.explore(events, 
 		{
 			file: "packages/den/integration/slice/app-programs.ts",
 			original:
-				"\t\tChangeSet.sequence(ChangeSet.empty(Loader).insert(Want, []), fanRequests.Wanted),\n",
+				"\t\tg.ChangeSet.sequence(g.ChangeSet.empty(Loader).insert(Want, []), fanRequests.Wanted),\n",
 			replacement:
-				"\t\tChangeSet.union(ChangeSet.empty(Loader).insert(Want, []), fanRequests.Wanted),\n",
+				"\t\tg.ChangeSet.union(g.ChangeSet.empty(Loader).insert(Want, []), fanRequests.Wanted),\n",
 			why: "The request reads the state before its own write: a size wanted beside it derives nothing, and no run stands where the read at its commit derives one."
 		}
 	]
@@ -403,20 +403,20 @@ const compositions: Gen<Composition> = (source) =>
  */
 const composingConfig = (
 	inserts: ReadonlyArray<ComposerInsert>
-): string => `import { defineConfig, login, role, wholeEntriesOf } from "@bjornpagen/grizzle"
+): string => `import * as g from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import { composerPrograms } from "#integration/slice/composing.ts"
 
-const composer = role(App, "composer", wholeEntriesOf(App), {
+const composer = g.role(App, "composer", g.wholeEntriesOf(App), {
 	insert: [${Arr.join(
 		Arr.map(inserts, (insert) => `"${insert}"`),
 		", "
 	)}]
 })
 
-export default defineConfig({
+export default g.defineConfig({
 	schemas: [App],
-	logins: [login(App, "composing", [composer], { workload: [composerPrograms(composer)] })],
+	logins: [g.login(App, "composing", [composer], { workload: [composerPrograms(composer)] })],
 	migrations: "migrations",
 	rolePrefixBytes: 13,
 	connection: () => {
@@ -426,10 +426,10 @@ export default defineConfig({
 `
 
 /** What a write over a level above the app's schema writes beside the request, as metis's proctored submit does. */
-const Noted = relation("Noted", { size: pg.bigint }, ["size"])
+const Noted = g.relation("Noted", { size: g.int8 }, ["size"])
 
 /** A level above the app's schema, as metis's proctoring levels stand above essay grading's. */
-const Above = schema.extend([App], "SliceAbove", [Noted], [])
+const Above = g.schema.extend([App], "SliceAbove", [Noted], [])
 
 /**
  * Composes a derived app root's request into every write of the app's over its schema or a level above it: the fan's
@@ -466,16 +466,20 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 			(_, c: Case<Composition["kind"]>) =>
 			(
 				composer
-			): Effect.Effect<void, ServedRefusal | PlatformError.PlatformError, CheckContext> => {
+			): Effect.Effect<
+				void,
+				gCompile.ServedRefusal | PlatformError.PlatformError,
+				CheckContext
+			> => {
 				c.note(composer.kind)
 				switch (composer.kind) {
 					case "the flow's writer":
 						return Effect.asVoid(
-							compileServed(AppLogin, snapshotFile, [
-								workload(Loader, {
-									wantRun: clocked(
-										ChangeSet.sequence(
-											ChangeSet.empty(Loader).insert(Want, []),
+							gCompile.compileServed(AppLogin, snapshotFile, [
+								g.workload(Loader, {
+									wantRun: g.clocked(
+										g.ChangeSet.sequence(
+											g.ChangeSet.empty(Loader).insert(Want, []),
 											fanRequests.Wanted
 										),
 										{ [denClock]: "millis" },
@@ -486,7 +490,7 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 						)
 					case "the composing role":
 						return Effect.asVoid(
-							compileServed(Composing, snapshotFile, [composerPrograms(Composer)])
+							gCompile.compileServed(Composing, snapshotFile, [composerPrograms(Composer)])
 						)
 					case "a configuration of the composing role":
 						return Effect.map(generatedFrom(composingConfig(composerInserts)), (generated) => {
@@ -512,7 +516,7 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 					case "a write over a level above the schema":
 						return Effect.asVoid(
 							Effect.sync(() =>
-								ChangeSet.sequence(ChangeSet.empty(Above).insert(Noted, []), fanRequests.Wanted)
+								g.ChangeSet.sequence(g.ChangeSet.empty(Above).insert(Noted, []), fanRequests.Wanted)
 							)
 						)
 				}
@@ -525,8 +529,8 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 		kills: [
 			{
 				file: "packages/den/integration/slice/generated/fan.programs.ts",
-				original: "\tWanted: ChangeSet.empty(App)\n",
-				replacement: "\tWanted: ChangeSet.empty(Loader)\n",
+				original: "\tWanted: g.ChangeSet.empty(App)\n",
+				replacement: "\tWanted: g.ChangeSet.empty(Loader)\n",
 				why: "The request is written over the fan's writer role: neither another role holding the same schema nor a write over a level above it can compose it, and each is refused."
 			},
 			{
@@ -628,7 +632,7 @@ export const aKeysFieldsNameOneRoot = property.exhaust(finite(renamings), {
 						const refusedOnItsFields = Option.exists(
 							Exit.findErrorOption(requested),
 							(error) =>
-								error.kind === "refused" &&
+								error._tag === "refused" &&
 								Arr.some(
 									refusedLaws(error.refused),
 									({ law }) => law.kind === "key" && law.side.relation === "FanWantedKey"
@@ -656,7 +660,7 @@ export const aKeysFieldsNameOneRoot = property.exhaust(finite(renamings), {
 	kills: [
 		{
 			file: "packages/den/integration/slice/generated/fan.fragment.ts",
-			original: '\t\tkey(on(FanWantedKey, "batchDigest")),\n',
+			original: '\t\tg.key(g.on(FanWantedKey, "batchDigest")),\n',
 			replacement: "",
 			why: "No law keys the key's fields: the installed index still refuses the renamed text's root, but as no law of the code's, so the refusal names no key law and the request fails for something else."
 		}

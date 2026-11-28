@@ -8,7 +8,7 @@ import {
 	InProcess,
 	Transport
 } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -76,10 +76,10 @@ export const aTurnRunsOnlyOnTheDeploymentItsEnvironmentServes = property.explore
 						const app = yield* openAuditor
 						const { held } = yield* InProcess
 						const transport = yield* Transport
-						const pagesOf = (scope: Sha256) =>
+						const pagesOf = (scope: g.Sha256) =>
 							Effect.map(
 								rows(app.workload.pages.once({ params: {}, facts: {} })),
-								(pages) => Arr.filter(pages, (page) => Sha256.equals(page.scope, scope)).length
+								(pages) => Arr.filter(pages, (page) => g.Sha256.equals(page.scope, scope)).length
 							)
 						const census = Effect.gen(function* () {
 							const reading = yield* chain.ledger.now

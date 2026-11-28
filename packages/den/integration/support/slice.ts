@@ -7,8 +7,8 @@ import {
 } from "@bjornpagen/den/lower/print"
 import { type Ledgers, promote } from "@bjornpagen/den/runtime/turn"
 import { DeploymentId, EnvironmentName, Host, inProcess } from "@bjornpagen/den/transport"
-import { compileServedMoved } from "@bjornpagen/grizzle/compile"
-import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { waitingOn } from "@bjornpagen/testing/live"
 import { type Need, NeedFailed } from "@bjornpagen/testing/property"
 import { Database, type DatabaseNeed, Template, templateKeyOf } from "@bjornpagen/testing/resources"
@@ -61,8 +61,8 @@ import { connectionTo, overTls, type TlsMember } from "#integration/support/clus
  * and dropped once the case ends.
  */
 
-const WorkerServed = served<typeof Worker>(workerFile, "worker")
-const AppServed = served<typeof AppLogin>(appFile, "app")
+const WorkerServed = gRuntime.served<typeof Worker>(workerFile, "worker")
+const AppServed = gRuntime.served<typeof AppLogin>(appFile, "app")
 
 /**
  * The slice's two logins served for a moved clock (compileServedMoved), from the committed snapshot: every clocked read
@@ -74,11 +74,13 @@ const AppServed = served<typeof AppLogin>(appFile, "app")
 const movedLogins = Effect.runSync(
 	Effect.cached(
 		Effect.all({
-			worker: Effect.map(compileServedMoved(Worker, snapshotFile, Worker.workload), (file) =>
-				served<typeof Worker>(file, "worker")
+			worker: Effect.map(
+				gCompile.compileServedMoved(Worker, snapshotFile, Worker.workload),
+				(file) => gRuntime.served<typeof Worker>(file, "worker")
 			),
-			app: Effect.map(compileServedMoved(AppLogin, snapshotFile, AppLogin.workload), (file) =>
-				served<typeof AppLogin>(file, "app")
+			app: Effect.map(
+				gCompile.compileServedMoved(AppLogin, snapshotFile, AppLogin.workload),
+				(file) => gRuntime.served<typeof AppLogin>(file, "app")
 			)
 		})
 	)
@@ -98,12 +100,12 @@ class Instant extends Context.Service<Instant, Effect.Effect<bigint>>()(
 
 /** The app's auditor, opened as every Db of a case is, over the case's moved clock (Instant). */
 export const openAuditor = Effect.flatMap(Instant, (instant) =>
-	Db.openMoved(AppServed.roles.auditor, {}, instant)
+	gRuntime.Db.openMoved(AppServed.roles.auditor, {}, instant)
 )
 
 /** The app's editor, which rewrites the passages and seen passages a decision read (app-programs.ts Editor). */
 export const openEditor = Effect.flatMap(Instant, (instant) =>
-	Db.openMoved(AppServed.roles.editor, {}, instant)
+	gRuntime.Db.openMoved(AppServed.roles.editor, {}, instant)
 )
 
 /** The slice's directory, where its migrations and a suite's configuration lie. */
@@ -272,9 +274,9 @@ const envOf = (member: TlsMember, database: string, rolePrefix: string) => ({
 
 /** The slice's three logins whose passwords a case's layers present: the worker's, the app's and the decoder's. */
 const loginsOf = (rolePrefix: string) => ({
-	worker: roleNameOf(WorkerServed, { rolePrefix }),
-	app: roleNameOf(AppServed, { rolePrefix }),
-	decoder: roleNameOf(WorkerServed.decoder, { rolePrefix })
+	worker: gRuntime.roleNameOf(WorkerServed, { rolePrefix }),
+	app: gRuntime.roleNameOf(AppServed, { rolePrefix }),
+	decoder: gRuntime.roleNameOf(WorkerServed.decoder, { rolePrefix })
 })
 
 /**
@@ -427,7 +429,7 @@ const pool = Object.freeze({ max: 4 })
 
 /** The app's loader, which den's commits run under, over the case's moved clock. */
 const openLoader = Effect.flatMap(Instant, (instant) =>
-	Db.openMoved(AppServed.roles.loader, {}, instant)
+	gRuntime.Db.openMoved(AppServed.roles.loader, {}, instant)
 )
 
 /**
@@ -451,16 +453,21 @@ const loginsLayer = (installed: Installed) =>
 				...connectionTo(installed.member, installed.database, password),
 				rolePrefix: installed.rolePrefix
 			})
-			const live = LiveSource.layer({ ...connection(installed.decoder), login: logins.worker })
+			const live = gRuntime.LiveSource.layer({
+				...connection(installed.decoder),
+				login: logins.worker
+			})
 			const misconfigured = Layer.effect(
 				Misconfigured,
 				Effect.map(openLoader, (loader) => ({ loader }))
 			).pipe(
-				Layer.provide(DbLayer.make({ ...connection(installed.worker), login: logins.app, pool }))
+				Layer.provide(
+					gRuntime.DbLayer.make({ ...connection(installed.worker), login: logins.app, pool })
+				)
 			)
 			return Layer.mergeAll(
-				DbLayer.make({ ...connection(installed.worker), login: logins.worker, pool }),
-				DbLayer.make({ ...connection(installed.app), login: logins.app, pool }),
+				gRuntime.DbLayer.make({ ...connection(installed.worker), login: logins.worker, pool }),
+				gRuntime.DbLayer.make({ ...connection(installed.app), login: logins.app, pool }),
 				misconfigured
 			).pipe(Layer.provide(live))
 		})
@@ -867,50 +874,67 @@ export const openLedgers = Effect.gen(function* () {
 	const commits = loader.workload
 	const roles = {
 		chain: {
-			den: (yield* Db.openMoved(WorkerServed.roles.chain_den, {}, instant)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.chain_coordinator, {}, instant))
+			den: (yield* gRuntime.Db.openMoved(WorkerServed.roles.chain_den, {}, instant)).workload,
+			coordinator: (yield* gRuntime.Db.openMoved(WorkerServed.roles.chain_coordinator, {}, instant))
 				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.chain_retirer, {}, instant)).workload
+			retirer: (yield* gRuntime.Db.openMoved(WorkerServed.roles.chain_retirer, {}, instant))
+				.workload
 		},
 		fan: {
-			den: (yield* Db.openMoved(WorkerServed.roles.fan_den, {}, instant)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.fan_coordinator, {}, instant)).workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.fan_retirer, {}, instant)).workload
+			den: (yield* gRuntime.Db.openMoved(WorkerServed.roles.fan_den, {}, instant)).workload,
+			coordinator: (yield* gRuntime.Db.openMoved(WorkerServed.roles.fan_coordinator, {}, instant))
+				.workload,
+			retirer: (yield* gRuntime.Db.openMoved(WorkerServed.roles.fan_retirer, {}, instant)).workload
 		},
 		sync: {
-			den: (yield* Db.openMoved(WorkerServed.roles.sync_den, {}, instant)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.sync_coordinator, {}, instant)).workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.sync_retirer, {}, instant)).workload
+			den: (yield* gRuntime.Db.openMoved(WorkerServed.roles.sync_den, {}, instant)).workload,
+			coordinator: (yield* gRuntime.Db.openMoved(WorkerServed.roles.sync_coordinator, {}, instant))
+				.workload,
+			retirer: (yield* gRuntime.Db.openMoved(WorkerServed.roles.sync_retirer, {}, instant)).workload
 		},
 		retry: {
-			den: (yield* Db.openMoved(WorkerServed.roles.retry_den, {}, instant)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.retry_coordinator, {}, instant))
+			den: (yield* gRuntime.Db.openMoved(WorkerServed.roles.retry_den, {}, instant)).workload,
+			coordinator: (yield* gRuntime.Db.openMoved(WorkerServed.roles.retry_coordinator, {}, instant))
 				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.retry_retirer, {}, instant)).workload
+			retirer: (yield* gRuntime.Db.openMoved(WorkerServed.roles.retry_retirer, {}, instant))
+				.workload
 		},
 		assign: {
-			den: (yield* Db.openMoved(WorkerServed.roles.assign_den, {}, instant)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.assign_coordinator, {}, instant))
-				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.assign_retirer, {}, instant)).workload
+			den: (yield* gRuntime.Db.openMoved(WorkerServed.roles.assign_den, {}, instant)).workload,
+			coordinator: (yield* gRuntime.Db.openMoved(
+				WorkerServed.roles.assign_coordinator,
+				{},
+				instant
+			)).workload,
+			retirer: (yield* gRuntime.Db.openMoved(WorkerServed.roles.assign_retirer, {}, instant))
+				.workload
 		},
 		review: {
-			den: (yield* Db.openMoved(WorkerServed.roles.review_den, {}, instant)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.review_coordinator, {}, instant))
-				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.review_retirer, {}, instant)).workload
+			den: (yield* gRuntime.Db.openMoved(WorkerServed.roles.review_den, {}, instant)).workload,
+			coordinator: (yield* gRuntime.Db.openMoved(
+				WorkerServed.roles.review_coordinator,
+				{},
+				instant
+			)).workload,
+			retirer: (yield* gRuntime.Db.openMoved(WorkerServed.roles.review_retirer, {}, instant))
+				.workload
 		},
 		writeback: {
-			den: (yield* Db.openMoved(WorkerServed.roles.writeback_den, {}, instant)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.writeback_coordinator, {}, instant))
-				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.writeback_retirer, {}, instant)).workload
+			den: (yield* gRuntime.Db.openMoved(WorkerServed.roles.writeback_den, {}, instant)).workload,
+			coordinator: (yield* gRuntime.Db.openMoved(
+				WorkerServed.roles.writeback_coordinator,
+				{},
+				instant
+			)).workload,
+			retirer: (yield* gRuntime.Db.openMoved(WorkerServed.roles.writeback_retirer, {}, instant))
+				.workload
 		},
 		clock: {
-			den: (yield* Db.openMoved(WorkerServed.roles.clock_den, {}, instant)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.clock_coordinator, {}, instant))
+			den: (yield* gRuntime.Db.openMoved(WorkerServed.roles.clock_den, {}, instant)).workload,
+			coordinator: (yield* gRuntime.Db.openMoved(WorkerServed.roles.clock_coordinator, {}, instant))
 				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.clock_retirer, {}, instant)).workload
+			retirer: (yield* gRuntime.Db.openMoved(WorkerServed.roles.clock_retirer, {}, instant))
+				.workload
 		}
 	}
 	const chain = chainLedger({ ...roles.chain, commits })

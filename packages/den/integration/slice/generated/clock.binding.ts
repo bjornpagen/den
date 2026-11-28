@@ -38,9 +38,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Clock over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, Sha256 } from "@bjornpagen/grizzle"
-import { codecText } from "@bjornpagen/grizzle/compile"
-import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Brand, Effect, Option, pipe, Result, Stream } from "effect"
 import { clock } from "#integration/slice/flows.ts"
 import { ClockPausable, ClockSittingInput } from "#integration/slice/generated/clock.fragment.ts"
@@ -63,8 +63,8 @@ import type {
 
 /** The codec text of each declared field of ClockSittingInput, a request's input row, bound once (grizzle's codecText). */
 const clockSittingInputTexts = Object.freeze({
-	sitting: codecText(ClockSittingInput.fields.sitting),
-	deadline: codecText(ClockSittingInput.fields.deadline)
+	sitting: gCompile.codecText(ClockSittingInput.fields.sitting),
+	deadline: gCompile.codecText(ClockSittingInput.fields.deadline)
 })
 /** The fingerprint of root kind Sitting's input heading, taken once. */
 const clockSittingHeading = inputFingerprint(
@@ -74,30 +74,34 @@ const clockSittingHeading = inputFingerprint(
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface ClockHandles {
 	readonly den: {
-		readonly [K in keyof typeof clockDenPrograms]: MemberHandle<(typeof clockDenPrograms)[K]>
+		readonly [K in keyof typeof clockDenPrograms]: gRuntime.MemberHandle<
+			(typeof clockDenPrograms)[K]
+		>
 	}
 	readonly coordinator: {
-		readonly [K in keyof typeof clockCoordinatorPrograms]: MemberHandle<
+		readonly [K in keyof typeof clockCoordinatorPrograms]: gRuntime.MemberHandle<
 			(typeof clockCoordinatorPrograms)[K]
 		>
 	}
 	readonly retirer: {
-		readonly [K in keyof typeof clockRetirerPrograms]: MemberHandle<
+		readonly [K in keyof typeof clockRetirerPrograms]: gRuntime.MemberHandle<
 			(typeof clockRetirerPrograms)[K]
 		>
 	}
 	readonly commits: {
-		readonly [K in keyof typeof clockCommitPrograms]: MemberHandle<(typeof clockCommitPrograms)[K]>
+		readonly [K in keyof typeof clockCommitPrograms]: gRuntime.MemberHandle<
+			(typeof clockCommitPrograms)[K]
+		>
 	}
 }
 
 interface Rows {
-	readonly ClockScope: ReadonlyArray<Addition<typeof ClockScope>>
-	readonly ClockAdmitted: ReadonlyArray<Addition<typeof ClockAdmitted>>
-	readonly ClockFinish: ReadonlyArray<Addition<typeof ClockFinish>>
-	readonly ClockStartStep: ReadonlyArray<Addition<typeof ClockStartStep>>
-	readonly ClockChimeInput: ReadonlyArray<Addition<typeof ClockChimeInput>>
-	readonly ClockCloseInput: ReadonlyArray<Addition<typeof ClockCloseInput>>
+	readonly ClockScope: ReadonlyArray<g.Addition<typeof ClockScope>>
+	readonly ClockAdmitted: ReadonlyArray<g.Addition<typeof ClockAdmitted>>
+	readonly ClockFinish: ReadonlyArray<g.Addition<typeof ClockFinish>>
+	readonly ClockStartStep: ReadonlyArray<g.Addition<typeof ClockStartStep>>
+	readonly ClockChimeInput: ReadonlyArray<g.Addition<typeof ClockChimeInput>>
+	readonly ClockCloseInput: ReadonlyArray<g.Addition<typeof ClockCloseInput>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -130,8 +134,8 @@ export const clockLedger = (h: ClockHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
-		Arr.some(grown.rows.ClockStartStep, (s) => Sha256.equals(s.scope, scope))
+	const hasChildren = (grown: Grown, scope: g.Sha256): boolean =>
+		Arr.some(grown.rows.ClockStartStep, (s) => g.Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			ClockScope: [...a.rows.ClockScope, ...b.rows.ClockScope],
@@ -149,8 +153,8 @@ export const clockLedger = (h: ClockHandles) => {
 		}
 	})
 	const startHourly = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof clock.kinds)[1]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -173,8 +177,8 @@ export const clockLedger = (h: ClockHandles) => {
 			joined
 		)
 	const startSitting = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof clock.kinds)[3]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -201,7 +205,7 @@ export const clockLedger = (h: ClockHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readClockChimeInput = (root: Sha256, step: Sha256) =>
+	const readClockChimeInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.clockReadClockChimeInput.once({ params: { root, step }, facts: {} })),
@@ -209,7 +213,7 @@ export const clockLedger = (h: ClockHandles) => {
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
-	const readClockCloseInput = (root: Sha256, step: Sha256) =>
+	const readClockCloseInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.clockReadClockCloseInput.once({ params: { root, step }, facts: {} })),
@@ -220,7 +224,7 @@ export const clockLedger = (h: ClockHandles) => {
 				deadline: Brand.nominal<bigint & Brand.Brand<"DenInstant">>()(found.deadline)
 			}))
 		})
-	const readClockHourlyInput = (root: Sha256, scope: Sha256) =>
+	const readClockHourlyInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.clockReadClockHourlyInput.once({ params: { root, scope }, facts: {} })),
@@ -228,7 +232,7 @@ export const clockLedger = (h: ClockHandles) => {
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
-	const readClockSittingInput = (root: Sha256, scope: Sha256) =>
+	const readClockSittingInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.clockReadClockSittingInput.once({ params: { root, scope }, facts: {} })),
@@ -536,7 +540,7 @@ export const clockLedger = (h: ClockHandles) => {
 		Hourly: {
 			window: clock.kinds[1].window,
 			precondition: clock.kinds[1].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readClockHourlyInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -548,11 +552,11 @@ export const clockLedger = (h: ClockHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "HourlyFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof ClockAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof ClockAdmitted>> = [
 						...grown.rows.ClockAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof ClockFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof ClockFinish>> = [
 						...grown.rows.ClockFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -583,7 +587,7 @@ export const clockLedger = (h: ClockHandles) => {
 		Sitting: {
 			window: clock.kinds[3].window,
 			precondition: clock.kinds[3].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readClockSittingInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -595,11 +599,11 @@ export const clockLedger = (h: ClockHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "SittingFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof ClockAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof ClockAdmitted>> = [
 						...grown.rows.ClockAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof ClockFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof ClockFinish>> = [
 						...grown.rows.ClockFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -697,7 +701,7 @@ export const clockLedger = (h: ClockHandles) => {
 			),
 		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				if (!Sha256.equals(root, scope)) {
+				if (!g.Sha256.equals(root, scope)) {
 					return Option.none()
 				}
 				const standing = yield* Effect.map(
@@ -820,9 +824,9 @@ export const clockLedger = (h: ClockHandles) => {
 		retire: (root) => settled(h.retirer.clockRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.clockSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof clock>> => {
-				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
+				const view = (scope: g.Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
-						Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
+						Arr.findFirst(read.roots, (o) => g.Sha256.equals(o.scope, scope)),
 						{
 							onSome: (o): ReadonlyArray<ScopeView> => [
 								{

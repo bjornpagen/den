@@ -1,7 +1,7 @@
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName, type Wake } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, type Gen, int } from "@bjornpagen/testing/gen"
@@ -157,7 +157,7 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUntilItSettles = property
 						)
 						const spawned = admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
 						assert.equal(spawned.length, 1)
-						const step: Sha256 = Option.getOrThrow(Arr.head(spawned)).step
+						const step: g.Sha256 = Option.getOrThrow(Arr.head(spawned)).step
 						const stepAt = { root: requested.scope, step }
 						const wakeOf = (attempt: number): Wake => ({
 							_tag: "Step",
@@ -234,7 +234,7 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUntilItSettles = property
 							app.workload.retryExhausted.once({ params: {}, facts: {} })
 						)
 						assert.equal(
-							Arr.some(exhausted, (row) => Sha256.equals(row.step, step)),
+							Arr.some(exhausted, (row) => g.Sha256.equals(row.step, step)),
 							past
 						)
 						const finished = yield* ledger.finished({

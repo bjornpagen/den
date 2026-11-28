@@ -14,7 +14,7 @@ import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
  * A field of a consumer's contract that den stores: the Gold root's and its Build step's input hold a build's number,
- * BuildNumber, a contract of the slice's app (relations.ts), decoded through its checked mint (contractInput), so den's
+ * BuildNumber, a contract of the slice's app (relations.ts), decoded through its checked mint (domainInput), so den's
  * input and output columns of it are BuildNumber itself, its domain on PostgreSQL, as metis's essay flow holds a
  * sitting's stage, qti-pie's SittingKey. A request of a number the contract holds commits, is admitted and builds: its
  * Build step reads its input back from den's column, the contract's host type, and writes Built by it, a parameter of
@@ -51,7 +51,7 @@ export const aBuildNumberOutsideItsContractIsRefusedByItsDomainAndOneInsideIsBui
 								)
 								assert.ok(Result.isFailure(refused), `a request of ${String(n)} is refused`)
 								if (Result.isFailure(refused)) {
-									assert.equal(refused.failure.kind, "refused")
+									assert.equal(refused.failure._tag, "refused")
 								}
 								const built = yield* rows(app.workload.built.once({ params: {}, facts: {} }))
 								assert.equal(built.length, 0, "no build")

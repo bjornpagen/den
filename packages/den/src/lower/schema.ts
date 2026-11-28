@@ -1,7 +1,7 @@
 import { Array as Arr, Option, Record, Schema } from "effect"
 import {
-	type ContractField,
-	contractInputOf,
+	type DomainField,
+	domainInputOf,
 	dimensionsOf,
 	type ElementSchema,
 	handled,
@@ -16,7 +16,7 @@ import {
 /**
  * Effect Schema, lowered to typed relations: a struct to a relation keyed by its owner; text, bigint, finite number and
  * boolean to their PostgreSQL types (a finite number to double precision, held finite by a row check), a literal union
- * of texts to a closed roster, a brand to a contract of its base (den's own contract, for a brand of its name), a vector to pgvector's of its dimensions, a consumer's contract (contractInput) to a column of that contract; an Option to a relation of its own, holding a row
+ * of texts to a closed roster, a brand to a contract of its base (den's own contract, for a brand of its name), a vector to pgvector's of its dimensions, a consumer's contract (domainInput) to a column of that contract; an Option to a relation of its own, holding a row
  * exactly when the value is there; an array to an ordered family; and a tagged union to its tag and a relation per
  * variant. `Unknown` and `Any` have no typed home and never reach here: the algebra's types admit only these forms, and
  * anything else is refused by name.
@@ -44,7 +44,7 @@ export type ColumnType =
 	| { readonly kind: "brand"; readonly brand: string; readonly base: Base }
 	| { readonly kind: "den"; readonly contract: DenKey }
 	| { readonly kind: "vector"; readonly dimensions: number }
-	| { readonly kind: "contract"; readonly contract: ContractField; readonly base: Base }
+	| { readonly kind: "contract"; readonly contract: DomainField; readonly base: Base }
 
 /** A column: its field's name and type. */
 export interface Column {
@@ -138,11 +138,11 @@ const columnOf = (declaration: string, field: string, schema: Schema.Top): Colum
 	if (Option.isSome(dimensions)) {
 		return { kind: "vector", dimensions: dimensions.value }
 	}
-	const consumer = contractInputOf(schema)
+	const consumer = domainInputOf(schema)
 	if (Option.isSome(consumer)) {
 		return {
 			kind: "contract",
-			contract: consumer.value.contract,
+			contract: consumer.value.domain,
 			base: baseOf(declaration, field, consumer.value.base)
 		}
 	}

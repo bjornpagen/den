@@ -1,4 +1,4 @@
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { array, boolean, element, type Gen, int, oneOf, option } from "@bjornpagen/testing/gen"
@@ -296,9 +296,9 @@ const built = (w: World): Built => {
 	const claims: Array<Snapshot<never>["claims"][number]> = []
 	const retries: Array<RetryRow> = []
 	const fenced: Array<FencedRow> = []
-	const awaiting: Array<Sha256> = []
+	const awaiting: Array<g.Sha256> = []
 	const kinds = new Map<string, string>()
-	const syncs: Array<Sha256> = []
+	const syncs: Array<g.Sha256> = []
 	const firstKey = exclusiveId(flowName, "Sync", "k0")
 	const secondKey = exclusiveId(flowName, "Sync", "k1")
 	const keyOf = (k: number) => (k === 0 ? firstKey : secondKey)
@@ -319,7 +319,7 @@ const built = (w: World): Built => {
 		}
 		for (const { value: s, index: j } of indexed(r.steps)) {
 			const step = startedStep(root, j)
-			kinds.set(Sha256.toHex(step), s.kind)
+			kinds.set(g.Sha256.toHex(step), s.kind)
 			steps.push({ step, root, runner: runners[s.kind], scope: root, due: at(s.due) })
 			if (s.awaiting) {
 				awaiting.push(step)
@@ -339,13 +339,13 @@ const built = (w: World): Built => {
 			}
 		}
 		const finish = finishStep(root)
-		kinds.set(Sha256.toHex(finish), "RunFinish")
+		kinds.set(g.Sha256.toHex(finish), "RunFinish")
 		steps.push({ step: finish, root, runner: runners.RunFinish, scope: root, due: at(r.age - 10) })
 		for (const j of ordinals(r.batches)) {
 			const batch = startedScope(root, 100 + j)
 			scopes.push({ place: "child", scope: batch, kind: "Batch", parent: root })
 			const batchFinish = finishStep(batch)
-			kinds.set(Sha256.toHex(batchFinish), "BatchFinish")
+			kinds.set(g.Sha256.toHex(batchFinish), "BatchFinish")
 			steps.push({
 				step: batchFinish,
 				root,
@@ -380,7 +380,7 @@ const built = (w: World): Built => {
 				() => dead
 			)
 		})),
-		(a, b) => Sha256.equals(a.key, b.key)
+		(a, b) => g.Sha256.equals(a.key, b.key)
 	)
 	const holdersStep = startedStep(dead, 0)
 	const holds: ReadonlyArray<HoldRow> = Arr.map(w.holds, (h, seat): HoldRow => ({
@@ -419,23 +419,23 @@ const specified = (
 	b: Built
 ): { readonly wakes: ReadonlyArray<string>; readonly fenced: ReadonlyArray<string> } => {
 	const { snapshot, now } = b
-	const viewOf = (scope: Sha256) =>
-		Arr.findFirst(snapshot.scopes, (s) => Sha256.equals(s.scope, scope))
-	const rootViewOf = (scope: Sha256): Option.Option<ScopeView> =>
+	const viewOf = (scope: g.Sha256) =>
+		Arr.findFirst(snapshot.scopes, (s) => g.Sha256.equals(s.scope, scope))
+	const rootViewOf = (scope: g.Sha256): Option.Option<ScopeView> =>
 		Option.flatMap(viewOf(scope), (s) =>
 			s.place === "root" ? Option.some(s) : rootViewOf(s.parent)
 		)
-	const ageOf = (scope: Sha256) =>
+	const ageOf = (scope: g.Sha256) =>
 		Option.getOrElse(
 			Option.flatMap(rootViewOf(scope), (s) =>
 				s.place === "root" ? Option.some(s.at) : Option.none()
 			),
 			() => now
 		)
-	const open = (scope: Sha256) =>
+	const open = (scope: g.Sha256) =>
 		Option.exists(rootViewOf(scope), (r) => (r.kind === "Run" ? isOpen(b.window, now) : true))
 	const paused = (target: string) => Arr.contains(snapshot.paused, target)
-	const rootPaused = (scope: Sha256) => Option.exists(rootViewOf(scope), (r) => paused(r.kind))
+	const rootPaused = (scope: g.Sha256) => Option.exists(rootViewOf(scope), (r) => paused(r.kind))
 
 	const admitted = Arr.flatMap(snapshot.scopes, (s): ReadonlyArray<string> =>
 		s.place === "root" &&
@@ -443,12 +443,12 @@ const specified = (
 		open(s.scope) &&
 		!paused(s.kind) &&
 		!(s.kind === "Sync" && Arr.contains(snapshot.busy, "Other"))
-			? [`admit ${Sha256.toHex(s.scope)}`]
+			? [`admit ${g.Sha256.toHex(s.scope)}`]
 			: []
 	)
 
 	interface Ready {
-		readonly step: Sha256
+		readonly step: g.Sha256
 		readonly kind: string
 		readonly attempt: number
 		readonly age: Instant
@@ -456,10 +456,10 @@ const specified = (
 		readonly fenced: boolean
 	}
 	const ready = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Ready> => {
-		if (Arr.some(snapshot.awaiting, (step) => Sha256.equals(step, p.step))) {
+		if (Arr.some(snapshot.awaiting, (step) => g.Sha256.equals(step, p.step))) {
 			return []
 		}
-		const mine = Arr.filter(snapshot.claims, (c) => Sha256.equals(c.step, p.step))
+		const mine = Arr.filter(snapshot.claims, (c) => g.Sha256.equals(c.step, p.step))
 		const latest = Arr.reduce(mine, Option.none<(typeof mine)[number]>(), (best, c) =>
 			Option.match(best, {
 				onNone: () => Option.some(c),
@@ -467,9 +467,12 @@ const specified = (
 			})
 		)
 		const retryOf = (attempt: bigint) =>
-			Arr.findFirst(snapshot.retries, (r) => Sha256.equals(r.step, p.step) && r.attempt === attempt)
+			Arr.findFirst(
+				snapshot.retries,
+				(r) => g.Sha256.equals(r.step, p.step) && r.attempt === attempt
+			)
 		const fencedAt = (attempt: bigint) =>
-			Arr.some(snapshot.fenced, (f) => Sha256.equals(f.step, p.step) && f.attempt === attempt)
+			Arr.some(snapshot.fenced, (f) => g.Sha256.equals(f.step, p.step) && f.attempt === attempt)
 		const stands = Option.exists(
 			latest,
 			(c) => c.until >= now && Option.isNone(retryOf(c.attempt)) && !fencedAt(c.attempt)
@@ -500,8 +503,9 @@ const specified = (
 		const blocked =
 			Arr.some(
 				snapshot.steps,
-				(o) => Sha256.equals(o.scope, p.scope) && !Sha256.equals(o.step, p.step)
-			) || Arr.some(snapshot.scopes, (s) => s.place === "child" && Sha256.equals(s.parent, p.scope))
+				(o) => g.Sha256.equals(o.scope, p.scope) && !g.Sha256.equals(o.step, p.step)
+			) ||
+			Arr.some(snapshot.scopes, (s) => s.place === "child" && g.Sha256.equals(s.parent, p.scope))
 		if (finishes && blocked) {
 			return []
 		}
@@ -517,11 +521,11 @@ const specified = (
 				Order.mapInput(Order.BigInt, (r: Ready) => r.age),
 				Order.mapInput(Order.BigInt, (r: Ready) => r.due)
 			),
-			Order.mapInput(Order.String, (r: Ready) => Sha256.toHex(r.step))
+			Order.mapInput(Order.String, (r: Ready) => g.Sha256.toHex(r.step))
 		)
 	)
 	const seated = [...Arr.filter(ready, (r) => r.kind !== "Work"), ...Arr.take(contending, free)]
-	const text = (r: Ready) => `step ${Sha256.toHex(r.step)} ${r.attempt}`
+	const text = (r: Ready) => `step ${g.Sha256.toHex(r.step)} ${r.attempt}`
 	return {
 		wakes: [
 			...admitted,
@@ -540,9 +544,9 @@ const specified = (
 const textOf = (wake: Wake): string => {
 	switch (wake._tag) {
 		case "Admit":
-			return `admit ${Sha256.toHex(wake.scope)}`
+			return `admit ${g.Sha256.toHex(wake.scope)}`
 		case "Step":
-			return `step ${Sha256.toHex(wake.step)} ${wake.attempt}`
+			return `step ${g.Sha256.toHex(wake.step)} ${wake.attempt}`
 		case "Census":
 			return `census ${wake.at}`
 	}
@@ -564,11 +568,11 @@ type Feature =
 	| "a pause"
 	| "a step waiting on a fact"
 
-const ringsStep = (wakes: ReadonlyArray<Wake>, step: Sha256) =>
-	Arr.some(wakes, (wake) => wake._tag === "Step" && Sha256.equals(wake.step, step))
+const ringsStep = (wakes: ReadonlyArray<Wake>, step: g.Sha256) =>
+	Arr.some(wakes, (wake) => wake._tag === "Step" && g.Sha256.equals(wake.step, step))
 
-const ringsAdmit = (wakes: ReadonlyArray<Wake>, scope: Sha256) =>
-	Arr.some(wakes, (wake) => wake._tag === "Admit" && Sha256.equals(wake.scope, scope))
+const ringsAdmit = (wakes: ReadonlyArray<Wake>, scope: g.Sha256) =>
+	Arr.some(wakes, (wake) => wake._tag === "Admit" && g.Sha256.equals(wake.scope, scope))
 
 describe("eligibility", () => {
 	it.effect(
@@ -633,7 +637,7 @@ describe("eligibility", () => {
 							const liveHolds = Arr.filter(snapshot.holds, (h) => h.until >= now).length
 							const pool = Arr.filter(
 								every,
-								(wake) => wake._tag === "Step" && b.kinds.get(Sha256.toHex(wake.step)) === "Work"
+								(wake) => wake._tag === "Step" && b.kinds.get(g.Sha256.toHex(wake.step)) === "Work"
 							).length
 							assert.isAtMost(pool, Math.max(0, w.seats - liveHolds))
 							assert.deepStrictEqual(
@@ -641,20 +645,20 @@ describe("eligibility", () => {
 								Arr.map(
 									Arr.filter(
 										snapshot.exclusives,
-										(e) => !Arr.some(snapshot.scopes, (s) => Sha256.equals(s.scope, e.scope))
+										(e) => !Arr.some(snapshot.scopes, (s) => g.Sha256.equals(s.scope, e.scope))
 									),
 									(e) => e.scope
 								)
 							)
 
-							const retriedOf = (step: Sha256, attempt: bigint) =>
+							const retriedOf = (step: g.Sha256, attempt: bigint) =>
 								Arr.some(
 									snapshot.retries,
-									(r) => Sha256.equals(r.step, step) && r.attempt === attempt
+									(r) => g.Sha256.equals(r.step, step) && r.attempt === attempt
 								) ||
 								Arr.some(
 									snapshot.fenced,
-									(f) => Sha256.equals(f.step, step) && f.attempt === attempt
+									(f) => g.Sha256.equals(f.step, step) && f.attempt === attempt
 								)
 							const work = Arr.filter(snapshot.steps, (p) => p.runner.kind === "Work")
 							if (
@@ -701,11 +705,11 @@ describe("eligibility", () => {
 									(p) =>
 										(Arr.some(
 											snapshot.steps,
-											(o) => Sha256.equals(o.scope, p.scope) && !Sha256.equals(o.step, p.step)
+											(o) => g.Sha256.equals(o.scope, p.scope) && !g.Sha256.equals(o.step, p.step)
 										) ||
 											Arr.some(
 												snapshot.scopes,
-												(s) => s.place === "child" && Sha256.equals(s.parent, p.scope)
+												(s) => s.place === "child" && g.Sha256.equals(s.parent, p.scope)
 											)) &&
 										!ringsStep(found.wakes, p.step)
 								)

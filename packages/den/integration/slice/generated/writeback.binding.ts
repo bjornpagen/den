@@ -36,9 +36,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Writeback over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, Sha256 } from "@bjornpagen/grizzle"
-import { codecText } from "@bjornpagen/grizzle/compile"
-import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { writeback } from "#integration/slice/flows.ts"
 import {
@@ -63,7 +63,7 @@ import type {
 
 /** The codec text of each declared field of WritebackWritebackInput, a request's input row, bound once (grizzle's codecText). */
 const writebackWritebackInputTexts = Object.freeze({
-	attempt: codecText(WritebackWritebackInput.fields.attempt)
+	attempt: gCompile.codecText(WritebackWritebackInput.fields.attempt)
 })
 /** The fingerprint of root kind Writeback's input heading, taken once. */
 const writebackWritebackHeading = inputFingerprint(
@@ -73,33 +73,33 @@ const writebackWritebackHeading = inputFingerprint(
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface WritebackHandles {
 	readonly den: {
-		readonly [K in keyof typeof writebackDenPrograms]: MemberHandle<
+		readonly [K in keyof typeof writebackDenPrograms]: gRuntime.MemberHandle<
 			(typeof writebackDenPrograms)[K]
 		>
 	}
 	readonly coordinator: {
-		readonly [K in keyof typeof writebackCoordinatorPrograms]: MemberHandle<
+		readonly [K in keyof typeof writebackCoordinatorPrograms]: gRuntime.MemberHandle<
 			(typeof writebackCoordinatorPrograms)[K]
 		>
 	}
 	readonly retirer: {
-		readonly [K in keyof typeof writebackRetirerPrograms]: MemberHandle<
+		readonly [K in keyof typeof writebackRetirerPrograms]: gRuntime.MemberHandle<
 			(typeof writebackRetirerPrograms)[K]
 		>
 	}
 	readonly commits: {
-		readonly [K in keyof typeof writebackCommitPrograms]: MemberHandle<
+		readonly [K in keyof typeof writebackCommitPrograms]: gRuntime.MemberHandle<
 			(typeof writebackCommitPrograms)[K]
 		>
 	}
 }
 
 interface Rows {
-	readonly WritebackScope: ReadonlyArray<Addition<typeof WritebackScope>>
-	readonly WritebackAdmitted: ReadonlyArray<Addition<typeof WritebackAdmitted>>
-	readonly WritebackFinish: ReadonlyArray<Addition<typeof WritebackFinish>>
-	readonly WritebackStartStep: ReadonlyArray<Addition<typeof WritebackStartStep>>
-	readonly WritebackDeliverInput: ReadonlyArray<Addition<typeof WritebackDeliverInput>>
+	readonly WritebackScope: ReadonlyArray<g.Addition<typeof WritebackScope>>
+	readonly WritebackAdmitted: ReadonlyArray<g.Addition<typeof WritebackAdmitted>>
+	readonly WritebackFinish: ReadonlyArray<g.Addition<typeof WritebackFinish>>
+	readonly WritebackStartStep: ReadonlyArray<g.Addition<typeof WritebackStartStep>>
+	readonly WritebackDeliverInput: ReadonlyArray<g.Addition<typeof WritebackDeliverInput>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -131,8 +131,8 @@ export const writebackLedger = (h: WritebackHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
-		Arr.some(grown.rows.WritebackStartStep, (s) => Sha256.equals(s.scope, scope))
+	const hasChildren = (grown: Grown, scope: g.Sha256): boolean =>
+		Arr.some(grown.rows.WritebackStartStep, (s) => g.Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			WritebackScope: [...a.rows.WritebackScope, ...b.rows.WritebackScope],
@@ -149,8 +149,8 @@ export const writebackLedger = (h: WritebackHandles) => {
 		}
 	})
 	const startWriteback = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof writeback.kinds)[1]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -170,7 +170,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readWritebackDeliverInput = (root: Sha256, step: Sha256) =>
+	const readWritebackDeliverInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
@@ -180,7 +180,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			)
 			return Option.map(row, (found) => ({ attempt: found.attempt }))
 		})
-	const readWritebackWritebackInput = (root: Sha256, scope: Sha256) =>
+	const readWritebackWritebackInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
@@ -365,7 +365,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 		Writeback: {
 			window: writeback.kinds[1].window,
 			precondition: writeback.kinds[1].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readWritebackWritebackInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -377,11 +377,11 @@ export const writebackLedger = (h: WritebackHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "WritebackFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof WritebackAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof WritebackAdmitted>> = [
 						...grown.rows.WritebackAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof WritebackFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof WritebackFinish>> = [
 						...grown.rows.WritebackFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -490,7 +490,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			),
 		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				if (!Sha256.equals(root, scope)) {
+				if (!g.Sha256.equals(root, scope)) {
 					return Option.none()
 				}
 				const standing = yield* Effect.map(
@@ -618,9 +618,9 @@ export const writebackLedger = (h: WritebackHandles) => {
 			settled(h.den.writebackSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>
 				Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof writeback>> => {
-					const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
+					const view = (scope: g.Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 						Option.match(
-							Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
+							Arr.findFirst(read.roots, (o) => g.Sha256.equals(o.scope, scope)),
 							{
 								onSome: (o): ReadonlyArray<ScopeView> => [
 									{

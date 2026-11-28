@@ -1,167 +1,155 @@
 import { DenEnvironment, DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Writeback to; `den generate` writes it, and nothing edits it. */
-import {
-	closed,
-	closedId,
-	contained,
-	derivedName,
-	fragment,
-	key,
-	mutable,
-	natural,
-	on,
-	place,
-	pred,
-	relation,
-	select,
-	sha256,
-	unit
-} from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 
-export const WritebackKind = closed.unordered("WritebackKind", ["Deliver", "WritebackFinish"])
-export const WritebackRootKind = closed.unordered("WritebackRootKind", ["Writeback"])
-export const WritebackOutcome = closed.unordered("WritebackOutcome", ["done", "failed"])
-export const WritebackRetryWhy = closed.unordered("WritebackRetryWhy", [
+export const WritebackKind = g.closed.unordered("WritebackKind", ["Deliver", "WritebackFinish"])
+export const WritebackRootKind = g.closed.unordered("WritebackRootKind", ["Writeback"])
+export const WritebackOutcome = g.closed.unordered("WritebackOutcome", ["done", "failed"])
+export const WritebackRetryWhy = g.closed.unordered("WritebackRetryWhy", [
 	"spent",
 	"transient",
 	"later"
 ])
-export const WritebackPausable = closed.unordered("WritebackPausable", ["Writeback"])
+export const WritebackPausable = g.closed.unordered("WritebackPausable", ["Writeback"])
 
-export const WritebackScope = relation("WritebackScope", { root: sha256, scope: sha256 }, [
+export const WritebackScope = g.relation("WritebackScope", { root: g.sha256, scope: g.sha256 }, [
 	"root",
 	"scope"
 ])
-export const WritebackRoot = relation(
+export const WritebackRoot = g.relation(
 	"WritebackRoot",
-	{ root: sha256, kind: closedId(WritebackRootKind), key: Text, at: DenInstant },
+	{ root: g.sha256, kind: g.closedId(WritebackRootKind), key: Text, at: DenInstant },
 	["root"]
 )
-export const WritebackRequestedWith = relation(
+export const WritebackRequestedWith = g.relation(
 	"WritebackRequestedWith",
-	{ root: sha256, fingerprint: sha256, input: sha256 },
+	{ root: g.sha256, fingerprint: g.sha256, input: g.sha256 },
 	["root"]
 )
-export const WritebackAdmitted = relation("WritebackAdmitted", { root: sha256, scope: sha256 }, [
-	"root",
-	"scope"
-])
-export const WritebackSkipped = relation(
-	"WritebackSkipped",
-	{ root: sha256, scope: sha256, by: sha256 },
+export const WritebackAdmitted = g.relation(
+	"WritebackAdmitted",
+	{ root: g.sha256, scope: g.sha256 },
 	["root", "scope"]
 )
-export const WritebackStep = relation(
+export const WritebackSkipped = g.relation(
+	"WritebackSkipped",
+	{ root: g.sha256, scope: g.sha256, by: g.sha256 },
+	["root", "scope"]
+)
+export const WritebackStep = g.relation(
 	"WritebackStep",
-	{ root: sha256, step: sha256, kind: closedId(WritebackKind), scope: sha256, due: DenInstant },
+	{
+		root: g.sha256,
+		step: g.sha256,
+		kind: g.closedId(WritebackKind),
+		scope: g.sha256,
+		due: DenInstant
+	},
 	["root", "step"]
 )
-export const WritebackStartStep = relation(
+export const WritebackStartStep = g.relation(
 	"WritebackStartStep",
-	{ root: sha256, scope: sha256, ordinal: natural, step: sha256 },
+	{ root: g.sha256, scope: g.sha256, ordinal: g.natural, step: g.sha256 },
 	["root", "scope", "ordinal"]
 )
-export const WritebackFinish = relation(
+export const WritebackFinish = g.relation(
 	"WritebackFinish",
-	{ root: sha256, scope: sha256, step: sha256 },
+	{ root: g.sha256, scope: g.sha256, step: g.sha256 },
 	["root", "scope"]
 )
-export const WritebackClaim = relation(
+export const WritebackClaim = g.relation(
 	"WritebackClaim",
-	{ root: sha256, step: sha256, attempt: place, until: DenInstant },
+	{ root: g.sha256, step: g.sha256, attempt: g.place, until: DenInstant },
 	["root", "step", "attempt"]
 )
-export const WritebackEnded = relation(
+export const WritebackEnded = g.relation(
 	"WritebackEnded",
-	{ root: sha256, step: sha256, attempt: natural },
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
 	["root", "step", "attempt"]
 )
-export const WritebackRetry = relation(
+export const WritebackRetry = g.relation(
 	"WritebackRetry",
 	{
-		root: sha256,
-		step: sha256,
-		attempt: natural,
+		root: g.sha256,
+		step: g.sha256,
+		attempt: g.natural,
 		at: DenInstant,
-		why: closedId(WritebackRetryWhy)
+		why: g.closedId(WritebackRetryWhy)
 	},
 	["root", "step", "attempt"]
 )
-export const WritebackFenced = relation(
+export const WritebackFenced = g.relation(
 	"WritebackFenced",
-	{ root: sha256, step: sha256, attempt: natural },
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
 	["root", "step", "attempt"]
 )
-export const WritebackResult = relation(
+export const WritebackResult = g.relation(
 	"WritebackResult",
-	{ root: sha256, step: sha256, outcome: closedId(WritebackOutcome) },
+	{ root: g.sha256, step: g.sha256, outcome: g.closedId(WritebackOutcome) },
 	["root", "step"]
 )
-export const WritebackDone = relation("WritebackDone", { root: sha256, step: sha256 }, [
+export const WritebackDone = g.relation("WritebackDone", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const WritebackFailed = relation("WritebackFailed", { root: sha256, step: sha256 }, [
+export const WritebackFailed = g.relation("WritebackFailed", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const WritebackHeld = relation(
+export const WritebackHeld = g.relation(
 	"WritebackHeld",
-	{ root: sha256, step: sha256, attempt: natural },
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
 	["root", "step"]
 )
-export const WritebackRefusal = relation(
+export const WritebackRefusal = g.relation(
 	"WritebackRefusal",
-	{ root: sha256, step: sha256, law: Text },
+	{ root: g.sha256, step: g.sha256, law: Text },
 	["root", "step"]
 )
-export const WritebackExhausted = relation("WritebackExhausted", { root: sha256, step: sha256 }, [
-	"root",
-	"step"
-])
-export const WritebackDeliverInput = derivedName({
-	stem: "Writeback",
-	path: ["DeliverInput"]
-}).relation("WritebackDeliverInput", { root: sha256, step: sha256, attempt: Text }, [
-	"root",
-	"step"
-])
-export const WritebackWritebackInput = derivedName({
-	stem: "Writeback",
-	path: ["WritebackInput"]
-}).relation("WritebackWritebackInput", { root: sha256, scope: sha256, attempt: Text }, [
-	"root",
-	"scope"
-])
-export const WritebackDeliverOutput = derivedName({
-	stem: "Writeback",
-	path: ["DeliverOutput"]
-}).relation("WritebackDeliverOutput", { root: sha256, step: sha256, attempt: Text }, [
-	"root",
-	"step"
-])
-export const WritebackWritebackFinishOutput = derivedName({
-	stem: "Writeback",
-	path: ["WritebackFinishOutput"]
-}).relation("WritebackWritebackFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
-export const WritebackPaused = relation(
+export const WritebackExhausted = g.relation(
+	"WritebackExhausted",
+	{ root: g.sha256, step: g.sha256 },
+	["root", "step"]
+)
+export const WritebackDeliverInput = g
+	.derivedName({ stem: "Writeback", path: ["DeliverInput"] })
+	.relation("WritebackDeliverInput", { root: g.sha256, step: g.sha256, attempt: Text }, [
+		"root",
+		"step"
+	])
+export const WritebackWritebackInput = g
+	.derivedName({ stem: "Writeback", path: ["WritebackInput"] })
+	.relation("WritebackWritebackInput", { root: g.sha256, scope: g.sha256, attempt: Text }, [
+		"root",
+		"scope"
+	])
+export const WritebackDeliverOutput = g
+	.derivedName({ stem: "Writeback", path: ["DeliverOutput"] })
+	.relation("WritebackDeliverOutput", { root: g.sha256, step: g.sha256, attempt: Text }, [
+		"root",
+		"step"
+	])
+export const WritebackWritebackFinishOutput = g
+	.derivedName({ stem: "Writeback", path: ["WritebackFinishOutput"] })
+	.relation("WritebackWritebackFinishOutput", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const WritebackPaused = g.relation(
 	"WritebackPaused",
-	{ target: closedId(WritebackPausable), turn: natural },
+	{ target: g.closedId(WritebackPausable), turn: g.natural },
 	["target", "turn"]
 )
-export const WritebackResumed = relation(
+export const WritebackResumed = g.relation(
 	"WritebackResumed",
-	{ target: closedId(WritebackPausable), turn: natural },
+	{ target: g.closedId(WritebackPausable), turn: g.natural },
 	["target", "turn"]
 )
-export const WritebackServed = relation(
+export const WritebackServed = g.relation(
 	"WritebackServed",
 	{ environment: DenEnvironment, at: DenInstant, deployment: Text },
 	["environment", "at"]
 )
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
-export const writebackGraph = fragment(
+export const writebackGraph = g.fragment(
 	[
 		WritebackKind,
 		WritebackRootKind,
@@ -192,142 +180,148 @@ export const writebackGraph = fragment(
 		WritebackWritebackFinishOutput
 	],
 	[
-		unit("DenRoot", { root: sha256 }),
-		key(on(WritebackScope, "scope")),
-		key(on(WritebackStep, "step")),
-		contained(on(WritebackAdmitted, "root", "scope"), on(WritebackScope, "root", "scope")),
-		contained(on(WritebackSkipped, "scope"), on(WritebackRoot, "root")),
-		contained(on(WritebackSkipped, "by"), on(WritebackRoot, "root")),
-		contained(on(WritebackRequestedWith, "root"), on(WritebackRoot, "root")),
-		contained(on(WritebackStep, "root", "scope"), on(WritebackAdmitted, "root", "scope")),
-		contained(on(WritebackStartStep, "root", "scope"), on(WritebackAdmitted, "root", "scope")),
-		contained(on(WritebackStartStep, "root", "step"), on(WritebackStep, "root", "step")),
-		key(on(WritebackStartStep, "root", "step")),
-		contained(on(WritebackFinish, "root", "scope"), on(WritebackAdmitted, "root", "scope")),
-		contained(on(WritebackFinish, "root", "step"), on(WritebackStep, "root", "step")),
-		key(on(WritebackFinish, "root", "step")),
-		contained(on(WritebackClaim, "root", "step"), on(WritebackStep, "root", "step")),
-		contained(
-			on(WritebackEnded, "root", "step", "attempt"),
-			on(WritebackClaim, "root", "step", "attempt")
+		g.unit("DenRoot", { root: g.sha256 }),
+		g.key(g.on(WritebackScope, "scope")),
+		g.key(g.on(WritebackStep, "step")),
+		g.contained(g.on(WritebackAdmitted, "root", "scope"), g.on(WritebackScope, "root", "scope")),
+		g.contained(g.on(WritebackSkipped, "scope"), g.on(WritebackRoot, "root")),
+		g.contained(g.on(WritebackSkipped, "by"), g.on(WritebackRoot, "root")),
+		g.contained(g.on(WritebackRequestedWith, "root"), g.on(WritebackRoot, "root")),
+		g.contained(g.on(WritebackStep, "root", "scope"), g.on(WritebackAdmitted, "root", "scope")),
+		g.contained(
+			g.on(WritebackStartStep, "root", "scope"),
+			g.on(WritebackAdmitted, "root", "scope")
 		),
-		contained(
-			on(
-				select(WritebackClaim, (row) => row.ge(row.attempt, 1n)),
+		g.contained(g.on(WritebackStartStep, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.key(g.on(WritebackStartStep, "root", "step")),
+		g.contained(g.on(WritebackFinish, "root", "scope"), g.on(WritebackAdmitted, "root", "scope")),
+		g.contained(g.on(WritebackFinish, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.key(g.on(WritebackFinish, "root", "step")),
+		g.contained(g.on(WritebackClaim, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.contained(
+			g.on(WritebackEnded, "root", "step", "attempt"),
+			g.on(WritebackClaim, "root", "step", "attempt")
+		),
+		g.contained(
+			g.on(
+				g.select(WritebackClaim, (row) => row.ge(row.attempt, 1n)),
 				"root",
 				"step",
-				pred("attempt")
+				g.pred("attempt")
 			),
-			on(WritebackEnded, "root", "step", "attempt")
+			g.on(WritebackEnded, "root", "step", "attempt")
 		),
-		contained(
-			on(WritebackRetry, "root", "step", "attempt"),
-			on(WritebackEnded, "root", "step", "attempt")
+		g.contained(
+			g.on(WritebackRetry, "root", "step", "attempt"),
+			g.on(WritebackEnded, "root", "step", "attempt")
 		),
-		contained(
-			on(WritebackFenced, "root", "step", "attempt"),
-			on(WritebackEnded, "root", "step", "attempt")
+		g.contained(
+			g.on(WritebackFenced, "root", "step", "attempt"),
+			g.on(WritebackEnded, "root", "step", "attempt")
 		),
-		contained(on(WritebackResult, "root", "step"), on(WritebackStep, "root", "step")),
-		contained(
-			on(WritebackHeld, "root", "step", "attempt"),
-			on(WritebackClaim, "root", "step", "attempt")
+		g.contained(g.on(WritebackResult, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.contained(
+			g.on(WritebackHeld, "root", "step", "attempt"),
+			g.on(WritebackClaim, "root", "step", "attempt")
 		),
-		contained(on(WritebackHeld, "root", "step"), on(WritebackResult, "root", "step")),
-		contained(
-			on(WritebackDone, "root", "step"),
-			on(
-				select(WritebackResult, (row) => row.eq(row.outcome, "done")),
+		g.contained(g.on(WritebackHeld, "root", "step"), g.on(WritebackResult, "root", "step")),
+		g.contained(
+			g.on(WritebackDone, "root", "step"),
+			g.on(
+				g.select(WritebackResult, (row) => row.eq(row.outcome, "done")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(WritebackFailed, "root", "step"),
-			on(
-				select(WritebackResult, (row) => row.eq(row.outcome, "failed")),
+		g.contained(
+			g.on(WritebackFailed, "root", "step"),
+			g.on(
+				g.select(WritebackResult, (row) => row.eq(row.outcome, "failed")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(WritebackRefusal, "root", "step"), on(WritebackFailed, "root", "step")),
-		contained(on(WritebackExhausted, "root", "step"), on(WritebackFailed, "root", "step")),
-		contained(
-			on(
-				select(WritebackRoot, (row) => row.eq(row.kind, "Writeback")),
+		g.contained(g.on(WritebackRefusal, "root", "step"), g.on(WritebackFailed, "root", "step")),
+		g.contained(g.on(WritebackExhausted, "root", "step"), g.on(WritebackFailed, "root", "step")),
+		g.contained(
+			g.on(
+				g.select(WritebackRoot, (row) => row.eq(row.kind, "Writeback")),
 				"root"
 			),
-			on(WritebackRequestedWith, "root")
+			g.on(WritebackRequestedWith, "root")
 		),
-		contained(
-			on(WritebackDeliverInput, "root", "step"),
-			on(
-				select(WritebackStep, (row) => row.eq(row.kind, "Deliver")),
+		g.contained(
+			g.on(WritebackDeliverInput, "root", "step"),
+			g.on(
+				g.select(WritebackStep, (row) => row.eq(row.kind, "Deliver")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(WritebackWritebackInput, "scope"),
-			on(
-				select(WritebackRoot, (row) => row.eq(row.kind, "Writeback")),
+		g.contained(
+			g.on(WritebackWritebackInput, "scope"),
+			g.on(
+				g.select(WritebackRoot, (row) => row.eq(row.kind, "Writeback")),
 				"root"
 			)
 		),
-		contained(
-			on(WritebackDeliverOutput, "root", "step"),
-			on(WritebackDeliverInput, "root", "step")
+		g.contained(
+			g.on(WritebackDeliverOutput, "root", "step"),
+			g.on(WritebackDeliverInput, "root", "step")
 		),
-		contained(on(WritebackDeliverOutput, "root", "step"), on(WritebackDone, "root", "step")),
-		contained(
-			on(WritebackWritebackFinishOutput, "root", "step"),
-			on(WritebackDone, "root", "step")
+		g.contained(g.on(WritebackDeliverOutput, "root", "step"), g.on(WritebackDone, "root", "step")),
+		g.contained(
+			g.on(WritebackWritebackFinishOutput, "root", "step"),
+			g.on(WritebackDone, "root", "step")
 		),
-		contained(on(WritebackScope, "root"), on(WritebackRoot, "root")),
-		mutable(WritebackScope),
-		mutable(WritebackAdmitted),
-		contained(on(WritebackSkipped, "root", "scope"), on(WritebackScope, "root", "scope")),
-		mutable(WritebackSkipped),
-		contained(on(WritebackStep, "root", "scope"), on(WritebackScope, "root", "scope")),
-		mutable(WritebackStep),
-		contained(on(WritebackStartStep, "root", "scope"), on(WritebackScope, "root", "scope")),
-		mutable(WritebackStartStep),
-		contained(on(WritebackFinish, "root", "scope"), on(WritebackScope, "root", "scope")),
-		mutable(WritebackFinish),
-		mutable(WritebackClaim),
-		contained(on(WritebackEnded, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackEnded),
-		contained(on(WritebackRetry, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackRetry),
-		contained(on(WritebackFenced, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackFenced),
-		mutable(WritebackResult),
-		contained(on(WritebackDone, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackDone),
-		contained(on(WritebackFailed, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackFailed),
-		contained(on(WritebackHeld, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackHeld),
-		contained(on(WritebackRefusal, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackRefusal),
-		contained(on(WritebackExhausted, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackExhausted),
-		contained(on(WritebackDeliverInput, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackDeliverInput),
-		contained(on(WritebackWritebackInput, "root", "scope"), on(WritebackScope, "root", "scope")),
-		mutable(WritebackWritebackInput),
-		contained(on(WritebackDeliverOutput, "root", "step"), on(WritebackStep, "root", "step")),
-		mutable(WritebackDeliverOutput),
-		contained(
-			on(WritebackWritebackFinishOutput, "root", "step"),
-			on(WritebackStep, "root", "step")
+		g.contained(g.on(WritebackScope, "root"), g.on(WritebackRoot, "root")),
+		g.mutable(WritebackScope),
+		g.mutable(WritebackAdmitted),
+		g.contained(g.on(WritebackSkipped, "root", "scope"), g.on(WritebackScope, "root", "scope")),
+		g.mutable(WritebackSkipped),
+		g.contained(g.on(WritebackStep, "root", "scope"), g.on(WritebackScope, "root", "scope")),
+		g.mutable(WritebackStep),
+		g.contained(g.on(WritebackStartStep, "root", "scope"), g.on(WritebackScope, "root", "scope")),
+		g.mutable(WritebackStartStep),
+		g.contained(g.on(WritebackFinish, "root", "scope"), g.on(WritebackScope, "root", "scope")),
+		g.mutable(WritebackFinish),
+		g.mutable(WritebackClaim),
+		g.contained(g.on(WritebackEnded, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackEnded),
+		g.contained(g.on(WritebackRetry, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackRetry),
+		g.contained(g.on(WritebackFenced, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackFenced),
+		g.mutable(WritebackResult),
+		g.contained(g.on(WritebackDone, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackDone),
+		g.contained(g.on(WritebackFailed, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackFailed),
+		g.contained(g.on(WritebackHeld, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackHeld),
+		g.contained(g.on(WritebackRefusal, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackRefusal),
+		g.contained(g.on(WritebackExhausted, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackExhausted),
+		g.contained(g.on(WritebackDeliverInput, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackDeliverInput),
+		g.contained(
+			g.on(WritebackWritebackInput, "root", "scope"),
+			g.on(WritebackScope, "root", "scope")
 		),
-		mutable(WritebackWritebackFinishOutput)
+		g.mutable(WritebackWritebackInput),
+		g.contained(g.on(WritebackDeliverOutput, "root", "step"), g.on(WritebackStep, "root", "step")),
+		g.mutable(WritebackDeliverOutput),
+		g.contained(
+			g.on(WritebackWritebackFinishOutput, "root", "step"),
+			g.on(WritebackStep, "root", "step")
+		),
+		g.mutable(WritebackWritebackFinishOutput)
 	]
 )
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
-export const writebackCoordination = fragment(
+export const writebackCoordination = g.fragment(
 	[
 		WritebackKind,
 		WritebackRootKind,
@@ -339,8 +333,11 @@ export const writebackCoordination = fragment(
 		WritebackServed
 	],
 	[
-		contained(on(WritebackResumed, "target", "turn"), on(WritebackPaused, "target", "turn")),
-		contained(on(WritebackPaused, "target", pred("turn")), on(WritebackResumed, "target", "turn"))
+		g.contained(g.on(WritebackResumed, "target", "turn"), g.on(WritebackPaused, "target", "turn")),
+		g.contained(
+			g.on(WritebackPaused, "target", g.pred("turn")),
+			g.on(WritebackResumed, "target", "turn")
+		)
 	]
 )
 

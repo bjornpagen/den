@@ -1,4 +1,4 @@
-import { contract, Logic, mintOf, pg, str } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 
 /**
  * den's own contracts, every flow's alike: an instant, a delay and an environment's name. A step's key, a scope's key, an exclusivity seat's
@@ -10,10 +10,10 @@ import { contract, Logic, mintOf, pg, str } from "@bjornpagen/grizzle"
  */
 /** DenInstant's key: the capability to mint its host type, which den's printed clocked programs and casts name. */
 export const denInstantKey = Symbol("DenInstant")
-export const DenInstant = contract<typeof denInstantKey>()("DenInstant", pg.bigint)
+export const DenInstant = g.domain<typeof denInstantKey>()("DenInstant", g.int8)
 
 /** The mint of DenInstant's host type: den's one conversion of a reading of its clock into an instant. */
-export const mintInstant = mintOf(denInstantKey)
+export const mintInstant = g.mintOf(denInstantKey)
 
 /**
  * An environment's name, as a host names the environment it serves (Vercel's `VERCEL_ENV`: production, preview,
@@ -34,13 +34,13 @@ export const environmentPattern = "^[A-Za-z0-9_.-]{1,64}$"
 /** An environment's name, the key of the deployments it served. */
 /** DenEnvironment's key: the capability to mint its host type. */
 export const denEnvironmentKey = Symbol("DenEnvironment")
-export const DenEnvironment = contract<typeof denEnvironmentKey>()(
+export const DenEnvironment = g.domain<typeof denEnvironmentKey>()(
 	"DenEnvironment",
-	str.regex(environmentPattern, "u")
+	g.str.regex(environmentPattern, "u")
 )
 
 /** The mint of DenEnvironment's host type: den's one conversion of a parsed environment's name. */
-export const mintEnvironment = mintOf(denEnvironmentKey)
+export const mintEnvironment = g.mintOf(denEnvironmentKey)
 
 /**
  * The most milliseconds a den delay holds: a due instant, a retry's or a lease's end is the database's clock reading plus
@@ -60,12 +60,12 @@ const longestDelayMillis = 9214147718838775808n
 /** A delay in milliseconds, never negative and at most {@link longestDelayMillis}. */
 /** DenDelay's key: the capability to mint its host type. */
 export const denDelayKey = Symbol("DenDelay")
-export const DenDelay = contract<typeof denDelayKey>()("DenDelay", pg.bigint, (d) =>
-	Logic.and([Logic.ge(d, 0n), Logic.le(d, longestDelayMillis)])
+export const DenDelay = g.domain<typeof denDelayKey>()("DenDelay", g.int8, (d) =>
+	g.Logic.and([g.Logic.ge(d, 0n), g.Logic.le(d, longestDelayMillis)])
 )
 
 /** The mint of DenDelay's host type: den's one conversion of a delay in milliseconds. */
-export const mintDelay = mintOf(denDelayKey)
+export const mintDelay = g.mintOf(denDelayKey)
 
 /** Any text, as a value's text column holds it. */
-export const Text = str.regex("^.*$", "su")
+export const Text = g.str.regex("^.*$", "su")

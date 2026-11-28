@@ -41,9 +41,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Review over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, Sha256 } from "@bjornpagen/grizzle"
-import { codecText } from "@bjornpagen/grizzle/compile"
-import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { review } from "#integration/slice/flows.ts"
 import {
@@ -78,54 +78,56 @@ import type {
 
 /** The codec text of each declared field of ReviewReviewRunInput, a request's input row, bound once (grizzle's codecText). */
 const reviewReviewRunInputTexts = Object.freeze({
-	review: codecText(ReviewReviewRunInput.fields.review)
+	review: gCompile.codecText(ReviewReviewRunInput.fields.review)
 })
 /** The codec text of each declared field of ReviewReviewRunInputSizes, a request's input row, bound once (grizzle's codecText). */
 const reviewReviewRunInputSizesTexts = Object.freeze({
-	ordinal: codecText(ReviewReviewRunInputSizes.fields.ordinal),
-	value: codecText(ReviewReviewRunInputSizes.fields.value)
+	ordinal: gCompile.codecText(ReviewReviewRunInputSizes.fields.ordinal),
+	value: gCompile.codecText(ReviewReviewRunInputSizes.fields.value)
 })
 /** The fingerprint of root kind ReviewRun's input heading, taken once. */
 const reviewReviewRunHeading = inputFingerprint(
-	'40:20:ReviewReviewRunInput14:6:review4:Text70:25:ReviewReviewRunInputSizes18:7:ordinal7:natural18:5:value9:pg.bigint481:6:digest469:[...pipe([{ scope: scope, root: scope, review: input.review }], Arr.flatMap((row) => [Result.succeed("ReviewReviewRunInput"), reviewReviewRunInputTexts.review(row.review)])), ...pipe(Arr.map(input.sizes, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("ReviewReviewRunInputSizes"), reviewReviewRunInputSizesTexts.ordinal(row.ordinal), reviewReviewRunInputSizesTexts.value(row.value)]))]'
+	'40:20:ReviewReviewRunInput14:6:review4:Text69:25:ReviewReviewRunInputSizes20:7:ordinal9:g.natural15:5:value6:g.int8481:6:digest469:[...pipe([{ scope: scope, root: scope, review: input.review }], Arr.flatMap((row) => [Result.succeed("ReviewReviewRunInput"), reviewReviewRunInputTexts.review(row.review)])), ...pipe(Arr.map(input.sizes, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("ReviewReviewRunInputSizes"), reviewReviewRunInputSizesTexts.ordinal(row.ordinal), reviewReviewRunInputSizesTexts.value(row.value)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface ReviewHandles {
 	readonly den: {
-		readonly [K in keyof typeof reviewDenPrograms]: MemberHandle<(typeof reviewDenPrograms)[K]>
+		readonly [K in keyof typeof reviewDenPrograms]: gRuntime.MemberHandle<
+			(typeof reviewDenPrograms)[K]
+		>
 	}
 	readonly coordinator: {
-		readonly [K in keyof typeof reviewCoordinatorPrograms]: MemberHandle<
+		readonly [K in keyof typeof reviewCoordinatorPrograms]: gRuntime.MemberHandle<
 			(typeof reviewCoordinatorPrograms)[K]
 		>
 	}
 	readonly retirer: {
-		readonly [K in keyof typeof reviewRetirerPrograms]: MemberHandle<
+		readonly [K in keyof typeof reviewRetirerPrograms]: gRuntime.MemberHandle<
 			(typeof reviewRetirerPrograms)[K]
 		>
 	}
 	readonly commits: {
-		readonly [K in keyof typeof reviewCommitPrograms]: MemberHandle<
+		readonly [K in keyof typeof reviewCommitPrograms]: gRuntime.MemberHandle<
 			(typeof reviewCommitPrograms)[K]
 		>
 	}
 }
 
 interface Rows {
-	readonly ReviewScope: ReadonlyArray<Addition<typeof ReviewScope>>
-	readonly ReviewWithin: ReadonlyArray<Addition<typeof ReviewWithin>>
-	readonly ReviewAdmitted: ReadonlyArray<Addition<typeof ReviewAdmitted>>
-	readonly ReviewFinish: ReadonlyArray<Addition<typeof ReviewFinish>>
-	readonly ReviewStartStep: ReadonlyArray<Addition<typeof ReviewStartStep>>
-	readonly ReviewStartScope: ReadonlyArray<Addition<typeof ReviewStartScope>>
-	readonly ReviewAnalyzeInput: ReadonlyArray<Addition<typeof ReviewAnalyzeInput>>
-	readonly ReviewGatherInput: ReadonlyArray<Addition<typeof ReviewGatherInput>>
-	readonly ReviewGatherInputSizes: ReadonlyArray<Addition<typeof ReviewGatherInputSizes>>
-	readonly ReviewSaveInput: ReadonlyArray<Addition<typeof ReviewSaveInput>>
-	readonly ReviewQuestionsInput: ReadonlyArray<Addition<typeof ReviewQuestionsInput>>
-	readonly ReviewSplit: ReadonlyArray<Addition<typeof ReviewSplit>>
-	readonly ReviewSaved: ReadonlyArray<Addition<typeof ReviewSaved>>
+	readonly ReviewScope: ReadonlyArray<g.Addition<typeof ReviewScope>>
+	readonly ReviewWithin: ReadonlyArray<g.Addition<typeof ReviewWithin>>
+	readonly ReviewAdmitted: ReadonlyArray<g.Addition<typeof ReviewAdmitted>>
+	readonly ReviewFinish: ReadonlyArray<g.Addition<typeof ReviewFinish>>
+	readonly ReviewStartStep: ReadonlyArray<g.Addition<typeof ReviewStartStep>>
+	readonly ReviewStartScope: ReadonlyArray<g.Addition<typeof ReviewStartScope>>
+	readonly ReviewAnalyzeInput: ReadonlyArray<g.Addition<typeof ReviewAnalyzeInput>>
+	readonly ReviewGatherInput: ReadonlyArray<g.Addition<typeof ReviewGatherInput>>
+	readonly ReviewGatherInputSizes: ReadonlyArray<g.Addition<typeof ReviewGatherInputSizes>>
+	readonly ReviewSaveInput: ReadonlyArray<g.Addition<typeof ReviewSaveInput>>
+	readonly ReviewQuestionsInput: ReadonlyArray<g.Addition<typeof ReviewQuestionsInput>>
+	readonly ReviewSplit: ReadonlyArray<g.Addition<typeof ReviewSplit>>
+	readonly ReviewSaved: ReadonlyArray<g.Addition<typeof ReviewSaved>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -173,9 +175,9 @@ export const reviewLedger = (h: ReviewHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
-		Arr.some(grown.rows.ReviewStartStep, (s) => Sha256.equals(s.scope, scope)) ||
-		Arr.some(grown.rows.ReviewStartScope, (s) => Sha256.equals(s.scope, scope))
+	const hasChildren = (grown: Grown, scope: g.Sha256): boolean =>
+		Arr.some(grown.rows.ReviewStartStep, (s) => g.Sha256.equals(s.scope, scope)) ||
+		Arr.some(grown.rows.ReviewStartScope, (s) => g.Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			ReviewScope: [...a.rows.ReviewScope, ...b.rows.ReviewScope],
@@ -200,8 +202,8 @@ export const reviewLedger = (h: ReviewHandles) => {
 		}
 	})
 	const startQuestions = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof review.kinds)[1]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -230,8 +232,8 @@ export const reviewLedger = (h: ReviewHandles) => {
 			joined
 		)
 	const startReviewRun = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof review.kinds)[4]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -257,7 +259,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readReviewAnalyzeInput = (root: Sha256, step: Sha256) =>
+	const readReviewAnalyzeInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewAnalyzeInput.once({ params: { root, step }, facts: {} })),
@@ -269,7 +271,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				question: found.question
 			}))
 		})
-	const readReviewGatherInput = (root: Sha256, step: Sha256) =>
+	const readReviewGatherInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewGatherInput.once({ params: { root, step }, facts: {} })),
@@ -284,7 +286,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				sizes: Arr.map(ordered(family0), (e) => e.value)
 			}))
 		})
-	const readReviewSaveInput = (root: Sha256, step: Sha256) =>
+	const readReviewSaveInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewSaveInput.once({ params: { root, step }, facts: {} })),
@@ -297,7 +299,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				total: found.total
 			}))
 		})
-	const readReviewQuestionsInput = (root: Sha256, scope: Sha256) =>
+	const readReviewQuestionsInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewQuestionsInput.once({ params: { root, scope }, facts: {} })),
@@ -309,7 +311,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				size: found.size
 			}))
 		})
-	const readReviewReviewRunInput = (root: Sha256, scope: Sha256) =>
+	const readReviewReviewRunInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewReviewRunInput.once({ params: { root, scope }, facts: {} })),
@@ -587,7 +589,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof review.kinds)[1]["finish"]["body"]>[1]
-					readonly parent: Sha256
+					readonly parent: g.Sha256
 				}) => review.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
@@ -633,7 +635,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 						const inputAnalyze = (child: (typeof inputAnalyzeRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputAnalyzeRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputAnalyzeRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) => ({ review: row.review, group: row.group, question: row.question })
 								)
 							)
@@ -781,7 +783,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 						const inputQuestions = (child: (typeof inputQuestionsRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputQuestionsRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputQuestionsRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) => ({ review: row.review, group: row.group, size: row.size })
 								)
 							)
@@ -821,7 +823,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 						const inputSave = (child: (typeof inputSaveRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputSaveRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputSaveRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) => ({
 										review: row.review,
 										group: row.group,
@@ -884,7 +886,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		ReviewRun: {
 			window: review.kinds[4].window,
 			precondition: review.kinds[4].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readReviewReviewRunInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -896,11 +898,11 @@ export const reviewLedger = (h: ReviewHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "ReviewRunFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof ReviewAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof ReviewAdmitted>> = [
 						...grown.rows.ReviewAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof ReviewFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof ReviewFinish>> = [
 						...grown.rows.ReviewFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -1005,7 +1007,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 			),
 		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				if (!Sha256.equals(root, scope)) {
+				if (!g.Sha256.equals(root, scope)) {
 					const within = yield* Effect.map(
 						settled(h.den.reviewWithinOf.once({ params: { root, scope }, facts: {} })),
 						one
@@ -1153,9 +1155,9 @@ export const reviewLedger = (h: ReviewHandles) => {
 			settled(h.den.reviewSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>
 				Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof review>> => {
-					const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
+					const view = (scope: g.Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 						Option.match(
-							Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
+							Arr.findFirst(read.roots, (o) => g.Sha256.equals(o.scope, scope)),
 							{
 								onSome: (o): ReadonlyArray<ScopeView> => [
 									{
@@ -1172,7 +1174,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 								onNone: () =>
 									Arr.map(
 										Option.toArray(
-											Arr.findFirst(read.withins, (w) => Sha256.equals(w.scope, scope))
+											Arr.findFirst(read.withins, (w) => g.Sha256.equals(w.scope, scope))
 										),
 										(w): ScopeView => ({ place: "child", scope, kind: w.kind, parent: w.parent })
 									)

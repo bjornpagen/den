@@ -2,7 +2,7 @@ import { atOnce, delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import { seatsFor } from "@bjornpagen/den/runtime/seats"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
@@ -72,7 +72,7 @@ export const aSeatGivenBackRingsTheStepsWaitingOnIt = property.explore(runs, {
 						const squares = admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
 						assert.equal(squares.length, run.size)
 						const root = requested.scope
-						const wakeOf = (step: Sha256, attempt: bigint) =>
+						const wakeOf = (step: g.Sha256, attempt: bigint) =>
 							({
 								_tag: "Step",
 								flow,
@@ -140,7 +140,7 @@ export const aSeatGivenBackRingsTheStepsWaitingOnIt = property.explore(runs, {
 						)
 						const finishes = yield* rows(app.workload.fanFinishes.once({ params: {}, facts: {} }))
 						assert.ok(
-							Arr.some(finishes, (f) => Sha256.equals(f.scope, root) && f.outcome === "done")
+							Arr.some(finishes, (f) => g.Sha256.equals(f.scope, root) && f.outcome === "done")
 						)
 						const left = yield* ledger.holds
 						assert.deepEqual(left, [])

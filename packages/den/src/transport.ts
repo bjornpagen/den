@@ -1,4 +1,4 @@
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { regex } from "arkregex"
 import {
 	Array as Arr,
@@ -94,11 +94,11 @@ export type Wake =
 	| {
 			readonly _tag: "Step"
 			readonly flow: FlowName
-			readonly root: Sha256
-			readonly step: Sha256
+			readonly root: g.Sha256
+			readonly step: g.Sha256
 			readonly attempt: AttemptNumber
 	  }
-	| { readonly _tag: "Admit"; readonly flow: FlowName; readonly scope: Sha256 }
+	| { readonly _tag: "Admit"; readonly flow: FlowName; readonly scope: g.Sha256 }
 	| typeof CensusWake.Type
 
 /** A wake of one flow: a step's attempt or a scope's admission, which that flow's ledger serves. */
@@ -108,9 +108,9 @@ export type FlowWake = Extract<Wake, { readonly flow: FlowName }>
 export const wireOf = (wake: Wake): WireWake => {
 	switch (wake._tag) {
 		case "Step":
-			return { ...wake, root: Sha256.toHex(wake.root), step: Sha256.toHex(wake.step) }
+			return { ...wake, root: g.Sha256.toHex(wake.root), step: g.Sha256.toHex(wake.step) }
 		case "Admit":
-			return { ...wake, scope: Sha256.toHex(wake.scope) }
+			return { ...wake, scope: g.Sha256.toHex(wake.scope) }
 		case "Census":
 			return wake
 	}
@@ -120,8 +120,8 @@ export const wireOf = (wake: Wake): WireWake => {
 export class NotAKey extends Data.TaggedError("NotAKey")<{ readonly message: string }> {}
 
 /** A wire key's digest, parsed from its hex once. */
-const keyOf = (text: string): Result.Result<Sha256, NotAKey> => {
-	const parsed = Sha256.fromHex(text)
+const keyOf = (text: string): Result.Result<g.Sha256, NotAKey> => {
+	const parsed = g.Sha256.fromHex(text)
 	return parsed.ok
 		? Result.succeed(parsed.value)
 		: Result.fail(
@@ -147,9 +147,9 @@ export const wakeOf = (wire: WireWake): Result.Result<Wake, NotAKey> => {
 export const wakeText = (wake: Wake): string => {
 	switch (wake._tag) {
 		case "Step":
-			return `${wake.flow}:step:${Sha256.toHex(wake.step)}:${wake.attempt}`
+			return `${wake.flow}:step:${g.Sha256.toHex(wake.step)}:${wake.attempt}`
 		case "Admit":
-			return `${wake.flow}:admit:${Sha256.toHex(wake.scope)}`
+			return `${wake.flow}:admit:${g.Sha256.toHex(wake.scope)}`
 		case "Census":
 			return `census:${wake.at}`
 	}

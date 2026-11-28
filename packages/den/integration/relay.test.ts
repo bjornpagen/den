@@ -1,7 +1,7 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { relay } from "@bjornpagen/den/runtime/relay"
 import { type Ring, Transport } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -79,7 +79,7 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 							Stream.fromQueue(rung).pipe(
 								Stream.filter(
 									(ring) =>
-										ring.wake._tag === "Admit" && Sha256.equals(ring.wake.scope, request.scope)
+										ring.wake._tag === "Admit" && g.Sha256.equals(ring.wake.scope, request.scope)
 								),
 								Stream.runHead
 							),
@@ -102,7 +102,7 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 						assert.ok(
 							Arr.some(
 								finishes,
-								(f) => Sha256.equals(f.scope, request.scope) && f.outcome === "done"
+								(f) => g.Sha256.equals(f.scope, request.scope) && f.outcome === "done"
 							)
 						)
 					}),

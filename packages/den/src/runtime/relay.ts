@@ -1,5 +1,5 @@
-import { Sha256 } from "@bjornpagen/grizzle"
-import type { CallError } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import {
 	Array as Arr,
 	Duration,
@@ -28,7 +28,7 @@ import { type Ring, Transport, wakeText } from "#transport.ts"
  */
 
 /** What ended a relay: the CallError one of its watches ended with, or its watches' end. */
-export type RelayEnd = Option.Option<CallError>
+export type RelayEnd = Option.Option<gRuntime.CallError>
 
 const encoder = new TextEncoder()
 
@@ -96,7 +96,7 @@ export const relay = <R>(ledger: Ledger<R>): Effect.Effect<RelayEnd, never, Tran
 			const snapshot = yield* ledger.snapshot
 			const at = yield* ledger.now
 			const found = eligible(ledger, snapshot, at)
-			const position = Sha256.toHex(Sha256.ofBytes(encoder.encode(textOf(snapshot))))
+			const position = g.Sha256.toHex(g.Sha256.ofBytes(encoder.encode(textOf(snapshot))))
 			const before = yield* Ref.get(rung)
 			const fresh = Arr.filter(found.wakes, (wake) => !HashSet.has(before, wakeText(wake)))
 			yield* transport.send(

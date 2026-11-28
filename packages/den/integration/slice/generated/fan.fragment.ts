@@ -1,34 +1,8 @@
 import { DenEnvironment, DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Fan to; `den generate` writes it, and nothing edits it. */
-import {
-	check,
-	closed,
-	closedId,
-	contained,
-	derivedName,
-	Crypto,
-	derived,
-	drawn,
-	fin,
-	fragment,
-	generated,
-	key,
-	mutable,
-	natural,
-	on,
-	ordered,
-	place,
-	pg,
-	pred,
-	query,
-	relation,
-	select,
-	sha256,
-	unit,
-	v
-} from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 
-export const FanKind = closed.unordered("FanKind", [
+export const FanKind = g.closed.unordered("FanKind", [
 	"Square",
 	"Dust",
 	"Mop",
@@ -37,222 +11,232 @@ export const FanKind = closed.unordered("FanKind", [
 	"SweepFinish",
 	"WantedFinish"
 ])
-export const FanRootKind = closed.unordered("FanRootKind", ["FanRun", "Sweep", "Wanted"])
-export const FanChildKind = closed.unordered("FanChildKind", ["Batch"])
-export const FanOutcome = closed.unordered("FanOutcome", ["done", "failed"])
-export const FanRetryWhy = closed.unordered("FanRetryWhy", ["spent", "transient", "later"])
-export const FanPausable = closed.unordered("FanPausable", [
+export const FanRootKind = g.closed.unordered("FanRootKind", ["FanRun", "Sweep", "Wanted"])
+export const FanChildKind = g.closed.unordered("FanChildKind", ["Batch"])
+export const FanOutcome = g.closed.unordered("FanOutcome", ["done", "failed"])
+export const FanRetryWhy = g.closed.unordered("FanRetryWhy", ["spent", "transient", "later"])
+export const FanPausable = g.closed.unordered("FanPausable", [
 	"Pool",
 	"Vendor",
 	"FanRun",
 	"Sweep",
 	"Wanted"
 ])
-export const FanResource = closed.unordered("FanResource", ["Pool"])
-const FanSeats = closed.relation(
+export const FanResource = g.closed.unordered("FanResource", ["Pool"])
+const FanSeats = g.closed.relation(
 	"FanSeats",
-	{ resource: closedId(FanResource), seats: natural },
+	{ resource: g.closedId(FanResource), seats: g.natural },
 	["resource"],
 	[{ resource: "Pool", seats: 2n }]
 )
 
-export const FanScope = relation("FanScope", { root: sha256, scope: sha256 }, ["root", "scope"])
-export const FanRoot = relation(
+export const FanScope = g.relation("FanScope", { root: g.sha256, scope: g.sha256 }, [
+	"root",
+	"scope"
+])
+export const FanRoot = g.relation(
 	"FanRoot",
-	{ root: sha256, kind: closedId(FanRootKind), key: Text, at: DenInstant },
+	{ root: g.sha256, kind: g.closedId(FanRootKind), key: Text, at: DenInstant },
 	["root"]
 )
-export const FanRequestedWith = relation(
+export const FanRequestedWith = g.relation(
 	"FanRequestedWith",
-	{ root: sha256, fingerprint: sha256, input: sha256 },
+	{ root: g.sha256, fingerprint: g.sha256, input: g.sha256 },
 	["root"]
 )
-export const FanWithin = relation(
+export const FanWithin = g.relation(
 	"FanWithin",
-	{ root: sha256, scope: sha256, parent: sha256, kind: closedId(FanChildKind) },
+	{ root: g.sha256, scope: g.sha256, parent: g.sha256, kind: g.closedId(FanChildKind) },
 	["root", "scope"]
 )
-export const FanExclusiveKey = relation(
+export const FanExclusiveKey = g.relation(
 	"FanExclusiveKey",
-	{ root: sha256, scope: sha256, key: Text, id: sha256 },
+	{ root: g.sha256, scope: g.sha256, key: Text, id: g.sha256 },
 	["root", "scope"]
 )
-export const FanAdmitted = relation("FanAdmitted", { root: sha256, scope: sha256 }, [
+export const FanAdmitted = g.relation("FanAdmitted", { root: g.sha256, scope: g.sha256 }, [
 	"root",
 	"scope"
 ])
-export const FanSkipped = relation("FanSkipped", { root: sha256, scope: sha256, by: sha256 }, [
-	"root",
-	"scope"
-])
-export const FanStep = relation(
+export const FanSkipped = g.relation(
+	"FanSkipped",
+	{ root: g.sha256, scope: g.sha256, by: g.sha256 },
+	["root", "scope"]
+)
+export const FanStep = g.relation(
 	"FanStep",
-	{ root: sha256, step: sha256, kind: closedId(FanKind), scope: sha256, due: DenInstant },
+	{ root: g.sha256, step: g.sha256, kind: g.closedId(FanKind), scope: g.sha256, due: DenInstant },
 	["root", "step"]
 )
-export const FanStartStep = relation(
+export const FanStartStep = g.relation(
 	"FanStartStep",
-	{ root: sha256, scope: sha256, ordinal: natural, step: sha256 },
+	{ root: g.sha256, scope: g.sha256, ordinal: g.natural, step: g.sha256 },
 	["root", "scope", "ordinal"]
 )
-export const FanStartScope = relation(
+export const FanStartScope = g.relation(
 	"FanStartScope",
-	{ root: sha256, scope: sha256, ordinal: natural, child: sha256 },
+	{ root: g.sha256, scope: g.sha256, ordinal: g.natural, child: g.sha256 },
 	["root", "scope", "ordinal"]
 )
-export const FanFinish = relation("FanFinish", { root: sha256, scope: sha256, step: sha256 }, [
-	"root",
-	"scope"
-])
-export const FanClaim = relation(
+export const FanFinish = g.relation(
+	"FanFinish",
+	{ root: g.sha256, scope: g.sha256, step: g.sha256 },
+	["root", "scope"]
+)
+export const FanClaim = g.relation(
 	"FanClaim",
-	{ root: sha256, step: sha256, attempt: place, until: DenInstant, holds: drawn(natural) },
+	{
+		root: g.sha256,
+		step: g.sha256,
+		attempt: g.place,
+		until: DenInstant,
+		holds: g.drawn(g.natural)
+	},
 	["root", "step", "attempt"]
 )
-export const FanEnded = relation("FanEnded", { root: sha256, step: sha256, attempt: natural }, [
-	"root",
-	"step",
-	"attempt"
-])
-export const FanRetry = relation(
+export const FanEnded = g.relation(
+	"FanEnded",
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
+	["root", "step", "attempt"]
+)
+export const FanRetry = g.relation(
 	"FanRetry",
-	{ root: sha256, step: sha256, attempt: natural, at: DenInstant, why: closedId(FanRetryWhy) },
+	{
+		root: g.sha256,
+		step: g.sha256,
+		attempt: g.natural,
+		at: DenInstant,
+		why: g.closedId(FanRetryWhy)
+	},
 	["root", "step", "attempt"]
 )
-export const FanFenced = relation("FanFenced", { root: sha256, step: sha256, attempt: natural }, [
-	"root",
-	"step",
-	"attempt"
-])
-export const FanResult = relation(
+export const FanFenced = g.relation(
+	"FanFenced",
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
+	["root", "step", "attempt"]
+)
+export const FanResult = g.relation(
 	"FanResult",
-	{ root: sha256, step: sha256, outcome: closedId(FanOutcome) },
+	{ root: g.sha256, step: g.sha256, outcome: g.closedId(FanOutcome) },
 	["root", "step"]
 )
-export const FanDone = relation("FanDone", { root: sha256, step: sha256 }, ["root", "step"])
-export const FanFailed = relation("FanFailed", { root: sha256, step: sha256 }, ["root", "step"])
-export const FanHeld = relation("FanHeld", { root: sha256, step: sha256, attempt: natural }, [
+export const FanDone = g.relation("FanDone", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const FanFailed = g.relation("FanFailed", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const FanRefusal = relation("FanRefusal", { root: sha256, step: sha256, law: Text }, [
+export const FanHeld = g.relation(
+	"FanHeld",
+	{ root: g.sha256, step: g.sha256, attempt: g.natural },
+	["root", "step"]
+)
+export const FanRefusal = g.relation("FanRefusal", { root: g.sha256, step: g.sha256, law: Text }, [
 	"root",
 	"step"
 ])
-export const FanExhausted = relation("FanExhausted", { root: sha256, step: sha256 }, [
+export const FanExhausted = g.relation("FanExhausted", { root: g.sha256, step: g.sha256 }, [
 	"root",
 	"step"
 ])
-export const FanSquareInput = derivedName({ stem: "Fan", path: ["SquareInput"] }).relation(
-	"FanSquareInput",
-	{ root: sha256, step: sha256, batch: Text, n: pg.bigint },
-	["root", "step"]
-)
-export const FanDustInput = derivedName({ stem: "Fan", path: ["DustInput"] }).relation(
-	"FanDustInput",
-	{ root: sha256, step: sha256, sweep: Text },
-	["root", "step"]
-)
-export const FanMopInput = derivedName({ stem: "Fan", path: ["MopInput"] }).relation(
-	"FanMopInput",
-	{ root: sha256, step: sha256, sweep: Text },
-	["root", "step"]
-)
-export const FanBatchInput = derivedName({ stem: "Fan", path: ["BatchInput"] }).relation(
-	"FanBatchInput",
-	{ root: sha256, scope: sha256, batch: Text, size: pg.bigint },
-	["root", "scope"]
-)
-export const FanFanRunInput = derivedName({ stem: "Fan", path: ["FanRunInput"] }).relation(
-	"FanFanRunInput",
-	{ root: sha256, scope: sha256, batch: Text, size: pg.bigint },
-	["root", "scope"]
-)
-export const FanSweepInput = derivedName({ stem: "Fan", path: ["SweepInput"] }).relation(
-	"FanSweepInput",
-	{ root: sha256, scope: sha256, sweep: Text },
-	["root", "scope"]
-)
-export const FanWantedInput = derivedName({ stem: "Fan", path: ["WantedInput"] }).relation(
-	"FanWantedInput",
-	{ root: sha256, scope: sha256, batch: Text, size: pg.bigint },
-	["root", "scope"]
-)
-export const FanWantedKey = derivedName({ stem: "Fan", path: ["WantedKey"] }).generated(
-	"FanWantedKey",
-	{ root: sha256, batch: Text },
-	["root"],
-	(row) => ({ batchDigest: generated(sha256, Crypto.sha256(row.batch)) })
-)
-export const FanSquareOutput = derivedName({ stem: "Fan", path: ["SquareOutput"] }).relation(
-	"FanSquareOutput",
-	{ root: sha256, step: sha256, square: pg.bigint },
-	["root", "step"]
-)
-export const FanDustOutput = derivedName({ stem: "Fan", path: ["DustOutput"] }).relation(
-	"FanDustOutput",
-	{ root: sha256, step: sha256, sweep: Text },
-	["root", "step"]
-)
-export const FanMopOutput = derivedName({ stem: "Fan", path: ["MopOutput"] }).relation(
-	"FanMopOutput",
-	{ root: sha256, step: sha256, sweep: Text },
-	["root", "step"]
-)
-export const FanBatchFinishOutput = derivedName({
-	stem: "Fan",
-	path: ["BatchFinishOutput"]
-}).relation("FanBatchFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
-export const FanFanRunFinishOutput = derivedName({
-	stem: "Fan",
-	path: ["FanRunFinishOutput"]
-}).relation("FanFanRunFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
-export const FanSweepFinishOutput = derivedName({
-	stem: "Fan",
-	path: ["SweepFinishOutput"]
-}).relation("FanSweepFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
-export const FanWantedFinishOutput = derivedName({
-	stem: "Fan",
-	path: ["WantedFinishOutput"]
-}).relation("FanWantedFinishOutput", { root: sha256, step: sha256 }, ["root", "step"])
-const FanHold = relation(
+export const FanSquareInput = g
+	.derivedName({ stem: "Fan", path: ["SquareInput"] })
+	.relation("FanSquareInput", { root: g.sha256, step: g.sha256, batch: Text, n: g.int8 }, [
+		"root",
+		"step"
+	])
+export const FanDustInput = g
+	.derivedName({ stem: "Fan", path: ["DustInput"] })
+	.relation("FanDustInput", { root: g.sha256, step: g.sha256, sweep: Text }, ["root", "step"])
+export const FanMopInput = g
+	.derivedName({ stem: "Fan", path: ["MopInput"] })
+	.relation("FanMopInput", { root: g.sha256, step: g.sha256, sweep: Text }, ["root", "step"])
+export const FanBatchInput = g
+	.derivedName({ stem: "Fan", path: ["BatchInput"] })
+	.relation("FanBatchInput", { root: g.sha256, scope: g.sha256, batch: Text, size: g.int8 }, [
+		"root",
+		"scope"
+	])
+export const FanFanRunInput = g
+	.derivedName({ stem: "Fan", path: ["FanRunInput"] })
+	.relation("FanFanRunInput", { root: g.sha256, scope: g.sha256, batch: Text, size: g.int8 }, [
+		"root",
+		"scope"
+	])
+export const FanSweepInput = g
+	.derivedName({ stem: "Fan", path: ["SweepInput"] })
+	.relation("FanSweepInput", { root: g.sha256, scope: g.sha256, sweep: Text }, ["root", "scope"])
+export const FanWantedInput = g
+	.derivedName({ stem: "Fan", path: ["WantedInput"] })
+	.relation("FanWantedInput", { root: g.sha256, scope: g.sha256, batch: Text, size: g.int8 }, [
+		"root",
+		"scope"
+	])
+export const FanWantedKey = g
+	.derivedName({ stem: "Fan", path: ["WantedKey"] })
+	.generated("FanWantedKey", { root: g.sha256, batch: Text }, ["root"], (row) => ({
+		batchDigest: g.generated(g.sha256, g.Crypto.sha256(row.batch))
+	}))
+export const FanSquareOutput = g
+	.derivedName({ stem: "Fan", path: ["SquareOutput"] })
+	.relation("FanSquareOutput", { root: g.sha256, step: g.sha256, square: g.int8 }, ["root", "step"])
+export const FanDustOutput = g
+	.derivedName({ stem: "Fan", path: ["DustOutput"] })
+	.relation("FanDustOutput", { root: g.sha256, step: g.sha256, sweep: Text }, ["root", "step"])
+export const FanMopOutput = g
+	.derivedName({ stem: "Fan", path: ["MopOutput"] })
+	.relation("FanMopOutput", { root: g.sha256, step: g.sha256, sweep: Text }, ["root", "step"])
+export const FanBatchFinishOutput = g
+	.derivedName({ stem: "Fan", path: ["BatchFinishOutput"] })
+	.relation("FanBatchFinishOutput", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const FanFanRunFinishOutput = g
+	.derivedName({ stem: "Fan", path: ["FanRunFinishOutput"] })
+	.relation("FanFanRunFinishOutput", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const FanSweepFinishOutput = g
+	.derivedName({ stem: "Fan", path: ["SweepFinishOutput"] })
+	.relation("FanSweepFinishOutput", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+export const FanWantedFinishOutput = g
+	.derivedName({ stem: "Fan", path: ["WantedFinishOutput"] })
+	.relation("FanWantedFinishOutput", { root: g.sha256, step: g.sha256 }, ["root", "step"])
+const FanHold = g.relation(
 	"FanHold",
 	{
-		resource: closedId(FanResource),
-		root: sha256,
-		step: sha256,
-		attempt: natural,
-		at: drawn(natural),
-		seat: natural
+		resource: g.closedId(FanResource),
+		root: g.sha256,
+		step: g.sha256,
+		attempt: g.natural,
+		at: g.drawn(g.natural),
+		seat: g.natural
 	},
 	["resource", "root", "step", "attempt"]
 )
-export const FanExclusive = relation(
+export const FanExclusive = g.relation(
 	"FanExclusive",
-	{ kind: closedId(FanRootKind), key: sha256, turn: natural, scope: sha256 },
+	{ kind: g.closedId(FanRootKind), key: g.sha256, turn: g.natural, scope: g.sha256 },
 	["kind", "key", "turn"]
 )
-export const FanReleased = relation(
+export const FanReleased = g.relation(
 	"FanReleased",
-	{ kind: closedId(FanRootKind), key: sha256, turn: natural },
+	{ kind: g.closedId(FanRootKind), key: g.sha256, turn: g.natural },
 	["kind", "key", "turn"]
 )
-export const FanPaused = relation("FanPaused", { target: closedId(FanPausable), turn: natural }, [
-	"target",
-	"turn"
-])
-export const FanResumed = relation("FanResumed", { target: closedId(FanPausable), turn: natural }, [
-	"target",
-	"turn"
-])
-export const FanServed = relation(
+export const FanPaused = g.relation(
+	"FanPaused",
+	{ target: g.closedId(FanPausable), turn: g.natural },
+	["target", "turn"]
+)
+export const FanResumed = g.relation(
+	"FanResumed",
+	{ target: g.closedId(FanPausable), turn: g.natural },
+	["target", "turn"]
+)
+export const FanServed = g.relation(
 	"FanServed",
 	{ environment: DenEnvironment, at: DenInstant, deployment: Text },
 	["environment", "at"]
 )
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
-export const fanGraph = fragment(
+export const fanGraph = g.fragment(
 	[
 		FanKind,
 		FanRootKind,
@@ -300,221 +284,233 @@ export const fanGraph = fragment(
 		FanHold
 	],
 	[
-		unit("DenRoot", { root: sha256 }),
-		key(on(FanScope, "scope")),
-		key(on(FanStep, "step")),
-		contained(on(FanExclusiveKey, "root", "scope"), on(FanScope, "root", "scope")),
-		contained(on(FanWithin, "root", "scope"), on(FanScope, "root", "scope")),
-		contained(on(FanWithin, "root", "parent"), on(FanScope, "root", "scope")),
-		contained(on(FanStartScope, "root", "scope"), on(FanAdmitted, "root", "scope")),
-		contained(on(FanStartScope, "root", "child"), on(FanScope, "root", "scope")),
-		key(on(FanStartScope, "root", "child")),
-		contained(on(FanAdmitted, "root", "scope"), on(FanScope, "root", "scope")),
-		contained(on(FanSkipped, "scope"), on(FanRoot, "root")),
-		contained(on(FanSkipped, "by"), on(FanRoot, "root")),
-		contained(on(FanRequestedWith, "root"), on(FanRoot, "root")),
-		contained(on(FanStep, "root", "scope"), on(FanAdmitted, "root", "scope")),
-		contained(on(FanStartStep, "root", "scope"), on(FanAdmitted, "root", "scope")),
-		contained(on(FanStartStep, "root", "step"), on(FanStep, "root", "step")),
-		key(on(FanStartStep, "root", "step")),
-		contained(on(FanFinish, "root", "scope"), on(FanAdmitted, "root", "scope")),
-		contained(on(FanFinish, "root", "step"), on(FanStep, "root", "step")),
-		key(on(FanFinish, "root", "step")),
-		contained(on(FanClaim, "root", "step"), on(FanStep, "root", "step")),
-		contained(on(FanEnded, "root", "step", "attempt"), on(FanClaim, "root", "step", "attempt")),
-		contained(
-			on(
-				select(FanClaim, (row) => row.ge(row.attempt, 1n)),
+		g.unit("DenRoot", { root: g.sha256 }),
+		g.key(g.on(FanScope, "scope")),
+		g.key(g.on(FanStep, "step")),
+		g.contained(g.on(FanExclusiveKey, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.contained(g.on(FanWithin, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.contained(g.on(FanWithin, "root", "parent"), g.on(FanScope, "root", "scope")),
+		g.contained(g.on(FanStartScope, "root", "scope"), g.on(FanAdmitted, "root", "scope")),
+		g.contained(g.on(FanStartScope, "root", "child"), g.on(FanScope, "root", "scope")),
+		g.key(g.on(FanStartScope, "root", "child")),
+		g.contained(g.on(FanAdmitted, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.contained(g.on(FanSkipped, "scope"), g.on(FanRoot, "root")),
+		g.contained(g.on(FanSkipped, "by"), g.on(FanRoot, "root")),
+		g.contained(g.on(FanRequestedWith, "root"), g.on(FanRoot, "root")),
+		g.contained(g.on(FanStep, "root", "scope"), g.on(FanAdmitted, "root", "scope")),
+		g.contained(g.on(FanStartStep, "root", "scope"), g.on(FanAdmitted, "root", "scope")),
+		g.contained(g.on(FanStartStep, "root", "step"), g.on(FanStep, "root", "step")),
+		g.key(g.on(FanStartStep, "root", "step")),
+		g.contained(g.on(FanFinish, "root", "scope"), g.on(FanAdmitted, "root", "scope")),
+		g.contained(g.on(FanFinish, "root", "step"), g.on(FanStep, "root", "step")),
+		g.key(g.on(FanFinish, "root", "step")),
+		g.contained(g.on(FanClaim, "root", "step"), g.on(FanStep, "root", "step")),
+		g.contained(
+			g.on(FanEnded, "root", "step", "attempt"),
+			g.on(FanClaim, "root", "step", "attempt")
+		),
+		g.contained(
+			g.on(
+				g.select(FanClaim, (row) => row.ge(row.attempt, 1n)),
 				"root",
 				"step",
-				pred("attempt")
+				g.pred("attempt")
 			),
-			on(FanEnded, "root", "step", "attempt")
+			g.on(FanEnded, "root", "step", "attempt")
 		),
-		contained(on(FanRetry, "root", "step", "attempt"), on(FanEnded, "root", "step", "attempt")),
-		contained(on(FanFenced, "root", "step", "attempt"), on(FanEnded, "root", "step", "attempt")),
-		contained(on(FanResult, "root", "step"), on(FanStep, "root", "step")),
-		contained(on(FanHeld, "root", "step", "attempt"), on(FanClaim, "root", "step", "attempt")),
-		contained(on(FanHeld, "root", "step"), on(FanResult, "root", "step")),
-		contained(
-			on(FanDone, "root", "step"),
-			on(
-				select(FanResult, (row) => row.eq(row.outcome, "done")),
+		g.contained(
+			g.on(FanRetry, "root", "step", "attempt"),
+			g.on(FanEnded, "root", "step", "attempt")
+		),
+		g.contained(
+			g.on(FanFenced, "root", "step", "attempt"),
+			g.on(FanEnded, "root", "step", "attempt")
+		),
+		g.contained(g.on(FanResult, "root", "step"), g.on(FanStep, "root", "step")),
+		g.contained(
+			g.on(FanHeld, "root", "step", "attempt"),
+			g.on(FanClaim, "root", "step", "attempt")
+		),
+		g.contained(g.on(FanHeld, "root", "step"), g.on(FanResult, "root", "step")),
+		g.contained(
+			g.on(FanDone, "root", "step"),
+			g.on(
+				g.select(FanResult, (row) => row.eq(row.outcome, "done")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(FanFailed, "root", "step"),
-			on(
-				select(FanResult, (row) => row.eq(row.outcome, "failed")),
+		g.contained(
+			g.on(FanFailed, "root", "step"),
+			g.on(
+				g.select(FanResult, (row) => row.eq(row.outcome, "failed")),
 				"root",
 				"step"
 			)
 		),
-		contained(on(FanRefusal, "root", "step"), on(FanFailed, "root", "step")),
-		contained(on(FanExhausted, "root", "step"), on(FanFailed, "root", "step")),
-		contained(
-			on(
-				select(FanRoot, (row) => row.eq(row.kind, "FanRun")),
+		g.contained(g.on(FanRefusal, "root", "step"), g.on(FanFailed, "root", "step")),
+		g.contained(g.on(FanExhausted, "root", "step"), g.on(FanFailed, "root", "step")),
+		g.contained(
+			g.on(
+				g.select(FanRoot, (row) => row.eq(row.kind, "FanRun")),
 				"root"
 			),
-			on(FanRequestedWith, "root")
+			g.on(FanRequestedWith, "root")
 		),
-		contained(
-			on(
-				select(FanRoot, (row) => row.eq(row.kind, "Sweep")),
+		g.contained(
+			g.on(
+				g.select(FanRoot, (row) => row.eq(row.kind, "Sweep")),
 				"root"
 			),
-			on(FanRequestedWith, "root")
+			g.on(FanRequestedWith, "root")
 		),
-		contained(
-			on(FanSquareInput, "root", "step"),
-			on(
-				select(FanStep, (row) => row.eq(row.kind, "Square")),
+		g.contained(
+			g.on(FanSquareInput, "root", "step"),
+			g.on(
+				g.select(FanStep, (row) => row.eq(row.kind, "Square")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(FanDustInput, "root", "step"),
-			on(
-				select(FanStep, (row) => row.eq(row.kind, "Dust")),
+		g.contained(
+			g.on(FanDustInput, "root", "step"),
+			g.on(
+				g.select(FanStep, (row) => row.eq(row.kind, "Dust")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(FanMopInput, "root", "step"),
-			on(
-				select(FanStep, (row) => row.eq(row.kind, "Mop")),
+		g.contained(
+			g.on(FanMopInput, "root", "step"),
+			g.on(
+				g.select(FanStep, (row) => row.eq(row.kind, "Mop")),
 				"root",
 				"step"
 			)
 		),
-		contained(
-			on(FanBatchInput, "root", "scope"),
-			on(
-				select(FanWithin, (row) => row.eq(row.kind, "Batch")),
+		g.contained(
+			g.on(FanBatchInput, "root", "scope"),
+			g.on(
+				g.select(FanWithin, (row) => row.eq(row.kind, "Batch")),
 				"root",
 				"scope"
 			)
 		),
-		contained(
-			on(FanFanRunInput, "scope"),
-			on(
-				select(FanRoot, (row) => row.eq(row.kind, "FanRun")),
+		g.contained(
+			g.on(FanFanRunInput, "scope"),
+			g.on(
+				g.select(FanRoot, (row) => row.eq(row.kind, "FanRun")),
 				"root"
 			)
 		),
-		contained(
-			on(FanSweepInput, "scope"),
-			on(
-				select(FanRoot, (row) => row.eq(row.kind, "Sweep")),
+		g.contained(
+			g.on(FanSweepInput, "scope"),
+			g.on(
+				g.select(FanRoot, (row) => row.eq(row.kind, "Sweep")),
 				"root"
 			)
 		),
-		contained(
-			on(FanWantedInput, "scope"),
-			on(
-				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
+		g.contained(
+			g.on(FanWantedInput, "scope"),
+			g.on(
+				g.select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
 				"root"
 			)
 		),
-		key(on(FanWantedKey, "batchDigest")),
-		contained(
-			on(FanWantedKey, "root"),
-			on(
-				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
+		g.key(g.on(FanWantedKey, "batchDigest")),
+		g.contained(
+			g.on(FanWantedKey, "root"),
+			g.on(
+				g.select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
 				"root"
 			)
 		),
-		contained(
-			on(
-				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
+		g.contained(
+			g.on(
+				g.select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
 				"root"
 			),
-			on(FanWantedKey, "root")
+			g.on(FanWantedKey, "root")
 		),
-		contained(on(FanSquareOutput, "root", "step"), on(FanSquareInput, "root", "step")),
-		contained(on(FanSquareOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanDustOutput, "root", "step"), on(FanDustInput, "root", "step")),
-		contained(on(FanDustOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanMopOutput, "root", "step"), on(FanMopInput, "root", "step")),
-		contained(on(FanMopOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanBatchFinishOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanFanRunFinishOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanSweepFinishOutput, "root", "step"), on(FanDone, "root", "step")),
-		contained(on(FanWantedFinishOutput, "root", "step"), on(FanDone, "root", "step")),
-		unit("FanSeat", { resource: closedId(FanResource) }),
-		ordered(on(FanHold, "root", "step", "attempt", "at"), fin(FanClaim, "holds")),
-		mutable(FanHold),
-		contained(on(FanScope, "root"), on(FanRoot, "root")),
-		mutable(FanScope),
-		mutable(FanWithin),
-		mutable(FanExclusiveKey),
-		mutable(FanAdmitted),
-		contained(on(FanSkipped, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanSkipped),
-		contained(on(FanStep, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanStep),
-		contained(on(FanStartStep, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanStartStep),
-		contained(on(FanStartScope, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanStartScope),
-		contained(on(FanFinish, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanFinish),
-		mutable(FanClaim),
-		contained(on(FanEnded, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanEnded),
-		contained(on(FanRetry, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanRetry),
-		contained(on(FanFenced, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanFenced),
-		mutable(FanResult),
-		contained(on(FanDone, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanDone),
-		contained(on(FanFailed, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanFailed),
-		contained(on(FanHeld, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanHeld),
-		contained(on(FanRefusal, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanRefusal),
-		contained(on(FanExhausted, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanExhausted),
-		contained(on(FanSquareInput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanSquareInput),
-		contained(on(FanDustInput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanDustInput),
-		contained(on(FanMopInput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanMopInput),
-		contained(on(FanBatchInput, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanBatchInput),
-		contained(on(FanFanRunInput, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanFanRunInput),
-		contained(on(FanSweepInput, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanSweepInput),
-		contained(on(FanWantedInput, "root", "scope"), on(FanScope, "root", "scope")),
-		mutable(FanWantedInput),
-		contained(on(FanSquareOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanSquareOutput),
-		contained(on(FanDustOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanDustOutput),
-		contained(on(FanMopOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanMopOutput),
-		contained(on(FanBatchFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanBatchFinishOutput),
-		contained(on(FanFanRunFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanFanRunFinishOutput),
-		contained(on(FanSweepFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanSweepFinishOutput),
-		contained(on(FanWantedFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanWantedFinishOutput)
+		g.contained(g.on(FanSquareOutput, "root", "step"), g.on(FanSquareInput, "root", "step")),
+		g.contained(g.on(FanSquareOutput, "root", "step"), g.on(FanDone, "root", "step")),
+		g.contained(g.on(FanDustOutput, "root", "step"), g.on(FanDustInput, "root", "step")),
+		g.contained(g.on(FanDustOutput, "root", "step"), g.on(FanDone, "root", "step")),
+		g.contained(g.on(FanMopOutput, "root", "step"), g.on(FanMopInput, "root", "step")),
+		g.contained(g.on(FanMopOutput, "root", "step"), g.on(FanDone, "root", "step")),
+		g.contained(g.on(FanBatchFinishOutput, "root", "step"), g.on(FanDone, "root", "step")),
+		g.contained(g.on(FanFanRunFinishOutput, "root", "step"), g.on(FanDone, "root", "step")),
+		g.contained(g.on(FanSweepFinishOutput, "root", "step"), g.on(FanDone, "root", "step")),
+		g.contained(g.on(FanWantedFinishOutput, "root", "step"), g.on(FanDone, "root", "step")),
+		g.unit("FanSeat", { resource: g.closedId(FanResource) }),
+		g.ordered(g.on(FanHold, "root", "step", "attempt", "at"), g.fin(FanClaim, "holds")),
+		g.mutable(FanHold),
+		g.contained(g.on(FanScope, "root"), g.on(FanRoot, "root")),
+		g.mutable(FanScope),
+		g.mutable(FanWithin),
+		g.mutable(FanExclusiveKey),
+		g.mutable(FanAdmitted),
+		g.contained(g.on(FanSkipped, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanSkipped),
+		g.contained(g.on(FanStep, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanStep),
+		g.contained(g.on(FanStartStep, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanStartStep),
+		g.contained(g.on(FanStartScope, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanStartScope),
+		g.contained(g.on(FanFinish, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanFinish),
+		g.mutable(FanClaim),
+		g.contained(g.on(FanEnded, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanEnded),
+		g.contained(g.on(FanRetry, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanRetry),
+		g.contained(g.on(FanFenced, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanFenced),
+		g.mutable(FanResult),
+		g.contained(g.on(FanDone, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanDone),
+		g.contained(g.on(FanFailed, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanFailed),
+		g.contained(g.on(FanHeld, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanHeld),
+		g.contained(g.on(FanRefusal, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanRefusal),
+		g.contained(g.on(FanExhausted, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanExhausted),
+		g.contained(g.on(FanSquareInput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanSquareInput),
+		g.contained(g.on(FanDustInput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanDustInput),
+		g.contained(g.on(FanMopInput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanMopInput),
+		g.contained(g.on(FanBatchInput, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanBatchInput),
+		g.contained(g.on(FanFanRunInput, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanFanRunInput),
+		g.contained(g.on(FanSweepInput, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanSweepInput),
+		g.contained(g.on(FanWantedInput, "root", "scope"), g.on(FanScope, "root", "scope")),
+		g.mutable(FanWantedInput),
+		g.contained(g.on(FanSquareOutput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanSquareOutput),
+		g.contained(g.on(FanDustOutput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanDustOutput),
+		g.contained(g.on(FanMopOutput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanMopOutput),
+		g.contained(g.on(FanBatchFinishOutput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanBatchFinishOutput),
+		g.contained(g.on(FanFanRunFinishOutput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanFanRunFinishOutput),
+		g.contained(g.on(FanSweepFinishOutput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanSweepFinishOutput),
+		g.contained(g.on(FanWantedFinishOutput, "root", "step"), g.on(FanStep, "root", "step")),
+		g.mutable(FanWantedFinishOutput)
 	]
 )
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
-export const fanCoordination = fragment(
+export const fanCoordination = g.fragment(
 	[
 		FanKind,
 		FanRootKind,
@@ -531,22 +527,25 @@ export const fanCoordination = fragment(
 		FanServed
 	],
 	[
-		contained(on(FanReleased, "kind", "key", "turn"), on(FanExclusive, "kind", "key", "turn")),
-		contained(
-			on(FanExclusive, "kind", "key", pred("turn")),
-			on(FanReleased, "kind", "key", "turn")
+		g.contained(
+			g.on(FanReleased, "kind", "key", "turn"),
+			g.on(FanExclusive, "kind", "key", "turn")
 		),
-		contained(on(FanResumed, "target", "turn"), on(FanPaused, "target", "turn")),
-		contained(on(FanPaused, "target", pred("turn")), on(FanResumed, "target", "turn"))
+		g.contained(
+			g.on(FanExclusive, "kind", "key", g.pred("turn")),
+			g.on(FanReleased, "kind", "key", "turn")
+		),
+		g.contained(g.on(FanResumed, "target", "turn"), g.on(FanPaused, "target", "turn")),
+		g.contained(g.on(FanPaused, "target", g.pred("turn")), g.on(FanResumed, "target", "turn"))
 	]
 )
 
 /** The flow's live holds: each hold whose claim's attempt has neither ended nor held its step's result, with its claim's lease, which den's role reads as the seats' holders. */
-const FanLive = derived(
+const FanLive = g.derived(
 	"FanLive",
-	query(fanGraph).rule((r) => {
-		const { step, root, attempt, resource, seat } = v(FanHold, "fanHold")
-		const { until } = v(FanClaim, "fanClaim")
+	g.query(fanGraph).rule((r) => {
+		const { step, root, attempt, resource, seat } = g.v(FanHold, "fanHold")
+		const { until } = g.v(FanClaim, "fanClaim")
 		return r
 			.match(FanHold, { step, root, attempt, resource, seat })
 			.match(FanClaim, { step, root, attempt, until })
@@ -559,8 +558,8 @@ const FanLive = derived(
 export const fanSeatLevel = {
 	relations: [FanLive],
 	laws: [
-		key(on(FanLive, "resource", "seat")),
-		check("FanSeatBelowCount", FanLive, (row) =>
+		g.key(g.on(FanLive, "resource", "seat")),
+		g.check("FanSeatBelowCount", FanLive, (row) =>
 			row.lt(row.seat, FanSeats.at("seats", row.resource))
 		)
 	]

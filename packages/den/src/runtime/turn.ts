@@ -1,5 +1,5 @@
-import { Sha256 } from "@bjornpagen/grizzle"
-import type { WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Again, Resource, Use } from "#algebra/kinds.ts"
 import { censusPeriodSeconds, goesAgain, seatedOf } from "#algebra/kinds.ts"
@@ -208,7 +208,7 @@ export type Wait =
 export type Ending =
 	| { readonly kind: "done"; readonly wake: Wake; readonly spawned: Spawned }
 	| { readonly kind: "admitted"; readonly wake: Wake; readonly spawned: Spawned }
-	| { readonly kind: "skipped"; readonly wake: Wake; readonly by: Sha256 }
+	| { readonly kind: "skipped"; readonly wake: Wake; readonly by: g.Sha256 }
 	| {
 			readonly kind: "failed"
 			readonly wake: Wake
@@ -235,11 +235,11 @@ export type Ending =
  * on the deployment, where its own login still can (`ended`), rings nothing, and names the fault in its ending. A stale
  * deployment's record never lands, since its every call meets `stale`: its claim's lapse spends the attempt, as before.
  */
-export type Fault = Extract<Settled, { readonly kind: "stale" | "credentialRefused" }>
+export type Fault = Extract<Settled, { readonly _tag: "stale" | "credentialRefused" }>
 
 /** The deployment's fault `error` is, if it is one. */
 const faultOf = (error: Settled): Option.Option<Fault> =>
-	error.kind === "stale" || error.kind === "credentialRefused" ? Option.some(error) : Option.none()
+	error._tag === "stale" || error._tag === "credentialRefused" ? Option.some(error) : Option.none()
 
 /** The ending of a call's failure: fenced on the deployment's fault, `otherwise` on any other. */
 const fencedOr = (error: Settled, wake: Wake, otherwise: Ending): Ending =>
@@ -315,14 +315,14 @@ export const lostRace = (flow: string, error: Settled): boolean =>
 		`${flow}Admitted`,
 		`${flow}Step`
 	]) ||
-	(error.kind === "refused" &&
+	(error._tag === "refused" &&
 		Arr.some(
 			refusedLaws(error.refused),
 			({ law }) => law.kind === "contained" && law.from.relation === `${flow}Claim`
 		))
 
 /** The law a refusal names first, by its identity, as a Refusal row records it. */
-const lawOf = (error: Extract<Settled, { readonly kind: "refused" }>): string =>
+const lawOf = (error: Extract<Settled, { readonly _tag: "refused" }>): string =>
 	String(refusedLaws(error.refused)[0].id)
 
 /**
@@ -351,7 +351,7 @@ export interface StepPort<I, Rows, D, E> {
 		readonly input: I
 		readonly rows: Rows
 		readonly error: E
-	}) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	}) => Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>
 }
 
 /**
@@ -461,7 +461,7 @@ const unwritten = (flow: string, error: Settled, wake: Wake): Ending =>
 /** The root `root` of a graph, by its own scope: none once it is gone. */
 const rootOf = <R>(
 	ledger: Ledger<R>,
-	root: Sha256
+	root: g.Sha256
 ): Effect.Effect<Option.Option<RootView>, Settled> =>
 	Effect.map(
 		ledger.scopeOf({ root, scope: root }),
@@ -554,7 +554,7 @@ const spawnDelay = (due: SpawnDue, now: Option.Option<Instant>): Duration.Durati
  */
 const spawnedRings = <R>(
 	ledger: Ledger<R>,
-	root: Sha256,
+	root: g.Sha256,
 	spawned: Spawned
 ): Effect.Effect<ReadonlyArray<Onward>> =>
 	Effect.map(
@@ -585,7 +585,7 @@ const settled = <R>(
 ): Effect.Effect<ReadonlyArray<Onward>> =>
 	Effect.gen(function* () {
 		const children = yield* spawnedRings(ledger, root, spawned)
-		const ready = (s: Sha256) =>
+		const ready = (s: g.Sha256) =>
 			Effect.flatMap(ledger.unended({ root, scope: s }), (busy) =>
 				busy ? Effect.succeedNone : nextWake(ledger, { root, step: finishStep(s) })
 			)
@@ -695,7 +695,7 @@ const ended = <R>(
 /** The ending a write's outcome gives: `ok` once written, lost when another fact holds its key, else a wait. */
 const recorded = <R>(
 	ledger: Ledger<R>,
-	write: Effect.Effect<WriteOutcome<unknown>, Settled>,
+	write: Effect.Effect<gRuntime.WriteOutcome<unknown>, Settled>,
 	wake: Wake,
 	ok: Ending
 ): Effect.Effect<Ending> =>
@@ -727,7 +727,7 @@ const endingOf = <R>(
 			)
 		case "error": {
 			const error = ran.error
-			switch (error.kind) {
+			switch (error._tag) {
 				case "stale":
 				case "credentialRefused":
 					return ended(ledger, runner, turn, used, { kind: "fenced", fault: error }, wake)
@@ -930,8 +930,8 @@ const serveStep = <R>(
  * The app's relations a commit's outcome added rows to or put rows into, whose rows may complete a step's awaited fact:
  * read off what the commit did, so a commit through a ChangeSet rings what its rows touched, whatever members it holds.
  */
-const writtenBy = (outcome: WriteOutcome<unknown>): ReadonlyArray<string> =>
-	outcome.kind === "accepted"
+const writtenBy = (outcome: gRuntime.WriteOutcome<unknown>): ReadonlyArray<string> =>
+	outcome._tag === "accepted"
 		? Arr.map(
 				Arr.filter(outcome.counts, (c) => c.added > 0n || c.put > 0n),
 				(c) => c.relation
@@ -981,7 +981,7 @@ const waitersOf = <R>(
 					Arr.some(
 						snapshot.steps,
 						(p) =>
-							Sha256.equals(p.step, wake.step) &&
+							g.Sha256.equals(p.step, wake.step) &&
 							Arr.some(seatedOf(p.runner.uses), (r) =>
 								Arr.some(freed, (seat) => seat.resource === r.name)
 							)
@@ -1079,7 +1079,10 @@ const serveAdmit = <R>(
 			const held = yield* readOr(holdExclusive(ledger, { kind: view.kind, key, scope }), wake)
 			if (!held) {
 				const holders = yield* readOr(ledger.coordination.exclusives, wake)
-				const by = Arr.findFirst(holders, (e) => e.kind === view.kind && Sha256.equals(e.key, key))
+				const by = Arr.findFirst(
+					holders,
+					(e) => e.kind === view.kind && g.Sha256.equals(e.key, key)
+				)
 				if (Option.isNone(by)) {
 					return served({ kind: "waiting", wake, why: "exclusive", until: Option.none() })
 				}

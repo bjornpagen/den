@@ -41,9 +41,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Assign over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, recordsFacts, Sha256 } from "@bjornpagen/grizzle"
-import { codecText } from "@bjornpagen/grizzle/compile"
-import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
+import * as g from "@bjornpagen/grizzle"
+import * as gCompile from "@bjornpagen/grizzle/compile"
+import type * as gRuntime from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { assign } from "#integration/slice/flows.ts"
 import {
@@ -87,68 +87,74 @@ const AssignDecideReadNearestText = recordText(assign.kinds[1].reads.named.neare
 const AssignDecideReadSeenText = recordText(assign.kinds[1].reads.named.seen)
 /** The codec text of each declared field of AssignAssignmentInput, a request's input row, bound once (grizzle's codecText). */
 const assignAssignmentInputTexts = Object.freeze({
-	learner: codecText(AssignAssignmentInput.fields.learner),
-	topic: codecText(AssignAssignmentInput.fields.topic),
-	mode: codecText(AssignAssignmentInput.fields.mode)
+	learner: gCompile.codecText(AssignAssignmentInput.fields.learner),
+	topic: gCompile.codecText(AssignAssignmentInput.fields.topic),
+	mode: gCompile.codecText(AssignAssignmentInput.fields.mode)
 })
 /** The codec text of each declared field of AssignAssignmentInputNear, a request's input row, bound once (grizzle's codecText). */
 const assignAssignmentInputNearTexts = Object.freeze({
-	ordinal: codecText(AssignAssignmentInputNear.fields.ordinal),
-	value: codecText(AssignAssignmentInputNear.fields.value)
+	ordinal: gCompile.codecText(AssignAssignmentInputNear.fields.ordinal),
+	value: gCompile.codecText(AssignAssignmentInputNear.fields.value)
 })
 /** The codec text of each declared field of AssignAssignmentInputExclude, a request's input row, bound once (grizzle's codecText). */
 const assignAssignmentInputExcludeTexts = Object.freeze({
-	ordinal: codecText(AssignAssignmentInputExclude.fields.ordinal),
-	value: codecText(AssignAssignmentInputExclude.fields.value)
+	ordinal: gCompile.codecText(AssignAssignmentInputExclude.fields.ordinal),
+	value: gCompile.codecText(AssignAssignmentInputExclude.fields.value)
 })
 /** The codec text of each declared field of AssignAssignmentInputModeWithin, a request's input row, bound once (grizzle's codecText). */
 const assignAssignmentInputModeWithinTexts = Object.freeze({
-	radius: codecText(AssignAssignmentInputModeWithin.fields.radius)
+	radius: gCompile.codecText(AssignAssignmentInputModeWithin.fields.radius)
 })
 /** The fingerprint of root kind Assignment's input heading, taken once. */
 const assignAssignmentHeading = inputFingerprint(
-	'125:21:AssignAssignmentInput15:7:learner4:Text13:5:topic4:Text64:4:mode55:8:closedId25:AssignAssignmentInputMode7:Nearest6:Within84:25:AssignAssignmentInputNear18:7:ordinal7:natural32:5:value22:pg["double precision"]68:28:AssignAssignmentInputExclude18:7:ordinal7:natural13:5:value4:Text35:32:AssignAssignmentInputModeNearest70:31:AssignAssignmentInputModeWithin33:6:radius22:pg["double precision"]1376:6:digest1363:[...pipe([{ scope: scope, root: scope, learner: input.learner, topic: input.topic, mode: input.mode._tag }], Arr.flatMap((row) => [Result.succeed("AssignAssignmentInput"), assignAssignmentInputTexts.learner(row.learner), assignAssignmentInputTexts.topic(row.topic), assignAssignmentInputTexts.mode(row.mode)])), ...pipe(Arr.map(input.near, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputNear"), assignAssignmentInputNearTexts.ordinal(row.ordinal), assignAssignmentInputNearTexts.value(row.value)])), ...pipe(Arr.map(input.exclude, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputExclude"), assignAssignmentInputExcludeTexts.ordinal(row.ordinal), assignAssignmentInputExcludeTexts.value(row.value)])), ...Arr.map(Arr.flatMap([input.mode], (variant) => (variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : [])), () => Result.succeed("AssignAssignmentInputModeNearest")), ...pipe(Arr.flatMap([input.mode], (variant) => (variant._tag === "Within" ? [{ scope: scope, root: scope, radius: variant.radius }] : [])), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputModeWithin"), assignAssignmentInputModeWithinTexts.radius(row.radius)]))]'
+	'125:21:AssignAssignmentInput15:7:learner4:Text13:5:topic4:Text64:4:mode55:8:closedId25:AssignAssignmentInputMode7:Nearest6:Within71:25:AssignAssignmentInputNear20:7:ordinal9:g.natural17:5:value8:g.float870:28:AssignAssignmentInputExclude20:7:ordinal9:g.natural13:5:value4:Text35:32:AssignAssignmentInputModeNearest55:31:AssignAssignmentInputModeWithin18:6:radius8:g.float81376:6:digest1363:[...pipe([{ scope: scope, root: scope, learner: input.learner, topic: input.topic, mode: input.mode._tag }], Arr.flatMap((row) => [Result.succeed("AssignAssignmentInput"), assignAssignmentInputTexts.learner(row.learner), assignAssignmentInputTexts.topic(row.topic), assignAssignmentInputTexts.mode(row.mode)])), ...pipe(Arr.map(input.near, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputNear"), assignAssignmentInputNearTexts.ordinal(row.ordinal), assignAssignmentInputNearTexts.value(row.value)])), ...pipe(Arr.map(input.exclude, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputExclude"), assignAssignmentInputExcludeTexts.ordinal(row.ordinal), assignAssignmentInputExcludeTexts.value(row.value)])), ...Arr.map(Arr.flatMap([input.mode], (variant) => (variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : [])), () => Result.succeed("AssignAssignmentInputModeNearest")), ...pipe(Arr.flatMap([input.mode], (variant) => (variant._tag === "Within" ? [{ scope: scope, root: scope, radius: variant.radius }] : [])), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputModeWithin"), assignAssignmentInputModeWithinTexts.radius(row.radius)]))]'
 )
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface AssignHandles {
 	readonly den: {
-		readonly [K in keyof typeof assignDenPrograms]: MemberHandle<(typeof assignDenPrograms)[K]>
+		readonly [K in keyof typeof assignDenPrograms]: gRuntime.MemberHandle<
+			(typeof assignDenPrograms)[K]
+		>
 	}
 	readonly coordinator: {
-		readonly [K in keyof typeof assignCoordinatorPrograms]: MemberHandle<
+		readonly [K in keyof typeof assignCoordinatorPrograms]: gRuntime.MemberHandle<
 			(typeof assignCoordinatorPrograms)[K]
 		>
 	}
 	readonly retirer: {
-		readonly [K in keyof typeof assignRetirerPrograms]: MemberHandle<
+		readonly [K in keyof typeof assignRetirerPrograms]: gRuntime.MemberHandle<
 			(typeof assignRetirerPrograms)[K]
 		>
 	}
 	readonly commits: {
-		readonly [K in keyof typeof assignCommitPrograms]: MemberHandle<
+		readonly [K in keyof typeof assignCommitPrograms]: gRuntime.MemberHandle<
 			(typeof assignCommitPrograms)[K]
 		>
 	}
 }
 
 interface Rows {
-	readonly AssignScope: ReadonlyArray<Addition<typeof AssignScope>>
-	readonly AssignAdmitted: ReadonlyArray<Addition<typeof AssignAdmitted>>
-	readonly AssignFinish: ReadonlyArray<Addition<typeof AssignFinish>>
-	readonly AssignStartStep: ReadonlyArray<Addition<typeof AssignStartStep>>
-	readonly AssignEmbedInput: ReadonlyArray<Addition<typeof AssignEmbedInput>>
-	readonly AssignEmbedInputNear: ReadonlyArray<Addition<typeof AssignEmbedInputNear>>
-	readonly AssignEmbedInputExclude: ReadonlyArray<Addition<typeof AssignEmbedInputExclude>>
-	readonly AssignEmbedInputModeNearest: ReadonlyArray<Addition<typeof AssignEmbedInputModeNearest>>
-	readonly AssignEmbedInputModeWithin: ReadonlyArray<Addition<typeof AssignEmbedInputModeWithin>>
-	readonly AssignDecideInput: ReadonlyArray<Addition<typeof AssignDecideInput>>
-	readonly AssignDecideInputExclude: ReadonlyArray<Addition<typeof AssignDecideInputExclude>>
-	readonly AssignDecideInputModeNearest: ReadonlyArray<
-		Addition<typeof AssignDecideInputModeNearest>
+	readonly AssignScope: ReadonlyArray<g.Addition<typeof AssignScope>>
+	readonly AssignAdmitted: ReadonlyArray<g.Addition<typeof AssignAdmitted>>
+	readonly AssignFinish: ReadonlyArray<g.Addition<typeof AssignFinish>>
+	readonly AssignStartStep: ReadonlyArray<g.Addition<typeof AssignStartStep>>
+	readonly AssignEmbedInput: ReadonlyArray<g.Addition<typeof AssignEmbedInput>>
+	readonly AssignEmbedInputNear: ReadonlyArray<g.Addition<typeof AssignEmbedInputNear>>
+	readonly AssignEmbedInputExclude: ReadonlyArray<g.Addition<typeof AssignEmbedInputExclude>>
+	readonly AssignEmbedInputModeNearest: ReadonlyArray<
+		g.Addition<typeof AssignEmbedInputModeNearest>
 	>
-	readonly AssignDecideInputModeWithin: ReadonlyArray<Addition<typeof AssignDecideInputModeWithin>>
-	readonly AssignAsked: ReadonlyArray<Addition<typeof AssignAsked>>
+	readonly AssignEmbedInputModeWithin: ReadonlyArray<g.Addition<typeof AssignEmbedInputModeWithin>>
+	readonly AssignDecideInput: ReadonlyArray<g.Addition<typeof AssignDecideInput>>
+	readonly AssignDecideInputExclude: ReadonlyArray<g.Addition<typeof AssignDecideInputExclude>>
+	readonly AssignDecideInputModeNearest: ReadonlyArray<
+		g.Addition<typeof AssignDecideInputModeNearest>
+	>
+	readonly AssignDecideInputModeWithin: ReadonlyArray<
+		g.Addition<typeof AssignDecideInputModeWithin>
+	>
+	readonly AssignAsked: ReadonlyArray<g.Addition<typeof AssignAsked>>
 }
 
 /** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
@@ -189,8 +195,8 @@ export const assignLedger = (h: AssignHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
-		Arr.some(grown.rows.AssignStartStep, (s) => Sha256.equals(s.scope, scope))
+	const hasChildren = (grown: Grown, scope: g.Sha256): boolean =>
+		Arr.some(grown.rows.AssignStartStep, (s) => g.Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			AssignScope: [...a.rows.AssignScope, ...b.rows.AssignScope],
@@ -234,8 +240,8 @@ export const assignLedger = (h: AssignHandles) => {
 		}
 	})
 	const startAssignment = (
-		root: Sha256,
-		scope: Sha256,
+		root: g.Sha256,
+		scope: g.Sha256,
 		input: Parameters<(typeof assign.kinds)[2]["start"]>[0]
 	): Grown =>
 		Arr.reduce(
@@ -281,7 +287,7 @@ export const assignLedger = (h: AssignHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readAssignEmbedInput = (root: Sha256, step: Sha256) =>
+	const readAssignEmbedInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.assignReadAssignEmbedInput.once({ params: { root, step }, facts: {} })),
@@ -330,7 +336,7 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const readAssignDecideInput = (root: Sha256, step: Sha256) =>
+	const readAssignDecideInput = (root: g.Sha256, step: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.assignReadAssignDecideInput.once({ params: { root, step }, facts: {} })),
@@ -375,7 +381,7 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const readAssignAssignmentInput = (root: Sha256, scope: Sha256) =>
+	const readAssignAssignmentInput = (root: g.Sha256, scope: g.Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.assignReadAssignAssignmentInput.once({ params: { root, scope }, facts: {} })),
@@ -700,7 +706,7 @@ export const assignLedger = (h: AssignHandles) => {
 							}))
 						)
 						const uniqueNearest = Arr.dedupeWith(recordedNearest, (a, b) =>
-							Sha256.equals(a.digest, b.digest)
+							g.Sha256.equals(a.digest, b.digest)
 						)
 						const recordedSeen = yield* Effect.forEach(done.rows.seen, (row) =>
 							Effect.map(AssignDecideReadSeenText(row), (text) => ({
@@ -709,7 +715,7 @@ export const assignLedger = (h: AssignHandles) => {
 							}))
 						)
 						const uniqueSeen = Arr.dedupeWith(recordedSeen, (a, b) =>
-							Sha256.equals(a.digest, b.digest)
+							g.Sha256.equals(a.digest, b.digest)
 						)
 						const outcome = yield* settled(
 							h.commits.assignCommitDecide.once({
@@ -757,7 +763,7 @@ export const assignLedger = (h: AssignHandles) => {
 													? [{ step: done.turn.step, root: done.turn.root }]
 													: []
 											),
-											...recordsFacts(
+											...g.recordsFacts(
 												assignGraph,
 												AssignDecideReadNearestRecords
 											)(
@@ -772,7 +778,7 @@ export const assignLedger = (h: AssignHandles) => {
 												ordinal: BigInt(ordinal),
 												digest: found.digest
 											})),
-											...recordsFacts(
+											...g.recordsFacts(
 												assignGraph,
 												AssignDecideReadSeenRecords
 											)(
@@ -901,7 +907,7 @@ export const assignLedger = (h: AssignHandles) => {
 						const inputDecide = (child: (typeof inputDecideRows)[number]["step"]) =>
 							held(
 								Option.flatMap(
-									Arr.findFirst(inputDecideRows, (row) => Sha256.equals(row.step, child)),
+									Arr.findFirst(inputDecideRows, (row) => g.Sha256.equals(row.step, child)),
 									(row) =>
 										Option.map(
 											Option.all({
@@ -909,13 +915,13 @@ export const assignLedger = (h: AssignHandles) => {
 													row.mode === "Nearest"
 														? Option.map(
 																Arr.findFirst(inputDecideVariant0_0, (o) =>
-																	Sha256.equals(o.step, row.step)
+																	g.Sha256.equals(o.step, row.step)
 																),
 																() => ({ _tag: "Nearest" as const })
 															)
 														: Option.map(
 																Arr.findFirst(inputDecideVariant0_1, (o) =>
-																	Sha256.equals(o.step, row.step)
+																	g.Sha256.equals(o.step, row.step)
 																),
 																(part) => ({ _tag: "Within" as const, radius: part.radius })
 															)
@@ -926,7 +932,7 @@ export const assignLedger = (h: AssignHandles) => {
 												vector: row.vector,
 												exclude: Arr.map(
 													ordered(
-														Arr.filter(inputDecideFamily0, (o) => Sha256.equals(o.step, row.step))
+														Arr.filter(inputDecideFamily0, (o) => g.Sha256.equals(o.step, row.step))
 													),
 													(e) => e.value
 												),
@@ -947,7 +953,7 @@ export const assignLedger = (h: AssignHandles) => {
 														row.stage === "Serve"
 															? Option.map(
 																	Arr.findFirst(outputDecideVariant0_0, (o) =>
-																		Sha256.equals(o.step, row.step)
+																		g.Sha256.equals(o.step, row.step)
 																	),
 																	(part) => ({
 																		_tag: "Serve" as const,
@@ -957,7 +963,7 @@ export const assignLedger = (h: AssignHandles) => {
 																)
 															: Option.map(
 																	Arr.findFirst(outputDecideVariant0_1, (o) =>
-																		Sha256.equals(o.step, row.step)
+																		g.Sha256.equals(o.step, row.step)
 																	),
 																	() => ({ _tag: "Rest" as const })
 																)
@@ -967,7 +973,7 @@ export const assignLedger = (h: AssignHandles) => {
 													weighed: Arr.map(
 														ordered(
 															Arr.filter(outputDecideFamily0, (o) =>
-																Sha256.equals(o.step, row.step)
+																g.Sha256.equals(o.step, row.step)
 															)
 														),
 														(e) => ({ passage: e.passage, distance: e.distance, passed: e.passed })
@@ -1024,7 +1030,7 @@ export const assignLedger = (h: AssignHandles) => {
 		Assignment: {
 			window: assign.kinds[2].window,
 			precondition: assign.kinds[2].precondition,
-			admit: (scope: Sha256) =>
+			admit: (scope: g.Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readAssignAssignmentInput(scope, scope)
 					if (Option.isNone(input)) {
@@ -1036,11 +1042,11 @@ export const assignLedger = (h: AssignHandles) => {
 						...grown.steps,
 						{ step: finish, kind: "AssignmentFinish", scope, delay: atOnce }
 					]
-					const admitted: ReadonlyArray<Addition<typeof AssignAdmitted>> = [
+					const admitted: ReadonlyArray<g.Addition<typeof AssignAdmitted>> = [
 						...grown.rows.AssignAdmitted,
 						{ scope, root: scope }
 					]
-					const finishes: ReadonlyArray<Addition<typeof AssignFinish>> = [
+					const finishes: ReadonlyArray<g.Addition<typeof AssignFinish>> = [
 						...grown.rows.AssignFinish,
 						{ scope, step: finish, root: scope }
 					]
@@ -1147,7 +1153,7 @@ export const assignLedger = (h: AssignHandles) => {
 			),
 		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				if (!Sha256.equals(root, scope)) {
+				if (!g.Sha256.equals(root, scope)) {
 					return Option.none()
 				}
 				const standing = yield* Effect.map(
@@ -1272,9 +1278,9 @@ export const assignLedger = (h: AssignHandles) => {
 			settled(h.den.assignSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>
 				Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof assign>> => {
-					const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
+					const view = (scope: g.Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 						Option.match(
-							Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
+							Arr.findFirst(read.roots, (o) => g.Sha256.equals(o.scope, scope)),
 							{
 								onSome: (o): ReadonlyArray<ScopeView> => [
 									{

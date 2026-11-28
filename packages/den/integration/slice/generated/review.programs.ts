@@ -1,6 +1,6 @@
 import { DenDelay, DenInstant, denInstantKey } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Review to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, Num, Type, clocked, param, query, role, v, workload } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import { review as declaredFlow } from "#integration/slice/flows.ts"
 import {
@@ -54,7 +54,7 @@ import {
 import { Loader } from "#integration/slice/roles.ts"
 
 /** den's role for the flow Review: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains, live holds and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
-export const ReviewDen = role(
+export const ReviewDen = g.role(
 	App,
 	"review_den",
 	{
@@ -62,8 +62,8 @@ export const ReviewDen = role(
 		ReviewPaused,
 		ReviewResumed,
 		ReviewServed,
-		ReviewLive: query(App).rule((r) => {
-			const { resource, seat, step, root, attempt, until } = v(App.relations.ReviewLive, "live")
+		ReviewLive: g.query(App).rule((r) => {
+			const { resource, seat, step, root, attempt, until } = g.v(App.relations.ReviewLive, "live")
 			return r
 				.match(App.relations.ReviewLive, { resource, seat, step, root, attempt, until })
 				.find({ resource, seat, step, root, attempt, until })
@@ -107,7 +107,7 @@ export const ReviewDen = role(
 )
 
 /** den's coordinator role for the flow Review: the turns of its exclusivity seats and pauses. It holds the coordination group's rosters and relations whole, no role holding a closed relation, and no live hold, which only den's role reads, over the graph it holds. */
-export const ReviewCoordinator = role(
+export const ReviewCoordinator = g.role(
 	App,
 	"review_coordinator",
 	{
@@ -125,16 +125,16 @@ export const ReviewCoordinator = role(
 	{ insert: ["ReviewPaused", "ReviewResumed", "ReviewServed"] }
 )
 
-const reviewPendingRead = query(ReviewDen).rule((r) => {
-	const { root, step, kind, scope, due } = v(ReviewStep, "step")
+const reviewPendingRead = g.query(ReviewDen).rule((r) => {
+	const { root, step, kind, scope, due } = g.v(ReviewStep, "step")
 	return r
 		.match(ReviewStep, { root, step, kind, scope, due })
 		.where(r.not(ReviewResult, { root, step }))
 		.find({ root, step, kind, scope, due })
 })
 
-const reviewRequestedRead = query(ReviewDen).rule((r) => {
-	const { scope } = v(ReviewScope, "scope")
+const reviewRequestedRead = g.query(ReviewDen).rule((r) => {
+	const { scope } = g.v(ReviewScope, "scope")
 	return r
 		.match(ReviewRoot, { root: scope })
 		.match(ReviewScope, { root: scope, scope })
@@ -145,16 +145,16 @@ const reviewRequestedRead = query(ReviewDen).rule((r) => {
 		.find({ scope })
 })
 
-const reviewRunningRead = query(ReviewDen).rule((r) => {
-	const { root, scope, step } = v(ReviewFinish, "finish")
+const reviewRunningRead = g.query(ReviewDen).rule((r) => {
+	const { root, scope, step } = g.v(ReviewFinish, "finish")
 	return r
 		.match(ReviewFinish, { root, scope, step })
 		.where(r.not(ReviewResult, { root, step }))
 		.find({ scope })
 })
 
-const reviewLatestServed = query(ReviewDen).rule((r) => {
-	const { environment, at } = v(ReviewServed, "served")
+const reviewLatestServed = g.query(ReviewDen).rule((r) => {
+	const { environment, at } = g.v(ReviewServed, "served")
 	return r
 		.match(ReviewServed, { environment, at })
 		.where(r.eq(environment, r.param("environment", ReviewServed.fields.environment)))
@@ -162,16 +162,16 @@ const reviewLatestServed = query(ReviewDen).rule((r) => {
 })
 
 export const reviewDenPrograms = Object.freeze({
-	reviewNow: clocked(
-		query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+	reviewNow: g.clocked(
+		g.query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewReading: clocked(
-		query(ReviewDen).reads({
-			now: query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
-			serving: query(ReviewDen).rule((r) => {
-				const { environment, at, deployment } = v(ReviewServed, "served")
+	reviewReading: g.clocked(
+		g.query(ReviewDen).reads({
+			now: g.query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+			serving: g.query(ReviewDen).rule((r) => {
+				const { environment, at, deployment } = g.v(ReviewServed, "served")
 				return r
 					.match(
 						reviewLatestServed.bind({
@@ -186,13 +186,16 @@ export const reviewDenPrograms = Object.freeze({
 		{ "now.denNow": "millis" },
 		{ "now.denNow": denInstantKey }
 	),
-	reviewClaim: clocked(
-		ChangeSet.empty(reviewGraph)
+	reviewClaim: g.clocked(
+		g.ChangeSet.empty(reviewGraph)
 			.insertAllComputed(
 				{ ReviewClaim: [] },
 				{
-					until: Type.cast(
-						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
+					until: g.Type.cast(
+						g.Num.add(
+							g.Type.base(g.param("denNow", DenInstant)),
+							g.Type.base(g.param("budget", DenDelay))
+						),
 						DenInstant,
 						denInstantKey
 					)
@@ -200,8 +203,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.insert(ReviewEnded, [])
 			.read("held", (delta) =>
-				query(reviewGraph).rule((r) => {
-					const { step, root, attempt } = v(delta.added(ReviewClaim), "added")
+				g.query(reviewGraph).rule((r) => {
+					const { step, root, attempt } = g.v(delta.added(ReviewClaim), "added")
 					return r
 						.match(delta.added(ReviewClaim), { step, root, attempt })
 						.find({ step, root, attempt })
@@ -210,19 +213,19 @@ export const reviewDenPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewRetry: clocked(
-		ChangeSet.empty(reviewGraph)
+	reviewRetry: g.clocked(
+		g.ChangeSet.empty(reviewGraph)
 			.insert(ReviewEnded, [])
 			.insert(
 				ReviewRetry,
-				query(reviewGraph).rule((r) =>
+				g.query(reviewGraph).rule((r) =>
 					r.find({
 						step: r.param("step", ReviewRetry.fields.step),
 						attempt: r.param("attempt", ReviewRetry.fields.attempt),
-						at: Type.cast(
-							Num.add(
-								Type.base(r.param("denNow", DenInstant)),
-								Type.base(r.param("delay", DenDelay))
+						at: g.Type.cast(
+							g.Num.add(
+								g.Type.base(r.param("denNow", DenInstant)),
+								g.Type.base(r.param("delay", DenDelay))
 							),
 							DenInstant,
 							denInstantKey
@@ -235,25 +238,28 @@ export const reviewDenPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewFence: ChangeSet.empty(reviewGraph).insert(ReviewEnded, []).insert(ReviewFenced, []),
-	reviewHolds: query(ReviewDen).rule((r) => {
-		const { resource, seat, step, root, attempt, until } = v(ReviewDen.relations.ReviewLive, "live")
+	reviewFence: g.ChangeSet.empty(reviewGraph).insert(ReviewEnded, []).insert(ReviewFenced, []),
+	reviewHolds: g.query(ReviewDen).rule((r) => {
+		const { resource, seat, step, root, attempt, until } = g.v(
+			ReviewDen.relations.ReviewLive,
+			"live"
+		)
 		return r
 			.match(ReviewDen.relations.ReviewLive, { resource, seat, step, root, attempt, until })
 			.find({ resource, seat, step, root, attempt, until })
 	}),
-	reviewRefuse: ChangeSet.empty(reviewGraph)
+	reviewRefuse: g.ChangeSet.empty(reviewGraph)
 		.insert(ReviewResult, [])
 		.insert(ReviewFailed, [])
 		.insert(ReviewHeld, [])
 		.insert(ReviewRefusal, []),
-	reviewExhaust: ChangeSet.empty(reviewGraph)
+	reviewExhaust: g.ChangeSet.empty(reviewGraph)
 		.insert(ReviewResult, [])
 		.insert(ReviewFailed, [])
 		.insert(ReviewHeld, [])
 		.insert(ReviewExhausted, []),
-	reviewAdmit: clocked(
-		ChangeSet.empty(reviewGraph)
+	reviewAdmit: g.clocked(
+		g.ChangeSet.empty(reviewGraph)
 			.insert(ReviewAdmitted, [])
 			.insert(ReviewFinish, [])
 			.insert(ReviewStartStep, [])
@@ -267,20 +273,20 @@ export const reviewDenPrograms = Object.freeze({
 			.insert(ReviewQuestionsInput, [])
 			.insert(
 				ReviewStep,
-				query(reviewGraph).rule((r) => {
+				g.query(reviewGraph).rule((r) => {
 					const steps = r.relation("steps", {
 						step: ReviewStep.fields.step,
 						kind: ReviewStep.fields.kind,
 						scope: ReviewStep.fields.scope,
 						delay: DenDelay
 					})
-					const { step, kind, scope, delay } = v(steps, "spawned")
+					const { step, kind, scope, delay } = g.v(steps, "spawned")
 					return r.match(steps, { step, kind, scope, delay }).find({
 						step,
 						kind,
 						scope,
-						due: Type.cast(
-							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
+						due: g.Type.cast(
+							g.Num.add(g.Type.base(r.param("denNow", DenInstant)), g.Type.base(delay)),
 							DenInstant,
 							denInstantKey
 						),
@@ -291,9 +297,9 @@ export const reviewDenPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewSkip: ChangeSet.empty(reviewGraph).insert(ReviewSkipped, []),
-	reviewSkippedOf: query(reviewGraph).rule((r) => {
-		const { root, scope, by } = v(ReviewSkipped, "reviewSkipped")
+	reviewSkip: g.ChangeSet.empty(reviewGraph).insert(ReviewSkipped, []),
+	reviewSkippedOf: g.query(reviewGraph).rule((r) => {
+		const { root, scope, by } = g.v(ReviewSkipped, "reviewSkipped")
 		return r
 			.match(ReviewSkipped, { root, scope, by })
 			.where(
@@ -302,8 +308,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, scope, by })
 	}),
-	reviewStepOf: query(reviewGraph).rule((r) => {
-		const { root, step, kind, scope, due } = v(ReviewStep, "reviewStep")
+	reviewStepOf: g.query(reviewGraph).rule((r) => {
+		const { root, step, kind, scope, due } = g.v(ReviewStep, "reviewStep")
 		return r
 			.match(ReviewStep, { root, step, kind, scope, due })
 			.where(
@@ -312,8 +318,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, step, kind, scope, due })
 	}),
-	reviewResultOf: query(reviewGraph).rule((r) => {
-		const { root, step, outcome } = v(ReviewResult, "reviewResult")
+	reviewResultOf: g.query(reviewGraph).rule((r) => {
+		const { root, step, outcome } = g.v(ReviewResult, "reviewResult")
 		return r
 			.match(ReviewResult, { root, step, outcome })
 			.where(
@@ -322,8 +328,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, step, outcome })
 	}),
-	reviewHeldOf: query(reviewGraph).rule((r) => {
-		const { root, step, attempt } = v(ReviewHeld, "reviewHeld")
+	reviewHeldOf: g.query(reviewGraph).rule((r) => {
+		const { root, step, attempt } = g.v(ReviewHeld, "reviewHeld")
 		return r
 			.match(ReviewHeld, { root, step, attempt })
 			.where(
@@ -332,8 +338,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, step, attempt })
 	}),
-	reviewWithinOf: query(reviewGraph).rule((r) => {
-		const { root, scope, parent, kind } = v(ReviewWithin, "reviewWithin")
+	reviewWithinOf: g.query(reviewGraph).rule((r) => {
+		const { root, scope, parent, kind } = g.v(ReviewWithin, "reviewWithin")
 		return r
 			.match(ReviewWithin, { root, scope, parent, kind })
 			.where(
@@ -342,8 +348,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, scope, parent, kind })
 	}),
-	reviewAdmittedOf: query(reviewGraph).rule((r) => {
-		const { root, scope } = v(ReviewAdmitted, "reviewAdmitted")
+	reviewAdmittedOf: g.query(reviewGraph).rule((r) => {
+		const { root, scope } = g.v(ReviewAdmitted, "reviewAdmitted")
 		return r
 			.match(ReviewAdmitted, { root, scope })
 			.where(
@@ -352,29 +358,30 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, scope })
 	}),
-	reviewRootOf: query(reviewGraph).rule((r) => {
-		const { kind, key, at } = v(ReviewRoot, "root")
-		const { scope } = v(ReviewScope, "scope")
+	reviewRootOf: g.query(reviewGraph).rule((r) => {
+		const { kind, key, at } = g.v(ReviewRoot, "root")
+		const { scope } = g.v(ReviewScope, "scope")
 		return r
 			.match(ReviewRoot, { root: scope, kind, key, at })
 			.match(ReviewScope, { root: scope, scope })
 			.where(r.eq(scope, r.param("root", ReviewRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
-	reviewFinishedRoots: query(reviewGraph)
+	reviewFinishedRoots: g
+		.query(reviewGraph)
 		.rule((r) => {
-			const { scope, step } = v(ReviewFinish, "finish")
+			const { scope, step } = g.v(ReviewFinish, "finish")
 			return r
 				.match(ReviewFinish, { root: scope, scope, step })
 				.match(ReviewResult, { root: scope, step })
 				.find({ scope })
 		})
 		.rule((r) => {
-			const { scope } = v(ReviewSkipped, "skipped")
+			const { scope } = g.v(ReviewSkipped, "skipped")
 			return r.match(ReviewSkipped, { root: scope, scope }).find({ scope })
 		}),
-	reviewClaimsOf: query(reviewGraph).rule((r) => {
-		const { root, step, attempt, until } = v(ReviewClaim, "claim")
+	reviewClaimsOf: g.query(reviewGraph).rule((r) => {
+		const { root, step, attempt, until } = g.v(ReviewClaim, "claim")
 		return r
 			.match(ReviewClaim, { root, step, attempt, until })
 			.where(
@@ -383,8 +390,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, attempt, until })
 	}),
-	reviewRetriesOf: query(reviewGraph).rule((r) => {
-		const { root, step, attempt, at, why } = v(ReviewRetry, "retry")
+	reviewRetriesOf: g.query(reviewGraph).rule((r) => {
+		const { root, step, attempt, at, why } = g.v(ReviewRetry, "retry")
 		return r
 			.match(ReviewRetry, { root, step, attempt, at, why })
 			.where(
@@ -393,8 +400,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, attempt, at, why })
 	}),
-	reviewFencedOf: query(reviewGraph).rule((r) => {
-		const { root, step, attempt } = v(ReviewFenced, "fenced")
+	reviewFencedOf: g.query(reviewGraph).rule((r) => {
+		const { root, step, attempt } = g.v(ReviewFenced, "fenced")
 		return r
 			.match(ReviewFenced, { root, step, attempt })
 			.where(
@@ -403,8 +410,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, attempt })
 	}),
-	reviewUnendedSteps: query(reviewGraph).rule((r) => {
-		const { root, step, scope } = v(ReviewStep, "step")
+	reviewUnendedSteps: g.query(reviewGraph).rule((r) => {
+		const { root, step, scope } = g.v(ReviewStep, "step")
 		return r
 			.match(ReviewStep, { root, step, scope })
 			.where(
@@ -415,9 +422,9 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	reviewOpenChildren: query(reviewGraph).rule((r) => {
-		const { root, scope, parent } = v(ReviewWithin, "within")
-		const { step } = v(ReviewFinish, "finish")
+	reviewOpenChildren: g.query(reviewGraph).rule((r) => {
+		const { root, scope, parent } = g.v(ReviewWithin, "within")
+		const { step } = g.v(ReviewFinish, "finish")
 		return r
 			.match(ReviewWithin, { root, scope, parent })
 			.match(ReviewFinish, { root, scope, step })
@@ -428,8 +435,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ child: scope })
 	}),
-	reviewFinished: query(reviewGraph).rule((r) => {
-		const { root, scope, step } = v(ReviewFinish, "finish")
+	reviewFinished: g.query(reviewGraph).rule((r) => {
+		const { root, scope, step } = g.v(ReviewFinish, "finish")
 		return r
 			.match(ReviewFinish, { root, scope, step })
 			.match(ReviewResult, { root, step })
@@ -442,24 +449,24 @@ export const reviewDenPrograms = Object.freeze({
 	reviewPending: reviewPendingRead,
 	reviewRequested: reviewRequestedRead,
 	reviewRunning: reviewRunningRead,
-	reviewSnapshot: query(ReviewDen).reads({
+	reviewSnapshot: g.query(ReviewDen).reads({
 		steps: reviewPendingRead,
-		claims: query(ReviewDen).rule((r) => {
-			const { root, step, attempt, until } = v(ReviewClaim, "claim")
+		claims: g.query(ReviewDen).rule((r) => {
+			const { root, step, attempt, until } = g.v(ReviewClaim, "claim")
 			return r
 				.match(ReviewClaim, { root, step, attempt, until })
 				.where(r.not(ReviewResult, { root, step }))
 				.find({ step, attempt, until })
 		}),
-		retries: query(ReviewDen).rule((r) => {
-			const { root, step, attempt, at, why } = v(ReviewRetry, "retry")
+		retries: g.query(ReviewDen).rule((r) => {
+			const { root, step, attempt, at, why } = g.v(ReviewRetry, "retry")
 			return r
 				.match(ReviewRetry, { root, step, attempt, at, why })
 				.where(r.not(ReviewResult, { root, step }))
 				.find({ step, attempt, at, why })
 		}),
-		fenced: query(ReviewDen).rule((r) => {
-			const { root, step, attempt } = v(ReviewFenced, "fenced")
+		fenced: g.query(ReviewDen).rule((r) => {
+			const { root, step, attempt } = g.v(ReviewFenced, "fenced")
 			return r
 				.match(ReviewFenced, { root, step, attempt })
 				.where(r.not(ReviewResult, { root, step }))
@@ -467,20 +474,20 @@ export const reviewDenPrograms = Object.freeze({
 		}),
 		requested: reviewRequestedRead,
 		running: reviewRunningRead,
-		withins: query(ReviewDen).rule((r) => {
-			const { scope, parent, kind } = v(ReviewWithin, "reviewWithin")
+		withins: g.query(ReviewDen).rule((r) => {
+			const { scope, parent, kind } = g.v(ReviewWithin, "reviewWithin")
 			return r.match(ReviewWithin, { scope, parent, kind }).find({ scope, parent, kind })
 		}),
-		roots: query(ReviewDen).rule((r) => {
-			const { kind, key, at } = v(ReviewRoot, "root")
-			const { scope } = v(ReviewScope, "scope")
+		roots: g.query(ReviewDen).rule((r) => {
+			const { kind, key, at } = g.v(ReviewRoot, "root")
+			const { scope } = g.v(ReviewScope, "scope")
 			return r
 				.match(ReviewRoot, { root: scope, kind, key, at })
 				.match(ReviewScope, { root: scope, scope })
 				.find({ scope, kind, key, at })
 		}),
-		holds: query(ReviewDen).rule((r) => {
-			const { resource, seat, step, root, attempt, until } = v(
+		holds: g.query(ReviewDen).rule((r) => {
+			const { resource, seat, step, root, attempt, until } = g.v(
 				ReviewDen.relations.ReviewLive,
 				"live"
 			)
@@ -488,15 +495,15 @@ export const reviewDenPrograms = Object.freeze({
 				.match(ReviewDen.relations.ReviewLive, { resource, seat, step, root, attempt, until })
 				.find({ resource, seat, step, root, attempt, until })
 		}),
-		paused: query(ReviewDen).rule((r) => {
-			const { target, turn } = v(ReviewPaused, "reviewPaused")
+		paused: g.query(ReviewDen).rule((r) => {
+			const { target, turn } = g.v(ReviewPaused, "reviewPaused")
 			return r
 				.match(ReviewPaused, { target, turn })
 				.where(r.not(ReviewResumed, { target, turn }))
 				.find({ target, turn })
 		}),
-		awaiting: query(ReviewDen).rule((r) => {
-			const { root, step, review } = v(ReviewGatherInput, "input")
+		awaiting: g.query(ReviewDen).rule((r) => {
+			const { root, step, review } = g.v(ReviewGatherInput, "input")
 			return r
 				.match(ReviewGatherInput, { root, step, review })
 				.where(
@@ -506,8 +513,8 @@ export const reviewDenPrograms = Object.freeze({
 				.find({ root, step })
 		})
 	}),
-	reviewAwaitingOf: query(ReviewDen).rule((r) => {
-		const { root, step, review } = v(ReviewGatherInput, "input")
+	reviewAwaitingOf: g.query(ReviewDen).rule((r) => {
+		const { root, step, review } = g.v(ReviewGatherInput, "input")
 		return r
 			.match(ReviewGatherInput, { root, step, review })
 			.where(
@@ -518,16 +525,16 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, step })
 	}),
-	reviewReady: query(ReviewDen).rule((r) => {
-		const { root, step, review } = v(ReviewGatherInput, "input")
+	reviewReady: g.query(ReviewDen).rule((r) => {
+		const { root, step, review } = g.v(ReviewGatherInput, "input")
 		return r
 			.match(ReviewGatherInput, { root, step, review })
 			.match(App.relations.Delivered, { attempt: review })
 			.where(r.not(ReviewResult, { root, step }), r.not(ReviewClaim, { root, step }))
 			.find({ root, step })
 	}),
-	reviewReadReviewAnalyzeInput: query(reviewGraph).rule((r) => {
-		const { root, step, review, group, question } = v(ReviewAnalyzeInput, "reviewAnalyzeInput")
+	reviewReadReviewAnalyzeInput: g.query(reviewGraph).rule((r) => {
+		const { root, step, review, group, question } = g.v(ReviewAnalyzeInput, "reviewAnalyzeInput")
 		return r
 			.match(ReviewAnalyzeInput, { root, step, review, group, question })
 			.where(
@@ -536,8 +543,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, step, review, group, question })
 	}),
-	reviewReadReviewGatherInput: query(reviewGraph).rule((r) => {
-		const { root, step, review } = v(ReviewGatherInput, "reviewGatherInput")
+	reviewReadReviewGatherInput: g.query(reviewGraph).rule((r) => {
+		const { root, step, review } = g.v(ReviewGatherInput, "reviewGatherInput")
 		return r
 			.match(ReviewGatherInput, { root, step, review })
 			.where(
@@ -546,8 +553,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, step, review })
 	}),
-	reviewReadReviewGatherInputSizes: query(reviewGraph).rule((r) => {
-		const { root, step, ordinal, value } = v(ReviewGatherInputSizes, "part")
+	reviewReadReviewGatherInputSizes: g.query(reviewGraph).rule((r) => {
+		const { root, step, ordinal, value } = g.v(ReviewGatherInputSizes, "part")
 		return r
 			.match(ReviewGatherInputSizes, { root, step, ordinal, value })
 			.where(
@@ -556,8 +563,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, step, ordinal, value })
 	}),
-	reviewReadReviewSaveInput: query(reviewGraph).rule((r) => {
-		const { root, step, review, group, count, total } = v(ReviewSaveInput, "reviewSaveInput")
+	reviewReadReviewSaveInput: g.query(reviewGraph).rule((r) => {
+		const { root, step, review, group, count, total } = g.v(ReviewSaveInput, "reviewSaveInput")
 		return r
 			.match(ReviewSaveInput, { root, step, review, group, count, total })
 			.where(
@@ -566,8 +573,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, step, review, group, count, total })
 	}),
-	reviewReadReviewQuestionsInput: query(reviewGraph).rule((r) => {
-		const { root, scope, review, group, size } = v(ReviewQuestionsInput, "reviewQuestionsInput")
+	reviewReadReviewQuestionsInput: g.query(reviewGraph).rule((r) => {
+		const { root, scope, review, group, size } = g.v(ReviewQuestionsInput, "reviewQuestionsInput")
 		return r
 			.match(ReviewQuestionsInput, { root, scope, review, group, size })
 			.where(
@@ -576,9 +583,9 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, scope, review, group, size })
 	}),
-	reviewOutputsQuestionsAnalyze: query(reviewGraph).rule((r) => {
-		const { root, step, scope } = v(ReviewStep, "step")
-		const { score } = v(ReviewAnalyzeOutput, "output")
+	reviewOutputsQuestionsAnalyze: g.query(reviewGraph).rule((r) => {
+		const { root, step, scope } = g.v(ReviewStep, "step")
+		const { score } = g.v(ReviewAnalyzeOutput, "output")
 		return r
 			.match(ReviewStep, { root, step, kind: "Analyze", scope })
 			.match(ReviewAnalyzeOutput, { root, step, score })
@@ -588,9 +595,9 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, score })
 	}),
-	reviewInputsQuestionsAnalyze: query(reviewGraph).rule((r) => {
-		const { root, step, scope } = v(ReviewStep, "step")
-		const { review, group, question } = v(ReviewAnalyzeInput, "input")
+	reviewInputsQuestionsAnalyze: g.query(reviewGraph).rule((r) => {
+		const { root, step, scope } = g.v(ReviewStep, "step")
+		const { review, group, question } = g.v(ReviewAnalyzeInput, "input")
 		return r
 			.match(ReviewStep, { root, step, kind: "Analyze", scope })
 			.match(ReviewAnalyzeInput, { root, step, review, group, question })
@@ -600,8 +607,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, review, group, question })
 	}),
-	reviewFailuresQuestionsAnalyze: query(reviewGraph).rule((r) => {
-		const { root, step, scope } = v(ReviewStep, "step")
+	reviewFailuresQuestionsAnalyze: g.query(reviewGraph).rule((r) => {
+		const { root, step, scope } = g.v(ReviewStep, "step")
 		return r
 			.match(ReviewStep, { root, step, kind: "Analyze", scope })
 			.match(ReviewResult, { root, step, outcome: "failed" })
@@ -611,8 +618,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	reviewReadReviewReviewRunInput: query(reviewGraph).rule((r) => {
-		const { root, scope, review } = v(ReviewReviewRunInput, "reviewReviewRunInput")
+	reviewReadReviewReviewRunInput: g.query(reviewGraph).rule((r) => {
+		const { root, scope, review } = g.v(ReviewReviewRunInput, "reviewReviewRunInput")
 		return r
 			.match(ReviewReviewRunInput, { root, scope, review })
 			.where(
@@ -621,8 +628,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, scope, review })
 	}),
-	reviewReadReviewReviewRunInputSizes: query(reviewGraph).rule((r) => {
-		const { root, scope, ordinal, value } = v(ReviewReviewRunInputSizes, "part")
+	reviewReadReviewReviewRunInputSizes: g.query(reviewGraph).rule((r) => {
+		const { root, scope, ordinal, value } = g.v(ReviewReviewRunInputSizes, "part")
 		return r
 			.match(ReviewReviewRunInputSizes, { root, scope, ordinal, value })
 			.where(
@@ -631,16 +638,16 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ root, scope, ordinal, value })
 	}),
-	reviewRequestReviewRun: clocked(
-		ChangeSet.empty(reviewGraph)
+	reviewRequestReviewRun: g.clocked(
+		g.ChangeSet.empty(reviewGraph)
 			.insert(
 				ReviewScope,
-				query(reviewGraph).rule((r) => {
+				g.query(reviewGraph).rule((r) => {
 					const requested = r.relation("reviewReviewRunReviewScope", {
 						root: ReviewScope.fields.root,
 						scope: ReviewScope.fields.scope
 					})
-					const { root, scope } = v(requested, "requested")
+					const { root, scope } = g.v(requested, "requested")
 					return r
 						.match(requested, { root, scope })
 						.where(r.not(ReviewRoot, { root }))
@@ -649,13 +656,13 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.insert(
 				ReviewReviewRunInput,
-				query(reviewGraph).rule((r) => {
+				g.query(reviewGraph).rule((r) => {
 					const requested = r.relation("reviewReviewRunReviewReviewRunInput", {
 						root: ReviewReviewRunInput.fields.root,
 						scope: ReviewReviewRunInput.fields.scope,
 						review: ReviewReviewRunInput.fields.review
 					})
-					const { root, scope, review } = v(requested, "requested")
+					const { root, scope, review } = g.v(requested, "requested")
 					return r
 						.match(requested, { root, scope, review })
 						.where(r.not(ReviewRoot, { root }))
@@ -664,14 +671,14 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.insert(
 				ReviewReviewRunInputSizes,
-				query(reviewGraph).rule((r) => {
+				g.query(reviewGraph).rule((r) => {
 					const requested = r.relation("reviewReviewRunReviewReviewRunInputSizes", {
 						root: ReviewReviewRunInputSizes.fields.root,
 						scope: ReviewReviewRunInputSizes.fields.scope,
 						ordinal: ReviewReviewRunInputSizes.fields.ordinal,
 						value: ReviewReviewRunInputSizes.fields.value
 					})
-					const { root, scope, ordinal, value } = v(requested, "requested")
+					const { root, scope, ordinal, value } = g.v(requested, "requested")
 					return r
 						.match(requested, { root, scope, ordinal, value })
 						.where(r.not(ReviewRoot, { root }))
@@ -680,14 +687,15 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.insert(
 				ReviewRequestedWith,
-				query(reviewGraph)
+				g
+					.query(reviewGraph)
 					.rule((r) => {
 						const requested = r.relation("reviewReviewRunReviewRequestedWith", {
 							root: ReviewRequestedWith.fields.root,
 							fingerprint: ReviewRequestedWith.fields.fingerprint,
 							input: ReviewRequestedWith.fields.input
 						})
-						const { root, fingerprint, input } = v(requested, "requested")
+						const { root, fingerprint, input } = g.v(requested, "requested")
 						return r
 							.match(requested, { root, fingerprint, input })
 							.where(r.not(ReviewRoot, { root }))
@@ -699,8 +707,8 @@ export const reviewDenPrograms = Object.freeze({
 							fingerprint: ReviewRequestedWith.fields.fingerprint,
 							input: ReviewRequestedWith.fields.input
 						})
-						const { root, fingerprint, input } = v(requested, "requested")
-						const { input: held } = v(ReviewRequestedWith, "held")
+						const { root, fingerprint, input } = g.v(requested, "requested")
+						const { input: held } = g.v(ReviewRequestedWith, "held")
 						return r
 							.match(requested, { root, fingerprint, input })
 							.match(ReviewRequestedWith, { root, fingerprint, input: held })
@@ -709,12 +717,12 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.insert(
 				ReviewRoot,
-				query(reviewGraph).rule((r) => {
+				g.query(reviewGraph).rule((r) => {
 					const requested = r.relation("reviewReviewRunReviewScope", {
 						root: ReviewScope.fields.root,
 						scope: ReviewScope.fields.scope
 					})
-					const { root, scope } = v(requested, "requested")
+					const { root, scope } = g.v(requested, "requested")
 					return r
 						.match(requested, { root, scope })
 						.where(
@@ -733,10 +741,10 @@ export const reviewDenPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewOutputsReviewRunQuestions: query(reviewGraph).rule((r) => {
-		const { root, scope, parent } = v(ReviewWithin, "within")
-		const { step } = v(ReviewFinish, "finish")
-		const { count, total } = v(ReviewQuestionsFinishOutput, "output")
+	reviewOutputsReviewRunQuestions: g.query(reviewGraph).rule((r) => {
+		const { root, scope, parent } = g.v(ReviewWithin, "within")
+		const { step } = g.v(ReviewFinish, "finish")
+		const { count, total } = g.v(ReviewQuestionsFinishOutput, "output")
 		return r
 			.match(ReviewWithin, { root, scope, parent, kind: "Questions" })
 			.match(ReviewFinish, { root, scope, step })
@@ -747,10 +755,10 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, count, total })
 	}),
-	reviewInputsReviewRunQuestions: query(reviewGraph).rule((r) => {
-		const { root, scope, parent } = v(ReviewWithin, "within")
-		const { step } = v(ReviewFinish, "finish")
-		const { review, group, size } = v(ReviewQuestionsInput, "input")
+	reviewInputsReviewRunQuestions: g.query(reviewGraph).rule((r) => {
+		const { root, scope, parent } = g.v(ReviewWithin, "within")
+		const { step } = g.v(ReviewFinish, "finish")
+		const { review, group, size } = g.v(ReviewQuestionsInput, "input")
 		return r
 			.match(ReviewWithin, { root, scope, parent, kind: "Questions" })
 			.match(ReviewFinish, { root, scope, step })
@@ -761,9 +769,9 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, review, group, size })
 	}),
-	reviewFailuresReviewRunQuestions: query(reviewGraph).rule((r) => {
-		const { root, scope, parent } = v(ReviewWithin, "within")
-		const { step } = v(ReviewFinish, "finish")
+	reviewFailuresReviewRunQuestions: g.query(reviewGraph).rule((r) => {
+		const { root, scope, parent } = g.v(ReviewWithin, "within")
+		const { step } = g.v(ReviewFinish, "finish")
 		return r
 			.match(ReviewWithin, { root, scope, parent, kind: "Questions" })
 			.match(ReviewFinish, { root, scope, step })
@@ -774,9 +782,9 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	reviewOutputsReviewRunSave: query(reviewGraph).rule((r) => {
-		const { root, step, scope } = v(ReviewStep, "step")
-		const { total } = v(ReviewSaveOutput, "output")
+	reviewOutputsReviewRunSave: g.query(reviewGraph).rule((r) => {
+		const { root, step, scope } = g.v(ReviewStep, "step")
+		const { total } = g.v(ReviewSaveOutput, "output")
 		return r
 			.match(ReviewStep, { root, step, kind: "Save", scope })
 			.match(ReviewSaveOutput, { root, step, total })
@@ -786,9 +794,9 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, total })
 	}),
-	reviewInputsReviewRunSave: query(reviewGraph).rule((r) => {
-		const { root, step, scope } = v(ReviewStep, "step")
-		const { review, group, count, total } = v(ReviewSaveInput, "input")
+	reviewInputsReviewRunSave: g.query(reviewGraph).rule((r) => {
+		const { root, step, scope } = g.v(ReviewStep, "step")
+		const { review, group, count, total } = g.v(ReviewSaveInput, "input")
 		return r
 			.match(ReviewStep, { root, step, kind: "Save", scope })
 			.match(ReviewSaveInput, { root, step, review, group, count, total })
@@ -798,8 +806,8 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step, review, group, count, total })
 	}),
-	reviewFailuresReviewRunSave: query(reviewGraph).rule((r) => {
-		const { root, step, scope } = v(ReviewStep, "step")
+	reviewFailuresReviewRunSave: g.query(reviewGraph).rule((r) => {
+		const { root, step, scope } = g.v(ReviewStep, "step")
 		return r
 			.match(ReviewStep, { root, step, kind: "Save", scope })
 			.match(ReviewResult, { root, step, outcome: "failed" })
@@ -811,13 +819,13 @@ export const reviewDenPrograms = Object.freeze({
 	})
 })
 
-export const reviewDenWorkload = workload(ReviewDen, reviewDenPrograms)
+export const reviewDenWorkload = g.workload(ReviewDen, reviewDenPrograms)
 
 export const reviewCoordinatorPrograms = Object.freeze({
-	reviewPromote: clocked(
-		ChangeSet.empty(reviewCoordination).insert(
+	reviewPromote: g.clocked(
+		g.ChangeSet.empty(reviewCoordination).insert(
 			ReviewServed,
-			query(reviewCoordination).rule((r) =>
+			g.query(reviewCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", ReviewServed.fields.environment),
 					at: r.param("denNow", ReviewServed.fields.at),
@@ -828,14 +836,14 @@ export const reviewCoordinatorPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewPause: ChangeSet.empty(reviewCoordination).insert(ReviewPaused, []),
-	reviewResume: ChangeSet.empty(reviewCoordination).insert(ReviewResumed, []),
-	reviewPauseTurns: query(reviewCoordination).rule((r) => {
-		const { target, turn } = v(ReviewPaused, "reviewPaused")
+	reviewPause: g.ChangeSet.empty(reviewCoordination).insert(ReviewPaused, []),
+	reviewResume: g.ChangeSet.empty(reviewCoordination).insert(ReviewResumed, []),
+	reviewPauseTurns: g.query(reviewCoordination).rule((r) => {
+		const { target, turn } = g.v(ReviewPaused, "reviewPaused")
 		return r.match(ReviewPaused, { target, turn }).find({ target, turn: r.max(turn) })
 	}),
-	reviewPausedAll: query(reviewCoordination).rule((r) => {
-		const { target, turn } = v(ReviewPaused, "reviewPaused")
+	reviewPausedAll: g.query(reviewCoordination).rule((r) => {
+		const { target, turn } = g.v(ReviewPaused, "reviewPaused")
 		return r
 			.match(ReviewPaused, { target, turn })
 			.where(r.not(ReviewResumed, { target, turn }))
@@ -843,10 +851,10 @@ export const reviewCoordinatorPrograms = Object.freeze({
 	})
 })
 
-export const reviewCoordinatorWorkload = workload(ReviewCoordinator, reviewCoordinatorPrograms)
+export const reviewCoordinatorWorkload = g.workload(ReviewCoordinator, reviewCoordinatorPrograms)
 
 /** den's retiring role for the flow Review: it clears finished roots' graphs, deleting every row of a root's graph but its record, under its root, and writes nothing else. */
-export const ReviewRetirer = role(
+export const ReviewRetirer = g.role(
 	App,
 	"review_retirer",
 	{ ...reviewGraph.relations },
@@ -890,58 +898,58 @@ export const ReviewRetirer = role(
 )
 
 export const reviewRetirerPrograms = Object.freeze({
-	reviewRetire: ChangeSet.empty(reviewGraph).deleteWhere({
-		ReviewScope: { root: param("root", ReviewRoot.fields.root) },
-		ReviewWithin: { root: param("root", ReviewRoot.fields.root) },
-		ReviewAdmitted: { root: param("root", ReviewRoot.fields.root) },
-		ReviewSkipped: { root: param("root", ReviewRoot.fields.root) },
-		ReviewStep: { root: param("root", ReviewRoot.fields.root) },
-		ReviewStartStep: { root: param("root", ReviewRoot.fields.root) },
-		ReviewStartScope: { root: param("root", ReviewRoot.fields.root) },
-		ReviewFinish: { root: param("root", ReviewRoot.fields.root) },
-		ReviewClaim: { root: param("root", ReviewRoot.fields.root) },
-		ReviewEnded: { root: param("root", ReviewRoot.fields.root) },
-		ReviewRetry: { root: param("root", ReviewRoot.fields.root) },
-		ReviewFenced: { root: param("root", ReviewRoot.fields.root) },
-		ReviewResult: { root: param("root", ReviewRoot.fields.root) },
-		ReviewDone: { root: param("root", ReviewRoot.fields.root) },
-		ReviewFailed: { root: param("root", ReviewRoot.fields.root) },
-		ReviewHeld: { root: param("root", ReviewRoot.fields.root) },
-		ReviewRefusal: { root: param("root", ReviewRoot.fields.root) },
-		ReviewExhausted: { root: param("root", ReviewRoot.fields.root) },
-		ReviewAnalyzeInput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewGatherInput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewGatherInputSizes: { root: param("root", ReviewRoot.fields.root) },
-		ReviewSaveInput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewQuestionsInput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewReviewRunInput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewReviewRunInputSizes: { root: param("root", ReviewRoot.fields.root) },
-		ReviewAnalyzeOutput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewGatherOutput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewSaveOutput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewQuestionsFinishOutput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewReviewRunFinishOutput: { root: param("root", ReviewRoot.fields.root) },
-		ReviewSplit: { root: param("root", ReviewRoot.fields.root) },
-		ReviewSaved: { root: param("root", ReviewRoot.fields.root) }
+	reviewRetire: g.ChangeSet.empty(reviewGraph).deleteWhere({
+		ReviewScope: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewWithin: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewAdmitted: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewSkipped: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewStep: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewStartStep: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewStartScope: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewFinish: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewClaim: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewEnded: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewRetry: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewFenced: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewResult: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewDone: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewFailed: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewHeld: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewRefusal: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewExhausted: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewAnalyzeInput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewGatherInput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewGatherInputSizes: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewSaveInput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewQuestionsInput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunInput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunInputSizes: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewAnalyzeOutput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewGatherOutput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewSaveOutput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewQuestionsFinishOutput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunFinishOutput: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewSplit: { root: g.param("root", ReviewRoot.fields.root) },
+		ReviewSaved: { root: g.param("root", ReviewRoot.fields.root) }
 	})
 })
 
-export const reviewRetirerWorkload = workload(ReviewRetirer, reviewRetirerPrograms)
+export const reviewRetirerWorkload = g.workload(ReviewRetirer, reviewRetirerPrograms)
 
 /** The commits and declared reads of the flow Review, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const reviewCommitPrograms = Object.freeze({
-	reviewAuthenticated: clocked(
-		query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+	reviewAuthenticated: g.clocked(
+		g.query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewCommitAnalyze: ChangeSet.empty(reviewGraph)
+	reviewCommitAnalyze: g.ChangeSet.empty(reviewGraph)
 		.insert(ReviewResult, [])
 		.insert(ReviewDone, [])
 		.insert(ReviewHeld, [])
 		.insert(ReviewAnalyzeOutput, []),
-	reviewCommitGather: clocked(
-		ChangeSet.empty(reviewGraph)
+	reviewCommitGather: g.clocked(
+		g.ChangeSet.empty(reviewGraph)
 			.insert(ReviewResult, [])
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
@@ -961,20 +969,20 @@ export const reviewCommitPrograms = Object.freeze({
 			.insert(ReviewSaved, [])
 			.insert(
 				ReviewStep,
-				query(reviewGraph).rule((r) => {
+				g.query(reviewGraph).rule((r) => {
 					const steps = r.relation("steps", {
 						step: ReviewStep.fields.step,
 						kind: ReviewStep.fields.kind,
 						scope: ReviewStep.fields.scope,
 						delay: DenDelay
 					})
-					const { step, kind, scope, delay } = v(steps, "spawned")
+					const { step, kind, scope, delay } = g.v(steps, "spawned")
 					return r.match(steps, { step, kind, scope, delay }).find({
 						step,
 						kind,
 						scope,
-						due: Type.cast(
-							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
+						due: g.Type.cast(
+							g.Num.add(g.Type.base(r.param("denNow", DenInstant)), g.Type.base(delay)),
 							DenInstant,
 							denInstantKey
 						),
@@ -985,16 +993,16 @@ export const reviewCommitPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewCommitSave: ChangeSet.union(
-		ChangeSet.empty(reviewGraph)
+	reviewCommitSave: g.ChangeSet.union(
+		g.ChangeSet.empty(reviewGraph)
 			.insert(ReviewResult, [])
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
 			.insert(ReviewSaveOutput, []),
 		declaredFlow.kinds[3].writes.changes(Loader)
 	),
-	reviewCommitQuestionsFinish: clocked(
-		ChangeSet.empty(reviewGraph)
+	reviewCommitQuestionsFinish: g.clocked(
+		g.ChangeSet.empty(reviewGraph)
 			.insert(ReviewResult, [])
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
@@ -1014,20 +1022,20 @@ export const reviewCommitPrograms = Object.freeze({
 			.insert(ReviewSaved, [])
 			.insert(
 				ReviewStep,
-				query(reviewGraph).rule((r) => {
+				g.query(reviewGraph).rule((r) => {
 					const steps = r.relation("steps", {
 						step: ReviewStep.fields.step,
 						kind: ReviewStep.fields.kind,
 						scope: ReviewStep.fields.scope,
 						delay: DenDelay
 					})
-					const { step, kind, scope, delay } = v(steps, "spawned")
+					const { step, kind, scope, delay } = g.v(steps, "spawned")
 					return r.match(steps, { step, kind, scope, delay }).find({
 						step,
 						kind,
 						scope,
-						due: Type.cast(
-							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
+						due: g.Type.cast(
+							g.Num.add(g.Type.base(r.param("denNow", DenInstant)), g.Type.base(delay)),
 							DenInstant,
 							denInstantKey
 						),
@@ -1038,8 +1046,8 @@ export const reviewCommitPrograms = Object.freeze({
 		{ denNow: "millis" },
 		{ denNow: denInstantKey }
 	),
-	reviewCommitReviewRunFinish: ChangeSet.union(
-		ChangeSet.empty(reviewGraph)
+	reviewCommitReviewRunFinish: g.ChangeSet.union(
+		g.ChangeSet.empty(reviewGraph)
 			.insert(ReviewResult, [])
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
@@ -1048,4 +1056,4 @@ export const reviewCommitPrograms = Object.freeze({
 	)
 })
 
-export const reviewCommits = workload(Loader, reviewCommitPrograms)
+export const reviewCommits = g.workload(Loader, reviewCommitPrograms)

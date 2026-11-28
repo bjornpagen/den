@@ -1,5 +1,5 @@
-import { contract, Num, pg, query, relation, schema, v } from "@bjornpagen/grizzle"
-import { contractParser } from "@bjornpagen/grizzle/contract"
+import * as g from "@bjornpagen/grizzle"
+import * as gDomain from "@bjornpagen/grizzle/domain"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -21,7 +21,7 @@ import { flow } from "#algebra/flow.ts"
 import {
 	always,
 	atSpawn,
-	contractInput,
+	domainInput,
 	given,
 	none,
 	operator,
@@ -40,7 +40,7 @@ import { type Placement, printFragment } from "#lower/print.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
- * A field of a consumer's contract (algebra/kinds.ts contractInput), from the contract's checked mint, grizzle's
+ * A field of a consumer's contract (algebra/kinds.ts domainInput), from the contract's checked mint, grizzle's
  * contractParser(contract, key), and its base's schema, as metis's essay binding takes a sitting's stage, qti-pie's
  * SittingKey, where a plain Schema.BigInt could not type the read parameter of SittingKey its step's read binds.
  *
@@ -62,33 +62,33 @@ import { caseHangMillis } from "#test/support/suites.ts"
 const sittingKeyKey = Symbol("SittingKey")
 
 /** qti-pie's sitting key: any nonnegative int8, a sitting's stage in its ledger and in metis's essay binding. */
-const SittingKey = contract<typeof sittingKeyKey>()("SittingKey", pg.bigint, (k) =>
-	Num.within(k, 0n, 2n ** 63n - 1n)
+const SittingKey = g.domain<typeof sittingKeyKey>()("SittingKey", g.int8, (k) =>
+	g.Num.within(k, 0n, 2n ** 63n - 1n)
 )
 
 /** SittingKey's checked mint, its checker derived from the contract, as qti-pie exports it beside its mint. */
-const sittingKeyParser = contractParser(SittingKey, sittingKeyKey)
+const sittingKeyParser = gDomain.domainParser(SittingKey, sittingKeyKey)
 
 /** A sitting's stage as a step's input holds it, metis's essay shape. */
-const Stage = contractInput(sittingKeyParser, Schema.BigInt)
+const Stage = domainInput(sittingKeyParser, Schema.BigInt)
 
 /** A sitting, as metis's essay flow's Pending step takes it. */
 const Sitting = Schema.Struct({ child: Schema.String, stage: Stage })
 
 /** The app's pending applications, by the child and the sitting's stage, as metis's Delivery level holds them. */
-const Pending = relation("Pending", { child: Text, stage: SittingKey, path: Text }, [
+const Pending = g.relation("Pending", { child: Text, stage: SittingKey, path: Text }, [
 	"child",
 	"stage",
 	"path"
 ])
-const Level = schema("Level", [Pending], [])
+const Level = g.schema("Level", [Pending], [])
 
 /** A sitting's pending applications, read by the child and by the stage, a parameter of SittingKey, from the input. */
 const PendingReads = reads(
 	Level,
 	{
-		pending: query(Level).rule((r) => {
-			const { child, stage, path } = v(Pending, "pending")
+		pending: g.query(Level).rule((r) => {
+			const { child, stage, path } = g.v(Pending, "pending")
 			return r
 				.match(Pending, { child, stage, path })
 				.where(r.eq(child, r.param("child", Text)), r.eq(stage, r.param("stage", SittingKey)))
@@ -357,7 +357,7 @@ describe("a field of a consumer's contract", () => {
 						assert.isTrue(Str.includes(`import { SittingKey } from "#contracts.ts"`)(fragment))
 						assert.isTrue(Str.includes("stage: SittingKey")(fragment))
 						printed(essay, placement({ SittingKey }))
-						assert.throws(() => printed(essay, placement({ SittingKey: pg.bigint })))
+						assert.throws(() => printed(essay, placement({ SittingKey: g.int8 })))
 					})
 			)
 		)

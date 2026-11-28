@@ -1,4 +1,4 @@
-import { login } from "@bjornpagen/grizzle"
+import * as g from "@bjornpagen/grizzle"
 import {
 	appWorkload,
 	Auditor,
@@ -82,7 +82,7 @@ import {
 import { Loader } from "#integration/slice/roles.ts"
 
 /** den's runtime login: each flow's den role, coordinator role and retiring role. */
-export const Worker = login(
+export const Worker = g.login(
 	App,
 	"worker",
 	[
@@ -145,7 +145,7 @@ export const Worker = login(
  * The app's login: its writer role, which den's commits run under beside the app's own writes, its auditor, and its
  * editor.
  */
-export const AppLogin = login(App, "app", [Loader, Auditor, Editor], {
+export const AppLogin = g.login(App, "app", [Loader, Auditor, Editor], {
 	workload: [
 		chainCommits,
 		fanCommits,
