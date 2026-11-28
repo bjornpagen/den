@@ -144,8 +144,8 @@ for the coordination group, and DBCLOCK:
 
 - **The scalar namespaces (grizzle 51dff4bc0)** and **a level's bases as a list (ca3c91ee3).** `Compute` is gone: den's
   printed programs compute a due instant or a lease's end as `Type.cast(Num.add(Type.base(denNow), Type.base(delay)),
-  DenInstant)`, a finite double's law is `Num.isFinite`, `DenDelay`'s contract is `Logic.and(Logic.ge(d, 0n),
-  Logic.le(d, longestDelayMillis))`, and the slice's nearest-row distance is `Distance.cosine`. The slice's `App` is
+  DenInstant)`, a finite double's law is `Num.isFinite`, `DenDelay`'s contract is `Logic.and([Logic.ge(d, 0n),
+  Logic.le(d, longestDelayMillis)])`, and the slice's nearest-row distance is `Distance.cosine`. The slice's `App` is
   `schema.extend([Listed], "SliceSeats", …)`. grizzle's packages include `packages/openapi`, which
   `@bjornpagen/grizzle` depends on, so den's workspace lists it beside the others.
 
