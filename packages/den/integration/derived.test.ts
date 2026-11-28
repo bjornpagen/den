@@ -6,19 +6,8 @@ import { refusedLaws } from "@bjornpagen/den/runtime/ledger"
 import { settled } from "@bjornpagen/den/runtime/settled"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import {
-	ChangeSet,
-	clocked,
-	login,
-	pg,
-	relation,
-	role,
-	Sha256,
-	schema,
-	wholeEntriesOf,
-	workload
-} from "@bjornpagen/grizzle"
-import { compileServed } from "@bjornpagen/grizzle/compile"
+import { ChangeSet, clocked, pg, relation, Sha256, schema, workload } from "@bjornpagen/grizzle"
+import { compileServed, type ServedRefusal } from "@bjornpagen/grizzle/compile"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import {
@@ -31,19 +20,40 @@ import {
 	int,
 	oneOf
 } from "@bjornpagen/testing/gen"
-import { type Case, property, ReplayToken } from "@bjornpagen/testing/property"
-import { Array as Arr, Effect, Exit, HashMap, Number as Num, Option, Order } from "effect"
+import { type Case, type CheckContext, property, ReplayToken } from "@bjornpagen/testing/property"
+import {
+	Array as Arr,
+	Effect,
+	Exit,
+	HashMap,
+	Number as Num,
+	Option,
+	Order,
+	type PlatformError,
+	Result
+} from "effect"
 import { App } from "#integration/slice/app.ts"
+import {
+	Composer,
+	Composing,
+	composerInserts,
+	composerPrograms
+} from "#integration/slice/composing.ts"
 import { fan as fanFlow, poolSeats } from "#integration/slice/flows.ts"
-import { chainRequests, chainRequestWrites } from "#integration/slice/generated/chain.programs.ts"
 import { fanAppRequests } from "#integration/slice/generated/fan.binding.ts"
-import { fanRequests, fanRequestWrites } from "#integration/slice/generated/fan.programs.ts"
+import { fanRequests } from "#integration/slice/generated/fan.programs.ts"
 import { AppLogin } from "#integration/slice/logins.ts"
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
 import { Want } from "#integration/slice/relations.ts"
 import { Loader } from "#integration/slice/roles.ts"
 import { ringOnAndDrain } from "#integration/support/run.ts"
-import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import {
+	generatedFrom,
+	openAuditor,
+	openLedgers,
+	rows,
+	sliceCase
+} from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
@@ -357,89 +367,64 @@ export const aDerivedRootsInputIsItsReadAtItsRequest = property.explore(events, 
 })
 
 /**
- * Where a derived root's request is composed: a write over the app's schema served by the flow's writer, or by another
- * role of the app's that holds the schema whole, or a write over a level above the schema.
+ * Where a derived root's request is composed: a write over the app's schema served by the flow's writer, or by the
+ * app's composing role, another role holding the schema whole (slice/composing.ts); a configuration of the composing
+ * role alone, inserting every relation it inserts or lacking one, which `grizzle generate` drafts, certifies and
+ * compiles as a deploy would; or a write over a level above the schema.
  */
-type Composer =
-	| "the flow's writer"
-	| "another role of the app's"
-	| "a write over a level above the schema"
+type Composition =
+	| { readonly kind: "the flow's writer" }
+	| { readonly kind: "the composing role" }
+	| { readonly kind: "a configuration of the composing role" }
+	| { readonly kind: "a composing role lacking one insert"; readonly lacking: ComposerInsert }
+	| { readonly kind: "a write over a level above the schema" }
 
-const composers: Gen<Composer> = (source) => {
-	if (!source.draw(boolean)) {
-		return "the flow's writer"
+/** A relation the composing role inserts: the app's want and order, and each its requests insert. */
+type ComposerInsert = (typeof composerInserts)[number]
+
+const compositions: Gen<Composition> = (source) =>
+	source.draw(
+		oneOf<Composition>([
+			() => ({ kind: "the flow's writer" }),
+			() => ({ kind: "the composing role" }),
+			() => ({ kind: "a configuration of the composing role" }),
+			(s) => ({
+				kind: "a composing role lacking one insert",
+				lacking: s.draw(element(composerInserts))
+			}),
+			() => ({ kind: "a write over a level above the schema" })
+		])
+	)
+
+/**
+ * The slice's configuration with its composing login alone, whose role inserts `inserts`, running the composing role's
+ * programs: a module's text, which `grizzle generate` reads in a directory of its own beside the slice (support/slice.ts
+ * generatedFrom).
+ */
+const composingConfig = (
+	inserts: ReadonlyArray<ComposerInsert>
+): string => `import { defineConfig, login, role, wholeEntriesOf } from "@bjornpagen/grizzle"
+import { App } from "#integration/slice/app.ts"
+import { composerPrograms } from "#integration/slice/composing.ts"
+
+const composer = role(App, "composer", wholeEntriesOf(App), {
+	insert: [${Arr.join(
+		Arr.map(inserts, (insert) => `"${insert}"`),
+		", "
+	)}]
+})
+
+export default defineConfig({
+	schemas: [App],
+	logins: [login(App, "composing", [composer], { workload: [composerPrograms(composer)] })],
+	contracts: [],
+	migrations: "migrations",
+	rolePrefixBytes: 13,
+	connection: () => {
+		throw new Error("grizzle generate connects to nothing")
 	}
-	return source.draw(boolean)
-		? "a write over a level above the schema"
-		: "another role of the app's"
-}
-
-/** The relations the fan's Wanted request inserts, as its flow's programs print them. */
-type WantedWrite = (typeof fanRequestWrites.Wanted)[number]
-
-/** The relations the chain's Ordered request inserts, a given root's, as its flow's programs print them. */
-type OrderedWrite = (typeof chainRequestWrites.Ordered)[number]
-
-/**
- * The compile, as `grizzle generate` commits it, of the app's want of a batch with its run requested after it, by a
- * role of the app's other than the one the fan names as its writer, holding the app's schema whole and inserting the
- * sizes it wants and `writes` alone, as metis's student role inserts what its proctored submit requests: a login of
- * that role alone, which no installation holds, so its workload is compiled, never served.
- */
-const wantRunBy = (writes: ReadonlyArray<WantedWrite>) => {
-	const another = role(App, "another", wholeEntriesOf(App), { insert: ["Want", ...writes] })
-	return compileServed(login(App, "composing", [another]), snapshotFile, [
-		workload(another, {
-			wantRun: clocked(
-				ChangeSet.sequence(ChangeSet.empty(another).insert(Want, []), fanRequests.Wanted),
-				{
-					[denClock]: "millis"
-				},
-				{ [denClock]: denInstantKey }
-			)
-		})
-	])
-}
-
-/** The compile, as `wantRunBy`'s, of the app's order with the chain's Ordered root requested beside it. */
-const orderBy = (writes: ReadonlyArray<OrderedWrite>) => {
-	const another = role(App, "another", wholeEntriesOf(App), { insert: ["Order", ...writes] })
-	return compileServed(login(App, "composing", [another]), snapshotFile, [
-		workload(another, {
-			order: clocked(
-				ChangeSet.union(
-					ChangeSet.empty(another).insert(App.relations.Order, []),
-					chainRequests.Ordered
-				),
-				{
-					[denClock]: "millis"
-				},
-				{ [denClock]: denInstantKey }
-			)
-		})
-	])
-}
-
-/**
- * That a role writes `request` inserting exactly `writes`: its compile (`compiled`) takes them all, and is refused
- * without any one of them.
- */
-const exactly = <W extends string, E>(
-	request: string,
-	writes: ReadonlyArray<W>,
-	compiled: (writes: ReadonlyArray<W>) => Effect.Effect<unknown, E>
-) =>
-	Effect.gen(function* () {
-		yield* compiled(writes)
-		yield* Effect.forEach(writes, (write) =>
-			Effect.map(Effect.exit(compiled(Arr.filter(writes, (other) => other !== write))), (exit) =>
-				assert.ok(
-					Exit.isFailure(exit),
-					`a role that does not insert ${write} cannot write ${request}`
-				)
-			)
-		)
-	})
+})
+`
 
 /** What a write over a level above the app's schema writes beside the request, as metis's proctored submit does. */
 const Noted = relation("Noted", { size: pg.bigint }, ["size"])
@@ -449,32 +434,42 @@ const Above = schema.extend([App], "SliceAbove", [Noted], [])
 
 /**
  * Composes a derived app root's request into every write of the app's over its schema or a level above it: the fan's
- * Wanted, sequenced after the sizes the write wants, compiled as a workload of the fan's writer and of another role
- * inserting what the request inserts (`fanRequestWrites`), whose compile is refused without any one of them, as is the
- * chain's Ordered, a given root's, beside the app's order, and built into a write over a level above the schema (its
- * levels alone: no installation holds that level).
+ * Wanted, sequenced after the sizes the write wants, compiled as a workload of the fan's writer and of the app's
+ * composing role, which inserts what the request inserts (`fanRequestWrites`), as it compiles the chain's Ordered, a
+ * given root's, beside the app's order; and built into a write over a level above the schema (its levels alone: no
+ * installation holds that level). A role that lacks any one relation the composing role inserts cannot run its
+ * programs: `grizzle generate`, which drafts, certifies and compiles whatever a configuration holds, drafts the
+ * composing role's configuration alone and refuses it with any one relation taken from the role's list. A login no
+ * installation holds is no test's to compile (grizzle's compileServed refuses it, UninstalledRole), so both verdicts
+ * are generate's.
  *
  * Oracle (specification): docs/decisions.md, a root the app's own write requests is written over the app's schema, so
  * it composes into any of the app's writes over the schema or a level above it, run by a role that holds it whole and
  * inserts what the request inserts.
  *
- * Box: its suite's, every case of it (the three places a write composes the fan's Wanted request, the chain's Ordered
- * beside it in the other role's).
+ * Box: its suite's, every case of it (the places a write composes the fan's Wanted request, the chain's Ordered beside
+ * it in the composing role's, the composing role's configuration, and that configuration lacking each relation its
+ * role inserts).
  */
 export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.exhaust(
-	finite(composers),
+	finite(compositions),
 	{
-		box: "the fan's Wanted request compiled for the fan's writer and for another role of the app's, the chain's Ordered for that role, and in a write over a level above the app's schema",
+		box: "the fan's Wanted request compiled for the fan's writer and for the app's composing role, the chain's Ordered for that role, a configuration whose composing role lacks each relation it inserts, and the request in a write over a level above the app's schema",
 		needs: {},
 		situations: [
 			"the flow's writer",
-			"another role of the app's",
+			"the composing role",
+			"a configuration of the composing role",
+			"a composing role lacking one insert",
 			"a write over a level above the schema"
-		] satisfies ReadonlyArray<Reached<Composer>>,
-		check: (_, c: Case<Composer>) => (composer) =>
-			Effect.suspend(() => {
-				c.note(composer)
-				switch (composer) {
+		] satisfies ReadonlyArray<Reached<Composition["kind"]>>,
+		check:
+			(_, c: Case<Composition["kind"]>) =>
+			(
+				composer
+			): Effect.Effect<void, ServedRefusal | PlatformError.PlatformError, CheckContext> => {
+				c.note(composer.kind)
+				switch (composer.kind) {
 					case "the flow's writer":
 						return Effect.asVoid(
 							compileServed(AppLogin, snapshotFile, [
@@ -490,10 +485,30 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 								})
 							])
 						)
-					case "another role of the app's":
-						return Effect.andThen(
-							exactly("the fan's Wanted request", fanRequestWrites.Wanted, wantRunBy),
-							exactly("the chain's Ordered request", chainRequestWrites.Ordered, orderBy)
+					case "the composing role":
+						return Effect.asVoid(
+							compileServed(Composing, snapshotFile, [composerPrograms(Composer)])
+						)
+					case "a configuration of the composing role":
+						return Effect.map(generatedFrom(composingConfig(composerInserts)), (generated) => {
+							assert.ok(
+								Result.isSuccess(generated),
+								"a composing role inserting every relation its programs write is drafted and certified"
+							)
+						})
+					case "a composing role lacking one insert":
+						return Effect.map(
+							generatedFrom(
+								composingConfig(
+									Arr.filter(composerInserts, (insert) => insert !== composer.lacking)
+								)
+							),
+							(generated) => {
+								assert.ok(
+									Result.isFailure(generated) && generated.failure._tag === "SetupFailed",
+									`a composing role that does not insert ${composer.lacking} cannot run its programs`
+								)
+							}
 						)
 					case "a write over a level above the schema":
 						return Effect.asVoid(
@@ -502,7 +517,7 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 							)
 						)
 				}
-			}),
+			},
 		oracle: {
 			kind: "specification",
 			name: "a derived app root's request composes into any of the app's writes over its schema or a level above it"

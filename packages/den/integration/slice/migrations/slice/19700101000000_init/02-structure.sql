@@ -165,7 +165,7 @@ CREATE TABLE "slice_den"."assign_finish" (
   "scope" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_finish_pk_kfe2ztwv2z" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__assign_finish_key_root_step_eqtmpheihj" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__assign_finish_key_root_step_eqtmpheihj" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."assign_held" (
@@ -224,7 +224,7 @@ CREATE TABLE "slice_den"."assign_root" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__assign_root_pk_b23qqyryx4" PRIMARY KEY ("root"),
-  CONSTRAINT "__assign_root_key_root_kind_albudrr2vv" UNIQUE NULLS DISTINCT ("kind", "root")
+  CONSTRAINT "__assign_root_key_root_kind_albudrr2vv" UNIQUE NULLS DISTINCT ("root", "kind")
 );
 
 CREATE TABLE "slice_den"."assign_scope" (
@@ -254,7 +254,7 @@ CREATE TABLE "slice_den"."assign_start_step" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_start_step_pk_jjcfkvptmp" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__assign_start_step_key_root_step_n7nc3rlewh" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__assign_start_step_key_root_step_n7nc3rlewh" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."assign_step" (
@@ -327,7 +327,7 @@ CREATE TABLE "slice_den"."chain_finish" (
   "scope" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_finish_pk_ebe75jmnzy" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__chain_finish_key_root_step_jhhtviztjs" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__chain_finish_key_root_step_jhhtviztjs" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."chain_held" (
@@ -386,7 +386,7 @@ CREATE TABLE "slice_den"."chain_root" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__chain_root_pk_wqfycdg3x5" PRIMARY KEY ("root"),
-  CONSTRAINT "__chain_root_key_root_kind_nrgbg46psl" UNIQUE NULLS DISTINCT ("kind", "root")
+  CONSTRAINT "__chain_root_key_root_kind_nrgbg46psl" UNIQUE NULLS DISTINCT ("root", "kind")
 );
 
 CREATE TABLE "slice_den"."chain_scope" (
@@ -416,7 +416,7 @@ CREATE TABLE "slice_den"."chain_start_step" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_start_step_pk_dgda7shxb4" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__chain_start_step_key_root_step_ncsd5g5nar" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__chain_start_step_key_root_step_ncsd5g5nar" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."chain_step" (
@@ -482,7 +482,7 @@ CREATE TABLE "slice_den"."clock_finish" (
   "scope" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_finish_pk_eqj7fcnrnq" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__clock_finish_key_root_step_gg4t25lynz" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__clock_finish_key_root_step_gg4t25lynz" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."clock_held" (
@@ -541,7 +541,7 @@ CREATE TABLE "slice_den"."clock_root" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__clock_root_pk_rnmiw3efr2" PRIMARY KEY ("root"),
-  CONSTRAINT "__clock_root_key_root_kind_e4vt5g6ggk" UNIQUE NULLS DISTINCT ("kind", "root")
+  CONSTRAINT "__clock_root_key_root_kind_e4vt5g6ggk" UNIQUE NULLS DISTINCT ("root", "kind")
 );
 
 CREATE TABLE "slice_den"."clock_scope" (
@@ -571,7 +571,7 @@ CREATE TABLE "slice_den"."clock_start_step" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_start_step_pk_qgw6bnuo54" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__clock_start_step_key_root_step_pknqcsg3yv" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__clock_start_step_key_root_step_pknqcsg3yv" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."clock_step" (
@@ -597,10 +597,11 @@ CREATE TABLE "slice_den"."fan_claim" (
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "holds" "slice"."__domain_gfw43vigph" NOT NULL,
   "__root_yewsvvtcyz" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "root" END) STORED,
+  "__root_krweilnoma" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "holds" > 0::bigint THEN "root" END) STORED,
   "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
   "__pred_holds_lq7itfruzz" bigint GENERATED ALWAYS AS (CASE WHEN "holds" > 0::bigint THEN "holds"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__fan_claim_pk_e7zimqppco" PRIMARY KEY ("root", "step", "attempt"),
-  CONSTRAINT "__fan_claim_key_root_step_attempt_holds_zpvvoill72" UNIQUE NULLS DISTINCT ("holds", "root", "step", "attempt")
+  CONSTRAINT "__fan_claim_key_root_step_attempt_raqrzlrtrk" UNIQUE NULLS DISTINCT ("__root_krweilnoma", "step", "attempt")
 );
 
 CREATE TABLE "slice_den"."fan_done" (
@@ -657,7 +658,7 @@ CREATE TABLE "slice_den"."fan_finish" (
   "scope" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_finish_pk_6mb33urjra" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__fan_finish_key_root_step_4hpunaiysi" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__fan_finish_key_root_step_4hpunaiysi" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."fan_held" (
@@ -674,12 +675,12 @@ CREATE TABLE "slice_den"."fan_hold" (
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_gfw43vigph" NOT NULL,
   "seat" "slice"."__domain_gfw43vigph" NOT NULL,
-  "__copy_holds_hfzvk7t2xc" bigint NOT NULL,
+  "__next_holds_qe2ylbyjxu" bigint NOT NULL,
   "__pred_at_xktcobhsti" bigint GENERATED ALWAYS AS (CASE WHEN "at" > 0::bigint THEN "at"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__fan_hold_pk_avuqdkljvb" PRIMARY KEY ("resource", "root", "step", "attempt"),
-  CONSTRAINT "__fan_hold_key_root_step_attempt_at_vy3k4db54f" UNIQUE NULLS DISTINCT ("at", "root", "step", "attempt"),
-  CONSTRAINT "__fan_hold_key_root_step_attempt_pred_at_pr3hqe44bn" UNIQUE NULLS DISTINCT ("__pred_at_xktcobhsti", "root", "step", "attempt"),
-  CONSTRAINT "__fan_hold_check_fan_hold_ordered_fan_claim_holds_zint2b2ifk" CHECK (("at" < "__copy_holds_hfzvk7t2xc") IS TRUE)
+  CONSTRAINT "__fan_hold_key_root_step_attempt_at_vy3k4db54f" UNIQUE NULLS DISTINCT ("root", "step", "attempt", "at"),
+  CONSTRAINT "__fan_hold_key_root_step_attempt_at_next_holds_2jq65xeeeq" UNIQUE NULLS DISTINCT ("root", "step", "attempt", "at", "__next_holds_qe2ylbyjxu"),
+  CONSTRAINT "__fan_hold_key_root_step_attempt_pred_at_pr3hqe44bn" UNIQUE NULLS DISTINCT ("root", "step", "attempt", "__pred_at_xktcobhsti")
 );
 
 CREATE TABLE "slice_den"."fan_paused" (
@@ -738,7 +739,7 @@ CREATE TABLE "slice_den"."fan_root" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__fan_root_pk_jesu7xtefn" PRIMARY KEY ("root"),
-  CONSTRAINT "__fan_root_key_root_kind_fhgsejgmzx" UNIQUE NULLS DISTINCT ("kind", "root")
+  CONSTRAINT "__fan_root_key_root_kind_fhgsejgmzx" UNIQUE NULLS DISTINCT ("root", "kind")
 );
 
 CREATE TABLE "slice_den"."fan_scope" (
@@ -768,7 +769,7 @@ CREATE TABLE "slice_den"."fan_start_scope" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "child" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_start_scope_pk_nnms2gjwyi" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__fan_start_scope_key_root_child_7zmuuriysl" UNIQUE NULLS DISTINCT ("child", "root")
+  CONSTRAINT "__fan_start_scope_key_root_child_7zmuuriysl" UNIQUE NULLS DISTINCT ("root", "child")
 );
 
 CREATE TABLE "slice_den"."fan_start_step" (
@@ -777,7 +778,7 @@ CREATE TABLE "slice_den"."fan_start_step" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_start_step_pk_7e247xk4mz" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__fan_start_step_key_root_step_edhkhzfqxw" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__fan_start_step_key_root_step_edhkhzfqxw" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."fan_step" (
@@ -851,7 +852,7 @@ CREATE TABLE "slice_den"."retry_finish" (
   "scope" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_finish_pk_yhwp5uk5cg" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__retry_finish_key_root_step_lrmuwwupuk" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__retry_finish_key_root_step_lrmuwwupuk" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."retry_held" (
@@ -910,7 +911,7 @@ CREATE TABLE "slice_den"."retry_root" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__retry_root_pk_qi2iw36jky" PRIMARY KEY ("root"),
-  CONSTRAINT "__retry_root_key_root_kind_fljwbhyeaq" UNIQUE NULLS DISTINCT ("kind", "root")
+  CONSTRAINT "__retry_root_key_root_kind_fljwbhyeaq" UNIQUE NULLS DISTINCT ("root", "kind")
 );
 
 CREATE TABLE "slice_den"."retry_scope" (
@@ -940,7 +941,7 @@ CREATE TABLE "slice_den"."retry_start_step" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_start_step_pk_mp77csmi26" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__retry_start_step_key_root_step_zrielh73lq" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__retry_start_step_key_root_step_zrielh73lq" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."retry_step" (
@@ -966,10 +967,11 @@ CREATE TABLE "slice_den"."review_claim" (
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "holds" "slice"."__domain_gfw43vigph" NOT NULL,
   "__root_yewsvvtcyz" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "root" END) STORED,
+  "__root_krweilnoma" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "holds" > 0::bigint THEN "root" END) STORED,
   "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
   "__pred_holds_lq7itfruzz" bigint GENERATED ALWAYS AS (CASE WHEN "holds" > 0::bigint THEN "holds"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__review_claim_pk_twa72qaol7" PRIMARY KEY ("root", "step", "attempt"),
-  CONSTRAINT "__review_claim_key_root_step_attempt_holds_djm3xecw7o" UNIQUE NULLS DISTINCT ("holds", "root", "step", "attempt")
+  CONSTRAINT "__review_claim_key_root_step_attempt_aa6aoqmhae" UNIQUE NULLS DISTINCT ("__root_krweilnoma", "step", "attempt")
 );
 
 CREATE TABLE "slice_den"."review_done" (
@@ -1009,7 +1011,7 @@ CREATE TABLE "slice_den"."review_finish" (
   "scope" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_finish_pk_ovczbakxjz" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__review_finish_key_root_step_cq4yeqzi25" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__review_finish_key_root_step_cq4yeqzi25" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."review_held" (
@@ -1026,12 +1028,12 @@ CREATE TABLE "slice_den"."review_hold" (
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_gfw43vigph" NOT NULL,
   "seat" "slice"."__domain_gfw43vigph" NOT NULL,
-  "__copy_holds_a7bsyj5c52" bigint NOT NULL,
+  "__next_holds_7j7ynyqmw6" bigint NOT NULL,
   "__pred_at_xktcobhsti" bigint GENERATED ALWAYS AS (CASE WHEN "at" > 0::bigint THEN "at"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__review_hold_pk_uhb6w3fp5v" PRIMARY KEY ("resource", "root", "step", "attempt"),
-  CONSTRAINT "__review_hold_key_root_step_attempt_at_6p3v4lr6zi" UNIQUE NULLS DISTINCT ("at", "root", "step", "attempt"),
-  CONSTRAINT "__review_hold_key_root_step_attempt_pred_at_adiit7mrkk" UNIQUE NULLS DISTINCT ("__pred_at_xktcobhsti", "root", "step", "attempt"),
-  CONSTRAINT "__review_hold_check_review_hold_ordered_review_claim_icnqunpnlb" CHECK (("at" < "__copy_holds_a7bsyj5c52") IS TRUE)
+  CONSTRAINT "__review_hold_key_root_step_attempt_at_6p3v4lr6zi" UNIQUE NULLS DISTINCT ("root", "step", "attempt", "at"),
+  CONSTRAINT "__review_hold_key_root_step_attempt_at_next_holds_yiw42djdl7" UNIQUE NULLS DISTINCT ("root", "step", "attempt", "at", "__next_holds_7j7ynyqmw6"),
+  CONSTRAINT "__review_hold_key_root_step_attempt_pred_at_adiit7mrkk" UNIQUE NULLS DISTINCT ("root", "step", "attempt", "__pred_at_xktcobhsti")
 );
 
 CREATE TABLE "slice_den"."review_paused" (
@@ -1083,7 +1085,7 @@ CREATE TABLE "slice_den"."review_root" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__review_root_pk_btvrw2kxvs" PRIMARY KEY ("root"),
-  CONSTRAINT "__review_root_key_root_kind_g7dcwn7ekf" UNIQUE NULLS DISTINCT ("kind", "root")
+  CONSTRAINT "__review_root_key_root_kind_g7dcwn7ekf" UNIQUE NULLS DISTINCT ("root", "kind")
 );
 
 CREATE TABLE "slice_den"."review_scope" (
@@ -1113,7 +1115,7 @@ CREATE TABLE "slice_den"."review_start_scope" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "child" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_start_scope_pk_qlm2r5uhqp" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__review_start_scope_key_root_child_cz7ajv7kqf" UNIQUE NULLS DISTINCT ("child", "root")
+  CONSTRAINT "__review_start_scope_key_root_child_cz7ajv7kqf" UNIQUE NULLS DISTINCT ("root", "child")
 );
 
 CREATE TABLE "slice_den"."review_start_step" (
@@ -1122,7 +1124,7 @@ CREATE TABLE "slice_den"."review_start_step" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_start_step_pk_w5suwqqg4p" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__review_start_step_key_root_step_sgv2fu4bpg" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__review_start_step_key_root_step_sgv2fu4bpg" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."review_step" (
@@ -1213,7 +1215,7 @@ CREATE TABLE "slice_den"."sync_finish" (
   "scope" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_finish_pk_hn7tmx25xc" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__sync_finish_key_root_step_mccyu3467o" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__sync_finish_key_root_step_mccyu3467o" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."sync_held" (
@@ -1279,7 +1281,7 @@ CREATE TABLE "slice_den"."sync_root" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__sync_root_pk_daktpubfe2" PRIMARY KEY ("root"),
-  CONSTRAINT "__sync_root_key_root_kind_eiyeq632ma" UNIQUE NULLS DISTINCT ("kind", "root")
+  CONSTRAINT "__sync_root_key_root_kind_eiyeq632ma" UNIQUE NULLS DISTINCT ("root", "kind")
 );
 
 CREATE TABLE "slice_den"."sync_scope" (
@@ -1309,7 +1311,7 @@ CREATE TABLE "slice_den"."sync_start_step" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_start_step_pk_4dv7h6kuu3" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__sync_start_step_key_root_step_otrdmdbrol" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__sync_start_step_key_root_step_otrdmdbrol" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."sync_step" (
@@ -1375,7 +1377,7 @@ CREATE TABLE "slice_den"."writeback_finish" (
   "scope" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_finish_pk_htcvidwpy6" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__writeback_finish_key_root_step_mwy36ww7ko" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__writeback_finish_key_root_step_mwy36ww7ko" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."writeback_held" (
@@ -1434,7 +1436,7 @@ CREATE TABLE "slice_den"."writeback_root" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   CONSTRAINT "__writeback_root_pk_a5puwyrem6" PRIMARY KEY ("root"),
-  CONSTRAINT "__writeback_root_key_root_kind_xcyyolrc7c" UNIQUE NULLS DISTINCT ("kind", "root")
+  CONSTRAINT "__writeback_root_key_root_kind_xcyyolrc7c" UNIQUE NULLS DISTINCT ("root", "kind")
 );
 
 CREATE TABLE "slice_den"."writeback_scope" (
@@ -1464,7 +1466,7 @@ CREATE TABLE "slice_den"."writeback_start_step" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_start_step_pk_sp7hkcjz7m" PRIMARY KEY ("root", "scope", "ordinal"),
-  CONSTRAINT "__writeback_start_step_key_root_step_td6hftw5pk" UNIQUE NULLS DISTINCT ("step", "root")
+  CONSTRAINT "__writeback_start_step_key_root_step_td6hftw5pk" UNIQUE NULLS DISTINCT ("root", "step")
 );
 
 CREATE TABLE "slice_den"."writeback_step" (
@@ -1483,7 +1485,7 @@ CREATE TABLE "slice_den"."__assign_asked_ydsj2i3eaz" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "to" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_asked_pk_5hpdamg2sv" PRIMARY KEY ("root", "from", "ordinal"),
-  CONSTRAINT "__assign_asked_key_root_to_nusrq43or3" UNIQUE NULLS DISTINCT ("to", "root")
+  CONSTRAINT "__assign_asked_key_root_to_nusrq43or3" UNIQUE NULLS DISTINCT ("root", "to")
 );
 
 CREATE TABLE "slice_den"."__assign_assignment_finish_output_tgx2l6dcwa" (
@@ -1713,7 +1715,7 @@ CREATE TABLE "slice_den"."__chain_next_hix6yqf25z" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "to" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_next_pk_qeumlilvtk" PRIMARY KEY ("root", "from", "ordinal"),
-  CONSTRAINT "__chain_next_key_root_to_jwrkpakwhb" UNIQUE NULLS DISTINCT ("to", "root")
+  CONSTRAINT "__chain_next_key_root_to_jwrkpakwhb" UNIQUE NULLS DISTINCT ("root", "to")
 );
 
 CREATE TABLE "slice_den"."__chain_ordered_finish_output_v4b6b7jaop" (
@@ -1799,11 +1801,11 @@ CREATE TABLE "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" (
   "feed" "slice"."feed" NOT NULL,
   "seq" bigint NOT NULL,
   "n" "slice"."__domain_gfw43vigph" NOT NULL,
-  "__copy_items_jii5wy7azg" bigint NOT NULL,
+  "__next_items_32zkibnpeq" bigint NOT NULL,
   "__pred_at_xktcobhsti" bigint GENERATED ALWAYS AS (CASE WHEN "at" > 0::bigint THEN "at"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__chain_page_read_tree_items_pk_fay3dxulye" PRIMARY KEY ("digest", "at"),
-  CONSTRAINT "__chain_page_read_tree_items_key_digest_pred_at_ipnjzk4wne" UNIQUE NULLS DISTINCT ("__pred_at_xktcobhsti", "digest"),
-  CONSTRAINT "__chain_page_read_tree_items_check_chain_page_read_yoect27eee" CHECK (("at" < "__copy_items_jii5wy7azg") IS TRUE)
+  CONSTRAINT "__chain_page_read_tree_items_key_digest_at_next_zwr7ept537" UNIQUE NULLS DISTINCT ("digest", "at", "__next_items_32zkibnpeq"),
+  CONSTRAINT "__chain_page_read_tree_items_key_digest_pred_at_ipnjzk4wne" UNIQUE NULLS DISTINCT ("digest", "__pred_at_xktcobhsti")
 );
 
 CREATE TABLE "slice_den"."__chain_page_read_tree_nd6esoa3d3" (
@@ -1811,9 +1813,10 @@ CREATE TABLE "slice_den"."__chain_page_read_tree_nd6esoa3d3" (
   "feed" "slice"."feed" NOT NULL,
   "factor" "slice"."__domain_gfw43vigph" NOT NULL,
   "items" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__digest_7nxtpg25rz" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "items" > 0::bigint THEN "digest" END) STORED,
   "__pred_items_3qltx5cx27" bigint GENERATED ALWAYS AS (CASE WHEN "items" > 0::bigint THEN "items"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__chain_page_read_tree_row_pk_krei6zvz6t" PRIMARY KEY ("digest"),
-  CONSTRAINT "__chain_page_read_tree_row_key_digest_items_s2jrbtqovl" UNIQUE NULLS DISTINCT ("items", "digest")
+  CONSTRAINT "__chain_page_read_tree_row_key_digest_e3kzriq3cu" UNIQUE NULLS DISTINCT ("__digest_7nxtpg25rz")
 );
 
 CREATE TABLE "slice_den"."__chain_page_read_weights_fcely5x3ye" (
@@ -2214,7 +2217,7 @@ CREATE TABLE "slice_den"."__review_saved_5iq7m2fmyr" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "to" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_saved_pk_mrkz2ovxcx" PRIMARY KEY ("root", "from", "ordinal"),
-  CONSTRAINT "__review_saved_key_root_to_hfwtbsvtvv" UNIQUE NULLS DISTINCT ("to", "root")
+  CONSTRAINT "__review_saved_key_root_to_hfwtbsvtvv" UNIQUE NULLS DISTINCT ("root", "to")
 );
 
 CREATE TABLE "slice_den"."__review_split_ggs6ku5tr5" (
@@ -2223,7 +2226,7 @@ CREATE TABLE "slice_den"."__review_split_ggs6ku5tr5" (
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "to" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_split_pk_im65kbvnho" PRIMARY KEY ("root", "from", "ordinal"),
-  CONSTRAINT "__review_split_key_root_to_3bsdaxl7fd" UNIQUE NULLS DISTINCT ("to", "root")
+  CONSTRAINT "__review_split_key_root_to_3bsdaxl7fd" UNIQUE NULLS DISTINCT ("root", "to")
 );
 
 CREATE TABLE "slice_den"."__sync_build_input_2ax6pwgsaz" (
@@ -3507,80 +3510,80 @@ CREATE TABLE "slice_den"."__head_writeback_claim_attempt_pk673p2jar" (
 REVOKE ALL ON TABLE "slice_den"."__head_writeback_claim_attempt_pk673p2jar" FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("__children_1" "slice"."__sha256"[], "__children_2" "slice"."__sha256"[]) RETURNS SETOF "slice_den"."__head_assign_claim_attempt_h744pvqs3v"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r3@r1) NO_GATHER(r4)'
 AS $$
 BEGIN
-  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_assign_claim_attempt_h744pvqs3v" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r1"."c1", "r1"."c2", "r1"."c3", "r1"."c4" FROM "r1" ;
+  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_assign_claim_attempt_h744pvqs3v" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r4"."c1", "r4"."c2", "r4"."c3", "r4"."c4" FROM "r1" AS "r4" ;
 END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("__children_1" "slice"."__sha256"[], "__children_2" "slice"."__sha256"[]) RETURNS SETOF "slice_den"."__head_chain_claim_attempt_n5yg3h2b6a"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r3@r1) NO_GATHER(r4)'
 AS $$
 BEGIN
-  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_chain_claim_attempt_n5yg3h2b6a" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r1"."c1", "r1"."c2", "r1"."c3", "r1"."c4" FROM "r1" ;
+  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_chain_claim_attempt_n5yg3h2b6a" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r4"."c1", "r4"."c2", "r4"."c3", "r4"."c4" FROM "r1" AS "r4" ;
 END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("__children_1" "slice"."__sha256"[], "__children_2" "slice"."__sha256"[]) RETURNS SETOF "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r3@r1) NO_GATHER(r4)'
 AS $$
 BEGIN
-  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r1"."c1", "r1"."c2", "r1"."c3", "r1"."c4" FROM "r1" ;
+  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r4"."c1", "r4"."c2", "r4"."c3", "r4"."c4" FROM "r1" AS "r4" ;
 END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("__children_1" "slice"."__sha256"[], "__children_2" "slice"."__sha256"[]) RETURNS SETOF "slice_den"."__head_fan_claim_attempt_u34lm72lgr"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r3@r1) NO_GATHER(r4)'
 AS $$
 BEGIN
-  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_fan_claim_attempt_u34lm72lgr" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r1"."c1", "r1"."c2", "r1"."c3", "r1"."c4" FROM "r1" ;
+  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_fan_claim_attempt_u34lm72lgr" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r4"."c1", "r4"."c2", "r4"."c3", "r4"."c4" FROM "r1" AS "r4" ;
 END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("__children_1" "slice"."__sha256"[], "__children_2" "slice"."__sha256"[]) RETURNS SETOF "slice_den"."__head_retry_claim_attempt_exbl6vgycp"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r3@r1) NO_GATHER(r4)'
 AS $$
 BEGIN
-  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_retry_claim_attempt_exbl6vgycp" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r1"."c1", "r1"."c2", "r1"."c3", "r1"."c4" FROM "r1" ;
+  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_retry_claim_attempt_exbl6vgycp" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r4"."c1", "r4"."c2", "r4"."c3", "r4"."c4" FROM "r1" AS "r4" ;
 END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("__children_1" "slice"."__sha256"[], "__children_2" "slice"."__sha256"[]) RETURNS SETOF "slice_den"."__head_review_claim_attempt_lsmvyy7ajm"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r3@r1) NO_GATHER(r4)'
 AS $$
 BEGIN
-  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_review_claim_attempt_lsmvyy7ajm" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r1"."c1", "r1"."c2", "r1"."c3", "r1"."c4" FROM "r1" ;
+  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_review_claim_attempt_lsmvyy7ajm" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r4"."c1", "r4"."c2", "r4"."c3", "r4"."c4" FROM "r1" AS "r4" ;
 END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("__children_1" "slice"."__sha256"[], "__children_2" "slice"."__sha256"[]) RETURNS SETOF "slice_den"."__head_sync_claim_attempt_dtv5nw4b3m"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r3@r1) NO_GATHER(r4)'
 AS $$
 BEGIN
-  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_sync_claim_attempt_dtv5nw4b3m" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r1"."c1", "r1"."c2", "r1"."c3", "r1"."c4" FROM "r1" ;
+  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_sync_claim_attempt_dtv5nw4b3m" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r4"."c1", "r4"."c2", "r4"."c3", "r4"."c4" FROM "r1" AS "r4" ;
 END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("__children_1" "slice"."__sha256"[], "__children_2" "slice"."__sha256"[]) RETURNS SETOF "slice_den"."__head_writeback_claim_attempt_pk673p2jar"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r3@r1) NO_GATHER(r4)'
 AS $$
 BEGIN
-  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_writeback_claim_attempt_pk673p2jar" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r1"."c1", "r1"."c2", "r1"."c3", "r1"."c4" FROM "r1" ;
+  RETURN QUERY WITH "r1"("c1", "c2", "c3", "c4") AS ( INSERT INTO "slice_den"."__head_writeback_claim_attempt_pk673p2jar" AS "r2" ("root", "step", "attempt", "__stamper") SELECT DISTINCT "r3"."c1", ("__children_2")["r3"."c2"], 0::bigint, "pg_catalog"."pg_current_xact_id"() FROM "pg_catalog"."unnest"("__children_1") WITH ORDINALITY AS "r3"("c1", "c2") ORDER BY "r3"."c1", ("__children_2")["r3"."c2"] ON CONFLICT ("root", "step") DO UPDATE SET "attempt" = CASE WHEN "r2"."__stamper" = "pg_catalog"."pg_current_xact_id"() THEN "r2"."attempt" ELSE "r2"."attempt" + 1::bigint END, "__stamper" = "pg_catalog"."pg_current_xact_id"() RETURNING "r2"."root" AS "c1", "r2"."step" AS "c2", "r2"."attempt" AS "c3", "r2"."__stamper" AS "c4" ) SELECT "r4"."c1", "r4"."c2", "r4"."c3", "r4"."c4" FROM "r1" AS "r4" ;
 END
 $$;
 
@@ -3784,7 +3787,7 @@ ALTER TABLE "slice_den"."fan_admitted" ADD CONSTRAINT "__fan_admitted_fk_root_sc
 
 ALTER TABLE "slice_den"."fan_claim"
   ADD CONSTRAINT "__fan_claim_fk_root_step_2xkxna4wne" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."fan_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_claim_fk_root_step_attempt_pred_holds_6ej2el2klx" FOREIGN KEY ("root", "step", "attempt", "__pred_holds_lq7itfruzz") REFERENCES "slice_den"."fan_hold" ("root", "step", "attempt", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__fan_claim_fk_root_step_attempt_pred_holds_pred_7lusubqoow" FOREIGN KEY ("root", "step", "attempt", "__pred_holds_lq7itfruzz", "__pred_holds_lq7itfruzz") REFERENCES "slice_den"."fan_hold" ("root", "step", "attempt", "at", "__next_holds_qe2ylbyjxu") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_claim_fk_root_step_pred_attempt_thlj3gkwmg" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."fan_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."fan_done" ADD CONSTRAINT "__fan_done_fk_root_step_snckhrcktc" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."fan_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -3818,8 +3821,8 @@ ALTER TABLE "slice_den"."fan_held"
   ADD CONSTRAINT "__fan_held_fk_root_step_attempt_bflumufwqp" FOREIGN KEY ("root", "step", "attempt") REFERENCES "slice_den"."fan_claim" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."fan_hold"
-  ADD CONSTRAINT "__fan_hold_fk_root_step_attempt_copy_holds_hnnbabpski" FOREIGN KEY ("root", "step", "attempt", "__copy_holds_hfzvk7t2xc") REFERENCES "slice_den"."fan_claim" ("root", "step", "attempt", "holds") MATCH SIMPLE ON UPDATE CASCADE,
-  ADD CONSTRAINT "__fan_hold_fk_root_step_attempt_pred_at_lene3l2wo7" FOREIGN KEY ("root", "step", "attempt", "__pred_at_xktcobhsti") REFERENCES "slice_den"."fan_hold" ("root", "step", "attempt", "at") MATCH SIMPLE;
+  ADD CONSTRAINT "__fan_hold_fk_root_step_attempt_mdkvryltnc" FOREIGN KEY ("root", "step", "attempt") REFERENCES "slice_den"."fan_claim" ("__root_krweilnoma", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__fan_hold_fk_root_step_attempt_pred_at_at_h5rmevrkns" FOREIGN KEY ("root", "step", "attempt", "__pred_at_xktcobhsti", "at") REFERENCES "slice_den"."fan_hold" ("root", "step", "attempt", "at", "__next_holds_qe2ylbyjxu") MATCH SIMPLE;
 
 ALTER TABLE "slice_den"."fan_paused" ADD CONSTRAINT "__fan_paused_fk_target_pred_turn_flvtnhgqoq" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice_den"."fan_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -3932,7 +3935,7 @@ ALTER TABLE "slice_den"."review_admitted" ADD CONSTRAINT "__review_admitted_fk_r
 
 ALTER TABLE "slice_den"."review_claim"
   ADD CONSTRAINT "__review_claim_fk_root_step_7f6aefekwa" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."review_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__review_claim_fk_root_step_attempt_pred_holds_4fz52sncza" FOREIGN KEY ("root", "step", "attempt", "__pred_holds_lq7itfruzz") REFERENCES "slice_den"."review_hold" ("root", "step", "attempt", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__review_claim_fk_root_step_attempt_pred_holds_pred_m435qghyae" FOREIGN KEY ("root", "step", "attempt", "__pred_holds_lq7itfruzz", "__pred_holds_lq7itfruzz") REFERENCES "slice_den"."review_hold" ("root", "step", "attempt", "at", "__next_holds_7j7ynyqmw6") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__review_claim_fk_root_step_pred_attempt_77xjl3onsd" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."review_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_done" ADD CONSTRAINT "__review_done_fk_root_step_glhq6szbww" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."review_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -3962,8 +3965,8 @@ ALTER TABLE "slice_den"."review_held"
   ADD CONSTRAINT "__review_held_fk_root_step_attempt_43pd26ucr5" FOREIGN KEY ("root", "step", "attempt") REFERENCES "slice_den"."review_claim" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_hold"
-  ADD CONSTRAINT "__review_hold_fk_root_step_attempt_copy_holds_4jxl3l2dff" FOREIGN KEY ("root", "step", "attempt", "__copy_holds_a7bsyj5c52") REFERENCES "slice_den"."review_claim" ("root", "step", "attempt", "holds") MATCH SIMPLE ON UPDATE CASCADE,
-  ADD CONSTRAINT "__review_hold_fk_root_step_attempt_pred_at_sqpugy4xri" FOREIGN KEY ("root", "step", "attempt", "__pred_at_xktcobhsti") REFERENCES "slice_den"."review_hold" ("root", "step", "attempt", "at") MATCH SIMPLE;
+  ADD CONSTRAINT "__review_hold_fk_root_step_attempt_mbgar6ii27" FOREIGN KEY ("root", "step", "attempt") REFERENCES "slice_den"."review_claim" ("__root_krweilnoma", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__review_hold_fk_root_step_attempt_pred_at_at_w5cftoczlu" FOREIGN KEY ("root", "step", "attempt", "__pred_at_xktcobhsti", "at") REFERENCES "slice_den"."review_hold" ("root", "step", "attempt", "at", "__next_holds_7j7ynyqmw6") MATCH SIMPLE;
 
 ALTER TABLE "slice_den"."review_paused" ADD CONSTRAINT "__review_paused_fk_target_pred_turn_rig5fmgcvc" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice_den"."review_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -4272,10 +4275,10 @@ ALTER TABLE "slice_den"."__chain_page_read_tree_mt76djloc5"
 ALTER TABLE "slice_den"."__chain_page_read_tree_items_first_noxho2nj7m" ADD CONSTRAINT "__chain_page_read_tree_first_fk_digest_at_mxnolu45np" FOREIGN KEY ("digest", "at") REFERENCES "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" ("digest", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."__chain_page_read_tree_items_57d6r2rrdd"
-  ADD CONSTRAINT "__chain_page_read_tree_items_fk_digest_copy_items_sicbcwc4zb" FOREIGN KEY ("digest", "__copy_items_jii5wy7azg") REFERENCES "slice_den"."__chain_page_read_tree_nd6esoa3d3" ("digest", "items") MATCH SIMPLE ON UPDATE CASCADE,
-  ADD CONSTRAINT "__chain_page_read_tree_items_fk_digest_pred_at_r7gpc2igze" FOREIGN KEY ("digest", "__pred_at_xktcobhsti") REFERENCES "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" ("digest", "at") MATCH SIMPLE;
+  ADD CONSTRAINT "__chain_page_read_tree_items_fk_digest_myuh5xjhli" FOREIGN KEY ("digest") REFERENCES "slice_den"."__chain_page_read_tree_nd6esoa3d3" ("__digest_7nxtpg25rz") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__chain_page_read_tree_items_fk_digest_pred_at_at_uuldtqtzh5" FOREIGN KEY ("digest", "__pred_at_xktcobhsti", "at") REFERENCES "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" ("digest", "at", "__next_items_32zkibnpeq") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."__chain_page_read_tree_nd6esoa3d3" ADD CONSTRAINT "__chain_page_read_tree_row_fk_digest_pred_items_7rh66dc67t" FOREIGN KEY ("digest", "__pred_items_3qltx5cx27") REFERENCES "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" ("digest", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."__chain_page_read_tree_nd6esoa3d3" ADD CONSTRAINT "__chain_page_read_tree_row_fk_digest_pred_items_pred_ddbsxh3gq5" FOREIGN KEY ("digest", "__pred_items_3qltx5cx27", "__pred_items_3qltx5cx27") REFERENCES "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" ("digest", "at", "__next_items_32zkibnpeq") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."__chain_page_read_weights_fcely5x3ye"
   ADD CONSTRAINT "__chain_page_read_weights_fk_digest_73zfvhpwus" FOREIGN KEY ("digest") REFERENCES "slice_den"."__chain_page_read_weights_as4vhffas4" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,

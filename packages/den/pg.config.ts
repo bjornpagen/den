@@ -30,9 +30,11 @@ const backendBytes = 99_049_472
  * den's local cluster, which every integration property's database is cloned on (test.config.ts): at each checkout a
  * family of its own of one member, the workbench's unit `postgres@den-test-<key>-0` (@bjornpagen/testing/pg family.ts),
  * reached over verify-full TLS at localhost at a port it claims from 20,000, since grizzle's client speaks nothing else.
- * Owned by den_dev, who may set deadlock_timeout, which grizzle's installation sets; its template den_template carries
- * pgvector in vector_ext for the slice's nearest reads; it preloads no library, since no den test reads what a backend
- * plans. Throwaway. Its connections are the machine's memory over one
+ * Owned by den_dev, who may set deadlock_timeout, which grizzle's installation sets, and session_preload_libraries; its
+ * template den_template carries pgvector in vector_ext for the slice's nearest reads; it preloads pg_plan_advice,
+ * loaded by each session, which every session grizzle serves and migrates loads, since grizzle carries each statement's
+ * proven plan to PostgreSQL as its plan advice (grizzle's README "Install"), and no other library, since no den test
+ * reads what a backend plans or the scans EXPLAIN names. Throwaway. Its connections are the machine's memory over one
  * busy backend's, and a replication slot and a WAL sender for each, since every live source's leader holds one of each;
  * its predicate lock table PostgreSQL's room for every backend at grizzle's recommendation to production, since den
  * states no measured room of its own. `pnpm exec toolchain-pg settle` from this package gives the member this spec; a
@@ -44,8 +46,8 @@ export default localCluster({
 	owner: "den_dev",
 	template: "den_template",
 	extensions: [{ name: "vector", schema: "vector_ext" }],
-	preload: [],
-	ownerParameters: ["deadlock_timeout"],
+	preload: ["pg_plan_advice"],
+	ownerParameters: ["deadlock_timeout", "session_preload_libraries"],
 	durability: "throwaway",
 	sizing: {
 		kind: "workers",

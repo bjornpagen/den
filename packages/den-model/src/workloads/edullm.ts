@@ -121,7 +121,7 @@ export const edullmOf = (
 			...Arr.map(world.attempts, ({ leaves }) => leaves + limits.takedown.idle)
 		],
 		0,
-		Math.max
+		(latest, at) => Math.max(latest, at)
 	)
 	return {
 		program: together("edullm", [

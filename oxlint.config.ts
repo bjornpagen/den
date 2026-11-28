@@ -1,11 +1,5 @@
 import { standard } from "@bjornpagen/devtools/preset"
-import {
-	CASE_LISTS,
-	CLOCK_RULES,
-	EVERY_FILE_RULES,
-	MODULE_RULES,
-	TEST_RULES
-} from "@bjornpagen/testing/oxlint"
+import { CASE_LISTS } from "@bjornpagen/testing/oxlint"
 import { defineConfig } from "oxlint"
 import toolchain from "#toolchain.config.ts"
 
@@ -71,14 +65,7 @@ export default defineConfig(
 			"test-no-spelled-names": { markers: [] }
 		},
 		ownPlugins: [],
-		tests: {
-			library: "installed",
-			jsPlugin: "@bjornpagen/testing/oxlint",
-			rules: TEST_RULES,
-			modules: MODULE_RULES,
-			everyFile: EVERY_FILE_RULES,
-			clock: { files: [], rules: CLOCK_RULES }
-		},
+		tests: { library: "installed", clockFree: [] },
 		overrides: [
 			{
 				files: ["packages/den/integration/support/slice.ts"],

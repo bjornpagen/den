@@ -3,6 +3,7 @@ import { CredentialError, defineConfig } from "@bjornpagen/grizzle"
 import { Config, Effect } from "effect"
 import pgDriver from "pg"
 import { App } from "#integration/slice/app.ts"
+import { Composing } from "#integration/slice/composing.ts"
 import { AppLogin, Worker } from "#integration/slice/logins.ts"
 import { BuildNumber } from "#integration/slice/relations.ts"
 
@@ -10,12 +11,13 @@ import { BuildNumber } from "#integration/slice/relations.ts"
  * The slice's configuration. `grizzle generate` and `grizzle check` never call its connection; `grizzle migrate` and
  * `grizzle uninstall`, which a suite runs for its own database, call it with the suite's database, role prefix,
  * cluster CA and owner password in the process's environment (support/slice.ts). Every installation of it is a suite's,
- * under its template's role prefix, `t` and twelve characters of the template's name (support/slice.ts
- * templatePrefixOf), so the longest prefix is 13 bytes (rolePrefixBytes).
+ * under its template's role prefix, `t` and the last twelve hex digits of its build's key (support/slice.ts
+ * templatePrefixOf), so the longest prefix is 13 bytes (rolePrefixBytes). Its logins are den's worker, the app's, and
+ * the app's composing login (composing.ts), whose role composes derived requests into writes of its own.
  */
 export default defineConfig({
 	schemas: [App],
-	logins: [Worker, AppLogin],
+	logins: [Worker, AppLogin, Composing],
 	contracts: [BuildNumber],
 	migrations: "migrations",
 	rolePrefixBytes: 13,

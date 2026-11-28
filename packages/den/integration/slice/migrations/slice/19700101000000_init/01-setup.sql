@@ -777,7 +777,7 @@ CREATE DOMAIN "slice_den"."__chain_ordered_input_feed_mnwz7hkicc" AS smallint CO
 CREATE DOMAIN "slice_den"."__chain_page_input_feed_3lfpnabckm" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_page_input_feed_live_zxgp5dub6j"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE OR REPLACE FUNCTION "slice"."__refuse"("state" "pg_catalog"."text", "constraint_name" "pg_catalog"."text", "detail" "pg_catalog"."text") RETURNS boolean
-LANGUAGE plpgsql VOLATILE PARALLEL SAFE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE PARALLEL SAFE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = ''
 AS $$
 BEGIN
   RAISE EXCEPTION 'grizzle refused the statement' USING ERRCODE = "state", CONSTRAINT = "constraint_name", DETAIL = "detail";
@@ -787,7 +787,7 @@ $$;
 REVOKE EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__borrow"("ids" bigint[], "exclusive" boolean[]) RETURNS "pg_catalog"."void"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'NO_GATHER(r1)'
 AS $$
 DECLARE
   "at" integer;
@@ -799,7 +799,7 @@ $$;
 REVOKE EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__require_serializable"() RETURNS "pg_catalog"."trigger"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = ''
 AS $$
 BEGIN
   IF "pg_catalog"."current_setting"('transaction_isolation'::"pg_catalog"."text") <> 'serializable'::"pg_catalog"."text" THEN RAISE EXCEPTION 'a write to a grizzle table requires SERIALIZABLE' USING ERRCODE = 'invalid_transaction_state'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'write at SERIALIZABLE'::"pg_catalog"."text"; END IF;
@@ -828,6 +828,21 @@ CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."__ledger"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
+CREATE TABLE "slice"."__ledger_head" (
+  "head" boolean NOT NULL,
+  "folder" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "target" "slice"."__sha256" NOT NULL,
+  "complete" boolean NOT NULL,
+  CONSTRAINT "__ledger_head_pk" PRIMARY KEY ("head"),
+  CONSTRAINT "__ledger_head_row_check" CHECK (("head") IS TRUE)
+);
+
+REVOKE ALL ON TABLE "slice"."__ledger_head" FROM PUBLIC;
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."__ledger_head"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
 CREATE TABLE "slice"."__drift_proofs" (
   "object" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "ddl" "slice"."__sha256" NOT NULL,
@@ -842,11 +857,14 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE OR REPLACE FUNCTION "slice"."__snapshot_guard"("fingerprint" "pg_catalog"."text") RETURNS "pg_catalog"."void"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp" SET pg_plan_advice.advice = 'SEQ_SCAN(r3@r2) NO_GATHER(r3@r2)'
 AS $$
+DECLARE
+  "verdict" "pg_catalog"."text";
 BEGIN
-  IF EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r1" WHERE "r1"."ordinal" = 0 AND "r1"."files" <> (SELECT "pg_catalog"."count"(*) FROM "slice"."__ledger" AS "r2" WHERE "r2"."folder" = "r1"."folder" AND "r2"."ordinal" <> 0)) THEN RAISE EXCEPTION 'a grizzle migration of this schema is running or stopped part-way' USING ERRCODE = '55Z02'::"pg_catalog"."text"; END IF;
-  IF NOT EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r3" WHERE "r3"."ordinal" = 0 AND "r3"."target" = "pg_catalog"."decode"("fingerprint", 'hex'::"pg_catalog"."text") AND NOT EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r4" WHERE "r4"."ordinal" = 0 AND "r4"."folder" > "r3"."folder")) THEN RAISE EXCEPTION 'the latest grizzle migration of this schema is not the snapshot of this Db' USING ERRCODE = '55Z01'::"pg_catalog"."text"; END IF;
+  IF NOT EXISTS (SELECT 1 FROM "pg_catalog"."pg_get_loaded_modules"() AS "r1"("c1", "c2", "c3") WHERE "r1"."c1" = 'pg_plan_advice'::"pg_catalog"."text") THEN RAISE EXCEPTION 'pg_plan_advice is not loaded in this session: a superuser loads it for the database (ALTER DATABASE ... SET session_preload_libraries = ''pg_plan_advice'') or for the server (shared_preload_libraries = ''pg_plan_advice'')' USING ERRCODE = '55Z04'::"pg_catalog"."text"; END IF;
+  "verdict" := COALESCE((SELECT "r2"."c1" FROM (SELECT CASE WHEN NOT "r3"."complete" THEN 'migrating'::"pg_catalog"."text" WHEN "r3"."target" = "pg_catalog"."decode"("fingerprint", 'hex'::"pg_catalog"."text") THEN 'admitted'::"pg_catalog"."text" ELSE 'migrated'::"pg_catalog"."text" END FROM "slice"."__ledger_head" AS "r3" OFFSET 0::bigint) AS "r2"("c1")), 'migrated'::"pg_catalog"."text");
+  IF "verdict" = 'migrating'::"pg_catalog"."text" THEN RAISE EXCEPTION 'a grizzle migration of this schema is running or stopped part-way' USING ERRCODE = '55Z02'::"pg_catalog"."text"; ELSIF "verdict" <> 'admitted'::"pg_catalog"."text" THEN RAISE EXCEPTION 'the latest grizzle migration of this schema is not the snapshot of this Db' USING ERRCODE = '55Z01'::"pg_catalog"."text"; END IF;
 END
 $$;
 

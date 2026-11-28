@@ -27,6 +27,10 @@ CREATE ROLE :"slice_seats__clock_den" NOLOGIN;
 
 CREATE ROLE :"slice_seats__clock_retirer" NOLOGIN;
 
+CREATE ROLE :"slice_seats__composer" NOLOGIN;
+
+CREATE ROLE :"slice_seats__composing" LOGIN NOINHERIT;
+
 CREATE ROLE :"slice_seats__editor" NOLOGIN;
 
 CREATE ROLE :"slice_seats__fan_coordinator" NOLOGIN;
@@ -74,1224 +78,1224 @@ CREATE SCHEMA "slice_seats__fan_den";
 CREATE SCHEMA "slice_seats__review_den";
 
 CREATE VIEW "__slice"."assigned" ("learner", "passage") AS
-SELECT "r1"."learner", "r1"."passage"
-FROM "slice"."assigned" AS "r1";
+SELECT "v1"."learner", "v1"."passage"
+FROM "slice"."assigned" AS "v1";
 
 CREATE VIEW "__slice"."built" ("build", "at") AS
-SELECT "r1"."build", "r1"."at"
-FROM "slice"."built" AS "r1";
+SELECT "v2"."build", "v2"."at"
+FROM "slice"."built" AS "v2";
 
 CREATE VIEW "__slice"."chimed" ("hour", "bell") AS
-SELECT "r1"."hour", "r1"."bell"
-FROM "slice"."chimed" AS "r1";
+SELECT "v3"."hour", "v3"."bell"
+FROM "slice"."chimed" AS "v3";
 
 CREATE VIEW "__slice"."concluded" ("learner", "served", "weighed") AS
-SELECT "r1"."learner", "r1"."served", "r1"."weighed"
-FROM "slice"."concluded" AS "r1";
+SELECT "v4"."learner", "v4"."served", "v4"."weighed"
+FROM "slice"."concluded" AS "v4";
 
 CREATE VIEW "__slice"."copied" ("relation", "run") AS
-SELECT "r1"."relation", "r1"."run"
-FROM "slice"."copied" AS "r1";
+SELECT "v5"."relation", "v5"."run"
+FROM "slice"."copied" AS "v5";
 
 CREATE VIEW "__slice"."cursor" ("feed", "feed_name", "position") AS
-SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."position"
-FROM "slice"."cursor" AS "r1";
+SELECT "v6"."feed", ("slice"."__feed_names_azjbqebc6i"())["v6"."feed" + 1]::"pg_catalog"."text", "v6"."position"
+FROM "slice"."cursor" AS "v6";
 
 CREATE VIEW "__slice"."delivered" ("attempt") AS
-SELECT "r1"."attempt"
-FROM "slice"."delivered" AS "r1";
+SELECT "v7"."attempt"
+FROM "slice"."delivered" AS "v7";
 
 CREATE VIEW "__slice"."heard" ("key", "answered") AS
-SELECT "r1"."key", "r1"."answered"
-FROM "slice"."heard" AS "r1";
+SELECT "v8"."key", "v8"."answered"
+FROM "slice"."heard" AS "v8";
 
 CREATE VIEW "__slice"."item" ("feed", "feed_name", "seq", "n") AS
-SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice"."item" AS "r1";
+SELECT "v9"."feed", ("slice"."__feed_names_azjbqebc6i"())["v9"."feed" + 1]::"pg_catalog"."text", "v9"."seq", "v9"."n"
+FROM "slice"."item" AS "v9";
 
 CREATE VIEW "__slice"."order" ("order", "feed", "feed_name") AS
-SELECT "r1"."order", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text"
-FROM "slice"."order" AS "r1";
+SELECT "v10"."order", "v10"."feed", ("slice"."__feed_names_azjbqebc6i"())["v10"."feed" + 1]::"pg_catalog"."text"
+FROM "slice"."order" AS "v10";
 
 CREATE VIEW "__slice"."passage" ("passage", "topic", "embedding") AS
-SELECT "r1"."passage", "r1"."topic", "r1"."embedding"
-FROM "slice"."passage" AS "r1";
+SELECT "v11"."passage", "v11"."topic", "v11"."embedding"
+FROM "slice"."passage" AS "v11";
 
 CREATE VIEW "__slice"."reviewed" ("review", "group", "count", "total") AS
-SELECT "r1"."review", "r1"."group", "r1"."count", "r1"."total"
-FROM "slice"."reviewed" AS "r1";
+SELECT "v12"."review", "v12"."group", "v12"."count", "v12"."total"
+FROM "slice"."reviewed" AS "v12";
 
 CREATE VIEW "__slice"."seen" ("learner", "passage") AS
-SELECT "r1"."learner", "r1"."passage"
-FROM "slice"."seen" AS "r1";
+SELECT "v13"."learner", "v13"."passage"
+FROM "slice"."seen" AS "v13";
 
 CREATE VIEW "__slice"."settled" ("batch") AS
-SELECT "r1"."batch"
-FROM "slice"."settled" AS "r1";
+SELECT "v14"."batch"
+FROM "slice"."settled" AS "v14";
 
 CREATE VIEW "__slice"."summary" ("review", "groups", "total") AS
-SELECT "r1"."review", "r1"."groups", "r1"."total"
-FROM "slice"."summary" AS "r1";
+SELECT "v15"."review", "v15"."groups", "v15"."total"
+FROM "slice"."summary" AS "v15";
 
 CREATE VIEW "__slice"."tally" ("batch", "count", "total") AS
-SELECT "r1"."batch", "r1"."count", "r1"."total"
-FROM "slice"."tally" AS "r1";
+SELECT "v16"."batch", "v16"."count", "v16"."total"
+FROM "slice"."tally" AS "v16";
 
 CREATE VIEW "__slice"."want" ("batch", "size") AS
-SELECT "r1"."batch", "r1"."size"
-FROM "slice"."want" AS "r1";
+SELECT "v17"."batch", "v17"."size"
+FROM "slice"."want" AS "v17";
 
 CREATE VIEW "__slice"."weight" ("feed", "feed_name", "factor") AS
-SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
-FROM "slice"."weight" AS "r1";
+SELECT "v18"."feed", ("slice"."__feed_names_azjbqebc6i"())["v18"."feed" + 1]::"pg_catalog"."text", "v18"."factor"
+FROM "slice"."weight" AS "v18";
 
 CREATE VIEW "__slice_den"."assign_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_admitted" AS "r1";
+SELECT "v19"."root", "v19"."scope"
+FROM "slice_den"."assign_admitted" AS "v19";
 
 CREATE VIEW "__slice_den"."assign_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."assign_claim" AS "r1";
+SELECT "v27"."root", "v27"."step", "v27"."attempt", "v27"."until"
+FROM "slice_den"."assign_claim" AS "v27";
 
 CREATE VIEW "__slice_den"."assign_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_done" AS "r1";
+SELECT "v40"."root", "v40"."step"
+FROM "slice_den"."assign_done" AS "v40";
 
 CREATE VIEW "__slice_den"."assign_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_ended" AS "r1";
+SELECT "v47"."root", "v47"."step", "v47"."attempt"
+FROM "slice_den"."assign_ended" AS "v47";
 
 CREATE VIEW "__slice_den"."assign_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_exhausted" AS "r1";
+SELECT "v48"."root", "v48"."step"
+FROM "slice_den"."assign_exhausted" AS "v48";
 
 CREATE VIEW "__slice_den"."assign_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_failed" AS "r1";
+SELECT "v49"."root", "v49"."step"
+FROM "slice_den"."assign_failed" AS "v49";
 
 CREATE VIEW "__slice_den"."assign_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_fenced" AS "r1";
+SELECT "v50"."root", "v50"."step", "v50"."attempt"
+FROM "slice_den"."assign_fenced" AS "v50";
 
 CREATE VIEW "__slice_den"."assign_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."assign_finish" AS "r1";
+SELECT "v51"."root", "v51"."scope", "v51"."step"
+FROM "slice_den"."assign_finish" AS "v51";
 
 CREATE VIEW "__slice_den"."assign_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_held" AS "r1";
+SELECT "v52"."root", "v52"."step", "v52"."attempt"
+FROM "slice_den"."assign_held" AS "v52";
 
 CREATE VIEW "__slice_den"."assign_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."assign_paused" AS "r1";
+SELECT "v53"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["v53"."target" + 1]::"pg_catalog"."text", "v53"."turn"
+FROM "slice_den"."assign_paused" AS "v53";
 
 CREATE VIEW "__slice_den"."assign_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."assign_refusal" AS "r1";
+SELECT "v54"."root", "v54"."step", "v54"."law"
+FROM "slice_den"."assign_refusal" AS "v54";
 
 CREATE VIEW "__slice_den"."assign_requested_with" ("root", "fingerprint", "input") AS
-SELECT "r1"."root", "r1"."fingerprint", "r1"."input"
-FROM "slice_den"."assign_requested_with" AS "r1";
+SELECT "v55"."root", "v55"."fingerprint", "v55"."input"
+FROM "slice_den"."assign_requested_with" AS "v55";
 
 CREATE VIEW "__slice_den"."assign_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__assign_outcome_names_2mccfiah6k"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_result" AS "r1";
+SELECT "v56"."root", "v56"."step", "v56"."outcome", ("slice"."__assign_outcome_names_2mccfiah6k"())["v56"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."assign_result" AS "v56";
 
 CREATE VIEW "__slice_den"."assign_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."assign_resumed" AS "r1";
+SELECT "v57"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["v57"."target" + 1]::"pg_catalog"."text", "v57"."turn"
+FROM "slice_den"."assign_resumed" AS "v57";
 
 CREATE VIEW "__slice_den"."assign_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__assign_retry_why_names_5ckzenntb2"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_retry" AS "r1";
+SELECT "v58"."root", "v58"."step", "v58"."attempt", "v58"."at", "v58"."why", ("slice"."__assign_retry_why_names_5ckzenntb2"())["v58"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."assign_retry" AS "v58";
 
 CREATE VIEW "__slice_den"."assign_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."assign_root" AS "r1";
+SELECT "v59"."root", "v59"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["v59"."kind" + 1]::"pg_catalog"."text", "v59"."key", "v59"."at"
+FROM "slice_den"."assign_root" AS "v59";
 
 CREATE VIEW "__slice_den"."assign_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_scope" AS "r1";
+SELECT "v60"."root", "v60"."scope"
+FROM "slice_den"."assign_scope" AS "v60";
 
 CREATE VIEW "__slice_den"."assign_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."assign_served" AS "r1";
+SELECT "v61"."environment", "v61"."at", "v61"."deployment"
+FROM "slice_den"."assign_served" AS "v61";
 
 CREATE VIEW "__slice_den"."assign_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."assign_skipped" AS "r1";
+SELECT "v62"."root", "v62"."scope", "v62"."by"
+FROM "slice_den"."assign_skipped" AS "v62";
 
 CREATE VIEW "__slice_den"."assign_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."assign_start_step" AS "r1";
+SELECT "v63"."root", "v63"."scope", "v63"."ordinal", "v63"."step"
+FROM "slice_den"."assign_start_step" AS "v63";
 
 CREATE VIEW "__slice_den"."assign_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_rtvscvwquk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."assign_step" AS "r1";
+SELECT "v64"."root", "v64"."step", "v64"."kind", ("slice"."__assign_kind_names_rtvscvwquk"())["v64"."kind" + 1]::"pg_catalog"."text", "v64"."scope", "v64"."due"
+FROM "slice_den"."assign_step" AS "v64";
 
 CREATE VIEW "__slice_den"."audit" ("step", "root", "note") AS
-SELECT "r1"."step", "r1"."root", "r1"."note"
-FROM "slice_den"."audit" AS "r1";
+SELECT "v65"."step", "v65"."root", "v65"."note"
+FROM "slice_den"."audit" AS "v65";
 
 CREATE VIEW "__slice_den"."chain_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_admitted" AS "r1";
+SELECT "v66"."root", "v66"."scope"
+FROM "slice_den"."chain_admitted" AS "v66";
 
 CREATE VIEW "__slice_den"."chain_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."chain_claim" AS "r1";
+SELECT "v69"."root", "v69"."step", "v69"."attempt", "v69"."until"
+FROM "slice_den"."chain_claim" AS "v69";
 
 CREATE VIEW "__slice_den"."chain_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_done" AS "r1";
+SELECT "v70"."root", "v70"."step"
+FROM "slice_den"."chain_done" AS "v70";
 
 CREATE VIEW "__slice_den"."chain_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_ended" AS "r1";
+SELECT "v71"."root", "v71"."step", "v71"."attempt"
+FROM "slice_den"."chain_ended" AS "v71";
 
 CREATE VIEW "__slice_den"."chain_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_exhausted" AS "r1";
+SELECT "v72"."root", "v72"."step"
+FROM "slice_den"."chain_exhausted" AS "v72";
 
 CREATE VIEW "__slice_den"."chain_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_failed" AS "r1";
+SELECT "v73"."root", "v73"."step"
+FROM "slice_den"."chain_failed" AS "v73";
 
 CREATE VIEW "__slice_den"."chain_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_fenced" AS "r1";
+SELECT "v74"."root", "v74"."step", "v74"."attempt"
+FROM "slice_den"."chain_fenced" AS "v74";
 
 CREATE VIEW "__slice_den"."chain_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."chain_finish" AS "r1";
+SELECT "v75"."root", "v75"."scope", "v75"."step"
+FROM "slice_den"."chain_finish" AS "v75";
 
 CREATE VIEW "__slice_den"."chain_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_held" AS "r1";
+SELECT "v76"."root", "v76"."step", "v76"."attempt"
+FROM "slice_den"."chain_held" AS "v76";
 
 CREATE VIEW "__slice_den"."chain_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."chain_paused" AS "r1";
+SELECT "v92"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["v92"."target" + 1]::"pg_catalog"."text", "v92"."turn"
+FROM "slice_den"."chain_paused" AS "v92";
 
 CREATE VIEW "__slice_den"."chain_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."chain_refusal" AS "r1";
+SELECT "v93"."root", "v93"."step", "v93"."law"
+FROM "slice_den"."chain_refusal" AS "v93";
 
 CREATE VIEW "__slice_den"."chain_requested_with" ("root", "fingerprint", "input") AS
-SELECT "r1"."root", "r1"."fingerprint", "r1"."input"
-FROM "slice_den"."chain_requested_with" AS "r1";
+SELECT "v94"."root", "v94"."fingerprint", "v94"."input"
+FROM "slice_den"."chain_requested_with" AS "v94";
 
 CREATE VIEW "__slice_den"."chain_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_result" AS "r1";
+SELECT "v95"."root", "v95"."step", "v95"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["v95"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."chain_result" AS "v95";
 
 CREATE VIEW "__slice_den"."chain_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."chain_resumed" AS "r1";
+SELECT "v96"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["v96"."target" + 1]::"pg_catalog"."text", "v96"."turn"
+FROM "slice_den"."chain_resumed" AS "v96";
 
 CREATE VIEW "__slice_den"."chain_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__chain_retry_why_names_zmog33hzfy"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_retry" AS "r1";
+SELECT "v97"."root", "v97"."step", "v97"."attempt", "v97"."at", "v97"."why", ("slice"."__chain_retry_why_names_zmog33hzfy"())["v97"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."chain_retry" AS "v97";
 
 CREATE VIEW "__slice_den"."chain_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."chain_root" AS "r1";
+SELECT "v98"."root", "v98"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["v98"."kind" + 1]::"pg_catalog"."text", "v98"."key", "v98"."at"
+FROM "slice_den"."chain_root" AS "v98";
 
 CREATE VIEW "__slice_den"."chain_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_scope" AS "r1";
+SELECT "v99"."root", "v99"."scope"
+FROM "slice_den"."chain_scope" AS "v99";
 
 CREATE VIEW "__slice_den"."chain_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."chain_served" AS "r1";
+SELECT "v100"."environment", "v100"."at", "v100"."deployment"
+FROM "slice_den"."chain_served" AS "v100";
 
 CREATE VIEW "__slice_den"."chain_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."chain_skipped" AS "r1";
+SELECT "v101"."root", "v101"."scope", "v101"."by"
+FROM "slice_den"."chain_skipped" AS "v101";
 
 CREATE VIEW "__slice_den"."chain_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."chain_start_step" AS "r1";
+SELECT "v102"."root", "v102"."scope", "v102"."ordinal", "v102"."step"
+FROM "slice_den"."chain_start_step" AS "v102";
 
 CREATE VIEW "__slice_den"."chain_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."chain_step" AS "r1";
+SELECT "v103"."root", "v103"."step", "v103"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["v103"."kind" + 1]::"pg_catalog"."text", "v103"."scope", "v103"."due"
+FROM "slice_den"."chain_step" AS "v103";
 
 CREATE VIEW "__slice_den"."clock_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."clock_admitted" AS "r1";
+SELECT "v104"."root", "v104"."scope"
+FROM "slice_den"."clock_admitted" AS "v104";
 
 CREATE VIEW "__slice_den"."clock_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."clock_claim" AS "r1";
+SELECT "v107"."root", "v107"."step", "v107"."attempt", "v107"."until"
+FROM "slice_den"."clock_claim" AS "v107";
 
 CREATE VIEW "__slice_den"."clock_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_done" AS "r1";
+SELECT "v110"."root", "v110"."step"
+FROM "slice_den"."clock_done" AS "v110";
 
 CREATE VIEW "__slice_den"."clock_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_ended" AS "r1";
+SELECT "v111"."root", "v111"."step", "v111"."attempt"
+FROM "slice_den"."clock_ended" AS "v111";
 
 CREATE VIEW "__slice_den"."clock_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_exhausted" AS "r1";
+SELECT "v112"."root", "v112"."step"
+FROM "slice_den"."clock_exhausted" AS "v112";
 
 CREATE VIEW "__slice_den"."clock_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_failed" AS "r1";
+SELECT "v113"."root", "v113"."step"
+FROM "slice_den"."clock_failed" AS "v113";
 
 CREATE VIEW "__slice_den"."clock_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_fenced" AS "r1";
+SELECT "v114"."root", "v114"."step", "v114"."attempt"
+FROM "slice_den"."clock_fenced" AS "v114";
 
 CREATE VIEW "__slice_den"."clock_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."clock_finish" AS "r1";
+SELECT "v115"."root", "v115"."scope", "v115"."step"
+FROM "slice_den"."clock_finish" AS "v115";
 
 CREATE VIEW "__slice_den"."clock_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_held" AS "r1";
+SELECT "v116"."root", "v116"."step", "v116"."attempt"
+FROM "slice_den"."clock_held" AS "v116";
 
 CREATE VIEW "__slice_den"."clock_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."clock_paused" AS "r1";
+SELECT "v120"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["v120"."target" + 1]::"pg_catalog"."text", "v120"."turn"
+FROM "slice_den"."clock_paused" AS "v120";
 
 CREATE VIEW "__slice_den"."clock_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."clock_refusal" AS "r1";
+SELECT "v121"."root", "v121"."step", "v121"."law"
+FROM "slice_den"."clock_refusal" AS "v121";
 
 CREATE VIEW "__slice_den"."clock_requested_with" ("root", "fingerprint", "input") AS
-SELECT "r1"."root", "r1"."fingerprint", "r1"."input"
-FROM "slice_den"."clock_requested_with" AS "r1";
+SELECT "v122"."root", "v122"."fingerprint", "v122"."input"
+FROM "slice_den"."clock_requested_with" AS "v122";
 
 CREATE VIEW "__slice_den"."clock_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__clock_outcome_names_rqtqczot4q"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_result" AS "r1";
+SELECT "v123"."root", "v123"."step", "v123"."outcome", ("slice"."__clock_outcome_names_rqtqczot4q"())["v123"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."clock_result" AS "v123";
 
 CREATE VIEW "__slice_den"."clock_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."clock_resumed" AS "r1";
+SELECT "v124"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["v124"."target" + 1]::"pg_catalog"."text", "v124"."turn"
+FROM "slice_den"."clock_resumed" AS "v124";
 
 CREATE VIEW "__slice_den"."clock_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__clock_retry_why_names_pjdgx4s6a4"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_retry" AS "r1";
+SELECT "v125"."root", "v125"."step", "v125"."attempt", "v125"."at", "v125"."why", ("slice"."__clock_retry_why_names_pjdgx4s6a4"())["v125"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."clock_retry" AS "v125";
 
 CREATE VIEW "__slice_den"."clock_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__clock_root_kind_names_3kro23qfv4"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."clock_root" AS "r1";
+SELECT "v126"."root", "v126"."kind", ("slice"."__clock_root_kind_names_3kro23qfv4"())["v126"."kind" + 1]::"pg_catalog"."text", "v126"."key", "v126"."at"
+FROM "slice_den"."clock_root" AS "v126";
 
 CREATE VIEW "__slice_den"."clock_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."clock_scope" AS "r1";
+SELECT "v127"."root", "v127"."scope"
+FROM "slice_den"."clock_scope" AS "v127";
 
 CREATE VIEW "__slice_den"."clock_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."clock_served" AS "r1";
+SELECT "v128"."environment", "v128"."at", "v128"."deployment"
+FROM "slice_den"."clock_served" AS "v128";
 
 CREATE VIEW "__slice_den"."clock_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."clock_skipped" AS "r1";
+SELECT "v131"."root", "v131"."scope", "v131"."by"
+FROM "slice_den"."clock_skipped" AS "v131";
 
 CREATE VIEW "__slice_den"."clock_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."clock_start_step" AS "r1";
+SELECT "v132"."root", "v132"."scope", "v132"."ordinal", "v132"."step"
+FROM "slice_den"."clock_start_step" AS "v132";
 
 CREATE VIEW "__slice_den"."clock_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__clock_kind_names_7yqk67pwg5"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."clock_step" AS "r1";
+SELECT "v133"."root", "v133"."step", "v133"."kind", ("slice"."__clock_kind_names_7yqk67pwg5"())["v133"."kind" + 1]::"pg_catalog"."text", "v133"."scope", "v133"."due"
+FROM "slice_den"."clock_step" AS "v133";
 
 CREATE VIEW "__slice_den"."fan_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_admitted" AS "r1";
+SELECT "v134"."root", "v134"."scope"
+FROM "slice_den"."fan_admitted" AS "v134";
 
 CREATE VIEW "__slice_den"."fan_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."fan_claim" AS "r1";
+SELECT "v137"."root", "v137"."step", "v137"."attempt", "v137"."until", "v137"."holds"
+FROM "slice_den"."fan_claim" AS "v137";
 
 CREATE VIEW "__slice_den"."fan_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_done" AS "r1";
+SELECT "v138"."root", "v138"."step"
+FROM "slice_den"."fan_done" AS "v138";
 
 CREATE VIEW "__slice_den"."fan_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_ended" AS "r1";
+SELECT "v141"."root", "v141"."step", "v141"."attempt"
+FROM "slice_den"."fan_ended" AS "v141";
 
 CREATE VIEW "__slice_den"."fan_exclusive" ("kind", "kind_name", "key", "turn", "scope") AS
-SELECT "r1"."kind", ("slice"."__fan_root_kind_names_jqlbcidhe6"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn", "r1"."scope"
-FROM "slice_den"."fan_exclusive" AS "r1";
+SELECT "v142"."kind", ("slice"."__fan_root_kind_names_jqlbcidhe6"())["v142"."kind" + 1]::"pg_catalog"."text", "v142"."key", "v142"."turn", "v142"."scope"
+FROM "slice_den"."fan_exclusive" AS "v142";
 
 CREATE VIEW "__slice_den"."fan_exclusive_key" ("root", "scope", "key", "id") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key", "r1"."id"
-FROM "slice_den"."fan_exclusive_key" AS "r1";
+SELECT "v143"."root", "v143"."scope", "v143"."key", "v143"."id"
+FROM "slice_den"."fan_exclusive_key" AS "v143";
 
 CREATE VIEW "__slice_den"."fan_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_exhausted" AS "r1";
+SELECT "v144"."root", "v144"."step"
+FROM "slice_den"."fan_exhausted" AS "v144";
 
 CREATE VIEW "__slice_den"."fan_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_failed" AS "r1";
+SELECT "v145"."root", "v145"."step"
+FROM "slice_den"."fan_failed" AS "v145";
 
 CREATE VIEW "__slice_den"."fan_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_fenced" AS "r1";
+SELECT "v148"."root", "v148"."step", "v148"."attempt"
+FROM "slice_den"."fan_fenced" AS "v148";
 
 CREATE VIEW "__slice_den"."fan_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."fan_finish" AS "r1";
+SELECT "v149"."root", "v149"."scope", "v149"."step"
+FROM "slice_den"."fan_finish" AS "v149";
 
 CREATE VIEW "__slice_den"."fan_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_held" AS "r1";
+SELECT "v150"."root", "v150"."step", "v150"."attempt"
+FROM "slice_den"."fan_held" AS "v150";
 
 CREATE VIEW "__slice_den"."fan_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__fan_resource_names_tugc7yp6xo"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."fan_hold" AS "r1";
+SELECT "v151"."resource", ("slice"."__fan_resource_names_tugc7yp6xo"())["v151"."resource" + 1]::"pg_catalog"."text", "v151"."root", "v151"."step", "v151"."attempt", "v151"."at", "v151"."seat"
+FROM "slice_den"."fan_hold" AS "v151";
 
 CREATE VIEW "__slice_den"."fan_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__fan_pausable_names_fpk6cvxfiv"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."fan_paused" AS "r1";
+SELECT "v154"."target", ("slice"."__fan_pausable_names_fpk6cvxfiv"())["v154"."target" + 1]::"pg_catalog"."text", "v154"."turn"
+FROM "slice_den"."fan_paused" AS "v154";
 
 CREATE VIEW "__slice_den"."fan_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."fan_refusal" AS "r1";
+SELECT "v155"."root", "v155"."step", "v155"."law"
+FROM "slice_den"."fan_refusal" AS "v155";
 
 CREATE VIEW "__slice_den"."fan_released" ("kind", "kind_name", "key", "turn") AS
-SELECT "r1"."kind", ("slice"."__fan_root_kind_names_jqlbcidhe6"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn"
-FROM "slice_den"."fan_released" AS "r1";
+SELECT "v156"."kind", ("slice"."__fan_root_kind_names_jqlbcidhe6"())["v156"."kind" + 1]::"pg_catalog"."text", "v156"."key", "v156"."turn"
+FROM "slice_den"."fan_released" AS "v156";
 
 CREATE VIEW "__slice_den"."fan_requested_with" ("root", "fingerprint", "input") AS
-SELECT "r1"."root", "r1"."fingerprint", "r1"."input"
-FROM "slice_den"."fan_requested_with" AS "r1";
+SELECT "v157"."root", "v157"."fingerprint", "v157"."input"
+FROM "slice_den"."fan_requested_with" AS "v157";
 
 CREATE VIEW "__slice_den"."fan_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__fan_outcome_names_7pbhseigfj"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_result" AS "r1";
+SELECT "v158"."root", "v158"."step", "v158"."outcome", ("slice"."__fan_outcome_names_7pbhseigfj"())["v158"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."fan_result" AS "v158";
 
 CREATE VIEW "__slice_den"."fan_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__fan_pausable_names_fpk6cvxfiv"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."fan_resumed" AS "r1";
+SELECT "v159"."target", ("slice"."__fan_pausable_names_fpk6cvxfiv"())["v159"."target" + 1]::"pg_catalog"."text", "v159"."turn"
+FROM "slice_den"."fan_resumed" AS "v159";
 
 CREATE VIEW "__slice_den"."fan_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__fan_retry_why_names_shpypqrqhk"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_retry" AS "r1";
+SELECT "v160"."root", "v160"."step", "v160"."attempt", "v160"."at", "v160"."why", ("slice"."__fan_retry_why_names_shpypqrqhk"())["v160"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."fan_retry" AS "v160";
 
 CREATE VIEW "__slice_den"."fan_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__fan_root_kind_names_jqlbcidhe6"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."fan_root" AS "r1";
+SELECT "v161"."root", "v161"."kind", ("slice"."__fan_root_kind_names_jqlbcidhe6"())["v161"."kind" + 1]::"pg_catalog"."text", "v161"."key", "v161"."at"
+FROM "slice_den"."fan_root" AS "v161";
 
 CREATE VIEW "__slice_den"."fan_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_scope" AS "r1";
+SELECT "v162"."root", "v162"."scope"
+FROM "slice_den"."fan_scope" AS "v162";
 
 CREATE VIEW "__slice_den"."fan_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."fan_served" AS "r1";
+SELECT "v163"."environment", "v163"."at", "v163"."deployment"
+FROM "slice_den"."fan_served" AS "v163";
 
 CREATE VIEW "__slice_den"."fan_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."fan_skipped" AS "r1";
+SELECT "v164"."root", "v164"."scope", "v164"."by"
+FROM "slice_den"."fan_skipped" AS "v164";
 
 CREATE VIEW "__slice_den"."fan_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."fan_start_scope" AS "r1";
+SELECT "v167"."root", "v167"."scope", "v167"."ordinal", "v167"."child"
+FROM "slice_den"."fan_start_scope" AS "v167";
 
 CREATE VIEW "__slice_den"."fan_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."fan_start_step" AS "r1";
+SELECT "v168"."root", "v168"."scope", "v168"."ordinal", "v168"."step"
+FROM "slice_den"."fan_start_step" AS "v168";
 
 CREATE VIEW "__slice_den"."fan_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_6jgkvuzg33"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."fan_step" AS "r1";
+SELECT "v169"."root", "v169"."step", "v169"."kind", ("slice"."__fan_kind_names_6jgkvuzg33"())["v169"."kind" + 1]::"pg_catalog"."text", "v169"."scope", "v169"."due"
+FROM "slice_den"."fan_step" AS "v169";
 
 CREATE VIEW "__slice_den"."fan_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_within" AS "r1";
+SELECT "v175"."root", "v175"."scope", "v175"."parent", "v175"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["v175"."kind" + 1]::"pg_catalog"."text"
+FROM "slice_den"."fan_within" AS "v175";
 
 CREATE VIEW "__slice_den"."retry_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."retry_admitted" AS "r1";
+SELECT "v176"."root", "v176"."scope"
+FROM "slice_den"."retry_admitted" AS "v176";
 
 CREATE VIEW "__slice_den"."retry_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."retry_claim" AS "r1";
+SELECT "v179"."root", "v179"."step", "v179"."attempt", "v179"."until"
+FROM "slice_den"."retry_claim" AS "v179";
 
 CREATE VIEW "__slice_den"."retry_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_done" AS "r1";
+SELECT "v180"."root", "v180"."step"
+FROM "slice_den"."retry_done" AS "v180";
 
 CREATE VIEW "__slice_den"."retry_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_ended" AS "r1";
+SELECT "v181"."root", "v181"."step", "v181"."attempt"
+FROM "slice_den"."retry_ended" AS "v181";
 
 CREATE VIEW "__slice_den"."retry_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_exhausted" AS "r1";
+SELECT "v182"."root", "v182"."step"
+FROM "slice_den"."retry_exhausted" AS "v182";
 
 CREATE VIEW "__slice_den"."retry_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_failed" AS "r1";
+SELECT "v183"."root", "v183"."step"
+FROM "slice_den"."retry_failed" AS "v183";
 
 CREATE VIEW "__slice_den"."retry_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_fenced" AS "r1";
+SELECT "v184"."root", "v184"."step", "v184"."attempt"
+FROM "slice_den"."retry_fenced" AS "v184";
 
 CREATE VIEW "__slice_den"."retry_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."retry_finish" AS "r1";
+SELECT "v185"."root", "v185"."scope", "v185"."step"
+FROM "slice_den"."retry_finish" AS "v185";
 
 CREATE VIEW "__slice_den"."retry_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_held" AS "r1";
+SELECT "v186"."root", "v186"."step", "v186"."attempt"
+FROM "slice_den"."retry_held" AS "v186";
 
 CREATE VIEW "__slice_den"."retry_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."retry_paused" AS "r1";
+SELECT "v191"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["v191"."target" + 1]::"pg_catalog"."text", "v191"."turn"
+FROM "slice_den"."retry_paused" AS "v191";
 
 CREATE VIEW "__slice_den"."retry_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."retry_refusal" AS "r1";
+SELECT "v194"."root", "v194"."step", "v194"."law"
+FROM "slice_den"."retry_refusal" AS "v194";
 
 CREATE VIEW "__slice_den"."retry_requested_with" ("root", "fingerprint", "input") AS
-SELECT "r1"."root", "r1"."fingerprint", "r1"."input"
-FROM "slice_den"."retry_requested_with" AS "r1";
+SELECT "v195"."root", "v195"."fingerprint", "v195"."input"
+FROM "slice_den"."retry_requested_with" AS "v195";
 
 CREATE VIEW "__slice_den"."retry_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__retry_outcome_names_zzz2kawwsa"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_result" AS "r1";
+SELECT "v196"."root", "v196"."step", "v196"."outcome", ("slice"."__retry_outcome_names_zzz2kawwsa"())["v196"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."retry_result" AS "v196";
 
 CREATE VIEW "__slice_den"."retry_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."retry_resumed" AS "r1";
+SELECT "v197"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["v197"."target" + 1]::"pg_catalog"."text", "v197"."turn"
+FROM "slice_den"."retry_resumed" AS "v197";
 
 CREATE VIEW "__slice_den"."retry_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__retry_retry_why_names_pwmdyzqghs"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_retry" AS "r1";
+SELECT "v198"."root", "v198"."step", "v198"."attempt", "v198"."at", "v198"."why", ("slice"."__retry_retry_why_names_pwmdyzqghs"())["v198"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."retry_retry" AS "v198";
 
 CREATE VIEW "__slice_den"."retry_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__retry_root_kind_names_bhf4onc7wq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."retry_root" AS "r1";
+SELECT "v199"."root", "v199"."kind", ("slice"."__retry_root_kind_names_bhf4onc7wq"())["v199"."kind" + 1]::"pg_catalog"."text", "v199"."key", "v199"."at"
+FROM "slice_den"."retry_root" AS "v199";
 
 CREATE VIEW "__slice_den"."retry_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."retry_scope" AS "r1";
+SELECT "v200"."root", "v200"."scope"
+FROM "slice_den"."retry_scope" AS "v200";
 
 CREATE VIEW "__slice_den"."retry_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."retry_served" AS "r1";
+SELECT "v201"."environment", "v201"."at", "v201"."deployment"
+FROM "slice_den"."retry_served" AS "v201";
 
 CREATE VIEW "__slice_den"."retry_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."retry_skipped" AS "r1";
+SELECT "v202"."root", "v202"."scope", "v202"."by"
+FROM "slice_den"."retry_skipped" AS "v202";
 
 CREATE VIEW "__slice_den"."retry_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."retry_start_step" AS "r1";
+SELECT "v203"."root", "v203"."scope", "v203"."ordinal", "v203"."step"
+FROM "slice_den"."retry_start_step" AS "v203";
 
 CREATE VIEW "__slice_den"."retry_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_yg2tu5rejg"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."retry_step" AS "r1";
+SELECT "v206"."root", "v206"."step", "v206"."kind", ("slice"."__retry_kind_names_yg2tu5rejg"())["v206"."kind" + 1]::"pg_catalog"."text", "v206"."scope", "v206"."due"
+FROM "slice_den"."retry_step" AS "v206";
 
 CREATE VIEW "__slice_den"."review_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."review_admitted" AS "r1";
+SELECT "v211"."root", "v211"."scope"
+FROM "slice_den"."review_admitted" AS "v211";
 
 CREATE VIEW "__slice_den"."review_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."review_claim" AS "r1";
+SELECT "v214"."root", "v214"."step", "v214"."attempt", "v214"."until", "v214"."holds"
+FROM "slice_den"."review_claim" AS "v214";
 
 CREATE VIEW "__slice_den"."review_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_done" AS "r1";
+SELECT "v215"."root", "v215"."step"
+FROM "slice_den"."review_done" AS "v215";
 
 CREATE VIEW "__slice_den"."review_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_ended" AS "r1";
+SELECT "v216"."root", "v216"."step", "v216"."attempt"
+FROM "slice_den"."review_ended" AS "v216";
 
 CREATE VIEW "__slice_den"."review_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_exhausted" AS "r1";
+SELECT "v217"."root", "v217"."step"
+FROM "slice_den"."review_exhausted" AS "v217";
 
 CREATE VIEW "__slice_den"."review_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_failed" AS "r1";
+SELECT "v218"."root", "v218"."step"
+FROM "slice_den"."review_failed" AS "v218";
 
 CREATE VIEW "__slice_den"."review_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_fenced" AS "r1";
+SELECT "v219"."root", "v219"."step", "v219"."attempt"
+FROM "slice_den"."review_fenced" AS "v219";
 
 CREATE VIEW "__slice_den"."review_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."review_finish" AS "r1";
+SELECT "v220"."root", "v220"."scope", "v220"."step"
+FROM "slice_den"."review_finish" AS "v220";
 
 CREATE VIEW "__slice_den"."review_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_held" AS "r1";
+SELECT "v224"."root", "v224"."step", "v224"."attempt"
+FROM "slice_den"."review_held" AS "v224";
 
 CREATE VIEW "__slice_den"."review_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__review_resource_names_ixi3gnpcnp"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."review_hold" AS "r1";
+SELECT "v225"."resource", ("slice"."__review_resource_names_ixi3gnpcnp"())["v225"."resource" + 1]::"pg_catalog"."text", "v225"."root", "v225"."step", "v225"."attempt", "v225"."at", "v225"."seat"
+FROM "slice_den"."review_hold" AS "v225";
 
 CREATE VIEW "__slice_den"."review_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."review_paused" AS "r1";
+SELECT "v226"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["v226"."target" + 1]::"pg_catalog"."text", "v226"."turn"
+FROM "slice_den"."review_paused" AS "v226";
 
 CREATE VIEW "__slice_den"."review_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."review_refusal" AS "r1";
+SELECT "v229"."root", "v229"."step", "v229"."law"
+FROM "slice_den"."review_refusal" AS "v229";
 
 CREATE VIEW "__slice_den"."review_requested_with" ("root", "fingerprint", "input") AS
-SELECT "r1"."root", "r1"."fingerprint", "r1"."input"
-FROM "slice_den"."review_requested_with" AS "r1";
+SELECT "v230"."root", "v230"."fingerprint", "v230"."input"
+FROM "slice_den"."review_requested_with" AS "v230";
 
 CREATE VIEW "__slice_den"."review_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_result" AS "r1";
+SELECT "v231"."root", "v231"."step", "v231"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["v231"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."review_result" AS "v231";
 
 CREATE VIEW "__slice_den"."review_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."review_resumed" AS "r1";
+SELECT "v232"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["v232"."target" + 1]::"pg_catalog"."text", "v232"."turn"
+FROM "slice_den"."review_resumed" AS "v232";
 
 CREATE VIEW "__slice_den"."review_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__review_retry_why_names_4ux5dj2mh3"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_retry" AS "r1";
+SELECT "v233"."root", "v233"."step", "v233"."attempt", "v233"."at", "v233"."why", ("slice"."__review_retry_why_names_4ux5dj2mh3"())["v233"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."review_retry" AS "v233";
 
 CREATE VIEW "__slice_den"."review_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."review_root" AS "r1";
+SELECT "v237"."root", "v237"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["v237"."kind" + 1]::"pg_catalog"."text", "v237"."key", "v237"."at"
+FROM "slice_den"."review_root" AS "v237";
 
 CREATE VIEW "__slice_den"."review_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."review_scope" AS "r1";
+SELECT "v241"."root", "v241"."scope"
+FROM "slice_den"."review_scope" AS "v241";
 
 CREATE VIEW "__slice_den"."review_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."review_served" AS "r1";
+SELECT "v242"."environment", "v242"."at", "v242"."deployment"
+FROM "slice_den"."review_served" AS "v242";
 
 CREATE VIEW "__slice_den"."review_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."review_skipped" AS "r1";
+SELECT "v243"."root", "v243"."scope", "v243"."by"
+FROM "slice_den"."review_skipped" AS "v243";
 
 CREATE VIEW "__slice_den"."review_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."review_start_scope" AS "r1";
+SELECT "v245"."root", "v245"."scope", "v245"."ordinal", "v245"."child"
+FROM "slice_den"."review_start_scope" AS "v245";
 
 CREATE VIEW "__slice_den"."review_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."review_start_step" AS "r1";
+SELECT "v246"."root", "v246"."scope", "v246"."ordinal", "v246"."step"
+FROM "slice_den"."review_start_step" AS "v246";
 
 CREATE VIEW "__slice_den"."review_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."review_step" AS "r1";
+SELECT "v247"."root", "v247"."step", "v247"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["v247"."kind" + 1]::"pg_catalog"."text", "v247"."scope", "v247"."due"
+FROM "slice_den"."review_step" AS "v247";
 
 CREATE VIEW "__slice_den"."review_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_within" AS "r1";
+SELECT "v248"."root", "v248"."scope", "v248"."parent", "v248"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["v248"."kind" + 1]::"pg_catalog"."text"
+FROM "slice_den"."review_within" AS "v248";
 
 CREATE VIEW "__slice_den"."sync_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_admitted" AS "r1";
+SELECT "v249"."root", "v249"."scope"
+FROM "slice_den"."sync_admitted" AS "v249";
 
 CREATE VIEW "__slice_den"."sync_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."sync_claim" AS "r1";
+SELECT "v252"."root", "v252"."step", "v252"."attempt", "v252"."until"
+FROM "slice_den"."sync_claim" AS "v252";
 
 CREATE VIEW "__slice_den"."sync_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_done" AS "r1";
+SELECT "v255"."root", "v255"."step"
+FROM "slice_den"."sync_done" AS "v255";
 
 CREATE VIEW "__slice_den"."sync_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_ended" AS "r1";
+SELECT "v256"."root", "v256"."step", "v256"."attempt"
+FROM "slice_den"."sync_ended" AS "v256";
 
 CREATE VIEW "__slice_den"."sync_exclusive" ("kind", "kind_name", "key", "turn", "scope") AS
-SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn", "r1"."scope"
-FROM "slice_den"."sync_exclusive" AS "r1";
+SELECT "v257"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["v257"."kind" + 1]::"pg_catalog"."text", "v257"."key", "v257"."turn", "v257"."scope"
+FROM "slice_den"."sync_exclusive" AS "v257";
 
 CREATE VIEW "__slice_den"."sync_exclusive_key" ("root", "scope", "key", "id") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key", "r1"."id"
-FROM "slice_den"."sync_exclusive_key" AS "r1";
+SELECT "v258"."root", "v258"."scope", "v258"."key", "v258"."id"
+FROM "slice_den"."sync_exclusive_key" AS "v258";
 
 CREATE VIEW "__slice_den"."sync_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_exhausted" AS "r1";
+SELECT "v259"."root", "v259"."step"
+FROM "slice_den"."sync_exhausted" AS "v259";
 
 CREATE VIEW "__slice_den"."sync_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_failed" AS "r1";
+SELECT "v260"."root", "v260"."step"
+FROM "slice_den"."sync_failed" AS "v260";
 
 CREATE VIEW "__slice_den"."sync_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_fenced" AS "r1";
+SELECT "v261"."root", "v261"."step", "v261"."attempt"
+FROM "slice_den"."sync_fenced" AS "v261";
 
 CREATE VIEW "__slice_den"."sync_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."sync_finish" AS "r1";
+SELECT "v262"."root", "v262"."scope", "v262"."step"
+FROM "slice_den"."sync_finish" AS "v262";
 
 CREATE VIEW "__slice_den"."sync_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_held" AS "r1";
+SELECT "v265"."root", "v265"."step", "v265"."attempt"
+FROM "slice_den"."sync_held" AS "v265";
 
 CREATE VIEW "__slice_den"."sync_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."sync_paused" AS "r1";
+SELECT "v266"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["v266"."target" + 1]::"pg_catalog"."text", "v266"."turn"
+FROM "slice_den"."sync_paused" AS "v266";
 
 CREATE VIEW "__slice_den"."sync_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."sync_refusal" AS "r1";
+SELECT "v267"."root", "v267"."step", "v267"."law"
+FROM "slice_den"."sync_refusal" AS "v267";
 
 CREATE VIEW "__slice_den"."sync_released" ("kind", "kind_name", "key", "turn") AS
-SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn"
-FROM "slice_den"."sync_released" AS "r1";
+SELECT "v268"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["v268"."kind" + 1]::"pg_catalog"."text", "v268"."key", "v268"."turn"
+FROM "slice_den"."sync_released" AS "v268";
 
 CREATE VIEW "__slice_den"."sync_requested_with" ("root", "fingerprint", "input") AS
-SELECT "r1"."root", "r1"."fingerprint", "r1"."input"
-FROM "slice_den"."sync_requested_with" AS "r1";
+SELECT "v269"."root", "v269"."fingerprint", "v269"."input"
+FROM "slice_den"."sync_requested_with" AS "v269";
 
 CREATE VIEW "__slice_den"."sync_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_result" AS "r1";
+SELECT "v270"."root", "v270"."step", "v270"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["v270"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."sync_result" AS "v270";
 
 CREATE VIEW "__slice_den"."sync_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."sync_resumed" AS "r1";
+SELECT "v271"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["v271"."target" + 1]::"pg_catalog"."text", "v271"."turn"
+FROM "slice_den"."sync_resumed" AS "v271";
 
 CREATE VIEW "__slice_den"."sync_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__sync_retry_why_names_o3uvvn3247"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_retry" AS "r1";
+SELECT "v272"."root", "v272"."step", "v272"."attempt", "v272"."at", "v272"."why", ("slice"."__sync_retry_why_names_o3uvvn3247"())["v272"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."sync_retry" AS "v272";
 
 CREATE VIEW "__slice_den"."sync_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."sync_root" AS "r1";
+SELECT "v273"."root", "v273"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["v273"."kind" + 1]::"pg_catalog"."text", "v273"."key", "v273"."at"
+FROM "slice_den"."sync_root" AS "v273";
 
 CREATE VIEW "__slice_den"."sync_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_scope" AS "r1";
+SELECT "v274"."root", "v274"."scope"
+FROM "slice_den"."sync_scope" AS "v274";
 
 CREATE VIEW "__slice_den"."sync_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."sync_served" AS "r1";
+SELECT "v275"."environment", "v275"."at", "v275"."deployment"
+FROM "slice_den"."sync_served" AS "v275";
 
 CREATE VIEW "__slice_den"."sync_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."sync_skipped" AS "r1";
+SELECT "v276"."root", "v276"."scope", "v276"."by"
+FROM "slice_den"."sync_skipped" AS "v276";
 
 CREATE VIEW "__slice_den"."sync_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."sync_start_step" AS "r1";
+SELECT "v277"."root", "v277"."scope", "v277"."ordinal", "v277"."step"
+FROM "slice_den"."sync_start_step" AS "v277";
 
 CREATE VIEW "__slice_den"."sync_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."sync_step" AS "r1";
+SELECT "v278"."root", "v278"."step", "v278"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["v278"."kind" + 1]::"pg_catalog"."text", "v278"."scope", "v278"."due"
+FROM "slice_den"."sync_step" AS "v278";
 
 CREATE VIEW "__slice_den"."writeback_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."writeback_admitted" AS "r1";
+SELECT "v281"."root", "v281"."scope"
+FROM "slice_den"."writeback_admitted" AS "v281";
 
 CREATE VIEW "__slice_den"."writeback_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."writeback_claim" AS "r1";
+SELECT "v282"."root", "v282"."step", "v282"."attempt", "v282"."until"
+FROM "slice_den"."writeback_claim" AS "v282";
 
 CREATE VIEW "__slice_den"."writeback_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_done" AS "r1";
+SELECT "v285"."root", "v285"."step"
+FROM "slice_den"."writeback_done" AS "v285";
 
 CREATE VIEW "__slice_den"."writeback_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_ended" AS "r1";
+SELECT "v286"."root", "v286"."step", "v286"."attempt"
+FROM "slice_den"."writeback_ended" AS "v286";
 
 CREATE VIEW "__slice_den"."writeback_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_exhausted" AS "r1";
+SELECT "v287"."root", "v287"."step"
+FROM "slice_den"."writeback_exhausted" AS "v287";
 
 CREATE VIEW "__slice_den"."writeback_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_failed" AS "r1";
+SELECT "v288"."root", "v288"."step"
+FROM "slice_den"."writeback_failed" AS "v288";
 
 CREATE VIEW "__slice_den"."writeback_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_fenced" AS "r1";
+SELECT "v289"."root", "v289"."step", "v289"."attempt"
+FROM "slice_den"."writeback_fenced" AS "v289";
 
 CREATE VIEW "__slice_den"."writeback_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."writeback_finish" AS "r1";
+SELECT "v290"."root", "v290"."scope", "v290"."step"
+FROM "slice_den"."writeback_finish" AS "v290";
 
 CREATE VIEW "__slice_den"."writeback_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_held" AS "r1";
+SELECT "v291"."root", "v291"."step", "v291"."attempt"
+FROM "slice_den"."writeback_held" AS "v291";
 
 CREATE VIEW "__slice_den"."writeback_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."writeback_paused" AS "r1";
+SELECT "v292"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["v292"."target" + 1]::"pg_catalog"."text", "v292"."turn"
+FROM "slice_den"."writeback_paused" AS "v292";
 
 CREATE VIEW "__slice_den"."writeback_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."writeback_refusal" AS "r1";
+SELECT "v293"."root", "v293"."step", "v293"."law"
+FROM "slice_den"."writeback_refusal" AS "v293";
 
 CREATE VIEW "__slice_den"."writeback_requested_with" ("root", "fingerprint", "input") AS
-SELECT "r1"."root", "r1"."fingerprint", "r1"."input"
-FROM "slice_den"."writeback_requested_with" AS "r1";
+SELECT "v294"."root", "v294"."fingerprint", "v294"."input"
+FROM "slice_den"."writeback_requested_with" AS "v294";
 
 CREATE VIEW "__slice_den"."writeback_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__writeback_outcome_names_oq43xsnmec"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."writeback_result" AS "r1";
+SELECT "v295"."root", "v295"."step", "v295"."outcome", ("slice"."__writeback_outcome_names_oq43xsnmec"())["v295"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."writeback_result" AS "v295";
 
 CREATE VIEW "__slice_den"."writeback_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."writeback_resumed" AS "r1";
+SELECT "v296"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["v296"."target" + 1]::"pg_catalog"."text", "v296"."turn"
+FROM "slice_den"."writeback_resumed" AS "v296";
 
 CREATE VIEW "__slice_den"."writeback_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__writeback_retry_why_names_7a7eowjbic"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."writeback_retry" AS "r1";
+SELECT "v297"."root", "v297"."step", "v297"."attempt", "v297"."at", "v297"."why", ("slice"."__writeback_retry_why_names_7a7eowjbic"())["v297"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."writeback_retry" AS "v297";
 
 CREATE VIEW "__slice_den"."writeback_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__writeback_root_kind_names_bz7cmi256x"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."writeback_root" AS "r1";
+SELECT "v298"."root", "v298"."kind", ("slice"."__writeback_root_kind_names_bz7cmi256x"())["v298"."kind" + 1]::"pg_catalog"."text", "v298"."key", "v298"."at"
+FROM "slice_den"."writeback_root" AS "v298";
 
 CREATE VIEW "__slice_den"."writeback_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."writeback_scope" AS "r1";
+SELECT "v299"."root", "v299"."scope"
+FROM "slice_den"."writeback_scope" AS "v299";
 
 CREATE VIEW "__slice_den"."writeback_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."writeback_served" AS "r1";
+SELECT "v300"."environment", "v300"."at", "v300"."deployment"
+FROM "slice_den"."writeback_served" AS "v300";
 
 CREATE VIEW "__slice_den"."writeback_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."writeback_skipped" AS "r1";
+SELECT "v301"."root", "v301"."scope", "v301"."by"
+FROM "slice_den"."writeback_skipped" AS "v301";
 
 CREATE VIEW "__slice_den"."writeback_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."writeback_start_step" AS "r1";
+SELECT "v302"."root", "v302"."scope", "v302"."ordinal", "v302"."step"
+FROM "slice_den"."writeback_start_step" AS "v302";
 
 CREATE VIEW "__slice_den"."writeback_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__writeback_kind_names_dbe6fofbjq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."writeback_step" AS "r1";
+SELECT "v303"."root", "v303"."step", "v303"."kind", ("slice"."__writeback_kind_names_dbe6fofbjq"())["v303"."kind" + 1]::"pg_catalog"."text", "v303"."scope", "v303"."due"
+FROM "slice_den"."writeback_step" AS "v303";
 
 CREATE VIEW "__slice_den"."__assign_asked_5rexkaff4y" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."__assign_asked_ydsj2i3eaz" AS "r1";
+SELECT "v20"."root", "v20"."from", "v20"."ordinal", "v20"."to"
+FROM "slice_den"."__assign_asked_ydsj2i3eaz" AS "v20";
 
 CREATE VIEW "__slice_den"."__assign_assignment_finish_output_vmzznq64gj" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__assign_assignment_finish_output_tgx2l6dcwa" AS "r1";
+SELECT "v21"."root", "v21"."step"
+FROM "slice_den"."__assign_assignment_finish_output_tgx2l6dcwa" AS "v21";
 
 CREATE VIEW "__slice_den"."__assign_assignment_input_lsywk53wce" ("root", "scope", "learner", "topic", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."__assign_assignment_input_jkityquzjz" AS "r1";
+SELECT "v22"."root", "v22"."scope", "v22"."learner", "v22"."topic", "v22"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["v22"."mode" + 1]::"pg_catalog"."text"
+FROM "slice_den"."__assign_assignment_input_jkityquzjz" AS "v22";
 
 CREATE VIEW "__slice_den"."__assign_assignment_input_exclude_s73dwlchwf" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."__assign_assignment_input_exclude_wqrktw62ew" AS "r1";
+SELECT "v23"."root", "v23"."scope", "v23"."ordinal", "v23"."value"
+FROM "slice_den"."__assign_assignment_input_exclude_wqrktw62ew" AS "v23";
 
 CREATE VIEW "__slice_den"."__assign_assignment_input_mode_nearest_fsoxous4jk" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."__assign_assignment_input_mode_nearest_rphbo3zi77" AS "r1";
+SELECT "v24"."root", "v24"."scope"
+FROM "slice_den"."__assign_assignment_input_mode_nearest_rphbo3zi77" AS "v24";
 
 CREATE VIEW "__slice_den"."__assign_assignment_input_mode_within_p65z522bja" ("root", "scope", "radius") AS
-SELECT "r1"."root", "r1"."scope", "r1"."radius"
-FROM "slice_den"."__assign_assignment_input_mode_within_ct54emb5dy" AS "r1";
+SELECT "v25"."root", "v25"."scope", "v25"."radius"
+FROM "slice_den"."__assign_assignment_input_mode_within_ct54emb5dy" AS "v25";
 
 CREATE VIEW "__slice_den"."__assign_assignment_input_near_pur3ox4six" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."__assign_assignment_input_near_6teditkssg" AS "r1";
+SELECT "v26"."root", "v26"."scope", "v26"."ordinal", "v26"."value"
+FROM "slice_den"."__assign_assignment_input_near_6teditkssg" AS "v26";
 
 CREATE VIEW "__slice_den"."__assign_decide_input_mq7tjlhiqm" ("root", "step", "learner", "topic", "vector", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."vector", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."__assign_decide_input_x2ivfl6dr6" AS "r1";
+SELECT "v28"."root", "v28"."step", "v28"."learner", "v28"."topic", "v28"."vector", "v28"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["v28"."mode" + 1]::"pg_catalog"."text"
+FROM "slice_den"."__assign_decide_input_x2ivfl6dr6" AS "v28";
 
 CREATE VIEW "__slice_den"."__assign_decide_input_exclude_dekejeu7t3" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."__assign_decide_input_exclude_hsjt7zirht" AS "r1";
+SELECT "v29"."root", "v29"."step", "v29"."ordinal", "v29"."value"
+FROM "slice_den"."__assign_decide_input_exclude_hsjt7zirht" AS "v29";
 
 CREATE VIEW "__slice_den"."__assign_decide_input_mode_nearest_mrjuvdz7yq" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__assign_decide_input_mode_nearest_cl7wnjtnl6" AS "r1";
+SELECT "v30"."root", "v30"."step"
+FROM "slice_den"."__assign_decide_input_mode_nearest_cl7wnjtnl6" AS "v30";
 
 CREATE VIEW "__slice_den"."__assign_decide_input_mode_within_pn6egu3bcm" ("root", "step", "radius") AS
-SELECT "r1"."root", "r1"."step", "r1"."radius"
-FROM "slice_den"."__assign_decide_input_mode_within_wyrtyk7xxz" AS "r1";
+SELECT "v31"."root", "v31"."step", "v31"."radius"
+FROM "slice_den"."__assign_decide_input_mode_within_wyrtyk7xxz" AS "v31";
 
 CREATE VIEW "__slice_den"."__assign_decide_output_ei23llh76f" ("root", "step", "confidence", "stage", "stage_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."confidence", "r1"."stage", ("slice"."__assign_decide_output_stage_names_ehhgk5bunv"())["r1"."stage" + 1]::"pg_catalog"."text"
-FROM "slice_den"."__assign_decide_output_lzpgzlkjyw" AS "r1";
+SELECT "v32"."root", "v32"."step", "v32"."confidence", "v32"."stage", ("slice"."__assign_decide_output_stage_names_ehhgk5bunv"())["v32"."stage" + 1]::"pg_catalog"."text"
+FROM "slice_den"."__assign_decide_output_lzpgzlkjyw" AS "v32";
 
 CREATE VIEW "__slice_den"."__assign_decide_output_stage_rest_z7marmyooe" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__assign_decide_output_stage_rest_zhvgamofet" AS "r1";
+SELECT "v33"."root", "v33"."step"
+FROM "slice_den"."__assign_decide_output_stage_rest_zhvgamofet" AS "v33";
 
 CREATE VIEW "__slice_den"."__assign_decide_output_stage_serve_j6zhqrh3tf" ("root", "step", "passage", "distance") AS
-SELECT "r1"."root", "r1"."step", "r1"."passage", "r1"."distance"
-FROM "slice_den"."__assign_decide_output_stage_serve_t5rc4e7rkh" AS "r1";
+SELECT "v34"."root", "v34"."step", "v34"."passage", "v34"."distance"
+FROM "slice_den"."__assign_decide_output_stage_serve_t5rc4e7rkh" AS "v34";
 
 CREATE VIEW "__slice_den"."__assign_decide_output_weighed_jegbamf4xg" ("root", "step", "ordinal", "passage", "distance", "passed") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."passage", "r1"."distance", "r1"."passed"
-FROM "slice_den"."__assign_decide_output_weighed_3owmsgm56c" AS "r1";
+SELECT "v35"."root", "v35"."step", "v35"."ordinal", "v35"."passage", "v35"."distance", "v35"."passed"
+FROM "slice_den"."__assign_decide_output_weighed_3owmsgm56c" AS "v35";
 
 CREATE VIEW "__slice_den"."__assign_decide_read_nearest_4wlfurrjbr" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."__assign_decide_read_nearest_rpgjzn2izt" AS "r1";
+SELECT "v36"."root", "v36"."step", "v36"."ordinal", "v36"."digest"
+FROM "slice_den"."__assign_decide_read_nearest_rpgjzn2izt" AS "v36";
 
 CREATE VIEW "__slice_den"."__assign_decide_read_nearest_7p37srsy2d" ("digest", "passage", "topic", "distance") AS
-SELECT "r1"."digest", "r1"."passage", "r1"."topic", "r1"."distance"
-FROM "slice_den"."__assign_decide_read_nearest_rgphb72gov" AS "r1";
+SELECT "v37"."digest", "v37"."passage", "v37"."topic", "v37"."distance"
+FROM "slice_den"."__assign_decide_read_nearest_rgphb72gov" AS "v37";
 
 CREATE VIEW "__slice_den"."__assign_decide_read_seen_464rzyvk6z" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."__assign_decide_read_seen_imbphpples" AS "r1";
+SELECT "v38"."root", "v38"."step", "v38"."ordinal", "v38"."digest"
+FROM "slice_den"."__assign_decide_read_seen_imbphpples" AS "v38";
 
 CREATE VIEW "__slice_den"."__assign_decide_read_seen_ihtnxvvg3s" ("digest", "learner", "passage") AS
-SELECT "r1"."digest", "r1"."learner", "r1"."passage"
-FROM "slice_den"."__assign_decide_read_seen_74cjs74p4e" AS "r1";
+SELECT "v39"."digest", "v39"."learner", "v39"."passage"
+FROM "slice_den"."__assign_decide_read_seen_74cjs74p4e" AS "v39";
 
 CREATE VIEW "__slice_den"."__assign_embed_input_qe7bmwbzgk" ("root", "step", "learner", "topic", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_embed_input_mode_names_5jkwmsqq3r"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."__assign_embed_input_plsl5oyfme" AS "r1";
+SELECT "v41"."root", "v41"."step", "v41"."learner", "v41"."topic", "v41"."mode", ("slice"."__assign_embed_input_mode_names_5jkwmsqq3r"())["v41"."mode" + 1]::"pg_catalog"."text"
+FROM "slice_den"."__assign_embed_input_plsl5oyfme" AS "v41";
 
 CREATE VIEW "__slice_den"."__assign_embed_input_exclude_htjy3bnieo" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."__assign_embed_input_exclude_jck2tra3om" AS "r1";
+SELECT "v42"."root", "v42"."step", "v42"."ordinal", "v42"."value"
+FROM "slice_den"."__assign_embed_input_exclude_jck2tra3om" AS "v42";
 
 CREATE VIEW "__slice_den"."__assign_embed_input_mode_nearest_l473yulorz" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__assign_embed_input_mode_nearest_arzebnvbjm" AS "r1";
+SELECT "v43"."root", "v43"."step"
+FROM "slice_den"."__assign_embed_input_mode_nearest_arzebnvbjm" AS "v43";
 
 CREATE VIEW "__slice_den"."__assign_embed_input_mode_within_rogyqvnnve" ("root", "step", "radius") AS
-SELECT "r1"."root", "r1"."step", "r1"."radius"
-FROM "slice_den"."__assign_embed_input_mode_within_ngfsonab43" AS "r1";
+SELECT "v44"."root", "v44"."step", "v44"."radius"
+FROM "slice_den"."__assign_embed_input_mode_within_ngfsonab43" AS "v44";
 
 CREATE VIEW "__slice_den"."__assign_embed_input_near_rqmgp5hkof" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."__assign_embed_input_near_jmllazcmpe" AS "r1";
+SELECT "v45"."root", "v45"."step", "v45"."ordinal", "v45"."value"
+FROM "slice_den"."__assign_embed_input_near_jmllazcmpe" AS "v45";
 
 CREATE VIEW "__slice_den"."__assign_embed_output_wwf3grsclj" ("root", "step", "vector") AS
-SELECT "r1"."root", "r1"."step", "r1"."vector"
-FROM "slice_den"."__assign_embed_output_outjkqxuwn" AS "r1";
+SELECT "v46"."root", "v46"."step", "v46"."vector"
+FROM "slice_den"."__assign_embed_output_outjkqxuwn" AS "v46";
 
 CREATE VIEW "__slice_den"."__chain_chain_run_finish_output_3qht6gjsqg" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__chain_chain_run_finish_output_c5x6npov3q" AS "r1";
+SELECT "v67"."root", "v67"."step"
+FROM "slice_den"."__chain_chain_run_finish_output_c5x6npov3q" AS "v67";
 
 CREATE VIEW "__slice_den"."__chain_chain_run_input_n4m5mx3ehn" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."__chain_chain_run_input_bmdsmqbrk2" AS "r1";
+SELECT "v68"."root", "v68"."scope", "v68"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["v68"."feed" + 1]::"pg_catalog"."text", "v68"."pages"
+FROM "slice_den"."__chain_chain_run_input_bmdsmqbrk2" AS "v68";
 
 CREATE VIEW "__slice_den"."__chain_next_gvzpsk3aog" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."__chain_next_hix6yqf25z" AS "r1";
+SELECT "v77"."root", "v77"."from", "v77"."ordinal", "v77"."to"
+FROM "slice_den"."__chain_next_hix6yqf25z" AS "v77";
 
 CREATE VIEW "__slice_den"."__chain_ordered_finish_output_xcg23roq7b" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__chain_ordered_finish_output_v4b6b7jaop" AS "r1";
+SELECT "v78"."root", "v78"."step"
+FROM "slice_den"."__chain_ordered_finish_output_v4b6b7jaop" AS "v78";
 
 CREATE VIEW "__slice_den"."__chain_ordered_input_zjofndphkd" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."__chain_ordered_input_tlj4ihbubo" AS "r1";
+SELECT "v79"."root", "v79"."scope", "v79"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["v79"."feed" + 1]::"pg_catalog"."text", "v79"."pages"
+FROM "slice_den"."__chain_ordered_input_tlj4ihbubo" AS "v79";
 
 CREATE VIEW "__slice_den"."__chain_page_input_n2wxdimvu4" ("root", "step", "feed", "feed_name", "seq", "pages") AS
-SELECT "r1"."root", "r1"."step", "r1"."feed", ("slice"."__chain_page_input_feed_names_dxuyhzkiur"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."pages"
-FROM "slice_den"."__chain_page_input_kbmuk2fo2o" AS "r1";
+SELECT "v80"."root", "v80"."step", "v80"."feed", ("slice"."__chain_page_input_feed_names_dxuyhzkiur"())["v80"."feed" + 1]::"pg_catalog"."text", "v80"."seq", "v80"."pages"
+FROM "slice_den"."__chain_page_input_kbmuk2fo2o" AS "v80";
 
 CREATE VIEW "__slice_den"."__chain_page_input_after_4jftkrqy47" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."__chain_page_input_after_lml64urvyw" AS "r1";
+SELECT "v81"."root", "v81"."step", "v81"."value"
+FROM "slice_den"."__chain_page_input_after_lml64urvyw" AS "v81";
 
 CREATE VIEW "__slice_den"."__chain_page_output_ycutffmuhv" ("root", "step", "seq", "items", "earlier") AS
-SELECT "r1"."root", "r1"."step", "r1"."seq", "r1"."items", "r1"."earlier"
-FROM "slice_den"."__chain_page_output_ar56neu7kw" AS "r1";
+SELECT "v82"."root", "v82"."step", "v82"."seq", "v82"."items", "v82"."earlier"
+FROM "slice_den"."__chain_page_output_ar56neu7kw" AS "v82";
 
 CREATE VIEW "__slice_den"."__chain_page_output_next_y33dlfjyiy" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."__chain_page_output_next_ettneiluga" AS "r1";
+SELECT "v83"."root", "v83"."step", "v83"."value"
+FROM "slice_den"."__chain_page_output_next_ettneiluga" AS "v83";
 
 CREATE VIEW "__slice_den"."__chain_page_read_earlier_taatxm7clo" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."__chain_page_read_earlier_33grnly7mg" AS "r1";
+SELECT "v84"."root", "v84"."step", "v84"."ordinal", "v84"."digest"
+FROM "slice_den"."__chain_page_read_earlier_33grnly7mg" AS "v84";
 
 CREATE VIEW "__slice_den"."__chain_page_read_earlier_wgak3f3vm6" ("digest", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."__chain_page_read_earlier_z5dqatdfnb" AS "r1";
+SELECT "v85"."digest", "v85"."feed", ("slice"."__feed_names_azjbqebc6i"())["v85"."feed" + 1]::"pg_catalog"."text", "v85"."seq", "v85"."n"
+FROM "slice_den"."__chain_page_read_earlier_z5dqatdfnb" AS "v85";
 
 CREATE VIEW "__slice_den"."__chain_page_read_tree_aufzv2ynay" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."__chain_page_read_tree_mt76djloc5" AS "r1";
+SELECT "v86"."root", "v86"."step", "v86"."ordinal", "v86"."digest"
+FROM "slice_den"."__chain_page_read_tree_mt76djloc5" AS "v86";
 
 CREATE VIEW "__slice_den"."__chain_page_read_tree_items_first_lwzoraiyj7" ("digest", "at") AS
-SELECT "r1"."digest", "r1"."at"
-FROM "slice_den"."__chain_page_read_tree_items_first_noxho2nj7m" AS "r1";
+SELECT "v87"."digest", "v87"."at"
+FROM "slice_den"."__chain_page_read_tree_items_first_noxho2nj7m" AS "v87";
 
 CREATE VIEW "__slice_den"."__chain_page_read_tree_items_pv2o2o45iv" ("digest", "at", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."at", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" AS "r1";
+SELECT "v88"."digest", "v88"."at", "v88"."feed", ("slice"."__feed_names_azjbqebc6i"())["v88"."feed" + 1]::"pg_catalog"."text", "v88"."seq", "v88"."n"
+FROM "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" AS "v88";
 
 CREATE VIEW "__slice_den"."__chain_page_read_tree_bx5wgrzj3z" ("digest", "feed", "feed_name", "factor", "items") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor", "r1"."items"
-FROM "slice_den"."__chain_page_read_tree_nd6esoa3d3" AS "r1";
+SELECT "v89"."digest", "v89"."feed", ("slice"."__feed_names_azjbqebc6i"())["v89"."feed" + 1]::"pg_catalog"."text", "v89"."factor", "v89"."items"
+FROM "slice_den"."__chain_page_read_tree_nd6esoa3d3" AS "v89";
 
 CREATE VIEW "__slice_den"."__chain_page_read_weights_ksi3s6acwt" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."__chain_page_read_weights_fcely5x3ye" AS "r1";
+SELECT "v90"."root", "v90"."step", "v90"."ordinal", "v90"."digest"
+FROM "slice_den"."__chain_page_read_weights_fcely5x3ye" AS "v90";
 
 CREATE VIEW "__slice_den"."__chain_page_read_weights_64rnqhgibn" ("digest", "feed", "feed_name", "factor") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
-FROM "slice_den"."__chain_page_read_weights_as4vhffas4" AS "r1";
+SELECT "v91"."digest", "v91"."feed", ("slice"."__feed_names_azjbqebc6i"())["v91"."feed" + 1]::"pg_catalog"."text", "v91"."factor"
+FROM "slice_den"."__chain_page_read_weights_as4vhffas4" AS "v91";
 
 CREATE VIEW "__slice_den"."__clock_chime_input_3tugabwvwi" ("root", "step", "hour", "bell") AS
-SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell"
-FROM "slice_den"."__clock_chime_input_nc7szz5fdz" AS "r1";
+SELECT "v105"."root", "v105"."step", "v105"."hour", "v105"."bell"
+FROM "slice_den"."__clock_chime_input_nc7szz5fdz" AS "v105";
 
 CREATE VIEW "__slice_den"."__clock_chime_output_2q332rujr2" ("root", "step", "hour", "bell") AS
-SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell"
-FROM "slice_den"."__clock_chime_output_yk3jszl3nz" AS "r1";
+SELECT "v106"."root", "v106"."step", "v106"."hour", "v106"."bell"
+FROM "slice_den"."__clock_chime_output_yk3jszl3nz" AS "v106";
 
 CREATE VIEW "__slice_den"."__clock_close_input_uv2ngtkxa4" ("root", "step", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."__clock_close_input_h75u27cqtv" AS "r1";
+SELECT "v108"."root", "v108"."step", "v108"."sitting", "v108"."deadline"
+FROM "slice_den"."__clock_close_input_h75u27cqtv" AS "v108";
 
 CREATE VIEW "__slice_den"."__clock_close_output_z6e74ccuzv" ("root", "step", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."__clock_close_output_eburj7fb27" AS "r1";
+SELECT "v109"."root", "v109"."step", "v109"."sitting", "v109"."deadline"
+FROM "slice_den"."__clock_close_output_eburj7fb27" AS "v109";
 
 CREATE VIEW "__slice_den"."__clock_hourly_finish_output_6vu5kthqnc" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__clock_hourly_finish_output_4z7ppwlpey" AS "r1";
+SELECT "v117"."root", "v117"."step"
+FROM "slice_den"."__clock_hourly_finish_output_4z7ppwlpey" AS "v117";
 
 CREATE VIEW "__slice_den"."__clock_hourly_input_dxuojkrov4" ("root", "scope", "hour", "bell") AS
-SELECT "r1"."root", "r1"."scope", "r1"."hour", "r1"."bell"
-FROM "slice_den"."__clock_hourly_input_nq4knj5mda" AS "r1";
+SELECT "v118"."root", "v118"."scope", "v118"."hour", "v118"."bell"
+FROM "slice_den"."__clock_hourly_input_nq4knj5mda" AS "v118";
 
 CREATE VIEW "__slice_den"."__clock_hourly_key_pckzljbr76" ("root", "at", "member", "member_digest") AS
-SELECT "r1"."root", "r1"."at", "r1"."member", "r1"."member_digest"
-FROM "slice_den"."__clock_hourly_key_ntq5bjzb5f" AS "r1";
+SELECT "v119"."root", "v119"."at", "v119"."member", "v119"."member_digest"
+FROM "slice_den"."__clock_hourly_key_ntq5bjzb5f" AS "v119";
 
 CREATE VIEW "__slice_den"."__clock_sitting_finish_output_eiwzambgu5" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__clock_sitting_finish_output_fwh455o2k3" AS "r1";
+SELECT "v129"."root", "v129"."step"
+FROM "slice_den"."__clock_sitting_finish_output_fwh455o2k3" AS "v129";
 
 CREATE VIEW "__slice_den"."__clock_sitting_input_zxsc72qv3v" ("root", "scope", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."scope", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."__clock_sitting_input_rjgg4hnzuz" AS "r1";
+SELECT "v130"."root", "v130"."scope", "v130"."sitting", "v130"."deadline"
+FROM "slice_den"."__clock_sitting_input_rjgg4hnzuz" AS "v130";
 
 CREATE VIEW "__slice_den"."__fan_batch_finish_output_apuis6scdp" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__fan_batch_finish_output_w3ybhcpn32" AS "r1";
+SELECT "v135"."root", "v135"."step"
+FROM "slice_den"."__fan_batch_finish_output_w3ybhcpn32" AS "v135";
 
 CREATE VIEW "__slice_den"."__fan_batch_input_allg6ywyyj" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."__fan_batch_input_g7ltcwxihg" AS "r1";
+SELECT "v136"."root", "v136"."scope", "v136"."batch", "v136"."size"
+FROM "slice_den"."__fan_batch_input_g7ltcwxihg" AS "v136";
 
 CREATE VIEW "__slice_den"."__fan_dust_input_jfqmrbvwme" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."__fan_dust_input_nl5ryyxwda" AS "r1";
+SELECT "v139"."root", "v139"."step", "v139"."sweep"
+FROM "slice_den"."__fan_dust_input_nl5ryyxwda" AS "v139";
 
 CREATE VIEW "__slice_den"."__fan_dust_output_3prgvh5vl6" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."__fan_dust_output_g3a5zvfwyn" AS "r1";
+SELECT "v140"."root", "v140"."step", "v140"."sweep"
+FROM "slice_den"."__fan_dust_output_g3a5zvfwyn" AS "v140";
 
 CREATE VIEW "__slice_den"."__fan_fan_run_finish_output_qeanoktsa2" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__fan_fan_run_finish_output_tihwjhg4ga" AS "r1";
+SELECT "v146"."root", "v146"."step"
+FROM "slice_den"."__fan_fan_run_finish_output_tihwjhg4ga" AS "v146";
 
 CREATE VIEW "__slice_den"."__fan_fan_run_input_o65lvvtgcm" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."__fan_fan_run_input_lbk743wucv" AS "r1";
+SELECT "v147"."root", "v147"."scope", "v147"."batch", "v147"."size"
+FROM "slice_den"."__fan_fan_run_input_lbk743wucv" AS "v147";
 
 CREATE VIEW "__slice_den"."__fan_mop_input_g4kp4gv2eh" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."__fan_mop_input_dygkjxsbxg" AS "r1";
+SELECT "v152"."root", "v152"."step", "v152"."sweep"
+FROM "slice_den"."__fan_mop_input_dygkjxsbxg" AS "v152";
 
 CREATE VIEW "__slice_den"."__fan_mop_output_tkiq3rfveq" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."__fan_mop_output_tpbr6xzihr" AS "r1";
+SELECT "v153"."root", "v153"."step", "v153"."sweep"
+FROM "slice_den"."__fan_mop_output_tpbr6xzihr" AS "v153";
 
 CREATE VIEW "__slice_den"."__fan_square_input_fsqulmyzya" ("root", "step", "batch", "n") AS
-SELECT "r1"."root", "r1"."step", "r1"."batch", "r1"."n"
-FROM "slice_den"."__fan_square_input_nrma7ymfpq" AS "r1";
+SELECT "v165"."root", "v165"."step", "v165"."batch", "v165"."n"
+FROM "slice_den"."__fan_square_input_nrma7ymfpq" AS "v165";
 
 CREATE VIEW "__slice_den"."__fan_square_output_odg2wd327a" ("root", "step", "square") AS
-SELECT "r1"."root", "r1"."step", "r1"."square"
-FROM "slice_den"."__fan_square_output_gjyqmfzpg4" AS "r1";
+SELECT "v166"."root", "v166"."step", "v166"."square"
+FROM "slice_den"."__fan_square_output_gjyqmfzpg4" AS "v166";
 
 CREATE VIEW "__slice_den"."__fan_sweep_finish_output_pmvs3dyjdc" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__fan_sweep_finish_output_x6kmrogoe4" AS "r1";
+SELECT "v170"."root", "v170"."step"
+FROM "slice_den"."__fan_sweep_finish_output_x6kmrogoe4" AS "v170";
 
 CREATE VIEW "__slice_den"."__fan_sweep_input_zjpy346jix" ("root", "scope", "sweep") AS
-SELECT "r1"."root", "r1"."scope", "r1"."sweep"
-FROM "slice_den"."__fan_sweep_input_zh2fwcaxpj" AS "r1";
+SELECT "v171"."root", "v171"."scope", "v171"."sweep"
+FROM "slice_den"."__fan_sweep_input_zh2fwcaxpj" AS "v171";
 
 CREATE VIEW "__slice_den"."__fan_wanted_finish_output_lpsyic5hpa" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__fan_wanted_finish_output_fbbbpc7sk2" AS "r1";
+SELECT "v172"."root", "v172"."step"
+FROM "slice_den"."__fan_wanted_finish_output_fbbbpc7sk2" AS "v172";
 
 CREATE VIEW "__slice_den"."__fan_wanted_input_yvtwle23oh" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."__fan_wanted_input_chczog66p4" AS "r1";
+SELECT "v173"."root", "v173"."scope", "v173"."batch", "v173"."size"
+FROM "slice_den"."__fan_wanted_input_chczog66p4" AS "v173";
 
 CREATE VIEW "__slice_den"."__fan_wanted_key_ma4fqkasze" ("root", "batch", "batch_digest") AS
-SELECT "r1"."root", "r1"."batch", "r1"."batch_digest"
-FROM "slice_den"."__fan_wanted_key_zqopchzdok" AS "r1";
+SELECT "v174"."root", "v174"."batch", "v174"."batch_digest"
+FROM "slice_den"."__fan_wanted_key_zqopchzdok" AS "v174";
 
 CREATE VIEW "__slice_den"."__retry_brittle_input_nude4kqvsy" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."__retry_brittle_input_zxa27dfpcf" AS "r1";
+SELECT "v177"."root", "v177"."step", "v177"."key"
+FROM "slice_den"."__retry_brittle_input_zxa27dfpcf" AS "v177";
 
 CREATE VIEW "__slice_den"."__retry_brittle_output_bsjmrx3bjd" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."__retry_brittle_output_bvdj5xglgr" AS "r1";
+SELECT "v178"."root", "v178"."step", "v178"."key"
+FROM "slice_den"."__retry_brittle_output_bvdj5xglgr" AS "v178";
 
 CREATE VIEW "__slice_den"."__retry_ladders_finish_output_izfhhwcjf7" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__retry_ladders_finish_output_lamvpr56cy" AS "r1";
+SELECT "v187"."root", "v187"."step"
+FROM "slice_den"."__retry_ladders_finish_output_lamvpr56cy" AS "v187";
 
 CREATE VIEW "__slice_den"."__retry_ladders_input_7jhwg2fejv" ("root", "scope", "steadfast", "brittle") AS
-SELECT "r1"."root", "r1"."scope", "r1"."steadfast", "r1"."brittle"
-FROM "slice_den"."__retry_ladders_input_kwlnpvmkji" AS "r1";
+SELECT "v188"."root", "v188"."scope", "v188"."steadfast", "v188"."brittle"
+FROM "slice_den"."__retry_ladders_input_kwlnpvmkji" AS "v188";
 
 CREATE VIEW "__slice_den"."__retry_patient_input_lamo36zgms" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."__retry_patient_input_jgz2ypwo6h" AS "r1";
+SELECT "v189"."root", "v189"."step", "v189"."key"
+FROM "slice_den"."__retry_patient_input_jgz2ypwo6h" AS "v189";
 
 CREATE VIEW "__slice_den"."__retry_patient_output_7l2gwafmdt" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."__retry_patient_output_4efhqtb55s" AS "r1";
+SELECT "v190"."root", "v190"."step", "v190"."key"
+FROM "slice_den"."__retry_patient_output_4efhqtb55s" AS "v190";
 
 CREATE VIEW "__slice_den"."__retry_polite_input_pvo53f6zv3" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."__retry_polite_input_i6nfplmbrq" AS "r1";
+SELECT "v192"."root", "v192"."step", "v192"."key"
+FROM "slice_den"."__retry_polite_input_i6nfplmbrq" AS "v192";
 
 CREATE VIEW "__slice_den"."__retry_polite_output_xnmxlnasop" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."__retry_polite_output_5gkkilaesu" AS "r1";
+SELECT "v193"."root", "v193"."step", "v193"."key"
+FROM "slice_den"."__retry_polite_output_5gkkilaesu" AS "v193";
 
 CREATE VIEW "__slice_den"."__retry_steadfast_input_7zu6kymb2m" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."__retry_steadfast_input_ktw6jkjsgs" AS "r1";
+SELECT "v204"."root", "v204"."step", "v204"."key"
+FROM "slice_den"."__retry_steadfast_input_ktw6jkjsgs" AS "v204";
 
 CREATE VIEW "__slice_den"."__retry_steadfast_output_2b3thawsw3" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."__retry_steadfast_output_mluqjs7euo" AS "r1";
+SELECT "v205"."root", "v205"."step", "v205"."key"
+FROM "slice_den"."__retry_steadfast_output_mluqjs7euo" AS "v205";
 
 CREATE VIEW "__slice_den"."__retry_throttled_finish_output_oh6nf7svvh" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__retry_throttled_finish_output_km4aldifvp" AS "r1";
+SELECT "v207"."root", "v207"."step"
+FROM "slice_den"."__retry_throttled_finish_output_km4aldifvp" AS "v207";
 
 CREATE VIEW "__slice_den"."__retry_throttled_input_ohn3datahq" ("root", "scope", "key") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key"
-FROM "slice_den"."__retry_throttled_input_khzxxl3wcp" AS "r1";
+SELECT "v208"."root", "v208"."scope", "v208"."key"
+FROM "slice_den"."__retry_throttled_input_khzxxl3wcp" AS "v208";
 
 CREATE VIEW "__slice_den"."__retry_unhurried_finish_output_emakxf3ts2" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__retry_unhurried_finish_output_tvybo25flf" AS "r1";
+SELECT "v209"."root", "v209"."step"
+FROM "slice_den"."__retry_unhurried_finish_output_tvybo25flf" AS "v209";
 
 CREATE VIEW "__slice_den"."__retry_unhurried_input_m7vmne5cca" ("root", "scope", "key") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key"
-FROM "slice_den"."__retry_unhurried_input_2o2io4czfn" AS "r1";
+SELECT "v210"."root", "v210"."scope", "v210"."key"
+FROM "slice_den"."__retry_unhurried_input_2o2io4czfn" AS "v210";
 
 CREATE VIEW "__slice_den"."__review_analyze_input_3or5on7gjq" ("root", "step", "review", "group", "question") AS
-SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."question"
-FROM "slice_den"."__review_analyze_input_ihh24uynlq" AS "r1";
+SELECT "v212"."root", "v212"."step", "v212"."review", "v212"."group", "v212"."question"
+FROM "slice_den"."__review_analyze_input_ihh24uynlq" AS "v212";
 
 CREATE VIEW "__slice_den"."__review_analyze_output_rrlfcr6frk" ("root", "step", "score") AS
-SELECT "r1"."root", "r1"."step", "r1"."score"
-FROM "slice_den"."__review_analyze_output_q7frt4d7gx" AS "r1";
+SELECT "v213"."root", "v213"."step", "v213"."score"
+FROM "slice_den"."__review_analyze_output_q7frt4d7gx" AS "v213";
 
 CREATE VIEW "__slice_den"."__review_gather_input_pckicpaipu" ("root", "step", "review") AS
-SELECT "r1"."root", "r1"."step", "r1"."review"
-FROM "slice_den"."__review_gather_input_ctew4fh6k4" AS "r1";
+SELECT "v221"."root", "v221"."step", "v221"."review"
+FROM "slice_den"."__review_gather_input_ctew4fh6k4" AS "v221";
 
 CREATE VIEW "__slice_den"."__review_gather_input_sizes_avc5skrpcw" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."__review_gather_input_sizes_bcltwv6ebr" AS "r1";
+SELECT "v222"."root", "v222"."step", "v222"."ordinal", "v222"."value"
+FROM "slice_den"."__review_gather_input_sizes_bcltwv6ebr" AS "v222";
 
 CREATE VIEW "__slice_den"."__review_gather_output_wvatxq36da" ("root", "step", "groups") AS
-SELECT "r1"."root", "r1"."step", "r1"."groups"
-FROM "slice_den"."__review_gather_output_wu55xueycd" AS "r1";
+SELECT "v223"."root", "v223"."step", "v223"."groups"
+FROM "slice_den"."__review_gather_output_wu55xueycd" AS "v223";
 
 CREATE VIEW "__slice_den"."__review_questions_finish_output_m7lqqwz4rj" ("root", "step", "count", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."count", "r1"."total"
-FROM "slice_den"."__review_questions_finish_output_fzoucv66df" AS "r1";
+SELECT "v227"."root", "v227"."step", "v227"."count", "v227"."total"
+FROM "slice_den"."__review_questions_finish_output_fzoucv66df" AS "v227";
 
 CREATE VIEW "__slice_den"."__review_questions_input_qzyahsamtt" ("root", "scope", "review", "group", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."review", "r1"."group", "r1"."size"
-FROM "slice_den"."__review_questions_input_mdxrdossfi" AS "r1";
+SELECT "v228"."root", "v228"."scope", "v228"."review", "v228"."group", "v228"."size"
+FROM "slice_den"."__review_questions_input_mdxrdossfi" AS "v228";
 
 CREATE VIEW "__slice_den"."__review_review_run_finish_output_abx4i3b4gi" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__review_review_run_finish_output_t6i22fh3a6" AS "r1";
+SELECT "v234"."root", "v234"."step"
+FROM "slice_den"."__review_review_run_finish_output_t6i22fh3a6" AS "v234";
 
 CREATE VIEW "__slice_den"."__review_review_run_input_f2n4ohz4dh" ("root", "scope", "review") AS
-SELECT "r1"."root", "r1"."scope", "r1"."review"
-FROM "slice_den"."__review_review_run_input_jzp47telwo" AS "r1";
+SELECT "v235"."root", "v235"."scope", "v235"."review"
+FROM "slice_den"."__review_review_run_input_jzp47telwo" AS "v235";
 
 CREATE VIEW "__slice_den"."__review_review_run_input_sizes_ohz5lwk6iy" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."__review_review_run_input_sizes_cuh2lwogrl" AS "r1";
+SELECT "v236"."root", "v236"."scope", "v236"."ordinal", "v236"."value"
+FROM "slice_den"."__review_review_run_input_sizes_cuh2lwogrl" AS "v236";
 
 CREATE VIEW "__slice_den"."__review_save_input_y7djhj264v" ("root", "step", "review", "group", "count", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."count", "r1"."total"
-FROM "slice_den"."__review_save_input_co47sfi2mr" AS "r1";
+SELECT "v238"."root", "v238"."step", "v238"."review", "v238"."group", "v238"."count", "v238"."total"
+FROM "slice_den"."__review_save_input_co47sfi2mr" AS "v238";
 
 CREATE VIEW "__slice_den"."__review_save_output_ylyfyellhe" ("root", "step", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."total"
-FROM "slice_den"."__review_save_output_lyuy6h4srf" AS "r1";
+SELECT "v239"."root", "v239"."step", "v239"."total"
+FROM "slice_den"."__review_save_output_lyuy6h4srf" AS "v239";
 
 CREATE VIEW "__slice_den"."__review_saved_kzovhjis3k" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."__review_saved_5iq7m2fmyr" AS "r1";
+SELECT "v240"."root", "v240"."from", "v240"."ordinal", "v240"."to"
+FROM "slice_den"."__review_saved_5iq7m2fmyr" AS "v240";
 
 CREATE VIEW "__slice_den"."__review_split_dainnyfuqc" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."__review_split_ggs6ku5tr5" AS "r1";
+SELECT "v244"."root", "v244"."from", "v244"."ordinal", "v244"."to"
+FROM "slice_den"."__review_split_ggs6ku5tr5" AS "v244";
 
 CREATE VIEW "__slice_den"."__sync_build_input_a6ls3kzrrv" ("root", "step", "build") AS
-SELECT "r1"."root", "r1"."step", "r1"."build"
-FROM "slice_den"."__sync_build_input_2ax6pwgsaz" AS "r1";
+SELECT "v250"."root", "v250"."step", "v250"."build"
+FROM "slice_den"."__sync_build_input_2ax6pwgsaz" AS "v250";
 
 CREATE VIEW "__slice_den"."__sync_build_output_t7krmj62gx" ("root", "step", "build") AS
-SELECT "r1"."root", "r1"."step", "r1"."build"
-FROM "slice_den"."__sync_build_output_q4gdmteauj" AS "r1";
+SELECT "v251"."root", "v251"."step", "v251"."build"
+FROM "slice_den"."__sync_build_output_q4gdmteauj" AS "v251";
 
 CREATE VIEW "__slice_den"."__sync_copy_input_ryjqwf7tlk" ("root", "step", "relation", "run") AS
-SELECT "r1"."root", "r1"."step", "r1"."relation", "r1"."run"
-FROM "slice_den"."__sync_copy_input_wrlz7dd6wx" AS "r1";
+SELECT "v253"."root", "v253"."step", "v253"."relation", "v253"."run"
+FROM "slice_den"."__sync_copy_input_wrlz7dd6wx" AS "v253";
 
 CREATE VIEW "__slice_den"."__sync_copy_output_tlzppzk36t" ("root", "step", "run") AS
-SELECT "r1"."root", "r1"."step", "r1"."run"
-FROM "slice_den"."__sync_copy_output_bgyc3dxoz3" AS "r1";
+SELECT "v254"."root", "v254"."step", "v254"."run"
+FROM "slice_den"."__sync_copy_output_bgyc3dxoz3" AS "v254";
 
 CREATE VIEW "__slice_den"."__sync_gold_finish_output_xumzee64lc" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__sync_gold_finish_output_bli5mgqtdu" AS "r1";
+SELECT "v263"."root", "v263"."step"
+FROM "slice_den"."__sync_gold_finish_output_bli5mgqtdu" AS "v263";
 
 CREATE VIEW "__slice_den"."__sync_gold_input_qnguek3ynf" ("root", "scope", "build") AS
-SELECT "r1"."root", "r1"."scope", "r1"."build"
-FROM "slice_den"."__sync_gold_input_3odt2l5j2i" AS "r1";
+SELECT "v264"."root", "v264"."scope", "v264"."build"
+FROM "slice_den"."__sync_gold_input_3odt2l5j2i" AS "v264";
 
 CREATE VIEW "__slice_den"."__sync_sync_run_finish_output_uei45snd7k" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__sync_sync_run_finish_output_h7vi6bsoxq" AS "r1";
+SELECT "v279"."root", "v279"."step"
+FROM "slice_den"."__sync_sync_run_finish_output_h7vi6bsoxq" AS "v279";
 
 CREATE VIEW "__slice_den"."__sync_sync_run_input_tb7xtbitmc" ("root", "scope", "relation", "run") AS
-SELECT "r1"."root", "r1"."scope", "r1"."relation", "r1"."run"
-FROM "slice_den"."__sync_sync_run_input_qo4lf3kyiy" AS "r1";
+SELECT "v280"."root", "v280"."scope", "v280"."relation", "v280"."run"
+FROM "slice_den"."__sync_sync_run_input_qo4lf3kyiy" AS "v280";
 
 CREATE VIEW "__slice_den"."__writeback_deliver_input_lin3i5xcbh" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."__writeback_deliver_input_ka7ox24nbt" AS "r1";
+SELECT "v283"."root", "v283"."step", "v283"."attempt"
+FROM "slice_den"."__writeback_deliver_input_ka7ox24nbt" AS "v283";
 
 CREATE VIEW "__slice_den"."__writeback_deliver_output_5jp5hfnsdl" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."__writeback_deliver_output_qjzukfor3j" AS "r1";
+SELECT "v284"."root", "v284"."step", "v284"."attempt"
+FROM "slice_den"."__writeback_deliver_output_qjzukfor3j" AS "v284";
 
 CREATE VIEW "__slice_den"."__writeback_writeback_finish_output_nlkgrju4r7" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."__writeback_writeback_finish_output_ckitnszwtc" AS "r1";
+SELECT "v304"."root", "v304"."step"
+FROM "slice_den"."__writeback_writeback_finish_output_ckitnszwtc" AS "v304";
 
 CREATE VIEW "__slice_den"."__writeback_writeback_input_dq6ignhwtw" ("root", "scope", "attempt") AS
-SELECT "r1"."root", "r1"."scope", "r1"."attempt"
-FROM "slice_den"."__writeback_writeback_input_zalrrn5ggs" AS "r1";
+SELECT "v305"."root", "v305"."scope", "v305"."attempt"
+FROM "slice_den"."__writeback_writeback_input_zalrrn5ggs" AS "v305";
 
 CREATE VIEW "slice_seats__fan_den"."fan_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r19"."c64", "r19"."c65", ("slice"."__fan_resource_names_tugc7yp6xo"())["r19"."c65" + 1]::"pg_catalog"."text", "r19"."c66", "r19"."c67", "r19"."c68", "r19"."c69"
@@ -1320,6 +1324,8 @@ GRANT :"slice_seats__clock_coordinator" TO :"slice_seats__worker" WITH INHERIT F
 GRANT :"slice_seats__clock_den" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
 
 GRANT :"slice_seats__clock_retirer" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
+
+GRANT :"slice_seats__composer" TO :"slice_seats__composing" WITH INHERIT FALSE, SET TRUE;
 
 GRANT :"slice_seats__editor" TO :"slice_seats__app" WITH INHERIT FALSE, SET TRUE;
 
@@ -1886,6 +1892,49 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_clock_chime_input_w4tkdsqfah"(), "slice"."__stand_clock_close_input_nbsmlpykk5"(), "slice"."__stand_clock_done_dja4biaxge"(), "slice"."__stand_clock_failed_zsyt2n5qx3"(), "slice"."__stand_clock_result_dk5lfugcd5"(), "slice"."__stand_clock_step_cbbapr6dla"() TO :"slice_seats__clock_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk" TO :"slice_seats__clock_retirer";
+
+SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den", "__slice" TO :"slice_seats__composer";
+
+SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
+GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__composer";
+
+GRANT SELECT ON TABLE "__slice_den"."assign_admitted", "__slice_den"."__assign_asked_5rexkaff4y", "__slice_den"."__assign_assignment_finish_output_vmzznq64gj", "__slice_den"."__assign_assignment_input_lsywk53wce", "__slice_den"."__assign_assignment_input_exclude_s73dwlchwf", "__slice_den"."__assign_assignment_input_mode_nearest_fsoxous4jk", "__slice_den"."__assign_assignment_input_mode_within_p65z522bja", "__slice_den"."__assign_assignment_input_near_pur3ox4six", "__slice_den"."assign_claim", "__slice_den"."__assign_decide_input_mq7tjlhiqm", "__slice_den"."__assign_decide_input_exclude_dekejeu7t3", "__slice_den"."__assign_decide_input_mode_nearest_mrjuvdz7yq", "__slice_den"."__assign_decide_input_mode_within_pn6egu3bcm", "__slice_den"."__assign_decide_output_ei23llh76f", "__slice_den"."__assign_decide_output_stage_rest_z7marmyooe", "__slice_den"."__assign_decide_output_stage_serve_j6zhqrh3tf", "__slice_den"."__assign_decide_output_weighed_jegbamf4xg", "__slice_den"."__assign_decide_read_nearest_4wlfurrjbr", "__slice_den"."__assign_decide_read_nearest_7p37srsy2d", "__slice_den"."__assign_decide_read_seen_464rzyvk6z", "__slice_den"."__assign_decide_read_seen_ihtnxvvg3s", "__slice_den"."assign_done", "__slice_den"."__assign_embed_input_qe7bmwbzgk", "__slice_den"."__assign_embed_input_exclude_htjy3bnieo", "__slice_den"."__assign_embed_input_mode_nearest_l473yulorz", "__slice_den"."__assign_embed_input_mode_within_rogyqvnnve", "__slice_den"."__assign_embed_input_near_rqmgp5hkof", "__slice_den"."__assign_embed_output_wwf3grsclj", "__slice_den"."assign_ended", "__slice_den"."assign_exhausted", "__slice_den"."assign_failed", "__slice_den"."assign_fenced", "__slice_den"."assign_finish", "__slice_den"."assign_held", "__slice_den"."assign_paused", "__slice_den"."assign_refusal", "__slice_den"."assign_requested_with", "__slice_den"."assign_result", "__slice_den"."assign_resumed", "__slice_den"."assign_retry", "__slice_den"."assign_root", "__slice_den"."assign_scope", "__slice_den"."assign_served", "__slice_den"."assign_skipped", "__slice_den"."assign_start_step", "__slice_den"."assign_step", "__slice"."assigned", "__slice_den"."audit", "__slice"."built", "__slice_den"."chain_admitted", "__slice_den"."__chain_chain_run_finish_output_3qht6gjsqg", "__slice_den"."__chain_chain_run_input_n4m5mx3ehn", "__slice_den"."chain_claim", "__slice_den"."chain_done", "__slice_den"."chain_ended", "__slice_den"."chain_exhausted", "__slice_den"."chain_failed", "__slice_den"."chain_fenced", "__slice_den"."chain_finish", "__slice_den"."chain_held", "__slice_den"."__chain_next_gvzpsk3aog", "__slice_den"."__chain_ordered_finish_output_xcg23roq7b", "__slice_den"."__chain_ordered_input_zjofndphkd", "__slice_den"."__chain_page_input_n2wxdimvu4", "__slice_den"."__chain_page_input_after_4jftkrqy47", "__slice_den"."__chain_page_output_ycutffmuhv", "__slice_den"."__chain_page_output_next_y33dlfjyiy", "__slice_den"."__chain_page_read_earlier_taatxm7clo", "__slice_den"."__chain_page_read_earlier_wgak3f3vm6", "__slice_den"."__chain_page_read_tree_aufzv2ynay", "__slice_den"."__chain_page_read_tree_items_first_lwzoraiyj7", "__slice_den"."__chain_page_read_tree_items_pv2o2o45iv", "__slice_den"."__chain_page_read_tree_bx5wgrzj3z", "__slice_den"."__chain_page_read_weights_ksi3s6acwt", "__slice_den"."__chain_page_read_weights_64rnqhgibn", "__slice_den"."chain_paused", "__slice_den"."chain_refusal", "__slice_den"."chain_requested_with", "__slice_den"."chain_result", "__slice_den"."chain_resumed", "__slice_den"."chain_retry", "__slice_den"."chain_root", "__slice_den"."chain_scope", "__slice_den"."chain_served", "__slice_den"."chain_skipped", "__slice_den"."chain_start_step", "__slice_den"."chain_step", "__slice"."chimed", "__slice_den"."clock_admitted", "__slice_den"."__clock_chime_input_3tugabwvwi", "__slice_den"."__clock_chime_output_2q332rujr2", "__slice_den"."clock_claim", "__slice_den"."__clock_close_input_uv2ngtkxa4", "__slice_den"."__clock_close_output_z6e74ccuzv", "__slice_den"."clock_done", "__slice_den"."clock_ended", "__slice_den"."clock_exhausted", "__slice_den"."clock_failed", "__slice_den"."clock_fenced", "__slice_den"."clock_finish", "__slice_den"."clock_held", "__slice_den"."__clock_hourly_finish_output_6vu5kthqnc", "__slice_den"."__clock_hourly_input_dxuojkrov4", "__slice_den"."__clock_hourly_key_pckzljbr76", "__slice_den"."clock_paused", "__slice_den"."clock_refusal", "__slice_den"."clock_requested_with", "__slice_den"."clock_result", "__slice_den"."clock_resumed", "__slice_den"."clock_retry", "__slice_den"."clock_root", "__slice_den"."clock_scope", "__slice_den"."clock_served", "__slice_den"."__clock_sitting_finish_output_eiwzambgu5", "__slice_den"."__clock_sitting_input_zxsc72qv3v", "__slice_den"."clock_skipped", "__slice_den"."clock_start_step", "__slice_den"."clock_step", "__slice"."concluded", "__slice"."copied", "__slice"."cursor", "__slice"."delivered", "__slice_den"."fan_admitted", "__slice_den"."__fan_batch_finish_output_apuis6scdp", "__slice_den"."__fan_batch_input_allg6ywyyj", "__slice_den"."fan_claim", "__slice_den"."fan_done", "__slice_den"."__fan_dust_input_jfqmrbvwme", "__slice_den"."__fan_dust_output_3prgvh5vl6", "__slice_den"."fan_ended", "__slice_den"."fan_exclusive", "__slice_den"."fan_exclusive_key", "__slice_den"."fan_exhausted", "__slice_den"."fan_failed", "__slice_den"."__fan_fan_run_finish_output_qeanoktsa2", "__slice_den"."__fan_fan_run_input_o65lvvtgcm", "__slice_den"."fan_fenced", "__slice_den"."fan_finish", "__slice_den"."fan_held", "__slice_den"."fan_hold", "__slice_den"."__fan_mop_input_g4kp4gv2eh", "__slice_den"."__fan_mop_output_tkiq3rfveq", "__slice_den"."fan_paused", "__slice_den"."fan_refusal", "__slice_den"."fan_released", "__slice_den"."fan_requested_with", "__slice_den"."fan_result", "__slice_den"."fan_resumed", "__slice_den"."fan_retry", "__slice_den"."fan_root", "__slice_den"."fan_scope", "__slice_den"."fan_served", "__slice_den"."fan_skipped", "__slice_den"."__fan_square_input_fsqulmyzya", "__slice_den"."__fan_square_output_odg2wd327a", "__slice_den"."fan_start_scope", "__slice_den"."fan_start_step", "__slice_den"."fan_step", "__slice_den"."__fan_sweep_finish_output_pmvs3dyjdc", "__slice_den"."__fan_sweep_input_zjpy346jix", "__slice_den"."__fan_wanted_finish_output_lpsyic5hpa", "__slice_den"."__fan_wanted_input_yvtwle23oh", "__slice_den"."__fan_wanted_key_ma4fqkasze", "__slice_den"."fan_within", "__slice"."heard", "__slice"."item", "__slice"."order", "__slice"."passage", "__slice_den"."retry_admitted", "__slice_den"."__retry_brittle_input_nude4kqvsy", "__slice_den"."__retry_brittle_output_bsjmrx3bjd", "__slice_den"."retry_claim", "__slice_den"."retry_done", "__slice_den"."retry_ended", "__slice_den"."retry_exhausted", "__slice_den"."retry_failed", "__slice_den"."retry_fenced", "__slice_den"."retry_finish", "__slice_den"."retry_held", "__slice_den"."__retry_ladders_finish_output_izfhhwcjf7", "__slice_den"."__retry_ladders_input_7jhwg2fejv", "__slice_den"."__retry_patient_input_lamo36zgms", "__slice_den"."__retry_patient_output_7l2gwafmdt", "__slice_den"."retry_paused", "__slice_den"."__retry_polite_input_pvo53f6zv3", "__slice_den"."__retry_polite_output_xnmxlnasop", "__slice_den"."retry_refusal", "__slice_den"."retry_requested_with", "__slice_den"."retry_result", "__slice_den"."retry_resumed", "__slice_den"."retry_retry", "__slice_den"."retry_root", "__slice_den"."retry_scope", "__slice_den"."retry_served", "__slice_den"."retry_skipped", "__slice_den"."retry_start_step", "__slice_den"."__retry_steadfast_input_7zu6kymb2m", "__slice_den"."__retry_steadfast_output_2b3thawsw3", "__slice_den"."retry_step", "__slice_den"."__retry_throttled_finish_output_oh6nf7svvh", "__slice_den"."__retry_throttled_input_ohn3datahq", "__slice_den"."__retry_unhurried_finish_output_emakxf3ts2", "__slice_den"."__retry_unhurried_input_m7vmne5cca", "__slice_den"."review_admitted", "__slice_den"."__review_analyze_input_3or5on7gjq", "__slice_den"."__review_analyze_output_rrlfcr6frk", "__slice_den"."review_claim", "__slice_den"."review_done", "__slice_den"."review_ended", "__slice_den"."review_exhausted", "__slice_den"."review_failed", "__slice_den"."review_fenced", "__slice_den"."review_finish", "__slice_den"."__review_gather_input_pckicpaipu", "__slice_den"."__review_gather_input_sizes_avc5skrpcw", "__slice_den"."__review_gather_output_wvatxq36da", "__slice_den"."review_held", "__slice_den"."review_hold", "__slice_den"."review_paused", "__slice_den"."__review_questions_finish_output_m7lqqwz4rj", "__slice_den"."__review_questions_input_qzyahsamtt", "__slice_den"."review_refusal", "__slice_den"."review_requested_with", "__slice_den"."review_result", "__slice_den"."review_resumed", "__slice_den"."review_retry", "__slice_den"."__review_review_run_finish_output_abx4i3b4gi", "__slice_den"."__review_review_run_input_f2n4ohz4dh", "__slice_den"."__review_review_run_input_sizes_ohz5lwk6iy", "__slice_den"."review_root", "__slice_den"."__review_save_input_y7djhj264v", "__slice_den"."__review_save_output_ylyfyellhe", "__slice_den"."__review_saved_kzovhjis3k", "__slice_den"."review_scope", "__slice_den"."review_served", "__slice_den"."review_skipped", "__slice_den"."__review_split_dainnyfuqc", "__slice_den"."review_start_scope", "__slice_den"."review_start_step", "__slice_den"."review_step", "__slice_den"."review_within", "__slice"."reviewed", "__slice"."seen", "__slice"."settled", "__slice"."summary", "__slice_den"."sync_admitted", "__slice_den"."__sync_build_input_a6ls3kzrrv", "__slice_den"."__sync_build_output_t7krmj62gx", "__slice_den"."sync_claim", "__slice_den"."__sync_copy_input_ryjqwf7tlk", "__slice_den"."__sync_copy_output_tlzppzk36t", "__slice_den"."sync_done", "__slice_den"."sync_ended", "__slice_den"."sync_exclusive", "__slice_den"."sync_exclusive_key", "__slice_den"."sync_exhausted", "__slice_den"."sync_failed", "__slice_den"."sync_fenced", "__slice_den"."sync_finish", "__slice_den"."__sync_gold_finish_output_xumzee64lc", "__slice_den"."__sync_gold_input_qnguek3ynf", "__slice_den"."sync_held", "__slice_den"."sync_paused", "__slice_den"."sync_refusal", "__slice_den"."sync_released", "__slice_den"."sync_requested_with", "__slice_den"."sync_result", "__slice_den"."sync_resumed", "__slice_den"."sync_retry", "__slice_den"."sync_root", "__slice_den"."sync_scope", "__slice_den"."sync_served", "__slice_den"."sync_skipped", "__slice_den"."sync_start_step", "__slice_den"."sync_step", "__slice_den"."__sync_sync_run_finish_output_uei45snd7k", "__slice_den"."__sync_sync_run_input_tb7xtbitmc", "__slice"."tally", "__slice"."want", "__slice"."weight", "__slice_den"."writeback_admitted", "__slice_den"."writeback_claim", "__slice_den"."__writeback_deliver_input_lin3i5xcbh", "__slice_den"."__writeback_deliver_output_5jp5hfnsdl", "__slice_den"."writeback_done", "__slice_den"."writeback_ended", "__slice_den"."writeback_exhausted", "__slice_den"."writeback_failed", "__slice_den"."writeback_fenced", "__slice_den"."writeback_finish", "__slice_den"."writeback_held", "__slice_den"."writeback_paused", "__slice_den"."writeback_refusal", "__slice_den"."writeback_requested_with", "__slice_den"."writeback_result", "__slice_den"."writeback_resumed", "__slice_den"."writeback_retry", "__slice_den"."writeback_root", "__slice_den"."writeback_scope", "__slice_den"."writeback_served", "__slice_den"."writeback_skipped", "__slice_den"."writeback_start_step", "__slice_den"."writeback_step", "__slice_den"."__writeback_writeback_finish_output_nlkgrju4r7", "__slice_den"."__writeback_writeback_input_dq6ignhwtw" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."__chain_ordered_input_tlj4ihbubo" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."chain_requested_with" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."chain_root" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."chain_scope" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."fan_exclusive_key" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."fan_root" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."fan_scope" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."__fan_wanted_input_chczog66p4" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice_den"."__fan_wanted_key_zqopchzdok" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice"."order" TO :"slice_seats__composer";
+
+GRANT SELECT, INSERT ON TABLE "slice"."want" TO :"slice_seats__composer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__composer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__composer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__constant_eq577tindj"(), "slice"."__constant_ejkw66w2je"(), "slice"."__closed_row_cq3qq2e2aa"(bigint[], bigint, bigint, bit varying), "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text"), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6jgkvuzg33"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_fpk6cvxfiv"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_jqlbcidhe6"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_wcuqzqhqwl"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_m2rf37xwjt"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_zwogjm2ro3"(), "slice"."__feed_live_pfwkvulieq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__composer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__stand_chain_root_mmsdkigltc"(), "slice"."__stand_fan_root_evnc53opne"(), "slice"."__stand_fan_wanted_key_n6zslzhip6"() TO :"slice_seats__composer";
+
+SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
+GRANT USAGE ON SCHEMA "slice" TO :"slice_seats__composing";
+
+GRANT EXECUTE ON FUNCTION "slice"."__snapshot_guard"("pg_catalog"."text") TO :"slice_seats__composing";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice" TO :"slice_seats__editor";
@@ -3000,7 +3049,7 @@ GRANT USAGE ON SCHEMA "slice" TO :"__live_wzkq6p2yii";
 
 GRANT SELECT ON TABLE "slice"."__live_secret" TO :"__live_wzkq6p2yii";
 
-GRANT SELECT ON TABLE "slice"."__ledger" TO :"slice_seats__app", :"slice_seats__worker";
+GRANT SELECT ON TABLE "slice"."__ledger" TO :"slice_seats__app", :"slice_seats__composing", :"slice_seats__worker";
 
 ALTER ROLE :"slice_seats__app" SET search_path = "pg_catalog", "pg_temp";
 
@@ -3017,6 +3066,22 @@ ALTER ROLE :"slice_seats__app" SET lc_numeric = 'C.UTF-8';
 ALTER ROLE :"slice_seats__app" SET lc_time = 'C.UTF-8';
 
 ALTER ROLE :"slice_seats__app" SET plan_cache_mode = 'force_generic_plan';
+
+ALTER ROLE :"slice_seats__composing" SET search_path = "pg_catalog", "pg_temp";
+
+ALTER ROLE :"slice_seats__composing" SET extra_float_digits = '1';
+
+ALTER ROLE :"slice_seats__composing" SET DateStyle = 'ISO, YMD';
+
+ALTER ROLE :"slice_seats__composing" SET bytea_output = 'hex';
+
+ALTER ROLE :"slice_seats__composing" SET lc_monetary = 'C.UTF-8';
+
+ALTER ROLE :"slice_seats__composing" SET lc_numeric = 'C.UTF-8';
+
+ALTER ROLE :"slice_seats__composing" SET lc_time = 'C.UTF-8';
+
+ALTER ROLE :"slice_seats__composing" SET plan_cache_mode = 'force_generic_plan';
 
 ALTER ROLE :"slice_seats__worker" SET search_path = "pg_catalog", "pg_temp";
 
@@ -3039,6 +3104,10 @@ SELECT "vector_ext"."vector_dims"('[1]'::"vector_ext"."vector");
 ALTER ROLE :"slice_seats__app" SET hnsw.iterative_scan = 'strict_order';
 
 ALTER ROLE :"slice_seats__app" SET hnsw.max_scan_tuples = '20000';
+
+ALTER ROLE :"slice_seats__composing" SET hnsw.iterative_scan = 'strict_order';
+
+ALTER ROLE :"slice_seats__composing" SET hnsw.max_scan_tuples = '20000';
 
 ALTER ROLE :"slice_seats__worker" SET hnsw.iterative_scan = 'strict_order';
 
@@ -3521,8 +3590,6 @@ COMMENT ON CONSTRAINT "__fan_admitted_pk_jzt7rtrzny" ON "slice_den"."fan_admitte
 
 COMMENT ON CONSTRAINT "__fan_claim_pk_e7zimqppco" ON "slice_den"."fan_claim" IS 'primary key of FanClaim';
 
-COMMENT ON CONSTRAINT "__fan_claim_key_root_step_attempt_holds_zpvvoill72" ON "slice_den"."fan_claim" IS 'key FanClaim(root, step, attempt, holds)';
-
 COMMENT ON CONSTRAINT "__fan_done_pk_5u65252q52" ON "slice_den"."fan_done" IS 'primary key of FanDone';
 
 COMMENT ON CONSTRAINT "__fan_ended_pk_23aeteyyv7" ON "slice_den"."fan_ended" IS 'primary key of FanEnded';
@@ -3642,8 +3709,6 @@ COMMENT ON CONSTRAINT "__retry_step_key_step_nrthvwlxer" ON "slice_den"."retry_s
 COMMENT ON CONSTRAINT "__review_admitted_pk_woy7ee4y4p" ON "slice_den"."review_admitted" IS 'primary key of ReviewAdmitted';
 
 COMMENT ON CONSTRAINT "__review_claim_pk_twa72qaol7" ON "slice_den"."review_claim" IS 'primary key of ReviewClaim';
-
-COMMENT ON CONSTRAINT "__review_claim_key_root_step_attempt_holds_djm3xecw7o" ON "slice_den"."review_claim" IS 'key ReviewClaim(root, step, attempt, holds)';
 
 COMMENT ON CONSTRAINT "__review_done_pk_ve6inioidy" ON "slice_den"."review_done" IS 'primary key of ReviewDone';
 
@@ -3981,8 +4046,6 @@ COMMENT ON TABLE "slice_den"."__chain_page_read_tree_nd6esoa3d3" IS 'relation Ch
 
 COMMENT ON CONSTRAINT "__chain_page_read_tree_row_pk_krei6zvz6t" ON "slice_den"."__chain_page_read_tree_nd6esoa3d3" IS 'primary key of ChainPageReadTreeRow';
 
-COMMENT ON CONSTRAINT "__chain_page_read_tree_row_key_digest_items_s2jrbtqovl" ON "slice_den"."__chain_page_read_tree_nd6esoa3d3" IS 'key ChainPageReadTreeRow(digest, items)';
-
 COMMENT ON TABLE "slice_den"."__chain_page_read_weights_fcely5x3ye" IS 'relation ChainPageReadWeights';
 
 COMMENT ON CONSTRAINT "__chain_page_read_weights_pk_7oohwtj6x4" ON "slice_den"."__chain_page_read_weights_fcely5x3ye" IS 'primary key of ChainPageReadWeights';
@@ -4275,13 +4338,15 @@ COMMENT ON COLUMN "slice_den"."clock_paused"."__pred_turn_qryngij6c4" IS 'pred(t
 
 COMMENT ON COLUMN "slice_den"."fan_claim"."__root_yewsvvtcyz" IS 'root where Logic.ge(attempt, 1n)';
 
+COMMENT ON COLUMN "slice_den"."fan_claim"."__root_krweilnoma" IS 'root where Logic.gt(holds, 0n)';
+
 COMMENT ON COLUMN "slice_den"."fan_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice_den"."fan_claim"."__pred_holds_lq7itfruzz" IS 'pred(holds)';
 
 COMMENT ON COLUMN "slice_den"."fan_exclusive"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice_den"."fan_hold"."__copy_holds_hfzvk7t2xc" IS 'the owner''s count of the family FanClaim.holds';
+COMMENT ON COLUMN "slice_den"."fan_hold"."__next_holds_qe2ylbyjxu" IS 'the successor of the family FanClaim.holds';
 
 COMMENT ON COLUMN "slice_den"."fan_hold"."__pred_at_xktcobhsti" IS 'pred(at)';
 
@@ -4295,11 +4360,13 @@ COMMENT ON COLUMN "slice_den"."retry_paused"."__pred_turn_qryngij6c4" IS 'pred(t
 
 COMMENT ON COLUMN "slice_den"."review_claim"."__root_yewsvvtcyz" IS 'root where Logic.ge(attempt, 1n)';
 
+COMMENT ON COLUMN "slice_den"."review_claim"."__root_krweilnoma" IS 'root where Logic.gt(holds, 0n)';
+
 COMMENT ON COLUMN "slice_den"."review_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice_den"."review_claim"."__pred_holds_lq7itfruzz" IS 'pred(holds)';
 
-COMMENT ON COLUMN "slice_den"."review_hold"."__copy_holds_a7bsyj5c52" IS 'the owner''s count of the family ReviewClaim.holds';
+COMMENT ON COLUMN "slice_den"."review_hold"."__next_holds_7j7ynyqmw6" IS 'the successor of the family ReviewClaim.holds';
 
 COMMENT ON COLUMN "slice_den"."review_hold"."__pred_at_xktcobhsti" IS 'pred(at)';
 
@@ -4349,9 +4416,11 @@ COMMENT ON COLUMN "slice_den"."__chain_chain_run_input_bmdsmqbrk2"."__tag_kind_c
 
 COMMENT ON COLUMN "slice_den"."__chain_ordered_input_tlj4ihbubo"."__tag_kind_ordered_ms3hwzrkhl" IS 'tag ChainRoot.kind = Ordered';
 
-COMMENT ON COLUMN "slice_den"."__chain_page_read_tree_items_57d6r2rrdd"."__copy_items_jii5wy7azg" IS 'the owner''s count of the family ChainPageReadTreeRow.items';
+COMMENT ON COLUMN "slice_den"."__chain_page_read_tree_items_57d6r2rrdd"."__next_items_32zkibnpeq" IS 'the successor of the family ChainPageReadTreeRow.items';
 
 COMMENT ON COLUMN "slice_den"."__chain_page_read_tree_items_57d6r2rrdd"."__pred_at_xktcobhsti" IS 'pred(at)';
+
+COMMENT ON COLUMN "slice_den"."__chain_page_read_tree_nd6esoa3d3"."__digest_7nxtpg25rz" IS 'digest where Logic.gt(items, 0n)';
 
 COMMENT ON COLUMN "slice_den"."__chain_page_read_tree_nd6esoa3d3"."__pred_items_3qltx5cx27" IS 'pred(items)';
 
@@ -4387,17 +4456,23 @@ COMMENT ON COLUMN "slice_den"."__sync_sync_run_input_qo4lf3kyiy"."__tag_kind_syn
 
 COMMENT ON COLUMN "slice_den"."__writeback_writeback_input_zalrrn5ggs"."__tag_kind_writeback_7zc6o24iqm" IS 'tag WritebackRoot.kind = Writeback';
 
+COMMENT ON CONSTRAINT "__fan_claim_key_root_step_attempt_raqrzlrtrk" ON "slice_den"."fan_claim" IS 'key FanClaim(root where Logic.gt(holds, 0n), step, attempt)';
+
+COMMENT ON CONSTRAINT "__fan_hold_key_root_step_attempt_at_next_holds_2jq65xeeeq" ON "slice_den"."fan_hold" IS 'key FanHold(root, step, attempt, at, the successor of the family FanClaim.holds)';
+
 COMMENT ON CONSTRAINT "__fan_hold_key_root_step_attempt_pred_at_pr3hqe44bn" ON "slice_den"."fan_hold" IS 'key FanHold(root, step, attempt, pred(at))';
+
+COMMENT ON CONSTRAINT "__review_claim_key_root_step_attempt_aa6aoqmhae" ON "slice_den"."review_claim" IS 'key ReviewClaim(root where Logic.gt(holds, 0n), step, attempt)';
+
+COMMENT ON CONSTRAINT "__review_hold_key_root_step_attempt_at_next_holds_yiw42djdl7" ON "slice_den"."review_hold" IS 'key ReviewHold(root, step, attempt, at, the successor of the family ReviewClaim.holds)';
 
 COMMENT ON CONSTRAINT "__review_hold_key_root_step_attempt_pred_at_adiit7mrkk" ON "slice_den"."review_hold" IS 'key ReviewHold(root, step, attempt, pred(at))';
 
+COMMENT ON CONSTRAINT "__chain_page_read_tree_items_key_digest_at_next_zwr7ept537" ON "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" IS 'key ChainPageReadTreeItems(digest, at, the successor of the family ChainPageReadTreeRow.items)';
+
 COMMENT ON CONSTRAINT "__chain_page_read_tree_items_key_digest_pred_at_ipnjzk4wne" ON "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" IS 'key ChainPageReadTreeItems(digest, pred(at))';
 
-COMMENT ON CONSTRAINT "__fan_hold_check_fan_hold_ordered_fan_claim_holds_zint2b2ifk" ON "slice_den"."fan_hold" IS 'check of FanHold for law ordered FanHold(root, step, attempt, at) in fin(FanClaim, holds)';
-
-COMMENT ON CONSTRAINT "__review_hold_check_review_hold_ordered_review_claim_icnqunpnlb" ON "slice_den"."review_hold" IS 'check of ReviewHold for law ordered ReviewHold(root, step, attempt, at) in fin(ReviewClaim, holds)';
-
-COMMENT ON CONSTRAINT "__chain_page_read_tree_items_check_chain_page_read_yoect27eee" ON "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" IS 'check of ChainPageReadTreeItems for law ordered ChainPageReadTreeItems(digest, at) in fin(ChainPageReadTreeRow, items)';
+COMMENT ON CONSTRAINT "__chain_page_read_tree_row_key_digest_e3kzriq3cu" ON "slice_den"."__chain_page_read_tree_nd6esoa3d3" IS 'key ChainPageReadTreeRow(digest where Logic.gt(items, 0n))';
 
 COMMENT ON CONSTRAINT "__assign_admitted_fk_root_scope_unmbbqjvuz" ON "slice_den"."assign_admitted" IS 'foreign key AssignAdmitted(root, scope) to AssignScope(root, scope)';
 
@@ -4609,7 +4684,7 @@ COMMENT ON CONSTRAINT "__fan_admitted_fk_root_scope_paiega74y2" ON "slice_den"."
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_2xkxna4wne" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root, step) to FanStep(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_attempt_pred_holds_6ej2el2klx" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root, step, attempt, pred(holds)) to FanHold(root, step, attempt, at)';
+COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_attempt_pred_holds_pred_7lusubqoow" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root, step, attempt, pred(holds), pred(holds)) to FanHold(root, step, attempt, at, the successor of the family FanClaim.holds)';
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_pred_attempt_thlj3gkwmg" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to FanEnded(root, step, attempt)';
 
@@ -4645,9 +4720,9 @@ COMMENT ON CONSTRAINT "__fan_held_fk_root_step_673ozjicob" ON "slice_den"."fan_h
 
 COMMENT ON CONSTRAINT "__fan_held_fk_root_step_attempt_bflumufwqp" ON "slice_den"."fan_held" IS 'foreign key FanHeld(root, step, attempt) to FanClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__fan_hold_fk_root_step_attempt_copy_holds_hnnbabpski" ON "slice_den"."fan_hold" IS 'foreign key FanHold(root, step, attempt, the owner''s count of the family FanClaim.holds) to FanClaim(root, step, attempt, holds)';
+COMMENT ON CONSTRAINT "__fan_hold_fk_root_step_attempt_mdkvryltnc" ON "slice_den"."fan_hold" IS 'foreign key FanHold(root, step, attempt) to FanClaim(root where Logic.gt(holds, 0n), step, attempt)';
 
-COMMENT ON CONSTRAINT "__fan_hold_fk_root_step_attempt_pred_at_lene3l2wo7" ON "slice_den"."fan_hold" IS 'foreign key FanHold(root, step, attempt, pred(at)) to FanHold(root, step, attempt, at)';
+COMMENT ON CONSTRAINT "__fan_hold_fk_root_step_attempt_pred_at_at_h5rmevrkns" ON "slice_den"."fan_hold" IS 'foreign key FanHold(root, step, attempt, pred(at), at) to FanHold(root, step, attempt, at, the successor of the family FanClaim.holds)';
 
 COMMENT ON CONSTRAINT "__fan_paused_fk_target_pred_turn_flvtnhgqoq" ON "slice_den"."fan_paused" IS 'foreign key FanPaused(target, pred(turn)) to FanResumed(target, turn)';
 
@@ -4767,7 +4842,7 @@ COMMENT ON CONSTRAINT "__review_admitted_fk_root_scope_wpazxz5qvc" ON "slice_den
 
 COMMENT ON CONSTRAINT "__review_claim_fk_root_step_7f6aefekwa" ON "slice_den"."review_claim" IS 'foreign key ReviewClaim(root, step) to ReviewStep(root, step)';
 
-COMMENT ON CONSTRAINT "__review_claim_fk_root_step_attempt_pred_holds_4fz52sncza" ON "slice_den"."review_claim" IS 'foreign key ReviewClaim(root, step, attempt, pred(holds)) to ReviewHold(root, step, attempt, at)';
+COMMENT ON CONSTRAINT "__review_claim_fk_root_step_attempt_pred_holds_pred_m435qghyae" ON "slice_den"."review_claim" IS 'foreign key ReviewClaim(root, step, attempt, pred(holds), pred(holds)) to ReviewHold(root, step, attempt, at, the successor of the family ReviewClaim.holds)';
 
 COMMENT ON CONSTRAINT "__review_claim_fk_root_step_pred_attempt_77xjl3onsd" ON "slice_den"."review_claim" IS 'foreign key ReviewClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to ReviewEnded(root, step, attempt)';
 
@@ -4799,9 +4874,9 @@ COMMENT ON CONSTRAINT "__review_held_fk_root_step_6ucwevd65f" ON "slice_den"."re
 
 COMMENT ON CONSTRAINT "__review_held_fk_root_step_attempt_43pd26ucr5" ON "slice_den"."review_held" IS 'foreign key ReviewHeld(root, step, attempt) to ReviewClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__review_hold_fk_root_step_attempt_copy_holds_4jxl3l2dff" ON "slice_den"."review_hold" IS 'foreign key ReviewHold(root, step, attempt, the owner''s count of the family ReviewClaim.holds) to ReviewClaim(root, step, attempt, holds)';
+COMMENT ON CONSTRAINT "__review_hold_fk_root_step_attempt_mbgar6ii27" ON "slice_den"."review_hold" IS 'foreign key ReviewHold(root, step, attempt) to ReviewClaim(root where Logic.gt(holds, 0n), step, attempt)';
 
-COMMENT ON CONSTRAINT "__review_hold_fk_root_step_attempt_pred_at_sqpugy4xri" ON "slice_den"."review_hold" IS 'foreign key ReviewHold(root, step, attempt, pred(at)) to ReviewHold(root, step, attempt, at)';
+COMMENT ON CONSTRAINT "__review_hold_fk_root_step_attempt_pred_at_at_w5cftoczlu" ON "slice_den"."review_hold" IS 'foreign key ReviewHold(root, step, attempt, pred(at), at) to ReviewHold(root, step, attempt, at, the successor of the family ReviewClaim.holds)';
 
 COMMENT ON CONSTRAINT "__review_paused_fk_target_pred_turn_rig5fmgcvc" ON "slice_den"."review_paused" IS 'foreign key ReviewPaused(target, pred(turn)) to ReviewResumed(target, turn)';
 
@@ -5135,11 +5210,11 @@ COMMENT ON CONSTRAINT "__chain_page_read_tree_fk_root_step_5jdwehtqbt" ON "slice
 
 COMMENT ON CONSTRAINT "__chain_page_read_tree_first_fk_digest_at_mxnolu45np" ON "slice_den"."__chain_page_read_tree_items_first_noxho2nj7m" IS 'foreign key ChainPageReadTreeFirst(digest, at) to ChainPageReadTreeItems(digest, at)';
 
-COMMENT ON CONSTRAINT "__chain_page_read_tree_items_fk_digest_copy_items_sicbcwc4zb" ON "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" IS 'foreign key ChainPageReadTreeItems(digest, the owner''s count of the family ChainPageReadTreeRow.items) to ChainPageReadTreeRow(digest, items)';
+COMMENT ON CONSTRAINT "__chain_page_read_tree_items_fk_digest_myuh5xjhli" ON "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" IS 'foreign key ChainPageReadTreeItems(digest) to ChainPageReadTreeRow(digest where Logic.gt(items, 0n))';
 
-COMMENT ON CONSTRAINT "__chain_page_read_tree_items_fk_digest_pred_at_r7gpc2igze" ON "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" IS 'foreign key ChainPageReadTreeItems(digest, pred(at)) to ChainPageReadTreeItems(digest, at)';
+COMMENT ON CONSTRAINT "__chain_page_read_tree_items_fk_digest_pred_at_at_uuldtqtzh5" ON "slice_den"."__chain_page_read_tree_items_57d6r2rrdd" IS 'foreign key ChainPageReadTreeItems(digest, pred(at), at) to ChainPageReadTreeItems(digest, at, the successor of the family ChainPageReadTreeRow.items)';
 
-COMMENT ON CONSTRAINT "__chain_page_read_tree_row_fk_digest_pred_items_7rh66dc67t" ON "slice_den"."__chain_page_read_tree_nd6esoa3d3" IS 'foreign key ChainPageReadTreeRow(digest, pred(items)) to ChainPageReadTreeItems(digest, at)';
+COMMENT ON CONSTRAINT "__chain_page_read_tree_row_fk_digest_pred_items_pred_ddbsxh3gq5" ON "slice_den"."__chain_page_read_tree_nd6esoa3d3" IS 'foreign key ChainPageReadTreeRow(digest, pred(items), pred(items)) to ChainPageReadTreeItems(digest, at, the successor of the family ChainPageReadTreeRow.items)';
 
 COMMENT ON CONSTRAINT "__chain_page_read_weights_fk_digest_73zfvhpwus" ON "slice_den"."__chain_page_read_weights_fcely5x3ye" IS 'foreign key ChainPageReadWeights(digest) to ChainPageReadWeightsRow(digest)';
 
@@ -5451,37 +5526,37 @@ COMMENT ON INDEX "slice"."__passage_ix_embedding_ujugi77ft2" IS 'hnsw index Pass
 
 COMMENT ON INDEX "slice_den"."__assign_assignment_input_ix_scope_2y6dle4van" IS 'btree index AssignAssignmentInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__assign_assignment_input_exclude_ix_pred_ordinal_e_m7lrvwvsz6" IS 'btree index AssignAssignmentInputExclude(__pred_ordinal_e545zctcav, scope, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice_den"."__assign_assignment_input_exclude_ix_scope_pred_fkj5fuiwuy" IS 'btree index AssignAssignmentInputExclude(scope, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
-COMMENT ON INDEX "slice_den"."__assign_assignment_input_near_ix_pred_ordinal_e_545_ccykqvswgk" IS 'btree index AssignAssignmentInputNear(__pred_ordinal_e545zctcav, scope, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice_den"."__assign_assignment_input_near_ix_scope_pred_ordinal_bta37gplsn" IS 'btree index AssignAssignmentInputNear(scope, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
-COMMENT ON INDEX "slice_den"."__assign_claim_ix_pred_attempt_oey_4_tm_5_xyl_step_ardralgmql" IS 'btree index AssignClaim(__pred_attempt_oey4tm5xyl, step, __root_yewsvvtcyz)';
+COMMENT ON INDEX "slice_den"."__assign_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_m6yuaw7627" IS 'btree index AssignClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
-COMMENT ON INDEX "slice_den"."__assign_decide_input_exclude_ix_pred_ordinal_e_545_2e4sfci2y4" IS 'btree index AssignDecideInputExclude(__pred_ordinal_e545zctcav, step, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice_den"."__assign_decide_input_exclude_ix_step_pred_ordinal_e_jpvevw4qhx" IS 'btree index AssignDecideInputExclude(step, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
-COMMENT ON INDEX "slice_den"."__assign_decide_output_weighed_ix_pred_ordinal_e_545_szwyi27mfy" IS 'btree index AssignDecideOutputWeighed(__pred_ordinal_e545zctcav, step, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice_den"."__assign_decide_output_weighed_ix_step_pred_ordinal_j6qawg5c6t" IS 'btree index AssignDecideOutputWeighed(step, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
 COMMENT ON INDEX "slice_den"."__assign_decide_read_nearest_ix_digest_tm2whkfyjf" IS 'btree index AssignDecideReadNearest(digest)';
 
 COMMENT ON INDEX "slice_den"."__assign_decide_read_seen_ix_digest_q7rgkxywvx" IS 'btree index AssignDecideReadSeen(digest)';
 
-COMMENT ON INDEX "slice_den"."__assign_embed_input_exclude_ix_pred_ordinal_e_545_tmwtnr6orc" IS 'btree index AssignEmbedInputExclude(__pred_ordinal_e545zctcav, step, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice_den"."__assign_embed_input_exclude_ix_step_pred_ordinal_e_g4pvuyld2j" IS 'btree index AssignEmbedInputExclude(step, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
-COMMENT ON INDEX "slice_den"."__assign_embed_input_near_ix_pred_ordinal_e_545_zyonbrmujo" IS 'btree index AssignEmbedInputNear(__pred_ordinal_e545zctcav, step, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice_den"."__assign_embed_input_near_ix_step_pred_ordinal_e_545_zato3md6gx" IS 'btree index AssignEmbedInputNear(step, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
-COMMENT ON INDEX "slice_den"."__assign_paused_ix_pred_turn_qryngij_6_c_4_target_aoi6sp74el" IS 'btree index AssignPaused(__pred_turn_qryngij6c4, target)';
+COMMENT ON INDEX "slice_den"."__assign_paused_ix_target_pred_turn_qryngij_6_c_4_u3nbuiteko" IS 'btree index AssignPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__assign_result_ix_outcome_root_step_wjgqvlpbde" IS 'btree index AssignResult(outcome, root, step)';
+COMMENT ON INDEX "slice_den"."__assign_result_ix_root_outcome_vfu6fjnep4" IS 'btree index AssignResult(root, outcome)';
 
 COMMENT ON INDEX "slice_den"."__assign_skipped_ix_by_phe5rdziqg" IS 'btree index AssignSkipped(by)';
 
 COMMENT ON INDEX "slice_den"."__assign_skipped_ix_scope_ftup4gbap6" IS 'btree index AssignSkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__assign_step_ix_scope_root_kind_x7xynjnrkv" IS 'btree index AssignStep(scope, root, kind)';
+COMMENT ON INDEX "slice_den"."__assign_step_ix_root_scope_kind_drsz5mwtr4" IS 'btree index AssignStep(root, scope, kind)';
 
 COMMENT ON INDEX "slice_den"."__chain_chain_run_input_ix_scope_iuq7js6bfa" IS 'btree index ChainChainRunInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__chain_claim_ix_pred_attempt_oey_4_tm_5_xyl_step_dnks3lj6ra" IS 'btree index ChainClaim(__pred_attempt_oey4tm5xyl, step, __root_yewsvvtcyz)';
+COMMENT ON INDEX "slice_den"."__chain_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_sic5xhruts" IS 'btree index ChainClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
 COMMENT ON INDEX "slice_den"."__chain_ordered_input_ix_scope_lbnwnucdyj" IS 'btree index ChainOrderedInput(scope)';
 
@@ -5491,9 +5566,9 @@ COMMENT ON INDEX "slice_den"."__chain_page_read_tree_ix_digest_qz4flptsbe" IS 'b
 
 COMMENT ON INDEX "slice_den"."__chain_page_read_weights_ix_digest_p6eekmx2x6" IS 'btree index ChainPageReadWeights(digest)';
 
-COMMENT ON INDEX "slice_den"."__chain_paused_ix_pred_turn_qryngij_6_c_4_target_ltz6nzangf" IS 'btree index ChainPaused(__pred_turn_qryngij6c4, target)';
+COMMENT ON INDEX "slice_den"."__chain_paused_ix_target_pred_turn_qryngij_6_c_4_azkairtri3" IS 'btree index ChainPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__chain_result_ix_outcome_root_step_axmfrho4j3" IS 'btree index ChainResult(outcome, root, step)';
+COMMENT ON INDEX "slice_den"."__chain_result_ix_root_outcome_b3ed6hz2xc" IS 'btree index ChainResult(root, outcome)';
 
 COMMENT ON INDEX "slice_den"."__chain_result_ix_step_4lfojblc4o" IS 'btree index ChainResult(step)';
 
@@ -5501,13 +5576,13 @@ COMMENT ON INDEX "slice_den"."__chain_skipped_ix_by_2c45vyfwzy" IS 'btree index 
 
 COMMENT ON INDEX "slice_den"."__chain_skipped_ix_scope_jvrcbbmf2m" IS 'btree index ChainSkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__chain_step_ix_scope_root_kind_ru3k3ivu6x" IS 'btree index ChainStep(scope, root, kind)';
+COMMENT ON INDEX "slice_den"."__chain_step_ix_root_scope_kind_7y3wfct5o4" IS 'btree index ChainStep(root, scope, kind)';
 
-COMMENT ON INDEX "slice_den"."__clock_claim_ix_pred_attempt_oey_4_tm_5_xyl_step_leqy727kyf" IS 'btree index ClockClaim(__pred_attempt_oey4tm5xyl, step, __root_yewsvvtcyz)';
+COMMENT ON INDEX "slice_den"."__clock_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_76aawvjtpr" IS 'btree index ClockClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
 COMMENT ON INDEX "slice_den"."__clock_hourly_input_ix_scope_hjvvwnlgos" IS 'btree index ClockHourlyInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__clock_paused_ix_pred_turn_qryngij_6_c_4_target_m3753rncus" IS 'btree index ClockPaused(__pred_turn_qryngij6c4, target)';
+COMMENT ON INDEX "slice_den"."__clock_paused_ix_target_pred_turn_qryngij_6_c_4_la4ocjtto2" IS 'btree index ClockPaused(target, __pred_turn_qryngij6c4)';
 
 COMMENT ON INDEX "slice_den"."__clock_sitting_input_ix_scope_k6vxbcvu2a" IS 'btree index ClockSittingInput(scope)';
 
@@ -5515,21 +5590,21 @@ COMMENT ON INDEX "slice_den"."__clock_skipped_ix_by_252vuphujb" IS 'btree index 
 
 COMMENT ON INDEX "slice_den"."__clock_skipped_ix_scope_vlmkgoc4qh" IS 'btree index ClockSkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__clock_step_ix_scope_root_dr2wopxg6r" IS 'btree index ClockStep(scope, root)';
+COMMENT ON INDEX "slice_den"."__clock_step_ix_root_scope_xautpoatwk" IS 'btree index ClockStep(root, scope)';
 
-COMMENT ON INDEX "slice_den"."__fan_claim_ix_pred_attempt_oey_4_tm_5_xyl_step_root_dofch63qek" IS 'btree index FanClaim(__pred_attempt_oey4tm5xyl, step, __root_yewsvvtcyz)';
+COMMENT ON INDEX "slice_den"."__fan_claim_ix_root_step_until_eoimsdmnc3" IS 'btree index FanClaim(root, step, until)';
 
-COMMENT ON INDEX "slice_den"."__fan_exclusive_ix_pred_turn_qryngij_6_c_4_kind_key_utbrcrsxai" IS 'btree index FanExclusive(__pred_turn_qryngij6c4, kind, key)';
+COMMENT ON INDEX "slice_den"."__fan_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_root_eihagatfae" IS 'btree index FanClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
+
+COMMENT ON INDEX "slice_den"."__fan_exclusive_ix_kind_key_pred_turn_qryngij_6_c_4_vboqjsyskn" IS 'btree index FanExclusive(kind, key, __pred_turn_qryngij6c4)';
 
 COMMENT ON INDEX "slice_den"."__fan_fan_run_input_ix_scope_rgmbrwdcvq" IS 'btree index FanFanRunInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__fan_hold_ix_root_step_attempt_rkm7jshnmy" IS 'btree index FanHold(root, step, attempt)';
+COMMENT ON INDEX "slice_den"."__fan_hold_ix_resource_seat_s7bnw22355" IS 'btree index FanHold(resource, seat)';
 
-COMMENT ON INDEX "slice_den"."__fan_hold_ix_seat_resource_bgylsgdtyj" IS 'btree index FanHold(seat, resource)';
+COMMENT ON INDEX "slice_den"."__fan_paused_ix_target_pred_turn_qryngij_6_c_4_526conssyj" IS 'btree index FanPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__fan_paused_ix_pred_turn_qryngij_6_c_4_target_yrplqpn2fl" IS 'btree index FanPaused(__pred_turn_qryngij6c4, target)';
-
-COMMENT ON INDEX "slice_den"."__fan_result_ix_outcome_root_step_raaoxnsivx" IS 'btree index FanResult(outcome, root, step)';
+COMMENT ON INDEX "slice_den"."__fan_result_ix_root_outcome_wy67z6qjlg" IS 'btree index FanResult(root, outcome)';
 
 COMMENT ON INDEX "slice_den"."__fan_result_ix_step_n47cclxm64" IS 'btree index FanResult(step)';
 
@@ -5537,65 +5612,65 @@ COMMENT ON INDEX "slice_den"."__fan_skipped_ix_by_3aejofkhor" IS 'btree index Fa
 
 COMMENT ON INDEX "slice_den"."__fan_skipped_ix_scope_h5pzdoa32a" IS 'btree index FanSkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__fan_step_ix_scope_root_kind_ey6px3al2m" IS 'btree index FanStep(scope, root, kind)';
+COMMENT ON INDEX "slice_den"."__fan_step_ix_root_scope_kind_u5r7xvxvzl" IS 'btree index FanStep(root, scope, kind)';
 
 COMMENT ON INDEX "slice_den"."__fan_sweep_input_ix_scope_zvab3un5km" IS 'btree index FanSweepInput(scope)';
 
 COMMENT ON INDEX "slice_den"."__fan_wanted_input_ix_scope_57fqk3rwec" IS 'btree index FanWantedInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__fan_within_ix_parent_root_kind_soxbcmdruc" IS 'btree index FanWithin(parent, root, kind)';
+COMMENT ON INDEX "slice_den"."__fan_within_ix_root_parent_kind_3fui4hg5uo" IS 'btree index FanWithin(root, parent, kind)';
 
-COMMENT ON INDEX "slice_den"."__retry_claim_ix_pred_attempt_oey_4_tm_5_xyl_step_mqytmou3i7" IS 'btree index RetryClaim(__pred_attempt_oey4tm5xyl, step, __root_yewsvvtcyz)';
+COMMENT ON INDEX "slice_den"."__retry_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_66l375ycrl" IS 'btree index RetryClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
 COMMENT ON INDEX "slice_den"."__retry_ladders_input_ix_scope_ktwahiu353" IS 'btree index RetryLaddersInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__retry_paused_ix_pred_turn_qryngij_6_c_4_target_mucldaev6r" IS 'btree index RetryPaused(__pred_turn_qryngij6c4, target)';
+COMMENT ON INDEX "slice_den"."__retry_paused_ix_target_pred_turn_qryngij_6_c_4_5kkljt6kwu" IS 'btree index RetryPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__retry_result_ix_outcome_root_step_oq2a3fz6jx" IS 'btree index RetryResult(outcome, root, step)';
+COMMENT ON INDEX "slice_den"."__retry_result_ix_root_outcome_mokpa5tbiz" IS 'btree index RetryResult(root, outcome)';
 
 COMMENT ON INDEX "slice_den"."__retry_skipped_ix_by_s7pekf7xtg" IS 'btree index RetrySkipped(by)';
 
 COMMENT ON INDEX "slice_den"."__retry_skipped_ix_scope_pj72ptncqt" IS 'btree index RetrySkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__retry_step_ix_scope_root_kind_535s5liuff" IS 'btree index RetryStep(scope, root, kind)';
+COMMENT ON INDEX "slice_den"."__retry_step_ix_root_scope_kind_2fjaoxcf4e" IS 'btree index RetryStep(root, scope, kind)';
 
 COMMENT ON INDEX "slice_den"."__retry_throttled_input_ix_scope_srrsrnmwfp" IS 'btree index RetryThrottledInput(scope)';
 
 COMMENT ON INDEX "slice_den"."__retry_unhurried_input_ix_scope_4drrri4lgl" IS 'btree index RetryUnhurriedInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__review_claim_ix_pred_attempt_oey_4_tm_5_xyl_step_2gmdd4mm6e" IS 'btree index ReviewClaim(__pred_attempt_oey4tm5xyl, step, __root_yewsvvtcyz)';
+COMMENT ON INDEX "slice_den"."__review_claim_ix_root_step_until_i35ihac4eg" IS 'btree index ReviewClaim(root, step, until)';
 
-COMMENT ON INDEX "slice_den"."__review_gather_input_sizes_ix_pred_ordinal_e_545_jr7iy6oa64" IS 'btree index ReviewGatherInputSizes(__pred_ordinal_e545zctcav, step, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice_den"."__review_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_guo6f4ktdf" IS 'btree index ReviewClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
-COMMENT ON INDEX "slice_den"."__review_hold_ix_root_step_attempt_7ukmo2gqiq" IS 'btree index ReviewHold(root, step, attempt)';
+COMMENT ON INDEX "slice_den"."__review_gather_input_sizes_ix_step_pred_ordinal_e_7dlth35tuv" IS 'btree index ReviewGatherInputSizes(step, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
-COMMENT ON INDEX "slice_den"."__review_hold_ix_seat_resource_qbfxqrocrv" IS 'btree index ReviewHold(seat, resource)';
+COMMENT ON INDEX "slice_den"."__review_hold_ix_resource_seat_3p66dnxzad" IS 'btree index ReviewHold(resource, seat)';
 
-COMMENT ON INDEX "slice_den"."__review_paused_ix_pred_turn_qryngij_6_c_4_target_ss2ligwgbm" IS 'btree index ReviewPaused(__pred_turn_qryngij6c4, target)';
+COMMENT ON INDEX "slice_den"."__review_paused_ix_target_pred_turn_qryngij_6_c_4_sdt7yco6va" IS 'btree index ReviewPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__review_result_ix_outcome_root_step_jzvmno4wbj" IS 'btree index ReviewResult(outcome, root, step)';
+COMMENT ON INDEX "slice_den"."__review_result_ix_root_outcome_um2qpg5dbg" IS 'btree index ReviewResult(root, outcome)';
 
 COMMENT ON INDEX "slice_den"."__review_result_ix_step_epvfaz7rh3" IS 'btree index ReviewResult(step)';
 
 COMMENT ON INDEX "slice_den"."__review_review_run_input_ix_scope_pjiclt36mp" IS 'btree index ReviewReviewRunInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__review_review_run_input_sizes_ix_pred_ordinal_e_luv72wacww" IS 'btree index ReviewReviewRunInputSizes(__pred_ordinal_e545zctcav, scope, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice_den"."__review_review_run_input_sizes_ix_scope_pred_pgudijocqy" IS 'btree index ReviewReviewRunInputSizes(scope, __pred_ordinal_e545zctcav, __root_yjobx7uyrd)';
 
 COMMENT ON INDEX "slice_den"."__review_skipped_ix_by_6z5g634njq" IS 'btree index ReviewSkipped(by)';
 
 COMMENT ON INDEX "slice_den"."__review_skipped_ix_scope_ypzvqrmdce" IS 'btree index ReviewSkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__review_step_ix_scope_root_kind_2bmzsiga2b" IS 'btree index ReviewStep(scope, root, kind)';
+COMMENT ON INDEX "slice_den"."__review_step_ix_root_scope_kind_y6rly7sw5c" IS 'btree index ReviewStep(root, scope, kind)';
 
-COMMENT ON INDEX "slice_den"."__review_within_ix_parent_root_kind_qyuenylfcb" IS 'btree index ReviewWithin(parent, root, kind)';
+COMMENT ON INDEX "slice_den"."__review_within_ix_root_parent_kind_olszbr3xpq" IS 'btree index ReviewWithin(root, parent, kind)';
 
-COMMENT ON INDEX "slice_den"."__sync_claim_ix_pred_attempt_oey_4_tm_5_xyl_step_vvvrcpuz7c" IS 'btree index SyncClaim(__pred_attempt_oey4tm5xyl, step, __root_yewsvvtcyz)';
+COMMENT ON INDEX "slice_den"."__sync_claim_ix_step_pred_attempt_oey_4_tm_5_xyl_2krihntk52" IS 'btree index SyncClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
-COMMENT ON INDEX "slice_den"."__sync_exclusive_ix_pred_turn_qryngij_6_c_4_kind_key_6ngsicnwod" IS 'btree index SyncExclusive(__pred_turn_qryngij6c4, kind, key)';
+COMMENT ON INDEX "slice_den"."__sync_exclusive_ix_kind_key_pred_turn_qryngij_6_c_4_xscx3i4mti" IS 'btree index SyncExclusive(kind, key, __pred_turn_qryngij6c4)';
 
 COMMENT ON INDEX "slice_den"."__sync_gold_input_ix_scope_5czwxdxbjp" IS 'btree index SyncGoldInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__sync_paused_ix_pred_turn_qryngij_6_c_4_target_tey4wi2fqb" IS 'btree index SyncPaused(__pred_turn_qryngij6c4, target)';
+COMMENT ON INDEX "slice_den"."__sync_paused_ix_target_pred_turn_qryngij_6_c_4_xfnff46zel" IS 'btree index SyncPaused(target, __pred_turn_qryngij6c4)';
 
 COMMENT ON INDEX "slice_den"."__sync_result_ix_step_g4pu37wr72" IS 'btree index SyncResult(step)';
 
@@ -5603,79 +5678,21 @@ COMMENT ON INDEX "slice_den"."__sync_skipped_ix_by_ttq6dm55n2" IS 'btree index S
 
 COMMENT ON INDEX "slice_den"."__sync_skipped_ix_scope_d5pw2mcp56" IS 'btree index SyncSkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__sync_step_ix_scope_root_hppxk5gi6a" IS 'btree index SyncStep(scope, root)';
+COMMENT ON INDEX "slice_den"."__sync_step_ix_root_scope_l4sfn7gzd3" IS 'btree index SyncStep(root, scope)';
 
 COMMENT ON INDEX "slice_den"."__sync_sync_run_input_ix_scope_xmn3bafu67" IS 'btree index SyncSyncRunInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__writeback_claim_ix_pred_attempt_oey_4_tm_5_xyl_kpmpdohxqg" IS 'btree index WritebackClaim(__pred_attempt_oey4tm5xyl, step, __root_yewsvvtcyz)';
+COMMENT ON INDEX "slice_den"."__writeback_claim_ix_step_pred_attempt_oey_4_tm_5_6cvrydc2i4" IS 'btree index WritebackClaim(step, __pred_attempt_oey4tm5xyl, __root_yewsvvtcyz)';
 
-COMMENT ON INDEX "slice_den"."__writeback_paused_ix_pred_turn_qryngij_6_c_4_target_c4qyccrebd" IS 'btree index WritebackPaused(__pred_turn_qryngij6c4, target)';
+COMMENT ON INDEX "slice_den"."__writeback_paused_ix_target_pred_turn_qryngij_6_c_4_j2yz63n2im" IS 'btree index WritebackPaused(target, __pred_turn_qryngij6c4)';
 
 COMMENT ON INDEX "slice_den"."__writeback_skipped_ix_by_3ei4k4fj53" IS 'btree index WritebackSkipped(by)';
 
 COMMENT ON INDEX "slice_den"."__writeback_skipped_ix_scope_dwesxm2rrj" IS 'btree index WritebackSkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__writeback_step_ix_scope_root_ft5ap6qmlh" IS 'btree index WritebackStep(scope, root)';
+COMMENT ON INDEX "slice_den"."__writeback_step_ix_root_scope_oebhktgfcr" IS 'btree index WritebackStep(root, scope)';
 
 COMMENT ON INDEX "slice_den"."__writeback_writeback_input_ix_scope_72jqfcjowv" IS 'btree index WritebackWritebackInput(scope)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_claim_dep_root_pred_attempt_oey_4_tm_5_xyl_snslnegsju" IS 'dependencies AssignClaim(root, __pred_attempt_oey4tm5xyl)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_skipped_dep_root_by_jqbe3mhzd4" IS 'dependencies AssignSkipped(root, by)';
-
-COMMENT ON STATISTICS "slice_den"."__chain_claim_dep_root_pred_attempt_oey_4_tm_5_xyl_2ye2fgwvgr" IS 'dependencies ChainClaim(root, __pred_attempt_oey4tm5xyl)';
-
-COMMENT ON STATISTICS "slice_den"."__chain_skipped_dep_root_by_zjr34eply4" IS 'dependencies ChainSkipped(root, by)';
-
-COMMENT ON STATISTICS "slice_den"."__clock_claim_dep_root_pred_attempt_oey_4_tm_5_xyl_v3ehq3tji4" IS 'dependencies ClockClaim(root, __pred_attempt_oey4tm5xyl)';
-
-COMMENT ON STATISTICS "slice_den"."__clock_skipped_dep_root_by_34myccg5jv" IS 'dependencies ClockSkipped(root, by)';
-
-COMMENT ON STATISTICS "slice_den"."__fan_claim_dep_root_pred_attempt_oey_4_tm_5_xyl_wm4bfehdvh" IS 'dependencies FanClaim(root, __pred_attempt_oey4tm5xyl)';
-
-COMMENT ON STATISTICS "slice_den"."__fan_skipped_dep_root_by_q2xa3boar6" IS 'dependencies FanSkipped(root, by)';
-
-COMMENT ON STATISTICS "slice_den"."__retry_claim_dep_root_pred_attempt_oey_4_tm_5_xyl_avp7q7lzf3" IS 'dependencies RetryClaim(root, __pred_attempt_oey4tm5xyl)';
-
-COMMENT ON STATISTICS "slice_den"."__retry_skipped_dep_root_by_lyntz5kvsj" IS 'dependencies RetrySkipped(root, by)';
-
-COMMENT ON STATISTICS "slice_den"."__review_claim_dep_root_pred_attempt_oey_4_tm_5_xyl_ai4a7qjra5" IS 'dependencies ReviewClaim(root, __pred_attempt_oey4tm5xyl)';
-
-COMMENT ON STATISTICS "slice_den"."__review_skipped_dep_root_by_uqr2pucr7i" IS 'dependencies ReviewSkipped(root, by)';
-
-COMMENT ON STATISTICS "slice_den"."__sync_claim_dep_root_pred_attempt_oey_4_tm_5_xyl_fj6qczmpr5" IS 'dependencies SyncClaim(root, __pred_attempt_oey4tm5xyl)';
-
-COMMENT ON STATISTICS "slice_den"."__sync_skipped_dep_root_by_peqcv2dirg" IS 'dependencies SyncSkipped(root, by)';
-
-COMMENT ON STATISTICS "slice_den"."__writeback_claim_dep_root_pred_attempt_oey_4_tm_5_dcxngvp2yf" IS 'dependencies WritebackClaim(root, __pred_attempt_oey4tm5xyl)';
-
-COMMENT ON STATISTICS "slice_den"."__writeback_skipped_dep_root_by_h34fojbwaq" IS 'dependencies WritebackSkipped(root, by)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_assignment_input_exclude_dep_root_pred_qtgxleyceu" IS 'dependencies AssignAssignmentInputExclude(root, __pred_ordinal_e545zctcav)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_assignment_input_near_dep_root_pred_ordinal_pao5ytpdqc" IS 'dependencies AssignAssignmentInputNear(root, __pred_ordinal_e545zctcav)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_decide_input_exclude_dep_root_pred_ordinal_aebbdd3iqm" IS 'dependencies AssignDecideInputExclude(root, __pred_ordinal_e545zctcav)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_decide_output_weighed_dep_root_pred_ordinal_m2iu3u7byb" IS 'dependencies AssignDecideOutputWeighed(root, __pred_ordinal_e545zctcav)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_decide_read_nearest_dep_root_digest_eakk64edwo" IS 'dependencies AssignDecideReadNearest(root, digest)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_decide_read_seen_dep_root_digest_ik3tvwzxeu" IS 'dependencies AssignDecideReadSeen(root, digest)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_embed_input_exclude_dep_root_pred_ordinal_e_j3cu4tmutv" IS 'dependencies AssignEmbedInputExclude(root, __pred_ordinal_e545zctcav)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_embed_input_near_dep_root_pred_ordinal_e_nzsedptvts" IS 'dependencies AssignEmbedInputNear(root, __pred_ordinal_e545zctcav)';
-
-COMMENT ON STATISTICS "slice_den"."__chain_page_read_earlier_dep_root_digest_yrfi2wve3y" IS 'dependencies ChainPageReadEarlier(root, digest)';
-
-COMMENT ON STATISTICS "slice_den"."__chain_page_read_tree_dep_root_digest_j6d5kqzjcn" IS 'dependencies ChainPageReadTree(root, digest)';
-
-COMMENT ON STATISTICS "slice_den"."__chain_page_read_weights_dep_root_digest_yecioznuht" IS 'dependencies ChainPageReadWeights(root, digest)';
-
-COMMENT ON STATISTICS "slice_den"."__review_gather_input_sizes_dep_root_pred_ordinal_e_s7vy7r7d5o" IS 'dependencies ReviewGatherInputSizes(root, __pred_ordinal_e545zctcav)';
-
-COMMENT ON STATISTICS "slice_den"."__review_review_run_input_sizes_dep_root_pred_n2j37pzgu5" IS 'dependencies ReviewReviewRunInputSizes(root, __pred_ordinal_e545zctcav)';
 
 COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_263rpuc3f6"() IS 'the reader of the delta of news of AssignAssignmentInput';
 

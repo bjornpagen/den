@@ -85,7 +85,7 @@ export const metisOf = (
 	const horizon = Arr.reduce(
 		[...Arr.map(sorted, (act) => act.at), ...Arr.map(world.segments, (segment) => segment.heals)],
 		0,
-		Math.max
+		(latest, at) => Math.max(latest, at)
 	)
 	return {
 		program: together("metis", [

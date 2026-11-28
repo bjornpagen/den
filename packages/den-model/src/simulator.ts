@@ -920,7 +920,8 @@ export const patienceOf = (
 	since: number
 ): number => {
 	const rows = HashMap.toValues(state.steps)
-	const longest = (values: ReadonlyArray<number>) => Arr.reduce(values, 0, Math.max)
+	const longest = (values: ReadonlyArray<number>) =>
+		Arr.reduce(values, 0, (most, value) => Math.max(most, value))
 	return (
 		longest(Arr.map(rows, (row) => row.runs.lease + row.runs.ladder.last)) +
 		longest(

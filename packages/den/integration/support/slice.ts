@@ -11,7 +11,7 @@ import { compileServedMoved } from "@bjornpagen/grizzle/compile"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
 import { waitingOn } from "@bjornpagen/testing/live"
 import { type Need, NeedFailed } from "@bjornpagen/testing/property"
-import { Database, type DatabaseNeed, Template } from "@bjornpagen/testing/resources"
+import { Database, type DatabaseNeed, Template, templateKeyOf } from "@bjornpagen/testing/resources"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import { regex } from "arkregex"
 import {
@@ -51,14 +51,7 @@ import initMigration from "#integration/slice/migrations/slice/19700101000000_in
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
-import {
-	awaitingPostgres,
-	backendOf,
-	connectionTo,
-	overTls,
-	signingIn,
-	type TlsMember
-} from "#integration/support/cluster.ts"
+import { connectionTo, overTls, type TlsMember } from "#integration/support/cluster.ts"
 
 /**
  * The vertical slice installed on den's cluster, as the needs of the integration properties: a template of the slice
@@ -164,20 +157,15 @@ const committedFolders = Effect.gen(function* () {
 class SetupFailed extends Data.TaggedError("SetupFailed")<{ readonly message: string }> {}
 
 /**
- * A session of the cluster's owner: its client, its backend recorded as it signed in (signingIn), and the member it
- * runs on, which its statements' waits ask whether that backend works on them (awaitingPostgres).
+ * A session of the cluster's owner in `database`, connected, and ended once its scope closes: its backend serves a
+ * socket of the case's process tree, so the runner counts its statements' work as the case's (the testing library's
+ * runner/backends.ts).
  */
-interface OwnerSession {
-	readonly client: pg.Client
-	readonly member: TlsMember
-}
-
-/** A session of the cluster's owner in `database`, connected, and ended once its scope closes. */
 const ownerSession = (member: TlsMember, database: string) =>
 	Effect.acquireRelease(
 		Effect.tap(
-			Effect.sync((): OwnerSession => ({
-				client: signingIn(
+			Effect.sync(
+				() =>
 					new pg.Client({
 						host: "localhost",
 						port: member.port,
@@ -186,33 +174,24 @@ const ownerSession = (member: TlsMember, database: string) =>
 						database,
 						ssl: { ca: member.tls.ca, servername: "localhost" }
 					})
-				),
-				member
-			})),
-			(owner) =>
-				awaitingPostgres(member, Option.none())(`connect as ${member.owner} to ${database}`)(
-					Effect.tryPromise({
-						try: () => owner.client.connect(),
-						catch: (cause) =>
-							new SetupFailed({ message: `connecting as ${member.owner}: ${String(cause)}` })
-					})
-				)
+			),
+			(client) =>
+				Effect.tryPromise({
+					try: () => client.connect(),
+					catch: (cause) =>
+						new SetupFailed({ message: `connecting as ${member.owner}: ${String(cause)}` })
+				})
 		),
-		(owner) =>
-			awaitingPostgres(member, Option.none())(`end of the owner's session in ${database}`)(
-				Effect.promise(() => owner.client.end())
-			)
+		(client) => Effect.promise(() => client.end())
 	)
 
 /** Runs one statement on an owner's session, and returns its rows' first column. */
-const runOn = (owner: OwnerSession, statement: string) =>
+const runOn = (client: pg.Client, statement: string) =>
 	Effect.map(
-		awaitingPostgres(owner.member, backendOf(owner.client.connection))(statement)(
-			Effect.tryPromise({
-				try: () => owner.client.query<{ readonly name: string }>(statement),
-				catch: (cause) => new SetupFailed({ message: `${statement}: ${String(cause)}` })
-			})
-		),
+		Effect.tryPromise({
+			try: () => client.query<{ readonly name: string }>(statement),
+			catch: (cause) => new SetupFailed({ message: `${statement}: ${String(cause)}` })
+		}),
 		(result) => Arr.map(result.rows, (row) => row.name)
 	)
 
@@ -326,11 +305,11 @@ const install = (
 	})
 
 /**
- * The role prefix of the slice template named `template` (`den_t_tpl_<32 hex digits>`, the toolchain's name for it):
- * `t` and its first 12 hex digits, so every worker that clones it, and its build, derive the same prefix, and two
- * templates' roles stay apart.
+ * The role prefix of the slice template whose build database or template is named `name`: `t` and the last 12 hex
+ * digits of its build's key (the testing library's templateKeyOf), the same at its build and at every clone of it, and
+ * apart from every other build's, whose roles a build drops before it makes its own.
  */
-const templatePrefixOf = (template: string): string => `t${Str.slice(-32, -20)(template)}`
+const templatePrefixOf = (name: string): string => `t${Str.slice(-12)(templateKeyOf(name))}`
 
 /**
  * The password of a login of the slice template: the owner's password, then the role's name, so only who holds the
@@ -377,34 +356,33 @@ const setupNeedFailed = (need: string) => (cause: SetupFailed | PlatformError.Pl
 
 /**
  * The CPU one open of a slice template's need may spend on a worker (Template.database's `budget`, which the needs that
- * take its clones state too): its build, a migration a child process runs that the worker awaits as a declared wait
- * (`grizzle`), or the wait on another worker's build, and the clone a case takes.
+ * take its clones state too): its build, a migration a child process runs, with the PostgreSQL backends it is the
+ * client of, which the toolchain counts as the open's work, or the wait on another worker's build, and the clone a case
+ * takes.
  *
  * @limitKind measured
  * @owner den's integration suites (packages/den/integration)
- * @unit milliseconds of CPU
- * @scope one open of the den slice or den empty template's need on one worker, the worker process's own CPU
- * @evidence each property's `readyingCpu` in ~/.cache/toolchain-test/runs/739101362-3164387.json (`toolchain-test run
- *   integration/claim.test.ts integration/relay.test.ts integration/seatcount.test.ts`, TEST_SEED=739101362), which
- *   bounds any one open of its needs from above (every need of a property opens in its readying); the same properties'
- *   at toolchain a6172d0 and 541d327 in 1854769185-1748472.json and 3087850660-3443342.json
- * @observed 2026-11-21 15:40 to 15:51 UTC (739101362); 13:46 to 13:55 UTC and 14:20 to 14:25 UTC (the others)
- * @environment cassowary, Ubuntu 26.04 on arm64 in AWS, 64 cores and 247 GiB, 1-minute load 410 to 430 from other
- *   lanes' runs; Node 26.13.1, toolchain 46e6e52e43dd, grizzle d81ee19dc (the pin), den-test-0 on the workbench's
- *   PostgreSQL 19.0
- * @workload one run of three properties on three workers, each opening its needs once: claim.test's sliceCase (the den
- *   slice template, built by `grizzle migrate` of the slice's 24,135-line init migration), relay.test's
- *   installedSliceCase (the den empty template), seatcount.test's liveSliceCase beside its lowered copy
- * @result readyingCpu claim 2,824.9 ms, relay 2,814.8 ms, seatcount 3,021.6 ms (its two needs together); at a6172d0
- *   claim 2,624.4 ms and relay 2,609.7 ms; at 541d327 relay 2,675.0 ms. No open failed
- * @decision about ten times the largest readying, 3,021.6 ms, rounded up: a worker's CPU for one open moves with the
- *   load and with a cold compile cache, which the runs met at load 410 to 430, and a guard that kills a building
- *   template fails every case that clones it. Unmeasured: a template built on a quiet machine, and a slice whose
- *   migration grows
- * @revalidate a slice migration grown well past 24,135 lines, a template build that does more in the worker, a toolchain
- *   that counts a need's children in its budget, another machine
+ * @unit milliseconds of CPU, the open's process tree's and its backends'
+ * @scope one open of the den slice or den empty template's need on one worker
+ * @evidence each property's `openings` in ~/.cache/toolchain-test/runs/79771309-870018.json (a copy in
+ *   ~/.cache/den/DENVARIANT-evidence/den-run.json), the whole run of den's integration properties, which bounds any one
+ *   open of its needs from above (every need of a property opens in its readying, and a property's openings sum them)
+ * @observed 2026-11-28 02:02 to 02:18 UTC
+ * @environment cassowary, Ubuntu 26.04 on arm64 in AWS, 64 cores and 247 GiB, shared (load average 360 to 380), Node
+ *   26, toolchain 13a371cdaeeb, grizzle 1b28f7563f73, den-test-0 on the workbench's PostgreSQL 19.0
+ * @workload one run of den's 38 integration properties on 31 workers, the den slice template built by `grizzle migrate`
+ *   of the slice's init migration, every live slice case migrating its own clone of den empty
+ * @result the largest openings: seatcount's 108,850 ms (its liveSliceCase beside its lowered copy, whose `grizzle
+ *   generate` counts there too) and requested's 86,670 ms (its liveSliceCase beside its recording copy); a slice case's
+ *   clone 3,420 to 5,220 ms. No open failed. At the earlier toolchain, which counted the worker's own CPU alone, the
+ *   largest readying was 3,021.6 ms, and a template build ran past that budget's 30,000 ms once the migration's child
+ *   and backends counted
+ * @decision about twice the largest opening, rounded up: the opening of two needs together bounds the template's own,
+ *   and a guard that kills a building template fails every case that clones it. Unmeasured: a template built alone on
+ *   a quiet machine
+ * @revalidate a slice migration grown, a template build that does more, a toolchain or grizzle repin, another machine
  */
-const templateBudgetMillis = 30_000
+const templateBudgetMillis = 220_000
 
 /**
  * The slice installed, as a template: built once on the cluster from den_template by `grizzle migrate` under the
@@ -744,6 +722,26 @@ const sliceCopyOf = (flow: string, lowered: Lowered, drops: ReadonlyArray<string
 		)
 		return copy
 	})
+
+/**
+ * What `grizzle generate` answers the configuration `config`: a configuration module's text, which reads the slice by
+ * its own specifiers, written into a directory of its own beside the slice, which its scope removes, its migrations
+ * drafted from nothing, as a deploy of it would draft them. Its success holds what generate printed, its failure
+ * generate's refusal (SetupFailed) or a platform's failure to run it.
+ */
+export const generatedFrom = (config: string) =>
+	Effect.scoped(
+		Effect.gen(function* () {
+			const fs = yield* FileSystem.FileSystem
+			const path = yield* Path.Path
+			const workspace = yield* fs.makeTempDirectoryScoped({
+				directory: path.dirname(sliceDir),
+				prefix: ".config-"
+			})
+			yield* fs.writeFileString(path.join(workspace, "grizzle.config.ts"), config)
+			return yield* Effect.result(grizzle("generate", {}, workspace, []))
+		})
+	)
 
 /**
  * The CPU a slice copy's open may spend on a worker (`sliceCopyNeed`'s budget): the slice copied, one flow's modules

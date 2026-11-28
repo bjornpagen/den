@@ -349,7 +349,7 @@ export const syntheticOf = (
 			horizonOf(shape.finish)
 		],
 		0,
-		Math.max
+		(latest, at) => Math.max(latest, at)
 	)
 	const program: Program = {
 		name: "synthetic",

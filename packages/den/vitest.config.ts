@@ -6,7 +6,6 @@ export default defineTestConfig({
 	guided: [],
 	setup: [],
 	conditions: [],
-	timeouts: { test: { kind: "unbounded" }, hook: { kind: "unbounded" } },
 	smallStack: [],
 	examples: { kind: "banned", exempt: [] }
 })
